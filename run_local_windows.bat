@@ -8,8 +8,7 @@ if %errorlevel%==0 (
 ) else (
     where python >nul 2>nul
     if errorlevel 1 (
-        echo Python tidak ditemukan.
-        echo Install Python 3.10+ lalu jalankan file ini kembali.
+        echo Python 3 tidak ditemukan.
         pause
         exit /b 1
     )
@@ -22,17 +21,16 @@ if not exist ".venv\Scripts\python.exe" (
     if errorlevel 1 goto :error
 )
 
-echo [SETUP] Menjalankan ConvertYAML Local Runner...
 ".venv\Scripts\python.exe" local_runner.py --config local_config.json
 if errorlevel 1 goto :error
 
 echo.
-echo Selesai. Cek akun.txt dan openclash_auto.yaml
+echo Selesai.
 pause
 exit /b 0
 
 :error
 echo.
-echo Proses gagal. Baca pesan error di atas.
+echo Proses gagal. Baca error di atas.
 pause
 exit /b 1

@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 """
-ConvertYAML Local Runner
+ConvertYAML Local Runner v2.0
 
-Menjalankan pipeline ConvertYAML secara lokal tanpa GitHub Actions:
-1. Menyiapkan file core ConvertYAML jika belum ada.
-2. Memasang dependency Python yang diperlukan.
-3. Mengunduh Mihomo dan sing-box terbaru sesuai OS/arsitektur.
-4. Menjalankan generate_yaml.py.
-5. Memvalidasi YAML keluaran dengan Mihomo.
-
-Catatan:
-- Script ini memakai sumber subscription publik yang sudah didefinisikan oleh core ConvertYAML.
-- Tambahan sumber milik Anda dapat ditulis satu URL per baris pada subscription_links.txt.
+Final consolidated runner:
+- no GitHub Actions dependency;
+- verified TLS with retry + curl fallback;
+- Mihomo/sing-box bootstrap;
+- upstream compatibility patches;
+- YAML sanitation;
+- ad/tracker/malware protection;
+- YouTube playback guard + browser filter;
+- Mihomo validation with clear output.
 """
 
 from __future__ import annotations
@@ -21,31 +20,39 @@ import gzip
 import json
 import os
 import platform
+import re
 import shutil
+import ssl
 import stat
 import subprocess
 import sys
 import tarfile
 import tempfile
+import time
 import urllib.request
 import zipfile
 from pathlib import Path
 from typing import Iterable
 
+APP_VERSION = "2.0"
 GITHUB_API = "https://api.github.com"
+GITHUB_API_VERSION = "2026-03-10"
+
 CORE_REPO = "adiorany3/ConvertYAML"
 MIHOMO_REPO = "MetaCubeX/mihomo"
 SINGBOX_REPO = "SagerNet/sing-box"
 
-CORE_FILES = (
-    "generate_yaml.py",
-    "sumberyaml_core.py",
-    "requirements.txt",
+CORE_FILES = ("generate_yaml.py", "sumberyaml_core.py", "requirements.txt")
+OUTPUT_YAMLS = (
+    "openclash_auto.yaml",
+    "openclash_android.yaml",
+    "openclash_lite.yaml",
+    "openclash_fresh_pool.yaml",
 )
 
 DEFAULT_ENV = {
     "MAX_NODES": "20",
-    "MIN_OUTPUT_NODES": "20",
+    "MIN_OUTPUT_NODES": "10",
     "URLTEST_POOL_NODES": "60",
     "NEKOBOX_POOL_NODES": "30",
     "FRESH_POOL_NODES": "30",
@@ -69,6 +76,12 @@ DEFAULT_ENV = {
     "MAX_WORKERS": "64",
     "HEALTH_TIMEOUT_MS": "6000",
     "RULE_MODE": "Lite",
+    "ADBLOCK_PROFILE": "balanced",
+    "ADBLOCK_PROVIDER_INTERVAL": "43200",
+    # Default off for maximum OpenClash portability. Security rules still block.
+    "ADBLOCK_DNS_MODE": "off",
+    "YOUTUBE_ADBLOCK_MODE": "enhanced",
+    "YOUTUBE_BROWSER_FILTER_FILE": "youtube_browser_filters.txt",
     "SUBSCRIPTION_LINKS_FILE": "subscription_links.txt",
     "MANUAL_NODES_FILE": "manual_nodes.txt",
     "OUTPUT_YAML": "openclash_auto.yaml",
@@ -84,279 +97,409 @@ DEFAULT_ENV = {
     "OUTPUT_STAMP": "last_update.txt",
 }
 
+SECURITY_PROVIDERS = {
+    "security-tif-mini": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "text",
+        "interval": 43200,
+        "path": "./ruleset/security-tif-mini.txt",
+        "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.mini-onlydomains.txt",
+    },
+    "popup-ads": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "text",
+        "interval": 43200,
+        "path": "./ruleset/popup-ads.txt",
+        "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/popupads-onlydomains.txt",
+    },
+    "tracker-domain": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "mrs",
+        "interval": 43200,
+        "path": "./ruleset/tracker.mrs",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tracker.mrs",
+    },
+    "hagezi-pro-mini": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "text",
+        "interval": 43200,
+        "path": "./ruleset/hagezi-pro-mini.txt",
+        "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/pro.mini-onlydomains.txt",
+    },
+}
+
+YOUTUBE_PLAYBACK_DOMAINS = (
+    "youtube.com",
+    "youtu.be",
+    "youtube-nocookie.com",
+    "googlevideo.com",
+    "ytimg.com",
+    "youtubei.googleapis.com",
+    "youtube.googleapis.com",
+    "ggpht.com",
+)
+
+YOUTUBE_BROWSER_FILTERS_SAFE = """\
+! ConvertYAML Local Runner v2.0
+! Cosmetic YouTube filters. Do not block googlevideo.com.
+youtube.com##ytd-display-ad-renderer
+youtube.com##ytd-ad-slot-renderer
+youtube.com##ytd-promoted-video-renderer
+youtube.com##ytd-promoted-sparkles-web-renderer
+youtube.com##ytd-in-feed-ad-layout-renderer
+youtube.com##ytd-banner-promo-renderer
+youtube.com##ytd-companion-slot-renderer
+youtube.com##.ytp-ad-module
+youtube.com##.video-ads
+youtube.com##.ytp-ad-overlay-container
+youtube.com##.ytp-ad-player-overlay
+youtube.com##.ytp-ad-text-overlay
+youtube.com##.ytp-ad-image-overlay
+youtube.com##.ytp-ad-progress-list
+"""
+
+YOUTUBE_BROWSER_FILTERS_ENHANCED = """\
+! Additional endpoints separated from the main media CDN.
+||googleads.g.doubleclick.net^$domain=youtube.com
+||static.doubleclick.net^$domain=youtube.com
+||pagead2.googlesyndication.com^$domain=youtube.com
+||tpc.googlesyndication.com^$domain=youtube.com
+||www.googleadservices.com^$domain=youtube.com
+||youtube.com/api/stats/ads^$xhr,domain=youtube.com
+||youtube.com/pagead/*$xhr,domain=youtube.com
+||youtube.com/ptracking^$xhr,domain=youtube.com
+"""
+
 
 def log(message: str) -> None:
     print(f"[LOCAL] {message}", flush=True)
 
 
+def _headers(json_api: bool = False) -> dict[str, str]:
+    headers = {"User-Agent": f"ConvertYAML-Local-Runner/{APP_VERSION}"}
+    if json_api:
+        headers["Accept"] = "application/vnd.github+json"
+        headers["X-GitHub-Api-Version"] = GITHUB_API_VERSION
+    token = os.environ.get("GITHUB_TOKEN", "").strip()
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    return headers
+
+
+def _ssl_context() -> ssl.SSLContext:
+    context = ssl.create_default_context()
+    try:
+        import certifi  # type: ignore
+        cafile = certifi.where()
+        if cafile and Path(cafile).exists():
+            context.load_verify_locations(cafile=cafile)
+    except Exception:
+        pass
+    return context
+
+
+def _curl_available() -> bool:
+    return shutil.which("curl") is not None
+
+
+def _curl_base() -> list[str]:
+    args = [
+        "curl", "--fail", "--location", "--silent", "--show-error",
+        "--retry", "4", "--retry-delay", "2", "--retry-max-time", "90",
+        "--connect-timeout", "20", "--max-time", "180", "--http1.1",
+        "-A", f"ConvertYAML-Local-Runner/{APP_VERSION}",
+    ]
+    token = os.environ.get("GITHUB_TOKEN", "").strip()
+    if token:
+        args += ["-H", f"Authorization: Bearer {token}"]
+    return args
+
+
 def request_json(url: str) -> dict:
-    req = urllib.request.Request(
-        url,
-        headers={
-            "Accept": "application/vnd.github+json",
-            "User-Agent": "ConvertYAML-Local-Runner/1.0",
-        },
+    errors: list[str] = []
+    for attempt in range(1, 4):
+        try:
+            req = urllib.request.Request(url, headers=_headers(True))
+            with urllib.request.urlopen(req, timeout=45, context=_ssl_context()) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except Exception as exc:
+            errors.append(f"urllib #{attempt}: {exc}")
+            if attempt < 3:
+                log(f"GitHub API via Python gagal, retry {attempt}/3")
+                time.sleep(attempt * 2)
+
+    if _curl_available():
+        log("Fallback ke curl sistem dengan TLS verification aktif")
+        cmd = _curl_base() + [
+            "-H", "Accept: application/vnd.github+json",
+            "-H", f"X-GitHub-Api-Version: {GITHUB_API_VERSION}",
+            url,
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+        if result.returncode == 0:
+            return json.loads(result.stdout)
+        errors.append("curl: " + (result.stderr.strip() or str(result.returncode)))
+
+    raise RuntimeError(
+        "Gagal mengakses GitHub API.\n"
+        + "\n".join(f"  - {item}" for item in errors)
+        + "\nTes manual: curl -I https://api.github.com"
     )
-    with urllib.request.urlopen(req, timeout=45) as response:
-        return json.loads(response.read().decode("utf-8"))
 
 
 def download(url: str, destination: Path) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
-    req = urllib.request.Request(
-        url,
-        headers={"User-Agent": "ConvertYAML-Local-Runner/1.0"},
-    )
-    with urllib.request.urlopen(req, timeout=120) as response, destination.open("wb") as out:
-        shutil.copyfileobj(response, out)
+    errors: list[str] = []
+
+    for attempt in range(1, 4):
+        part = destination.with_suffix(destination.suffix + ".part")
+        part.unlink(missing_ok=True)
+        try:
+            req = urllib.request.Request(url, headers=_headers(False))
+            with urllib.request.urlopen(req, timeout=120, context=_ssl_context()) as response, part.open("wb") as out:
+                shutil.copyfileobj(response, out)
+            if not part.exists() or part.stat().st_size == 0:
+                raise RuntimeError("hasil download kosong")
+            part.replace(destination)
+            return
+        except Exception as exc:
+            part.unlink(missing_ok=True)
+            errors.append(f"urllib #{attempt}: {exc}")
+            if attempt < 3:
+                log(f"Download via Python gagal, retry {attempt}/3")
+                time.sleep(attempt * 2)
+
+    if _curl_available():
+        log("Fallback download ke curl sistem")
+        part = destination.with_suffix(destination.suffix + ".part")
+        part.unlink(missing_ok=True)
+        result = subprocess.run(
+            _curl_base() + ["--output", str(part), url],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode == 0 and part.exists() and part.stat().st_size > 0:
+            part.replace(destination)
+            return
+        part.unlink(missing_ok=True)
+        errors.append("curl: " + (result.stderr.strip() or str(result.returncode)))
+
+    raise RuntimeError(f"Gagal mengunduh {url}\n" + "\n".join(errors))
 
 
-def raw_github_url(repo: str, file_name: str, branch: str = "main") -> str:
-    return f"https://raw.githubusercontent.com/{repo}/{branch}/{file_name}"
+def raw_github_url(repo: str, filename: str, branch: str = "main") -> str:
+    return f"https://raw.githubusercontent.com/{repo}/{branch}/{filename}"
 
 
 def ensure_core_files(workdir: Path, refresh: bool) -> None:
-    missing = [name for name in CORE_FILES if not (workdir / name).exists()]
-    targets = list(CORE_FILES) if refresh else missing
+    targets = list(CORE_FILES) if refresh else [name for name in CORE_FILES if not (workdir / name).exists()]
     if not targets:
-        log("Core ConvertYAML sudah tersedia.")
+        log("Core ConvertYAML sudah tersedia")
         return
-
     for name in targets:
         log(f"Mengunduh core: {name}")
         download(raw_github_url(CORE_REPO, name), workdir / name)
 
 
-def ensure_text_files(workdir: Path) -> None:
-    sub_file = workdir / "subscription_links.txt"
-    manual_file = workdir / "manual_nodes.txt"
-
-    if not sub_file.exists():
-        sub_file.write_text(
-            "# Tambahkan URL subscription publik/milik Anda di bawah ini.\n"
-            "# Satu URL per baris. Baris yang diawali # diabaikan.\n",
-            encoding="utf-8",
-        )
-    if not manual_file.exists():
-        manual_file.write_text(
-            "# Node manual opsional. Satu URI VLESS/VMess/Trojan/SS per baris.\n",
-            encoding="utf-8",
-        )
+def ensure_input_files(workdir: Path) -> None:
+    defaults = {
+        "subscription_links.txt": "# Tambahkan subscription publik/milik Anda. Satu URL per baris.\n",
+        "manual_nodes.txt": "# Node manual opsional. Satu URI per baris.\n",
+        "adblock_allowlist.txt": "# Domain yang tidak boleh diblokir. Satu domain per baris.\n",
+    }
+    for name, body in defaults.items():
+        path = workdir / name
+        if not path.exists():
+            path.write_text(body, encoding="utf-8")
 
 
-def pip_install_dependencies(workdir: Path) -> None:
+def install_dependencies() -> None:
     try:
         import requests  # noqa: F401
         import yaml  # noqa: F401
-        log("Dependency Python sudah tersedia.")
+        import certifi  # noqa: F401
         return
     except Exception:
         pass
-
-    log("Memasang dependency Python...")
+    log("Memasang requests, PyYAML, certifi")
     subprocess.run(
         [
-            sys.executable,
-            "-m",
-            "pip",
-            "install",
-            "--disable-pip-version-check",
-            "requests>=2.31",
-            "PyYAML>=6.0",
+            sys.executable, "-m", "pip", "install", "--disable-pip-version-check",
+            "requests>=2.31", "PyYAML>=6.0", "certifi>=2024.2.2",
         ],
-        cwd=workdir,
         check=True,
     )
 
 
 def normalized_platform() -> tuple[str, str]:
-    system_raw = platform.system().lower()
-    machine_raw = platform.machine().lower()
-
-    system_map = {
-        "windows": "windows",
-        "linux": "linux",
-        "darwin": "darwin",
-    }
-    if system_raw not in system_map:
-        raise RuntimeError(f"OS belum didukung otomatis: {platform.system()}")
-
-    if machine_raw in {"x86_64", "amd64", "x64"}:
+    system = platform.system().lower()
+    machine = platform.machine().lower()
+    if system not in {"windows", "linux", "darwin"}:
+        raise RuntimeError(f"OS belum didukung: {platform.system()}")
+    if machine in {"x86_64", "amd64", "x64"}:
         arch = "amd64"
-    elif machine_raw in {"arm64", "aarch64"}:
+    elif machine in {"arm64", "aarch64"}:
         arch = "arm64"
     else:
-        raise RuntimeError(f"Arsitektur belum didukung otomatis: {platform.machine()}")
+        raise RuntimeError(f"Arsitektur belum didukung: {platform.machine()}")
+    return system, arch
 
-    return system_map[system_raw], arch
 
-
-def executable_name(base: str) -> str:
-    return base + (".exe" if platform.system().lower() == "windows" else "")
+def executable_name(name: str) -> str:
+    return name + (".exe" if platform.system().lower() == "windows" else "")
 
 
 def make_executable(path: Path) -> None:
     if platform.system().lower() != "windows":
-        mode = path.stat().st_mode
-        path.chmod(mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        path.chmod(path.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
 
 def select_mihomo_asset(assets: list[dict], os_name: str, arch: str) -> dict:
-    candidates: list[tuple[int, dict]] = []
     prefix = f"mihomo-{os_name}-{arch}"
-
+    candidates: list[tuple[int, int, dict]] = []
     for asset in assets:
         name = str(asset.get("name", "")).lower()
-        if not name.startswith(prefix):
-            continue
-        if "debug" in name:
+        if not name.startswith(prefix) or "debug" in name:
             continue
         if not (name.endswith(".gz") or name.endswith(".zip")):
             continue
-
-        score = 50
-        if arch == "amd64" and "compatible" in name:
-            score -= 20
+        score = 0
+        if "compatible" in name:
+            score += 20
         if "-v1-" in name or "-v2-" in name or "-v3-" in name:
             score += 10
-        if "go1" in name or "go120" in name or "go122" in name or "go124" in name:
-            score += 5
-        candidates.append((score, asset))
-
+        candidates.append((score, len(name), asset))
     if not candidates:
-        raise RuntimeError(f"Tidak menemukan asset Mihomo untuk {os_name}/{arch}")
-
-    candidates.sort(key=lambda item: (item[0], item[1].get("name", "")))
-    return candidates[0][1]
+        raise RuntimeError(f"Asset Mihomo tidak ditemukan untuk {os_name}/{arch}")
+    candidates.sort(key=lambda item: (item[0], item[1]))
+    return candidates[0][2]
 
 
 def select_singbox_asset(assets: list[dict], os_name: str, arch: str) -> dict:
-    candidates: list[dict] = []
     needle = f"-{os_name}-{arch}"
-
+    candidates = []
     for asset in assets:
         name = str(asset.get("name", "")).lower()
-        if not name.startswith("sing-box-"):
-            continue
-        if needle not in name:
-            continue
-        if name.endswith(".tar.gz") or name.endswith(".zip"):
+        if name.startswith("sing-box-") and needle in name and (name.endswith(".tar.gz") or name.endswith(".zip")):
             candidates.append(asset)
-
     if not candidates:
-        raise RuntimeError(f"Tidak menemukan asset sing-box untuk {os_name}/{arch}")
-
-    candidates.sort(key=lambda x: len(str(x.get("name", ""))))
-    return candidates[0]
+        raise RuntimeError(f"Asset sing-box tidak ditemukan untuk {os_name}/{arch}")
+    return sorted(candidates, key=lambda asset: len(str(asset.get("name", ""))))[0]
 
 
-def extract_binary(archive_path: Path, binary_name: str, output_path: Path) -> None:
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    if archive_path.name.endswith(".tar.gz"):
-        with tarfile.open(archive_path, "r:gz") as tar:
-            members = [
-                m for m in tar.getmembers()
-                if m.isfile() and Path(m.name).name.lower() == binary_name.lower()
-            ]
+def extract_binary(archive: Path, binary_name: str, output: Path) -> None:
+    output.parent.mkdir(parents=True, exist_ok=True)
+    if archive.name.endswith(".tar.gz"):
+        with tarfile.open(archive, "r:gz") as tf:
+            members = [m for m in tf.getmembers() if m.isfile() and Path(m.name).name.lower() == binary_name.lower()]
             if not members:
-                raise RuntimeError(f"Binary {binary_name} tidak ditemukan di {archive_path.name}")
-            member = members[0]
-            extracted = tar.extractfile(member)
-            if extracted is None:
-                raise RuntimeError(f"Gagal mengekstrak {binary_name}")
-            with output_path.open("wb") as out:
-                shutil.copyfileobj(extracted, out)
-
-    elif archive_path.name.endswith(".zip"):
-        with zipfile.ZipFile(archive_path) as zf:
-            members = [
-                n for n in zf.namelist()
-                if Path(n).name.lower() == binary_name.lower()
-            ]
-            if not members:
-                raise RuntimeError(f"Binary {binary_name} tidak ditemukan di {archive_path.name}")
-            with zf.open(members[0]) as src, output_path.open("wb") as out:
-                shutil.copyfileobj(src, out)
-
-    elif archive_path.name.endswith(".gz"):
-        with gzip.open(archive_path, "rb") as src, output_path.open("wb") as out:
-            shutil.copyfileobj(src, out)
-
+                raise RuntimeError(f"{binary_name} tidak ada dalam {archive.name}")
+            src = tf.extractfile(members[0])
+            if src is None:
+                raise RuntimeError("Gagal extract")
+            with output.open("wb") as dst:
+                shutil.copyfileobj(src, dst)
+    elif archive.name.endswith(".zip"):
+        with zipfile.ZipFile(archive) as zf:
+            names = [name for name in zf.namelist() if Path(name).name.lower() == binary_name.lower()]
+            if not names:
+                raise RuntimeError(f"{binary_name} tidak ada dalam {archive.name}")
+            with zf.open(names[0]) as src, output.open("wb") as dst:
+                shutil.copyfileobj(src, dst)
+    elif archive.name.endswith(".gz"):
+        with gzip.open(archive, "rb") as src, output.open("wb") as dst:
+            shutil.copyfileobj(src, dst)
     else:
-        raise RuntimeError(f"Format archive belum didukung: {archive_path.name}")
+        raise RuntimeError(f"Archive tidak didukung: {archive.name}")
+    make_executable(output)
 
-    make_executable(output_path)
 
-
-def ensure_binary(
-    workdir: Path,
-    repo: str,
-    program: str,
-    selector,
-    force_download: bool,
-) -> Path:
+def ensure_binary(workdir: Path, repo: str, program: str, selector, refresh: bool) -> Path:
     bin_dir = workdir / ".local_bin"
     bin_dir.mkdir(exist_ok=True)
-
     exe = executable_name(program)
-    output_path = bin_dir / exe
+    local = bin_dir / exe
 
-    if output_path.exists() and not force_download:
-        log(f"{program} sudah tersedia: {output_path}")
-        return output_path
+    if local.exists() and not refresh:
+        log(f"{program} lokal: {local}")
+        return local
+
+    if not refresh:
+        system_binary = shutil.which(exe) or shutil.which(program)
+        if system_binary:
+            path = Path(system_binary).resolve()
+            log(f"{program} dari PATH: {path}")
+            return path
 
     os_name, arch = normalized_platform()
-    log(f"Mencari {program} terbaru untuk {os_name}/{arch}...")
-
+    log(f"Mencari {program} terbaru untuk {os_name}/{arch}")
     release = request_json(f"{GITHUB_API}/repos/{repo}/releases/latest")
-    assets = release.get("assets") or []
-    asset = selector(assets, os_name, arch)
+    asset = selector(release.get("assets") or [], os_name, arch)
 
-    asset_name = str(asset["name"])
-    asset_url = str(asset["browser_download_url"])
-    log(f"Mengunduh {asset_name}")
-
-    with tempfile.TemporaryDirectory(prefix=f"{program}-download-") as tempdir:
-        archive = Path(tempdir) / asset_name
-        download(asset_url, archive)
-        extract_binary(archive, exe, output_path)
-
-    version = subprocess.run(
-        [str(output_path), "version"] if program == "sing-box" else [str(output_path), "-v"],
-        cwd=workdir,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        check=False,
-    )
-    first_line = (version.stdout or "").strip().splitlines()
-    if first_line:
-        log(f"{program}: {first_line[0]}")
-    return output_path
+    with tempfile.TemporaryDirectory(prefix=f"{program}-") as temp_dir:
+        archive = Path(temp_dir) / str(asset["name"])
+        download(str(asset["browser_download_url"]), archive)
+        extract_binary(archive, exe, local)
+    return local
 
 
 def load_config(path: Path | None) -> dict[str, str]:
     if path is None:
         return {}
     if not path.exists():
-        raise FileNotFoundError(f"Config tidak ditemukan: {path}")
+        raise FileNotFoundError(path)
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
-        raise ValueError("local_config.json harus berupa object JSON.")
-    return {str(k): str(v) for k, v in data.items()}
+        raise ValueError("Config JSON harus object")
+    return {str(key): str(value) for key, value in data.items()}
+
+
+def patch_core_compatibility(workdir: Path) -> None:
+    changed = []
+    for filename in ("generate_yaml.py", "sumberyaml_core.py"):
+        path = workdir / filename
+        if not path.exists():
+            continue
+        source = path.read_text(encoding="utf-8", errors="ignore")
+        original = source
+
+        source = re.sub(
+            r"(?m)^[ \t]*[\"']global-client-fingerprint[\"'][ \t]*:[ \t]*[^\n]+?,[ \t]*\n",
+            "",
+            source,
+        )
+        source = re.sub(
+            r"(?m)^[ \t]*global-client-fingerprint[ \t]*:[ \t]*chrome[ \t]*\n",
+            "",
+            source,
+        )
+        if filename == "generate_yaml.py":
+            source = source.replace(
+                'refs_available = set(proxy_names) | set(keep_group_names) | {"REJECT", "GLOBAL"}',
+                'refs_available = set(proxy_names) | set(groups.keys()) | {"DIRECT", "REJECT", "GLOBAL"}',
+            )
+
+        if source != original:
+            path.write_text(source, encoding="utf-8")
+            changed.append(filename)
+
+    if changed:
+        log("Core patched: " + ", ".join(changed))
 
 
 def build_environment(args, workdir: Path, mihomo: Path, singbox: Path) -> dict[str, str]:
     env = os.environ.copy()
     env.update(DEFAULT_ENV)
     env.update(load_config(args.config))
-
     env["MAX_NODES"] = str(args.max_nodes)
     env["MIN_OUTPUT_NODES"] = str(min(args.min_nodes, args.max_nodes))
     env["MIHOMO_PATH"] = str(mihomo.resolve())
     env["SINGBOX_PATH"] = str(singbox.resolve())
-
     if args.no_nekobox:
         env["REQUIRE_NEKOBOX_TEST"] = "false"
     if args.no_ws_only:
@@ -367,153 +510,515 @@ def build_environment(args, workdir: Path, mihomo: Path, singbox: Path) -> dict[
         env["URLTEST_POOL_NODES"] = str(args.urltest_pool)
     if args.nekobox_pool is not None:
         env["NEKOBOX_POOL_NODES"] = str(args.nekobox_pool)
-
     return env
 
 
-def validate_yaml(workdir: Path, mihomo: Path, files: Iterable[str]) -> None:
+def load_allowlist(workdir: Path) -> list[str]:
+    path = workdir / "adblock_allowlist.txt"
+    if not path.exists():
+        return []
+    domains = []
+    for raw in path.read_text(encoding="utf-8", errors="ignore").splitlines():
+        value = raw.strip().lower().rstrip(".")
+        if not value or value.startswith("#"):
+            continue
+        value = re.sub(r"^https?://", "", value).split("/", 1)[0]
+        if value.startswith("*.") or value.startswith("+."):
+            value = value[2:]
+        if re.fullmatch(r"[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?", value) and "." in value and ".." not in value:
+            domains.append(value)
+    return sorted(set(domains))
+
+
+def _safe_provider_path(name: str, provider: dict) -> str:
+    fmt = str(provider.get("format") or "yaml").lower()
+    ext = ".mrs" if fmt == "mrs" else ".txt" if fmt == "text" else ".yaml"
+    slug = re.sub(r"[^A-Za-z0-9._-]+", "_", name).strip("._") or "provider"
+    return f"./ruleset/{slug}{ext}"
+
+
+def _valid_policies(config: dict) -> set[str]:
+    names = {"DIRECT", "REJECT", "PASS", "COMPATIBLE"}
+    for item in config.get("proxies", []) or []:
+        if isinstance(item, dict) and item.get("name"):
+            names.add(str(item["name"]))
+    for item in config.get("proxy-groups", []) or []:
+        if isinstance(item, dict) and item.get("name"):
+            names.add(str(item["name"]))
+    return names
+
+
+def _default_route(config: dict) -> str:
+    valid = _valid_policies(config)
+    rules = config.get("rules") or []
+    for raw in reversed(rules):
+        parts = [part.strip() for part in str(raw).split(",")]
+        if len(parts) >= 2 and parts[0].upper() in {"MATCH", "FINAL"} and parts[1] in valid:
+            return parts[1]
+    for name in ("GLOBAL", "PROXY", "Proxy", "AUTO", "Auto"):
+        if name in valid:
+            return name
+    groups = [
+        group.get("name") for group in config.get("proxy-groups", []) or []
+        if isinstance(group, dict) and group.get("name")
+    ]
+    return str(groups[0]) if groups else "DIRECT"
+
+
+def sanitize_yaml(path: Path) -> bool:
+    import yaml
+
+    if not path.exists():
+        return False
+    try:
+        config = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    except Exception as exc:
+        raise RuntimeError(f"{path.name}: YAML tidak dapat diparse: {exc}") from exc
+    if not isinstance(config, dict):
+        raise RuntimeError(f"{path.name}: root YAML bukan mapping")
+
+    changed = False
+
+    if "global-client-fingerprint" in config:
+        config.pop("global-client-fingerprint", None)
+        log(f"{path.name}: hapus global-client-fingerprint")
+        changed = True
+
+    # Portable local output should not contain OpenClash runtime absolute UI paths.
+    external_ui = config.get("external-ui")
+    if isinstance(external_ui, str) and external_ui.startswith("/"):
+        config.pop("external-ui", None)
+        log(f"{path.name}: hapus external-ui absolut dari output portable")
+        changed = True
+
+    dns = config.get("dns")
+    if isinstance(dns, dict):
+        policy = dns.get("nameserver-policy")
+        if isinstance(policy, dict):
+            # Remove only stale keys injected by older runner versions.
+            if "geosite:category-ads-all,tracker" in policy:
+                policy.pop("geosite:category-ads-all,tracker", None)
+                changed = True
+            for domain in YOUTUBE_PLAYBACK_DOMAINS:
+                for key in (domain, f"+.{domain}"):
+                    if key in policy:
+                        policy.pop(key, None)
+                        changed = True
+
+    providers = config.get("rule-providers")
+    if providers is not None and not isinstance(providers, dict):
+        config["rule-providers"] = {}
+        providers = config["rule-providers"]
+        changed = True
+
+    if isinstance(providers, dict):
+        for name, provider in list(providers.items()):
+            if not isinstance(provider, dict):
+                continue
+            if str(provider.get("type") or "").lower() == "http":
+                provider_path = str(provider.get("path") or "").strip()
+                path_parts = Path(provider_path).parts if provider_path else ()
+                if not provider_path or provider_path.startswith("/") or ".." in path_parts:
+                    provider["path"] = _safe_provider_path(str(name), provider)
+                    log(f"{path.name}: normalisasi path provider {name}")
+                    changed = True
+                if "interval" not in provider:
+                    provider["interval"] = 43200
+                    changed = True
+
+    rules = config.get("rules")
+    if not isinstance(rules, list):
+        rules = []
+        config["rules"] = rules
+        changed = True
+
+    known_providers = set((config.get("rule-providers") or {}).keys())
+    cleaned_rules: list[str] = []
+    seen_rules = set()
+    for raw in rules:
+        value = str(raw).strip()
+        if not value:
+            changed = True
+            continue
+        if re.match(r"(?i)^GEOSITE\s*,\s*tracker\s*,", value):
+            log(f"{path.name}: hapus GEOSITE,tracker yang tidak portable")
+            changed = True
+            continue
+
+        parts = [part.strip() for part in value.split(",")]
+        if len(parts) >= 3 and parts[0].upper() == "RULE-SET":
+            provider_name = parts[1]
+            if known_providers and provider_name not in known_providers:
+                log(f"{path.name}: hapus RULE-SET tanpa provider: {provider_name}")
+                changed = True
+                continue
+
+        if value not in seen_rules:
+            cleaned_rules.append(value)
+            seen_rules.add(value)
+        else:
+            changed = True
+    config["rules"] = cleaned_rules
+
+    proxies = [
+        proxy for proxy in config.get("proxies", []) or []
+        if isinstance(proxy, dict) and str(proxy.get("name") or "").strip()
+    ]
+    proxy_names = {str(proxy["name"]) for proxy in proxies}
+    groups = [
+        group for group in config.get("proxy-groups", []) or []
+        if isinstance(group, dict) and str(group.get("name") or "").strip()
+    ]
+    group_names = {str(group["name"]) for group in groups}
+    valid_refs = proxy_names | group_names | {"DIRECT", "REJECT", "PASS", "COMPATIBLE"}
+    fallback = sorted(proxy_names)[0] if proxy_names else "DIRECT"
+
+    for group in groups:
+        refs = group.get("proxies")
+        if not isinstance(refs, list):
+            continue
+        new_refs = []
+        seen = set()
+        for ref in refs:
+            name = str(ref)
+            if name in valid_refs and name not in seen:
+                new_refs.append(name)
+                seen.add(name)
+        if new_refs != refs:
+            log(f"{path.name}: bersihkan referensi group {group.get('name')}")
+            group["proxies"] = new_refs
+            changed = True
+        if not group.get("proxies"):
+            group["proxies"] = [fallback]
+            changed = True
+
+    if "MANUAL" not in group_names:
+        fixed_rules = []
+        route = _default_route(config)
+        for rule in config["rules"]:
+            parts = [part.strip() for part in str(rule).split(",")]
+            if len(parts) >= 2:
+                idx = -2 if parts[-1] == "no-resolve" and len(parts) >= 3 else -1
+                if parts[idx] == "MANUAL":
+                    parts[idx] = route
+                    changed = True
+            fixed_rules.append(",".join(parts))
+        config["rules"] = fixed_rules
+
+    if changed:
+        path.write_text(
+            yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=160),
+            encoding="utf-8",
+        )
+    return changed
+
+
+def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_mode: str) -> bool:
+    import yaml
+
+    if not path.exists():
+        return False
+    config = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    if not isinstance(config, dict):
+        return False
+
+    changed = False
+    providers = config.setdefault("rule-providers", {})
+    if not isinstance(providers, dict):
+        providers = {}
+        config["rule-providers"] = providers
+        changed = True
+
+    managed_names = {"security-tif-mini", "popup-ads", "tracker-domain", "hagezi-pro-mini"}
+    if profile == "off":
+        selected: list[str] = []
+    else:
+        selected = ["security-tif-mini", "popup-ads", "tracker-domain"]
+        if profile == "strict":
+            selected.append("hagezi-pro-mini")
+
+    for name in selected:
+        provider = dict(SECURITY_PROVIDERS[name])
+        provider["interval"] = interval
+        if providers.get(name) != provider:
+            providers[name] = provider
+            changed = True
+    for name in managed_names - set(selected):
+        if name in providers:
+            providers.pop(name, None)
+            changed = True
+
+    current_rules = [str(item) for item in config.get("rules", []) or []]
+    managed_prefixes = (
+        "RULE-SET,security-tif-mini,",
+        "RULE-SET,popup-ads,",
+        "RULE-SET,tracker-domain,",
+        "RULE-SET,hagezi-pro-mini,",
+        "GEOSITE,category-ads-all,",
+        "GEOSITE,tracker,",
+    )
+    cleaned = [rule for rule in current_rules if not rule.startswith(managed_prefixes)]
+
+    allow_rules = [f"DOMAIN-SUFFIX,{domain},DIRECT" for domain in load_allowlist(workdir)]
+    security_rules = list(allow_rules)
+    if profile != "off":
+        security_rules += [
+            "RULE-SET,security-tif-mini,REJECT",
+            "RULE-SET,popup-ads,REJECT",
+            "GEOSITE,category-ads-all,REJECT",
+            "RULE-SET,tracker-domain,REJECT",
+        ]
+        if profile == "strict":
+            security_rules.insert(len(allow_rules) + 2, "RULE-SET,hagezi-pro-mini,REJECT")
+
+    new_rules = security_rules + cleaned
+    if new_rules != current_rules:
+        config["rules"] = new_rules
+        changed = True
+
+    dns = config.get("dns")
+    if isinstance(dns, dict):
+        policy = dns.get("nameserver-policy")
+        if isinstance(policy, dict):
+            if "geosite:category-ads-all,tracker" in policy:
+                policy.pop("geosite:category-ads-all,tracker", None)
+                changed = True
+            if dns_mode == "off" or profile == "off":
+                if "geosite:category-ads-all" in policy:
+                    policy.pop("geosite:category-ads-all", None)
+                    changed = True
+            elif dns_mode == "geosite":
+                if policy.get("geosite:category-ads-all") != "rcode://success":
+                    policy["geosite:category-ads-all"] = "rcode://success"
+                    changed = True
+
+    if changed:
+        path.write_text(
+            yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=160),
+            encoding="utf-8",
+        )
+    return changed
+
+
+def apply_youtube_guard(path: Path, mode: str) -> bool:
+    import yaml
+
+    if not path.exists():
+        return False
+    config = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    if not isinstance(config, dict):
+        return False
+
+    current = [str(item) for item in config.get("rules", []) or []]
+    domains = set(YOUTUBE_PLAYBACK_DOMAINS)
+    cleaned = []
+    for rule in current:
+        parts = [part.strip() for part in rule.split(",")]
+        if len(parts) >= 3 and parts[0].upper() in {"DOMAIN", "DOMAIN-SUFFIX"} and parts[1].lower() in domains:
+            continue
+        cleaned.append(rule)
+
+    if mode == "off":
+        new_rules = cleaned
+    else:
+        route = _default_route(config)
+        guard = [f"DOMAIN-SUFFIX,{domain},{route}" for domain in YOUTUBE_PLAYBACK_DOMAINS]
+        insert_at = 0
+        for index, rule in enumerate(cleaned):
+            if rule.startswith((
+                "RULE-SET,security-tif-mini,",
+                "RULE-SET,popup-ads,",
+                "RULE-SET,hagezi-pro-mini,",
+                "RULE-SET,tracker-domain,",
+                "GEOSITE,category-ads-all,",
+            )):
+                insert_at = index
+                break
+        new_rules = cleaned[:insert_at] + guard + cleaned[insert_at:]
+
+    if new_rules != current:
+        config["rules"] = new_rules
+        path.write_text(
+            yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=160),
+            encoding="utf-8",
+        )
+        return True
+    return False
+
+
+def write_youtube_filters(workdir: Path, mode: str, filename: str) -> None:
+    path = workdir / filename
+    if mode == "off":
+        path.unlink(missing_ok=True)
+        return
+    body = YOUTUBE_BROWSER_FILTERS_SAFE
+    if mode == "enhanced":
+        body += "\n" + YOUTUBE_BROWSER_FILTERS_ENHANCED
+    body += """
+! Keep the browser blocker's own filter lists enabled and updated.
+! DNS/Mihomo alone cannot reliably distinguish every YouTube video ad from
+! normal media when they share delivery infrastructure.
+"""
+    path.write_text(body, encoding="utf-8")
+
+
+def optimize_outputs(
+    workdir: Path,
+    files: Iterable[str],
+    profile: str,
+    interval: int,
+    dns_mode: str,
+    youtube_mode: str,
+    youtube_filter_file: str,
+) -> None:
+    for filename in files:
+        path = workdir / filename
+        if not path.exists():
+            continue
+        sanitize_yaml(path)
+        if apply_security(path, profile, workdir, interval, dns_mode):
+            log(f"Security [{profile}] diterapkan: {filename}")
+        if apply_youtube_guard(path, youtube_mode):
+            log(f"YouTube guard [{youtube_mode}] diterapkan: {filename}")
+        sanitize_yaml(path)
+    write_youtube_filters(workdir, youtube_mode, youtube_filter_file)
+
+
+def validate_yaml(workdir: Path, mihomo: Path, files: Iterable[str]) -> bool:
+    ok = True
     for filename in files:
         path = workdir / filename
         if not path.exists():
             continue
         log(f"Validasi Mihomo: {filename}")
-        subprocess.run(
+        result = subprocess.run(
             [str(mihomo), "-t", "-d", str(workdir), "-f", str(path)],
             cwd=workdir,
-            check=True,
+            capture_output=True,
+            text=True,
+            check=False,
         )
+        output = (result.stdout or "") + (result.stderr or "")
+        if output.strip():
+            print(output.rstrip())
+        if result.returncode != 0:
+            print(f"[ERROR] {filename} gagal validasi, exit={result.returncode}")
+            ok = False
+        else:
+            print(f"[OK] {filename}")
+    return ok
 
 
-def print_outputs(workdir: Path) -> None:
-    names = [
-        "openclash_auto.yaml",
-        "openclash_android.yaml",
-        "openclash_lite.yaml",
-        "openclash_fresh_pool.yaml",
-        "akun.txt",
-        "openclash_auto_report.csv",
-        "urltest_report.csv",
-        "nekobox_test_report.csv",
-        "node_quality_report.md",
-        "last_update.txt",
-    ]
-    print("\nHasil:")
-    for name in names:
-        p = workdir / name
-        if p.exists():
-            print(f"  - {p}")
+def network_test() -> int:
+    print(f"ConvertYAML Local Runner v{APP_VERSION}")
+    print(f"Python : {sys.version.split()[0]}")
+    print(f"OpenSSL: {ssl.OPENSSL_VERSION}")
+    print(f"curl   : {shutil.which('curl') or 'tidak ada'}")
+    try:
+        release = request_json(f"{GITHUB_API}/repos/{MIHOMO_REPO}/releases/latest")
+        print(f"GitHub : OK, latest Mihomo={release.get('tag_name')}")
+        return 0
+    except Exception as exc:
+        print(f"GitHub : GAGAL\n{exc}")
+        return 1
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Jalankan pencarian dan validasi node ConvertYAML secara lokal."
-    )
-    parser.add_argument(
-        "--workdir",
-        type=Path,
-        default=Path.cwd(),
-        help="Folder kerja. Default: folder terminal saat ini.",
-    )
-    parser.add_argument("--max-nodes", type=int, default=20, help="Jumlah node final.")
-    parser.add_argument("--min-nodes", type=int, default=10, help="Target minimal node.")
-    parser.add_argument("--candidate-min", type=int, default=None, help="Minimal kandidat awal.")
-    parser.add_argument("--urltest-pool", type=int, default=None, help="Ukuran pool sebelum URL test.")
-    parser.add_argument("--nekobox-pool", type=int, default=None, help="Ukuran pool sebelum tes sing-box.")
-    parser.add_argument(
-        "--config",
-        type=Path,
-        default=None,
-        help="File JSON untuk override environment variable.",
-    )
-    parser.add_argument(
-        "--refresh-core",
-        action="store_true",
-        help="Unduh ulang generate_yaml.py dan sumberyaml_core.py dari repo.",
-    )
-    parser.add_argument(
-        "--refresh-binaries",
-        action="store_true",
-        help="Unduh ulang Mihomo dan sing-box terbaru.",
-    )
-    parser.add_argument(
-        "--no-nekobox",
-        action="store_true",
-        help="Lewati tes sing-box/NekoBox. Lebih cepat, tetapi validasi lebih sedikit.",
-    )
-    parser.add_argument(
-        "--no-ws-only",
-        action="store_true",
-        help="Izinkan network selain WebSocket.",
-    )
-    parser.add_argument(
-        "--no-install-deps",
-        action="store_true",
-        help="Jangan memasang dependency Python otomatis.",
-    )
+    parser = argparse.ArgumentParser(description="ConvertYAML local runner v2.0")
+    parser.add_argument("--workdir", type=Path, default=Path.cwd())
+    parser.add_argument("--config", type=Path, default=None)
+    parser.add_argument("--max-nodes", type=int, default=20)
+    parser.add_argument("--min-nodes", type=int, default=10)
+    parser.add_argument("--candidate-min", type=int)
+    parser.add_argument("--urltest-pool", type=int)
+    parser.add_argument("--nekobox-pool", type=int)
+    parser.add_argument("--refresh-core", action="store_true")
+    parser.add_argument("--refresh-binaries", action="store_true")
+    parser.add_argument("--no-nekobox", action="store_true")
+    parser.add_argument("--no-ws-only", action="store_true")
+    parser.add_argument("--no-install-deps", action="store_true")
+    parser.add_argument("--network-test", action="store_true")
+    parser.add_argument("--adblock-profile", choices=("off", "balanced", "strict"))
+    parser.add_argument("--dns-adblock", choices=("off", "geosite"))
+    parser.add_argument("--youtube-mode", choices=("off", "safe", "enhanced"))
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+    if args.network_test:
+        return network_test()
+
     workdir = args.workdir.expanduser().resolve()
     workdir.mkdir(parents=True, exist_ok=True)
-
-    if args.max_nodes < 1:
-        raise SystemExit("--max-nodes minimal 1")
-    if args.min_nodes < 1:
-        raise SystemExit("--min-nodes minimal 1")
-
     log(f"Folder kerja: {workdir}")
-    ensure_core_files(workdir, refresh=args.refresh_core)
-    ensure_text_files(workdir)
+
+    if args.max_nodes < 1 or args.min_nodes < 1:
+        raise SystemExit("max/min nodes minimal 1")
+
+    ensure_core_files(workdir, args.refresh_core)
+    patch_core_compatibility(workdir)
+    ensure_input_files(workdir)
 
     if not args.no_install_deps:
-        pip_install_dependencies(workdir)
+        install_dependencies()
 
-    mihomo = ensure_binary(
-        workdir,
-        MIHOMO_REPO,
-        "mihomo",
-        select_mihomo_asset,
-        args.refresh_binaries,
-    )
-    singbox = ensure_binary(
-        workdir,
-        SINGBOX_REPO,
-        "sing-box",
-        select_singbox_asset,
-        args.refresh_binaries,
-    )
-
+    mihomo = ensure_binary(workdir, MIHOMO_REPO, "mihomo", select_mihomo_asset, args.refresh_binaries)
+    singbox = ensure_binary(workdir, SINGBOX_REPO, "sing-box", select_singbox_asset, args.refresh_binaries)
     env = build_environment(args, workdir, mihomo, singbox)
 
-    log("Menjalankan pencarian, penyaringan, dan pengujian node...")
-    result = subprocess.run(
-        [sys.executable, "generate_yaml.py"],
-        cwd=workdir,
-        env=env,
-        check=False,
-    )
+    log("Menjalankan generate_yaml.py")
+    result = subprocess.run([sys.executable, "generate_yaml.py"], cwd=workdir, env=env, check=False)
     if result.returncode != 0:
-        print(
-            "\nPipeline gagal. Coba jalankan lagi dengan kandidat lebih besar, misalnya:\n"
-            "  python local_runner.py --candidate-min 3000 --urltest-pool 100\n",
-            file=sys.stderr,
-        )
+        print(f"[ERROR] Pipeline generator gagal, exit={result.returncode}")
         return result.returncode
 
-    validate_yaml(
-        workdir,
-        mihomo,
-        (
-            env.get("OUTPUT_YAML", "openclash_auto.yaml"),
-            env.get("OUTPUT_ANDROID_YAML", "openclash_android.yaml"),
-            env.get("OUTPUT_LITE_YAML", "openclash_lite.yaml"),
-        ),
+    output_files = (
+        env.get("OUTPUT_YAML", OUTPUT_YAMLS[0]),
+        env.get("OUTPUT_ANDROID_YAML", OUTPUT_YAMLS[1]),
+        env.get("OUTPUT_LITE_YAML", OUTPUT_YAMLS[2]),
+        env.get("OUTPUT_FRESH_YAML", OUTPUT_YAMLS[3]),
     )
 
-    log("Selesai.")
-    print_outputs(workdir)
+    profile = (args.adblock_profile or env.get("ADBLOCK_PROFILE", "balanced")).strip().lower()
+    if profile not in {"off", "balanced", "strict"}:
+        profile = "balanced"
+
+    dns_mode = (args.dns_adblock or env.get("ADBLOCK_DNS_MODE", "off")).strip().lower()
+    if dns_mode not in {"off", "geosite"}:
+        dns_mode = "off"
+
+    youtube_mode = (args.youtube_mode or env.get("YOUTUBE_ADBLOCK_MODE", "enhanced")).strip().lower()
+    if youtube_mode not in {"off", "safe", "enhanced"}:
+        youtube_mode = "enhanced"
+
+    try:
+        interval = max(3600, int(env.get("ADBLOCK_PROVIDER_INTERVAL", "43200")))
+    except ValueError:
+        interval = 43200
+
+    youtube_filter_file = env.get("YOUTUBE_BROWSER_FILTER_FILE", "youtube_browser_filters.txt").strip() or "youtube_browser_filters.txt"
+
+    optimize_outputs(
+        workdir,
+        output_files,
+        profile,
+        interval,
+        dns_mode,
+        youtube_mode,
+        youtube_filter_file,
+    )
+
+    if not validate_yaml(workdir, mihomo, output_files):
+        print("\n[ERROR] Ada YAML yang gagal validasi.")
+        print("Gunakan error tepat di atas untuk diagnosis.")
+        return 2
+
+    print("\n[OK] Semua output yang tersedia lolos validasi Mihomo.")
+    for name in (*output_files, env.get("OUTPUT_AKUN", "akun.txt"), env.get("OUTPUT_CSV", "openclash_auto_report.csv"), youtube_filter_file):
+        output_path = workdir / name
+        if output_path.exists():
+            print(f"  - {output_path}")
     return 0
 
 
