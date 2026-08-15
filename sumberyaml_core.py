@@ -217,7 +217,6 @@ SMART_FAKE_IP_FILTER = [
     "router.asus.com",
     "tplinkwifi.net",
     "tendawifi.com",
-    "+.bank*",
     "+.bca.co.id",
     "+.bni.co.id",
     "+.bri.co.id",
@@ -364,9 +363,47 @@ def _inject_manual_unblock_rules(rules: list[str], target: str = "MANUAL") -> li
         break
     return out[:insert_at] + manual_rules + out[insert_at:]
 
+def _valid_mihomo_domain_wildcard(value: str) -> bool:
+    """Validate wildcard syntax accepted by Mihomo domain matchers.
+
+    Rules enforced here are intentionally conservative:
+    - `+` is only allowed as the `+.` prefix.
+    - `*` must occupy a complete DNS label, e.g. `time.*.com`.
+    - partial wildcards such as `bank*`, `*bank`, or `foo+` are rejected.
+    """
+    text = str(value or "").strip()
+    if not text or any(ch.isspace() for ch in text):
+        return False
+    if text.startswith("+."):
+        text = text[2:]
+        if not text:
+            return False
+    elif "+" in text:
+        return False
+    if text.startswith("."):
+        text = text[1:]
+        if not text:
+            return False
+    labels = text.split(".")
+    if any(not label for label in labels):
+        return False
+    for label in labels:
+        if "*" in label and label != "*":
+            return False
+    return True
+
+
 def _dns_fake_ip_filter() -> list[str]:
-    extra = [x.strip() for x in os.getenv("EXTRA_FAKE_IP_FILTER", "").split(",") if x.strip()]
-    return _dedupe_names(SMART_FAKE_IP_FILTER + extra)
+    raw = SMART_FAKE_IP_FILTER + [
+        x.strip() for x in os.getenv("EXTRA_FAKE_IP_FILTER", "").split(",") if x.strip()
+    ]
+    cleaned: list[str] = []
+    for item in _dedupe_names(raw):
+        if _valid_mihomo_domain_wildcard(item):
+            cleaned.append(item)
+        else:
+            print(f"[WARN] Abaikan fake-ip-filter domain invalid untuk Mihomo: {item}")
+    return cleaned
 
 DEFAULT_LINKS = [
     "https://raw.githubusercontent.com/itsyebekhe/PSG/main/lite/subscriptions/xray/normal/mix",

@@ -768,6 +768,28 @@ def sanitize_yaml(path: Path) -> bool:
 
     dns = config.get("dns")
     if isinstance(dns, dict):
+        fake_filter = dns.get("fake-ip-filter")
+        if isinstance(fake_filter, list):
+            cleaned_filter = []
+            for raw_domain in fake_filter:
+                value = str(raw_domain or "").strip()
+                check = value[2:] if value.startswith("+.") else (value[1:] if value.startswith(".") else value)
+                valid = bool(value) and not any(ch.isspace() for ch in value)
+                if "+" in value and not value.startswith("+."):
+                    valid = False
+                labels = check.split(".") if check else []
+                if not labels or any(not label for label in labels):
+                    valid = False
+                if any("*" in label and label != "*" for label in labels):
+                    valid = False
+                if valid:
+                    cleaned_filter.append(value)
+                else:
+                    log(f"{path.name}: hapus fake-ip-filter domain invalid: {value}")
+                    changed = True
+            if cleaned_filter != fake_filter:
+                dns["fake-ip-filter"] = cleaned_filter
+
         policy = dns.get("nameserver-policy")
         if isinstance(policy, dict):
             # Remove only stale keys injected by older runner versions.
