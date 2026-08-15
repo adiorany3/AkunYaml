@@ -1,0 +1,28 @@
+ConvertYAML v2.3 Reference-Locked validation
+
+Known-good:
+  adiorany3/ConvertYAML/openclash_auto.yaml
+
+Previously failing:
+  adiorany3/AkunYaml/openclash_auto.yaml
+
+Result:
+- proxies preserved from failing/new output: 24
+- proxy groups preserved: 15
+- known-good routing rules restored: 304
+- rule providers: ads_domain, youtube_domain
+- tracker-domain provider: removed
+- RULE-SET tracker-domain: removed
+- direct GEOSITE category-ads-all injection: removed
+- RULE-SET ads_domain: retained
+- RULE-SET youtube_domain: retained
+- MANUAL routing block: restored
+- deprecated global-client-fingerprint: removed
+- invalid proxy-group references: 0
+- invalid SNI/Host syntax in selected proxies: 0
+
+Reasoning:
+The failing YAML added tracker-domain immediately after the direct
+category-ads-all rule, while the known-good YAML uses only ads_domain and
+youtube_domain MRS providers. The known-good file also contains the full
+MANUAL routing block that was missing from the failing YAML.

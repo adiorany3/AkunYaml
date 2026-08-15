@@ -16,6 +16,7 @@ Final consolidated runner:
 from __future__ import annotations
 
 import argparse
+import copy
 import gzip
 import json
 import os
@@ -34,13 +35,19 @@ import zipfile
 from pathlib import Path
 from typing import Iterable
 
-APP_VERSION = "2.2"
+APP_VERSION = "2.3"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
 CORE_REPO = "adiorany3/ConvertYAML"
 MIHOMO_REPO = "MetaCubeX/mihomo"
 SINGBOX_REPO = "SagerNet/sing-box"
+
+REFERENCE_PROFILE_URL = (
+    "https://raw.githubusercontent.com/adiorany3/ConvertYAML/"
+    "refs/heads/main/openclash_auto.yaml"
+)
+REFERENCE_PROFILE_CACHE = ".reference/openclash_auto.reference.yaml"
 
 CORE_FILES = ("generate_yaml.py", "sumberyaml_core.py", "requirements.txt")
 OUTPUT_YAMLS = (
@@ -80,6 +87,8 @@ DEFAULT_ENV = {
     "MAX_WORKERS": "64",
     "HEALTH_TIMEOUT_MS": "6000",
     "RULE_MODE": "Lite",
+    "REFERENCE_PROFILE_MODE": "locked",
+    "REFERENCE_PROFILE_URL": REFERENCE_PROFILE_URL,
     "ADBLOCK_PROFILE": "balanced",
     "ADBLOCK_PROVIDER_INTERVAL": "43200",
     # Default off for maximum OpenClash portability. Security rules still block.
@@ -102,16 +111,7 @@ DEFAULT_ENV = {
     "OUTPUT_STAMP": "last_update.txt",
 }
 
-SECURITY_PROVIDERS = {
-    "tracker-domain": {
-        "type": "http",
-        "behavior": "domain",
-        "format": "mrs",
-        "interval": 43200,
-        "path": "./ruleset/tracker.mrs",
-        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tracker.mrs",
-    },
-}
+SECURITY_PROVIDERS = {}
 
 YOUTUBE_PLAYBACK_DOMAINS = (
     "youtube.com",
@@ -765,6 +765,104 @@ def sanitize_yaml(path: Path) -> bool:
     return changed
 
 
+
+def apply_reference_profile(
+    path: Path,
+    workdir: Path,
+    reference_url: str = REFERENCE_PROFILE_URL,
+) -> bool:
+    """
+    Use the working ConvertYAML openclash_auto.yaml as the routing baseline.
+
+    Preserved from newly generated output:
+      - proxies
+      - proxy-groups
+      - runtime/top-level settings
+
+    Locked to known-good reference:
+      - profile
+      - sniffer
+      - dns
+      - rule-providers
+      - rules
+    """
+    import yaml
+
+    if not path.exists():
+        return False
+
+    generated = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    if not isinstance(generated, dict):
+        raise RuntimeError(f"{path.name}: root YAML bukan mapping")
+
+    cache_path = workdir / REFERENCE_PROFILE_CACHE
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+
+    try:
+        download(reference_url, cache_path)
+        log("Known-good OpenClash reference diperbarui")
+    except Exception as exc:
+        if not cache_path.exists():
+            raise RuntimeError(
+                f"Gagal mengambil known-good reference: {exc}"
+            ) from exc
+        log(f"Reference download gagal; menggunakan cache {cache_path}")
+
+    reference = yaml.safe_load(cache_path.read_text(encoding="utf-8")) or {}
+    if not isinstance(reference, dict):
+        raise RuntimeError("Known-good reference YAML invalid")
+
+    merged = copy.deepcopy(generated)
+
+    for key in ("profile", "sniffer", "dns", "rule-providers", "rules"):
+        if key in reference:
+            merged[key] = copy.deepcopy(reference[key])
+
+    # Deprecated in current Mihomo.
+    merged.pop("global-client-fingerprint", None)
+
+    # Never re-introduce providers/rules that are absent from the proven file.
+    providers = merged.get("rule-providers")
+    if isinstance(providers, dict):
+        for name in (
+            "tracker-domain",
+            "security-tif-mini",
+            "popup-ads",
+            "hagezi-pro-mini",
+            "awavenue-ads",
+        ):
+            providers.pop(name, None)
+
+    if isinstance(merged.get("rules"), list):
+        cleaned = []
+        for raw in merged["rules"]:
+            rule = str(raw).strip()
+            if re.match(
+                r"(?i)^GEOSITE\s*,\s*(tracker|category-ads-all)\s*,",
+                rule,
+            ):
+                continue
+            if re.match(
+                r"(?i)^RULE-SET\s*,\s*"
+                r"(tracker-domain|security-tif-mini|popup-ads|hagezi-pro-mini|awavenue-ads)"
+                r"\s*,",
+                rule,
+            ):
+                continue
+            cleaned.append(rule)
+        merged["rules"] = cleaned
+
+    path.write_text(
+        yaml.safe_dump(
+            merged,
+            allow_unicode=True,
+            sort_keys=False,
+            width=160,
+        ),
+        encoding="utf-8",
+    )
+    return True
+
 def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_mode: str) -> bool:
     """
     OpenClash-safe security profile.
@@ -939,18 +1037,32 @@ def optimize_outputs(
     youtube_mode: str,
     youtube_filter_file: str,
 ) -> None:
+    """
+    v2.3 reference-locked strategy.
+
+    Only openclash_auto.yaml is locked to the proven reference profile.
+    Other output variants are sanitized but receive no experimental
+    security/routing injection.
+    """
+    reference_url = os.environ.get(
+        "REFERENCE_PROFILE_URL",
+        REFERENCE_PROFILE_URL,
+    ).strip() or REFERENCE_PROFILE_URL
+
     for filename in files:
         path = workdir / filename
         if not path.exists():
             continue
-        sanitize_yaml(path)
-        if apply_security(path, profile, workdir, interval, dns_mode):
-            log(f"Security [{profile}] diterapkan: {filename}")
-        if apply_youtube_guard(path, youtube_mode):
-            log(f"YouTube guard [{youtube_mode}] diterapkan: {filename}")
-        sanitize_yaml(path)
-    write_youtube_filters(workdir, youtube_mode, youtube_filter_file)
 
+        sanitize_yaml(path)
+
+        if filename == "openclash_auto.yaml":
+            apply_reference_profile(path, workdir, reference_url)
+            sanitize_yaml(path)
+            log(f"Reference-locked profile diterapkan: {filename}")
+
+    # Browser filters stay separate from the OpenClash YAML.
+    write_youtube_filters(workdir, youtube_mode, youtube_filter_file)
 
 def validate_yaml(workdir: Path, mihomo: Path, files: Iterable[str]) -> bool:
     ok = True
@@ -1077,6 +1189,11 @@ def main() -> int:
         interval = 43200
 
     youtube_filter_file = env.get("YOUTUBE_BROWSER_FILTER_FILE", "youtube_browser_filters.txt").strip() or "youtube_browser_filters.txt"
+
+    os.environ["REFERENCE_PROFILE_URL"] = env.get(
+        "REFERENCE_PROFILE_URL",
+        REFERENCE_PROFILE_URL,
+    )
 
     optimize_outputs(
         workdir,

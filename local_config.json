@@ -10,10 +10,10 @@
   "FORCE_WS_ONLY": "true",
   "REQUIRE_WS_UPGRADE": "true",
   "PREFER_WS": "true",
-  "ADBLOCK_PROFILE": "balanced",
+  "ADBLOCK_PROFILE": "off",
   "ADBLOCK_PROVIDER_INTERVAL": "43200",
   "ADBLOCK_DNS_MODE": "off",
-  "YOUTUBE_ADBLOCK_MODE": "enhanced",
+  "YOUTUBE_ADBLOCK_MODE": "safe",
   "YOUTUBE_BROWSER_FILTER_FILE": "youtube_browser_filters.txt",
   "REQUIRE_OPENCLASH_COMPAT": "true",
   "OPENCLASH_COMPAT_TIMEOUT_SEC": "6",
@@ -21,5 +21,7 @@
   "OPENCLASH_COMPAT_POOL_MULTIPLIER": "4",
   "REQUIRE_NEKOBOX_TEST": "false",
   "OUTPUT_OPENCLASH_COMPAT_REPORT": "openclash_compat_report.csv",
-  "OPENCLASH_SAFE_SECURITY": "true"
+  "OPENCLASH_SAFE_SECURITY": "true",
+  "REFERENCE_PROFILE_MODE": "locked",
+  "REFERENCE_PROFILE_URL": "https://raw.githubusercontent.com/adiorany3/ConvertYAML/refs/heads/main/openclash_auto.yaml"
 }

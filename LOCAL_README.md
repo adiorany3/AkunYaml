@@ -150,3 +150,36 @@ Bagian `Legacy providers that must be gone` harus menampilkan:
 ```text
 tidak ditemukan
 ```
+
+
+## v2.3 Reference-Locked
+
+v2.3 membandingkan langsung known-good `ConvertYAML/openclash_auto.yaml`
+dengan failing `AkunYaml/openclash_auto.yaml`.
+
+Output `openclash_auto.yaml` sekarang dibangun dengan aturan:
+
+- `proxies` dan `proxy-groups`: hasil pencarian terbaru;
+- `profile`, `sniffer`, `dns`, `rule-providers`, `rules`: dari baseline
+  ConvertYAML yang sudah terbukti berjalan;
+- tidak ada `tracker-domain`;
+- tidak ada injeksi langsung `GEOSITE,category-ads-all`;
+- adblock menggunakan `RULE-SET,ads_domain,REJECT`;
+- YouTube menggunakan `RULE-SET,youtube_domain,YOUTUBE`;
+- rule `MANUAL` Indonesia dipulihkan;
+- `global-client-fingerprint` global dibuang karena deprecated.
+
+Perbaiki file lama tanpa mencari akun ulang:
+
+```bash
+python fix_reference_locked.py
+```
+
+Generate baru:
+
+```bash
+python local_runner.py --config local_config.json
+```
+
+`openclash_auto_fixed.yaml` adalah hasil perbaikan langsung terhadap
+AkunYaml yang sedang error ketika paket v2.3 dibuat.
