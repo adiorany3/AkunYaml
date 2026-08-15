@@ -21,6 +21,7 @@ import gzip
 import json
 import os
 import platform
+import re
 import shutil
 import stat
 import subprocess
@@ -69,6 +70,8 @@ DEFAULT_ENV = {
     "MAX_WORKERS": "64",
     "HEALTH_TIMEOUT_MS": "6000",
     "RULE_MODE": "Lite",
+    "ADBLOCK_PROFILE": "balanced",
+    "ADBLOCK_PROVIDER_INTERVAL": "43200",
     "SUBSCRIPTION_LINKS_FILE": "subscription_links.txt",
     "MANUAL_NODES_FILE": "manual_nodes.txt",
     "OUTPUT_YAML": "openclash_auto.yaml",
@@ -371,6 +374,283 @@ def build_environment(args, workdir: Path, mihomo: Path, singbox: Path) -> dict[
     return env
 
 
+
+# Security / adblock provider sources. These are domain-only lists so they work
+# with Mihomo rule-provider behavior=domain and format=text.
+SECURITY_PROVIDERS = {
+    "security-tif-mini": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "text",
+        "interval": 43200,
+        "path": "./ruleset/security-tif-mini.txt",
+        "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.mini-onlydomains.txt",
+    },
+    "popup-ads": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "text",
+        "interval": 43200,
+        "path": "./ruleset/popup-ads.txt",
+        "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/popupads-onlydomains.txt",
+    },
+    "awavenue-ads": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "text",
+        "interval": 43200,
+        "path": "./ruleset/awavenue-ads.txt",
+        "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/AdvertisingLite/AdvertisingLite_Domain.txt",
+    },
+}
+
+
+def patch_core_compatibility(workdir: Path) -> None:
+    """Patch known compatibility issues in the downloaded ConvertYAML core."""
+    changed_files: list[str] = []
+
+    generate_path = workdir / "generate_yaml.py"
+    if generate_path.exists():
+        source = generate_path.read_text(encoding="utf-8", errors="ignore")
+        original = source
+
+        # New Mihomo releases removed this global option. Per-proxy
+        # client-fingerprint remains untouched.
+        source = re.sub(
+            r'(?m)^[ \t]*"global-client-fingerprint"[ \t]*:[ \t]*"chrome",[ \t]*\n',
+            "",
+            source,
+        )
+
+        # Fix upstream lite YAML builder leaving GLOBAL -> MANUAL even when
+        # MANUAL does not exist.
+        source = source.replace(
+            'refs_available = set(proxy_names) | set(keep_group_names) | {"REJECT", "GLOBAL"}',
+            'refs_available = set(proxy_names) | set(groups.keys()) | {"DIRECT", "REJECT", "GLOBAL"}',
+        )
+
+        if source != original:
+            generate_path.write_text(source, encoding="utf-8")
+            changed_files.append(generate_path.name)
+
+    core_path = workdir / "sumberyaml_core.py"
+    if core_path.exists():
+        source = core_path.read_text(encoding="utf-8", errors="ignore")
+        original = source
+        source = re.sub(
+            r'(?m)^[ \t]*"global-client-fingerprint"[ \t]*:[ \t]*"chrome",[ \t]*\n',
+            "",
+            source,
+        )
+        if source != original:
+            core_path.write_text(source, encoding="utf-8")
+            changed_files.append(core_path.name)
+
+    if changed_files:
+        log("Patch kompatibilitas diterapkan: " + ", ".join(changed_files))
+
+
+def load_adblock_allowlist(workdir: Path) -> list[str]:
+    path = workdir / "adblock_allowlist.txt"
+    if not path.exists():
+        path.write_text(
+            "# Domain yang tidak boleh diblokir. Satu domain per baris.\n"
+            "# Contoh: example.com\n",
+            encoding="utf-8",
+        )
+        return []
+
+    domains: list[str] = []
+    for raw in path.read_text(encoding="utf-8", errors="ignore").splitlines():
+        value = raw.strip().lower().rstrip(".")
+        if not value or value.startswith("#"):
+            continue
+        value = re.sub(r"^https?://", "", value).split("/", 1)[0]
+        if value.startswith("*."):
+            value = value[2:]
+        if value.startswith("+."):
+            value = value[2:]
+        if re.fullmatch(r"[a-z0-9][a-z0-9.-]*[a-z0-9]", value) and "." in value:
+            domains.append(value)
+    return sorted(set(domains))
+
+
+def sanitize_generated_yaml(path: Path) -> bool:
+    """Repair stale group references and removed Mihomo settings."""
+    if not path.exists():
+        return False
+    try:
+        import yaml
+        config = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    except Exception as exc:
+        log(f"Skip sanitasi {path.name}: YAML tidak dapat dibaca ({exc})")
+        return False
+    if not isinstance(config, dict):
+        return False
+
+    changed = False
+    if "global-client-fingerprint" in config:
+        config.pop("global-client-fingerprint", None)
+        changed = True
+
+    proxies = [
+        p for p in config.get("proxies", [])
+        if isinstance(p, dict) and str(p.get("name") or "").strip()
+    ]
+    proxy_names = {str(p["name"]) for p in proxies}
+    groups = [
+        g for g in config.get("proxy-groups", [])
+        if isinstance(g, dict) and str(g.get("name") or "").strip()
+    ]
+    group_names = {str(g["name"]) for g in groups}
+    valid_refs = proxy_names | group_names | {"DIRECT", "REJECT", "PASS", "COMPATIBLE"}
+
+    for group in groups:
+        refs = group.get("proxies")
+        if not isinstance(refs, list):
+            continue
+        cleaned = []
+        seen = set()
+        for ref in refs:
+            name = str(ref)
+            if name in valid_refs and name not in seen:
+                cleaned.append(name)
+                seen.add(name)
+        if cleaned != refs:
+            missing = [str(ref) for ref in refs if str(ref) not in valid_refs]
+            if missing:
+                log(f"{path.name}: hapus referensi tidak ada dari {group.get('name')}: {', '.join(missing)}")
+            group["proxies"] = cleaned
+            changed = True
+        if not group.get("proxies"):
+            if proxy_names:
+                group["proxies"] = [next(iter(proxy_names))]
+                changed = True
+            elif str(group.get("type") or "").lower() == "select":
+                group["proxies"] = ["DIRECT"]
+                changed = True
+
+    if "MANUAL" not in group_names:
+        rules = config.get("rules")
+        if isinstance(rules, list):
+            fixed = []
+            for rule in rules:
+                value = str(rule)
+                parts = value.split(",")
+                idx = -2 if parts and parts[-1].strip() == "no-resolve" else -1
+                if len(parts) >= 2 and parts[idx].strip() == "MANUAL":
+                    parts[idx] = "GLOBAL"
+                    value = ",".join(parts)
+                    changed = True
+                fixed.append(value)
+            config["rules"] = fixed
+
+    if changed:
+        path.write_text(yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=140), encoding="utf-8")
+    return changed
+
+
+def apply_adblock_security(path: Path, profile: str, workdir: Path, interval: int = 43200) -> bool:
+    """Inject layered ad, tracker, popup, malware and phishing blocking."""
+    if not path.exists() or profile == "off":
+        return False
+
+    import yaml
+    config = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    if not isinstance(config, dict):
+        return False
+
+    changed = False
+    providers = config.setdefault("rule-providers", {})
+    if not isinstance(providers, dict):
+        providers = {}
+        config["rule-providers"] = providers
+        changed = True
+
+    selected = ["security-tif-mini", "popup-ads"]
+    if profile == "strict":
+        selected.append("awavenue-ads")
+
+    for name in selected:
+        provider = dict(SECURITY_PROVIDERS[name])
+        provider["interval"] = interval
+        if providers.get(name) != provider:
+            providers[name] = provider
+            changed = True
+
+    # DNS-layer blocking for MetaCubeX geosite categories. MetaCubeX documents
+    # rcode://success for category-ads-all. Tracker uses the same domain matcher.
+    dns = config.setdefault("dns", {})
+    if isinstance(dns, dict):
+        policy = dns.setdefault("nameserver-policy", {})
+        if not isinstance(policy, dict):
+            policy = {}
+            dns["nameserver-policy"] = policy
+            changed = True
+        key = "geosite:category-ads-all,tracker"
+        if policy.get(key) != "rcode://success":
+            policy[key] = "rcode://success"
+            changed = True
+
+    allowlist_rules = [
+        f"DOMAIN-SUFFIX,{domain},DIRECT"
+        for domain in load_adblock_allowlist(workdir)
+    ]
+
+    security_rules = allowlist_rules + [
+        "RULE-SET,security-tif-mini,REJECT",
+        "RULE-SET,popup-ads,REJECT",
+        "GEOSITE,category-ads-all,REJECT",
+        "GEOSITE,tracker,REJECT",
+    ]
+    if profile == "strict":
+        security_rules.insert(len(allowlist_rules) + 2, "RULE-SET,awavenue-ads,REJECT")
+
+    current_rules = config.get("rules")
+    if not isinstance(current_rules, list):
+        current_rules = []
+
+    managed_prefixes = (
+        "RULE-SET,security-tif-mini,",
+        "RULE-SET,popup-ads,",
+        "RULE-SET,awavenue-ads,",
+        "GEOSITE,category-ads-all,",
+        "GEOSITE,tracker,",
+    )
+    allow_domains = {r.split(",", 2)[1] for r in allowlist_rules}
+    cleaned_rules = []
+    for rule in current_rules:
+        value = str(rule)
+        if value.startswith(managed_prefixes):
+            continue
+        if value.startswith("DOMAIN-SUFFIX,"):
+            parts = value.split(",")
+            if len(parts) >= 3 and parts[1] in allow_domains and parts[2] == "DIRECT":
+                continue
+        cleaned_rules.append(value)
+
+    new_rules = security_rules + cleaned_rules
+    if new_rules != current_rules:
+        config["rules"] = new_rules
+        changed = True
+
+    if changed:
+        path.write_text(yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=140), encoding="utf-8")
+    return changed
+
+
+def optimize_outputs(workdir: Path, files: Iterable[str], profile: str, interval: int) -> None:
+    for filename in files:
+        path = workdir / filename
+        if not path.exists():
+            continue
+        sanitize_generated_yaml(path)
+        if apply_adblock_security(path, profile, workdir, interval):
+            log(f"Adblock/security [{profile}] diterapkan: {filename}")
+        # Re-sanitize because adding rules can expose an old invalid group.
+        sanitize_generated_yaml(path)
+
+
 def validate_yaml(workdir: Path, mihomo: Path, files: Iterable[str]) -> None:
     for filename in files:
         path = workdir / filename
@@ -446,6 +726,12 @@ def parse_args():
         help="Izinkan network selain WebSocket.",
     )
     parser.add_argument(
+        "--adblock-profile",
+        choices=("off", "balanced", "strict"),
+        default=None,
+        help="Profil pemblokiran: off, balanced (default), atau strict.",
+    )
+    parser.add_argument(
         "--no-install-deps",
         action="store_true",
         help="Jangan memasang dependency Python otomatis.",
@@ -465,7 +751,9 @@ def main() -> int:
 
     log(f"Folder kerja: {workdir}")
     ensure_core_files(workdir, refresh=args.refresh_core)
+    patch_core_compatibility(workdir)
     ensure_text_files(workdir)
+    load_adblock_allowlist(workdir)
 
     if not args.no_install_deps:
         pip_install_dependencies(workdir)
@@ -502,15 +790,23 @@ def main() -> int:
         )
         return result.returncode
 
-    validate_yaml(
-        workdir,
-        mihomo,
-        (
-            env.get("OUTPUT_YAML", "openclash_auto.yaml"),
-            env.get("OUTPUT_ANDROID_YAML", "openclash_android.yaml"),
-            env.get("OUTPUT_LITE_YAML", "openclash_lite.yaml"),
-        ),
+    generated_yaml_files = (
+        env.get("OUTPUT_YAML", "openclash_auto.yaml"),
+        env.get("OUTPUT_ANDROID_YAML", "openclash_android.yaml"),
+        env.get("OUTPUT_LITE_YAML", "openclash_lite.yaml"),
+        env.get("OUTPUT_FRESH_YAML", "openclash_fresh_pool.yaml"),
     )
+
+    adblock_profile = (args.adblock_profile or env.get("ADBLOCK_PROFILE", "balanced")).strip().lower()
+    if adblock_profile not in {"off", "balanced", "strict"}:
+        adblock_profile = "balanced"
+    try:
+        adblock_interval = max(3600, int(env.get("ADBLOCK_PROVIDER_INTERVAL", "43200")))
+    except ValueError:
+        adblock_interval = 43200
+
+    optimize_outputs(workdir, generated_yaml_files, adblock_profile, adblock_interval)
+    validate_yaml(workdir, mihomo, generated_yaml_files)
 
     log("Selesai.")
     print_outputs(workdir)

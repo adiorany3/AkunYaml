@@ -9,5 +9,7 @@
   "REQUIRE_SUCCESSES": "2",
   "FORCE_WS_ONLY": "true",
   "REQUIRE_WS_UPGRADE": "true",
-  "PREFER_WS": "true"
+  "PREFER_WS": "true",
+  "ADBLOCK_PROFILE": "balanced",
+  "ADBLOCK_PROVIDER_INTERVAL": "43200"
 }

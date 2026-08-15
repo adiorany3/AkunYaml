@@ -158,3 +158,74 @@ python local_runner.py --refresh-core --refresh-binaries
 Runner ini tidak memerlukan GitHub Actions. Namun, pencarian node tetap membutuhkan internet karena sumber subscription dan tes koneksi berada di internet.
 
 Jika jumlah node yang lolos terlalu sedikit, naikkan `CANDIDATE_MIN`, `URLTEST_POOL_NODES`, atau timeout. Jangan langsung menaikkan semua parameter terlalu tinggi karena waktu pengujian dan penggunaan bandwidth ikut meningkat.
+
+
+## Jika openclash_lite.yaml gagal karena MANUAL not found
+
+Versi runner ini sudah memperbaiki kasus tersebut secara otomatis.
+
+Jika hasil YAML lama sudah terbentuk dan Anda tidak ingin melakukan pencarian ulang, jalankan:
+
+```bash
+.venv/bin/python repair_existing_outputs.py
+```
+
+Pada Windows:
+
+```bat
+.venv\Scripts\python.exe repair_existing_outputs.py
+```
+
+Script akan:
+- membuat backup `.yaml.bak`;
+- menghapus `global-client-fingerprint` tingkat global;
+- menghapus referensi grup yang tidak benar-benar ada;
+- mengalihkan rule `MANUAL` ke `GLOBAL` jika grup MANUAL memang tidak tersedia;
+- menjalankan validasi Mihomo ulang.
+
+
+## Adblock dan perlindungan malware
+
+Versi ini menambahkan profil keamanan pada semua YAML yang dihasilkan.
+
+Default:
+
+```json
+"ADBLOCK_PROFILE": "balanced"
+```
+
+Profil tersedia:
+
+- `off`: tidak menambahkan adblock/security rules.
+- `balanced`: memblokir iklan, tracker, pop-up ads, malware, phishing, scam, dan cryptojacking dengan beban yang lebih masuk akal untuk router.
+- `strict`: semua perlindungan `balanced` ditambah AdvertisingLite/AWAvenue. Potensi false positive lebih tinggi.
+
+Jalankan profil strict:
+
+```bash
+.venv/bin/python local_runner.py --config local_config.json --adblock-profile strict
+```
+
+Jika sebuah domain normal ikut terblokir, masukkan domain tersebut ke:
+
+```text
+adblock_allowlist.txt
+```
+
+Satu domain per baris, misalnya:
+
+```text
+example.com
+api.example.com
+```
+
+Allowlist ditempatkan sebelum semua rule pemblokiran sehingga mendapat prioritas `DIRECT`.
+
+Sumber yang digunakan oleh profil balanced:
+
+- MetaCubeX geosite `category-ads-all`
+- MetaCubeX geosite `tracker`
+- HaGeZi Threat Intelligence Feed Mini
+- HaGeZi Pop-Up Ads
+
+Profil strict menambahkan AdvertisingLite dari blackmatrix7/AWAvenue ecosystem.
