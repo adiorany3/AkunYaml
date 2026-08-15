@@ -183,3 +183,62 @@ python local_runner.py --config local_config.json
 
 `openclash_auto_fixed.yaml` adalah hasil perbaikan langsung terhadap
 AkunYaml yang sedang error ketika paket v2.3 dibuat.
+
+
+## v2.4 Exact OpenClash
+
+v2.4 tidak lagi menganggap validasi Mihomo di Mac sebagai keputusan final.
+
+`openclash_exact_core_filter.sh` dijalankan di router dan menggunakan core
+OpenClash yang benar-benar terpasang.
+
+### 1. Tes URL GitHub langsung
+
+```sh
+sh openclash_exact_core_filter.sh test
+```
+
+Jika `AkunYaml` direct valid tetapi update LuCI gagal, berarti OpenClash
+mengubah config saat subscription update.
+
+### 2. Tangkap config sementara OpenClash
+
+```sh
+sh openclash_exact_core_filter.sh watch
+```
+
+Saat script menunggu, tekan Update `AkunBaru` di LuCI.
+
+Jika `/tmp/yaml_sub_tmp_config.yaml` menjadi invalid, script otomatis
+menyimpannya ke:
+
+```text
+/root/AkunBaru_CAPTURED_BAD.yaml
+```
+
+### 3. Exact node isolation
+
+Script menguji setiap proxy satu per satu dengan core router.
+
+Node yang ditolak core akan dihapus dari output:
+
+```text
+/root/openclash_auto_exact_filtered.yaml
+```
+
+Kemudian seluruh YAML difinal-test lagi.
+
+Jika semua node lolos tetapi config tetap invalid, script mengisolasi
+`dns`, `sniffer`, serta `rules/rule-providers`.
+
+### Strict domain filter
+
+Generator Mac juga sekarang:
+
+- menormalisasi SNI/Host ke lowercase;
+- menolak whitespace/wildcard/URL pada server, SNI, dan WS Host;
+- menolak label DNS kosong atau malformed;
+- membersihkan referensi proxy-group sesudah node dibuang.
+
+Default `MAX_NODES` diturunkan ke 10 agar sama dengan skala output
+known-good saat ini.

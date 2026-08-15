@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import copy
 import gzip
+import ipaddress
 import json
 import os
 import platform
@@ -35,7 +36,7 @@ import zipfile
 from pathlib import Path
 from typing import Iterable
 
-APP_VERSION = "2.3"
+APP_VERSION = "2.4"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -595,6 +596,130 @@ def _default_route(config: dict) -> str:
     return str(groups[0]) if groups else "DIRECT"
 
 
+
+def _strict_hostname_or_ip(value: str) -> tuple[bool, str]:
+    """Strict public proxy hostname/IP validation for OpenClash output."""
+    raw = str(value or "").strip()
+    if not raw:
+        return False, "empty"
+
+    # Bracketed IPv6.
+    ip_candidate = raw[1:-1] if raw.startswith("[") and raw.endswith("]") else raw
+    try:
+        ipaddress.ip_address(ip_candidate)
+        return True, ip_candidate
+    except ValueError:
+        pass
+
+    # Public proxy domains should be ASCII DNS names.
+    name = raw.rstrip(".").lower()
+    if len(name) > 253 or "." not in name:
+        return False, "invalid hostname length/shape"
+    labels = name.split(".")
+    for label in labels:
+        if not (1 <= len(label) <= 63):
+            return False, "invalid label length"
+        if label.startswith("-") or label.endswith("-"):
+            return False, "label starts/ends with hyphen"
+        if not re.fullmatch(r"[a-z0-9-]+", label):
+            return False, "invalid hostname character"
+    return True, name
+
+
+def strict_proxy_domain_filter(config: dict, source_name: str = "") -> int:
+    """
+    Normalize and remove proxies with unsafe server/SNI/WS Host values.
+
+    This filter is intentionally stricter than DNS itself because generated
+    public subscription nodes should not contain whitespace, wildcard
+    expressions, URL schemes, IDN text, or malformed labels in fields that
+    Mihomo/OpenClash interpret as a host/domain.
+    """
+    proxies = config.get("proxies")
+    if not isinstance(proxies, list):
+        return 0
+
+    kept = []
+    removed_names = []
+
+    for proxy in proxies:
+        if not isinstance(proxy, dict):
+            continue
+        name = str(proxy.get("name") or "UNNAMED")
+        bad_reason = None
+
+        # server can be IP or hostname.
+        if isinstance(proxy.get("server"), str):
+            ok, normalized = _strict_hostname_or_ip(proxy["server"])
+            if not ok:
+                bad_reason = f"server: {normalized}"
+            else:
+                proxy["server"] = normalized
+
+        # SNI/domain fields.
+        for field in ("servername", "sni"):
+            if bad_reason:
+                break
+            if isinstance(proxy.get(field), str) and proxy[field].strip():
+                ok, normalized = _strict_hostname_or_ip(proxy[field])
+                if not ok:
+                    bad_reason = f"{field}: {normalized}"
+                    break
+                proxy[field] = normalized
+
+        # WebSocket Host.
+        if not bad_reason:
+            ws = proxy.get("ws-opts")
+            if isinstance(ws, dict):
+                headers = ws.get("headers")
+                if isinstance(headers, dict):
+                    host_key = next(
+                        (k for k in headers if str(k).lower() == "host"),
+                        None,
+                    )
+                    if host_key is not None and isinstance(headers.get(host_key), str):
+                        ok, normalized = _strict_hostname_or_ip(headers[host_key])
+                        if not ok:
+                            bad_reason = f"ws Host: {normalized}"
+                        else:
+                            headers[host_key] = normalized
+
+        if bad_reason:
+            removed_names.append(name)
+            log(f"{source_name}: SKIP strict-domain {name}: {bad_reason}")
+        else:
+            kept.append(proxy)
+
+    if removed_names:
+        config["proxies"] = kept
+        valid_proxy_names = {
+            str(p.get("name"))
+            for p in kept
+            if isinstance(p, dict) and p.get("name")
+        }
+        group_names = {
+            str(g.get("name"))
+            for g in config.get("proxy-groups", []) or []
+            if isinstance(g, dict) and g.get("name")
+        }
+        valid_refs = valid_proxy_names | group_names | {
+            "DIRECT", "REJECT", "PASS", "COMPATIBLE"
+        }
+
+        fallback = next(iter(valid_proxy_names), "DIRECT")
+        for group in config.get("proxy-groups", []) or []:
+            if not isinstance(group, dict):
+                continue
+            refs = group.get("proxies")
+            if isinstance(refs, list):
+                group["proxies"] = [
+                    str(ref) for ref in refs if str(ref) in valid_refs
+                ]
+                if not group["proxies"]:
+                    group["proxies"] = [fallback]
+
+    return len(removed_names)
+
 def sanitize_yaml(path: Path) -> bool:
     import yaml
 
@@ -608,6 +733,9 @@ def sanitize_yaml(path: Path) -> bool:
         raise RuntimeError(f"{path.name}: root YAML bukan mapping")
 
     changed = False
+    removed_strict = strict_proxy_domain_filter(config, path.name)
+    if removed_strict:
+        changed = True
 
     if "global-client-fingerprint" in config:
         config.pop("global-client-fingerprint", None)
@@ -1038,7 +1166,7 @@ def optimize_outputs(
     youtube_filter_file: str,
 ) -> None:
     """
-    v2.3 reference-locked strategy.
+    v2.4 reference-locked strategy.
 
     Only openclash_auto.yaml is locked to the proven reference profile.
     Other output variants are sanitized but receive no experimental

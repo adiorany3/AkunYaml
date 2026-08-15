@@ -23,5 +23,8 @@
   "OUTPUT_OPENCLASH_COMPAT_REPORT": "openclash_compat_report.csv",
   "OPENCLASH_SAFE_SECURITY": "true",
   "REFERENCE_PROFILE_MODE": "locked",
-  "REFERENCE_PROFILE_URL": "https://raw.githubusercontent.com/adiorany3/ConvertYAML/refs/heads/main/openclash_auto.yaml"
+  "REFERENCE_PROFILE_URL": "https://raw.githubusercontent.com/adiorany3/ConvertYAML/refs/heads/main/openclash_auto.yaml",
+  "MAX_NODES": "10",
+  "MIN_OUTPUT_NODES": "6",
+  "OPENCLASH_TARGET_VALIDATION": "router-exact-core"
 }
