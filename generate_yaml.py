@@ -159,6 +159,7 @@ def _mihomo_url_test_nodes(
         "ipv6": False,
         "unified-delay": True,
         "tcp-concurrent": True,
+        "global-client-fingerprint": "chrome",
         "external-controller": f"127.0.0.1:{controller_port}",
         "profile": {"store-selected": False, "store-fake-ip": False},
         "dns": {
@@ -1066,7 +1067,7 @@ def _build_lite_yaml_from_text(yaml_text: str) -> str:
     keep_group_names = ["GLOBAL", "PROXY", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK", "MANUAL"]
     proxies = [p for p in config.get("proxies", []) if isinstance(p, dict)]
     proxy_names = [str(p.get("name")) for p in proxies if p.get("name")]
-    refs_available = set(proxy_names) | set(groups.keys()) | {"DIRECT", "REJECT", "GLOBAL"}
+    refs_available = set(proxy_names) | set(keep_group_names) | {"REJECT", "GLOBAL"}
 
     lite_groups: list[dict[str, Any]] = []
     for name in keep_group_names:
