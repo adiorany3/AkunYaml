@@ -1,244 +1,206 @@
-# ConvertYAML Local Runner v2.0 Final
+# AkunYaml Target Package
 
-Versi ini menggantikan patch v1.1 sampai v1.5. Gunakan hanya file dari paket ini agar fixer lama tidak menimpa konfigurasi dengan pola yang berbeda.
+Target paket ini:
+
+- OpenClash: `v0.47.156`
+- Mihomo Meta: `alpha-ge183c58`
+- Mihomo revision: `e183c58`
+- OpenWrt core path: `/etc/openclash/core/clash_meta`
+
+Paket ini dikunci ke target di atas. Generator tidak lagi menganggap Mihomo terbaru sebagai validator yang setara.
+
+## Perbaikan utama
+
+1. `sumberyaml_core.py`
+   - Memperbaiki regex delay `MS` yang sebelumnya mengandung control character tersembunyi.
+   - Nama seperti `NODE-86MS` sekarang terbaca sebagai 86 ms dan dapat diranking dengan benar.
+
+2. `generate_yaml.py`
+   - Wajib memeriksa versi Mihomo sebelum generate.
+   - Default `REQUIRE_EXACT_MIHOMO_CORE=true`.
+   - Filter kompatibilitas node memakai core target yang sama.
+   - Empat YAML final diuji lagi sebelum ditulis.
+   - Final validation memeriksa struktur YAML, referensi proxy/group, rule-provider, rule policy, dan parser Mihomo.
+
+3. `local_runner.py`
+   - Tidak lagi menimpa source target dengan source remote.
+   - Tidak lagi memakai Mihomo latest secara diam-diam untuk mode normal.
+   - Mendeteksi core dari `--mihomo-path`, `MIHOMO_PATH`, `/etc/openclash/core/clash_meta`, `.local_bin/mihomo`, atau PATH.
+   - Core selain `alpha-ge183c58` ditolak secara default.
+   - Reference profile memakai snapshot lokal `reference_profile_v047156.yaml`.
+   - Default adblock profile dibuat `off` agar jalur default tidak tergantung provider tambahan.
+
+4. `openclash_target.py`
+   - Satu modul validasi target.
+   - Cek exact revision Mihomo.
+   - Cek duplicate proxy/group.
+   - Cek dangling reference.
+   - Cek proxy-group cycle.
+   - Cek `RULE-SET` dan policy target.
+   - Cek MRS provider.
+   - Cek hidden control character.
+   - Menjalankan `mihomo -t` untuk final parser test.
+
+5. Router scripts
+   - `openclash_router_fix.sh` sekarang memeriksa OpenClash `0.47.156` dan core `alpha-ge183c58` sebelum menyatakan config valid.
+   - `openclash_exact_core_filter.sh` menolak proses jika exact target core tidak terdeteksi.
+
+6. Utility lama
+   - Fixer lama dipindahkan ke `legacy/`.
+   - Jangan gunakan file dalam `legacy/` untuk target ini.
 
 ## File utama
 
-- `local_runner.py`: generate akun/YAML baru.
-- `apply_existing.py`: sanitasi dan optimasi YAML yang sudah ada tanpa mencari akun ulang.
-- `openclash_router_fix.sh`: audit dan fix konfigurasi aktif OpenClash di router.
-- `local_config.json`: konfigurasi default.
+- `local_runner.py`: generate dan validasi lengkap.
+- `generate_yaml.py`: generator utama.
+- `sumberyaml_core.py`: parser dan builder YAML.
+- `openclash_target.py`: validator target.
+- `validate_openclash_target.py`: validator CLI.
+- `apply_existing.py`: perbaiki YAML yang sudah ada dengan rollback otomatis jika validasi gagal.
+- `reference_profile_v047156.yaml`: baseline DNS, sniffer, provider, dan rules yang dipin lokal.
+- `local_config.json`: konfigurasi default target.
+- `openclash_router_fix.sh`: audit dan fix config pada router.
+- `openclash_exact_core_filter.sh`: isolate proxy dengan exact core router.
 
-## Perbaikan yang sudah digabung
+## Generate di OpenWrt atau Linux
 
-- GitHub Actions tidak diperlukan.
-- TLS Python/Conda memakai retry dan fallback `curl`, tanpa mematikan verifikasi SSL.
-- Mihomo dan sing-box disiapkan otomatis.
-- `global-client-fingerprint` global dibersihkan.
-- Bug `GLOBAL -> MANUAL` pada lite YAML diperbaiki.
-- `GEOSITE,tracker` tidak digunakan.
-- Tracker memakai `tracker.mrs` resmi MetaCubeX.
-- HTTP rule-provider selalu memakai path relatif.
-- Dangling `RULE-SET` dan referensi proxy-group invalid dibersihkan.
-- DNS adblock default `off` untuk kompatibilitas OpenClash. Pemblokiran tetap aktif di `rules`.
-- `GEOSITE,category-ads-all,REJECT` tetap digunakan.
-- Malware/phishing: HaGeZi TIF Mini.
-- Pop-up ads: HaGeZi Pop-Up Ads.
-- Strict mode menambah HaGeZi Pro Mini.
-- YouTube tidak memblokir `googlevideo.com` secara kasar.
-- Filter browser YouTube dibuat terpisah.
-- Validator router menggunakan `SAFE_PATHS=/usr/share/openclash:/etc/ssl`.
+Pastikan exact core tersedia.
 
-## macOS / Linux
+```sh
+/etc/openclash/core/clash_meta -v
+```
 
-```bash
-chmod +x run_local_unix.sh
-./run_local_unix.sh
+Output versi harus menunjukkan `alpha` dan revision `e183c58`.
+
+Jalankan:
+
+```sh
+export MIHOMO_PATH=/etc/openclash/core/clash_meta
+python3 local_runner.py --config local_config.json
 ```
 
 Atau:
 
-```bash
-python local_runner.py --config local_config.json
+```sh
+python3 local_runner.py \
+  --config local_config.json \
+  --mihomo-path /etc/openclash/core/clash_meta
 ```
 
-Tes GitHub/TLS:
+## Generate di macOS atau Linux desktop
+
+Binary exact `alpha-ge183c58` tidak dibundel karena binary berbeda untuk setiap OS dan arsitektur.
+
+Set path core Anda:
 
 ```bash
-python local_runner.py --network-test
+export MIHOMO_PATH=/path/ke/mihomo-alpha-ge183c58
+./run_local_unix.sh
 ```
 
-## YAML yang sudah ada
+Jika exact core tidak ada, runner berhenti dan tidak mengklaim hasil sebagai exact-target compatible.
+
+`--allow-non-target-core` hanya untuk pengembangan. Jangan gunakan hasil mode itu sebagai validasi final router.
+
+## Windows
+
+Set environment variable `MIHOMO_PATH` ke binary exact target, lalu jalankan:
+
+```bat
+run_local_windows.bat
+```
+
+Atau:
+
+```bat
+python local_runner.py --config local_config.json --mihomo-path C:\path\mihomo.exe
+```
+
+## Validasi YAML tanpa regenerate
+
+Validasi statis:
 
 ```bash
-python apply_existing.py
+python validate_openclash_target.py --static-only
 ```
 
-Mode ketat:
+Validasi dengan exact core:
 
 ```bash
-python apply_existing.py --profile strict
+python validate_openclash_target.py \
+  --core /etc/openclash/core/clash_meta
 ```
 
-DNS adblock opt-in:
+Default file yang diperiksa:
+
+- `openclash_auto.yaml`
+- `openclash_android.yaml`
+- `openclash_lite.yaml`
+- `openclash_fresh_pool.yaml`
+
+## Perbaiki YAML yang sudah ada
+
+Dengan exact core:
 
 ```bash
-python apply_existing.py --dns-adblock geosite
+python apply_existing.py --core /etc/openclash/core/clash_meta
 ```
 
-Default tetap `off` karena rule-level blocking lebih portable pada OpenClash.
+Hanya static check:
 
-## Router OpenClash
+```bash
+python apply_existing.py --static-only
+```
 
-Upload `openclash_router_fix.sh` ke `/tmp`, lalu:
+Script membuat backup di `backup_target/`. Jika validasi gagal setelah perubahan, script otomatis rollback.
+
+## Audit router
+
+Upload script ke router, lalu:
 
 ```sh
 chmod +x /tmp/openclash_router_fix.sh
 sh /tmp/openclash_router_fix.sh
 ```
 
-Fix pola lama:
+Untuk memperbaiki pola lama yang sudah diketahui:
 
 ```sh
 sh /tmp/openclash_router_fix.sh --fix
 ```
 
-Validasi menggunakan environment yang sesuai OpenClash modern:
+Script hanya menyatakan `CONFIG VALID` jika config parser lolos dan exact target check juga lolos.
 
-```sh
-SAFE_PATHS=/usr/share/openclash:/etc/ssl \
-/etc/openclash/core/clash_meta -t -d /etc/openclash -f /etc/openclash/openclash_auto.yaml
-```
+## Exact proxy isolation
 
-## YouTube
-
-Network-level blocker tidak bisa menjamin semua pre-roll/mid-roll YouTube hilang tanpa risiko merusak playback. Runner menjaga domain media utama tetap routable dan membuat `youtube_browser_filters.txt` untuk blocker browser.
-
-Jangan menambahkan `googlevideo.com` ke `REJECT`.
-
-## Hapus penggunaan file lama
-
-Jangan gunakan lagi:
-
-- `repair_existing_outputs.py`
-- `apply_security_existing.py`
-- `apply_youtube_optimized.py`
-- `fix_openclash_v15.py`
-- `openclash_active_fix.sh`
-- `openclash_active_fix_v2.sh`
-
-Semua fungsi pentingnya sudah digabung ke v2.0.
-
-
-## v2.2 OpenClash Safe
-
-Jika OpenClash menunjukkan:
-
-```text
-Finished initial GeoSite rule category-ads-all => REJECT
-invalid domain
-```
-
-runner tidak lagi memasukkan HaGeZi TXT secara langsung sebagai Mihomo
-`rule-provider behavior: domain`.
-
-Default security sekarang hanya:
-
-```text
-GEOSITE,category-ads-all,REJECT
-RULE-SET,tracker-domain,REJECT
-```
-
-`tracker-domain` menggunakan `tracker.mrs` resmi MetaCubeX.
-
-Perbaiki YAML lama tanpa mencari akun ulang:
-
-```bash
-python fix_invalid_domain.py
-```
-
-Lalu unggah/subscription ulang `openclash_auto.yaml`.
-
-Cek router:
-
-```sh
-sh diagnose_invalid_domain.sh AkunBaru
-```
-
-Bagian `Legacy providers that must be gone` harus menampilkan:
-
-```text
-tidak ditemukan
-```
-
-
-## v2.3 Reference-Locked
-
-v2.3 membandingkan langsung known-good `ConvertYAML/openclash_auto.yaml`
-dengan failing `AkunYaml/openclash_auto.yaml`.
-
-Output `openclash_auto.yaml` sekarang dibangun dengan aturan:
-
-- `proxies` dan `proxy-groups`: hasil pencarian terbaru;
-- `profile`, `sniffer`, `dns`, `rule-providers`, `rules`: dari baseline
-  ConvertYAML yang sudah terbukti berjalan;
-- tidak ada `tracker-domain`;
-- tidak ada injeksi langsung `GEOSITE,category-ads-all`;
-- adblock menggunakan `RULE-SET,ads_domain,REJECT`;
-- YouTube menggunakan `RULE-SET,youtube_domain,YOUTUBE`;
-- rule `MANUAL` Indonesia dipulihkan;
-- `global-client-fingerprint` global dibuang karena deprecated.
-
-Perbaiki file lama tanpa mencari akun ulang:
-
-```bash
-python fix_reference_locked.py
-```
-
-Generate baru:
-
-```bash
-python local_runner.py --config local_config.json
-```
-
-`openclash_auto_fixed.yaml` adalah hasil perbaikan langsung terhadap
-AkunYaml yang sedang error ketika paket v2.3 dibuat.
-
-
-## v2.4 Exact OpenClash
-
-v2.4 tidak lagi menganggap validasi Mihomo di Mac sebagai keputusan final.
-
-`openclash_exact_core_filter.sh` dijalankan di router dan menggunakan core
-OpenClash yang benar-benar terpasang.
-
-### 1. Tes URL GitHub langsung
+Di router:
 
 ```sh
 sh openclash_exact_core_filter.sh test
 ```
 
-Jika `AkunYaml` direct valid tetapi update LuCI gagal, berarti OpenClash
-mengubah config saat subscription update.
-
-### 2. Tangkap config sementara OpenClash
+Jika source gagal:
 
 ```sh
-sh openclash_exact_core_filter.sh watch
+sh openclash_exact_core_filter.sh isolate
 ```
 
-Saat script menunggu, tekan Update `AkunBaru` di LuCI.
+Script menguji proxy satu per satu menggunakan `/etc/openclash/core/clash_meta`.
 
-Jika `/tmp/yaml_sub_tmp_config.yaml` menjadi invalid, script otomatis
-menyimpannya ke:
+## Reference profile
+
+`REFERENCE_PROFILE_MODE` default adalah `local-pinned`.
+
+File baseline:
 
 ```text
-/root/AkunBaru_CAPTURED_BAD.yaml
+reference_profile_v047156.yaml
 ```
 
-### 3. Exact node isolation
+Generator tidak mengambil DNS, sniffer, providers, atau rules dari repo remote dalam mode default. Ini mencegah perubahan eksternal mengubah hasil tanpa perubahan pada paket lokal.
 
-Script menguji setiap proxy satu per satu dengan core router.
+## Catatan output
 
-Node yang ditolak core akan dihapus dari output:
+Paket tidak menyertakan binary Mihomo target. Gunakan core milik router atau binary yang sesuai OS/arsitektur Anda.
 
-```text
-/root/openclash_auto_exact_filtered.yaml
-```
-
-Kemudian seluruh YAML difinal-test lagi.
-
-Jika semua node lolos tetapi config tetap invalid, script mengisolasi
-`dns`, `sniffer`, serta `rules/rule-providers`.
-
-### Strict domain filter
-
-Generator Mac juga sekarang:
-
-- menormalisasi SNI/Host ke lowercase;
-- menolak whitespace/wildcard/URL pada server, SNI, dan WS Host;
-- menolak label DNS kosong atau malformed;
-- membersihkan referensi proxy-group sesudah node dibuang.
-
-Default `MAX_NODES` diturunkan ke 10 agar sama dengan skala output
-known-good saat ini.
+Keempat YAML bawaan sudah melewati static validator paket ini. Exact Mihomo parser test harus dilakukan menggunakan binary `alpha-ge183c58` pada perangkat Anda.

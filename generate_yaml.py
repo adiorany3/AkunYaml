@@ -17,6 +17,12 @@ import json
 import yaml
 import requests
 
+from openclash_target import (
+    MIHOMO_TARGET_LABEL,
+    assert_target_mihomo,
+    validate_generated_text_with_core,
+)
+
 from sumberyaml_core import (
     ALT_TEST_URL,
     DEFAULT_LINKS,
@@ -74,6 +80,23 @@ def _env_bool(name: str, default: bool) -> bool:
         return default
     return value in {"1", "true", "yes", "y", "on", "aktif"}
 
+
+
+def _target_core_path() -> str:
+    return os.getenv("MIHOMO_PATH", "./mihomo").strip() or "./mihomo"
+
+
+def _require_target_core() -> str:
+    core_path = _target_core_path()
+    strict = _env_bool("REQUIRE_EXACT_MIHOMO_CORE", True)
+    try:
+        version = assert_target_mihomo(core_path, strict=strict)
+    except RuntimeError as exc:
+        raise SystemExit(f"[ERROR] {exc}") from exc
+    print(f"[INFO] Mihomo validator: {version}")
+    if strict:
+        print(f"[INFO] Exact target aktif: {MIHOMO_TARGET_LABEL}")
+    return core_path
 
 
 def _free_tcp_port() -> int:
@@ -139,12 +162,19 @@ def _mihomo_openclash_compatibility_filter(
             })
         return nodes, rows
 
-    core_path = os.getenv("MIHOMO_PATH", "./mihomo").strip() or "./mihomo"
+    core_path = _target_core_path()
     if not Path(core_path).exists():
         raise SystemExit(
             f"Mihomo binary tidak ditemukan di {core_path}; "
             "OpenClash compatibility filter wajib aktif."
         )
+    try:
+        assert_target_mihomo(
+            core_path,
+            strict=_env_bool("REQUIRE_EXACT_MIHOMO_CORE", True),
+        )
+    except RuntimeError as exc:
+        raise SystemExit(f"[ERROR] {exc}") from exc
 
     timeout_s = max(2.0, _env_float("OPENCLASH_COMPAT_TIMEOUT_SEC", 6.0))
     workers = max(1, min(16, _env_int("OPENCLASH_COMPAT_WORKERS", 6)))
@@ -272,9 +302,16 @@ def _mihomo_url_test_nodes(
             node.url_test_success = True
         return final_nodes, len(final_nodes), "URL test disabled", rows
 
-    core_path = os.getenv("MIHOMO_PATH", "./mihomo").strip() or "./mihomo"
+    core_path = _target_core_path()
     if not Path(core_path).exists():
         raise SystemExit(f"Mihomo binary tidak ditemukan di {core_path}; URL test wajib aktif.")
+    try:
+        assert_target_mihomo(
+            core_path,
+            strict=_env_bool("REQUIRE_EXACT_MIHOMO_CORE", True),
+        )
+    except RuntimeError as exc:
+        raise SystemExit(f"[ERROR] {exc}") from exc
 
     expected = _expected_statuses()
     proxy_port = _free_tcp_port()
@@ -1426,6 +1463,7 @@ def _build_fresh_pool_json(fresh_nodes: list[Any], strict_nodes: list[Any], urlt
 
 
 def main() -> int:
+    target_core_path = _require_target_core()
     output_yaml = os.getenv("OUTPUT_YAML", "openclash_auto.yaml")
     output_csv = os.getenv("OUTPUT_CSV", "openclash_auto_report.csv")
     output_akun = os.getenv("OUTPUT_AKUN", "akun.txt")
@@ -1564,6 +1602,24 @@ def main() -> int:
     akun_text = build_akun_txt(alive_nodes)
     manual_akun_text = build_akun_txt(manual_nodes)
     manual_skipped_text = "\n".join(manual_skipped) + ("\n" if manual_skipped else "")
+
+    if _env_bool("FINAL_TARGET_VALIDATION", True):
+        for _label, _text in (
+            (output_yaml, yaml_text),
+            (output_android_yaml, android_yaml_text),
+            (output_lite_yaml, lite_yaml_text),
+            (output_fresh_yaml, fresh_yaml_text),
+        ):
+            try:
+                validate_generated_text_with_core(
+                    _text,
+                    label=_label,
+                    core_path=target_core_path,
+                    require_exact_core=_env_bool("REQUIRE_EXACT_MIHOMO_CORE", True),
+                )
+            except RuntimeError as exc:
+                raise SystemExit(f"[ERROR] Final target validation gagal: {exc}") from exc
+            print(f"[OK] Final target validation: {_label}")
 
     Path(output_yaml).write_text(yaml_text, encoding="utf-8")
     Path(output_android_yaml).write_text(android_yaml_text, encoding="utf-8")

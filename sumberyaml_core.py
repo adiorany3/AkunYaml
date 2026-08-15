@@ -127,7 +127,7 @@ def _active_health_interval(interval: int) -> int:
 
 def _delay_from_proxy_name(name: str) -> int:
     """Extract delay suffix from names like AKUN-001-...-86MS for smart ranking."""
-    match = re.search(r"(\d+)MS", str(name).upper())
+    match = re.search(r"(\d+)MS\b", str(name).upper())
     return int(match.group(1)) if match else 999999
 
 

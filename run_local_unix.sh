@@ -2,6 +2,12 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
+# Pada macOS gunakan workflow khusus yang melakukan git pull, exact-core build,
+# pencarian akun, generate, dan validasi.
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  exec ./mac_refresh_accounts.sh "$@"
+fi
+
 PYTHON="${PYTHON:-python3}"
 if ! command -v "$PYTHON" >/dev/null 2>&1; then
   echo "Python 3 tidak ditemukan."
@@ -13,4 +19,5 @@ if [ ! -x ".venv/bin/python" ]; then
   "$PYTHON" -m venv .venv
 fi
 
-".venv/bin/python" local_runner.py --config local_config.json
+".venv/bin/python" -m pip install --disable-pip-version-check -q -r requirements.txt
+".venv/bin/python" local_runner.py --config local_config.json "$@"

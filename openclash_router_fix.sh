@@ -10,10 +10,51 @@ BASE="/etc/openclash"
 CORE="$BASE/core/clash_meta"
 INIT="/etc/init.d/openclash"
 SAFE_PATHS_VALUE="/usr/share/openclash:/etc/ssl"
+TARGET_OPENCLASH="0.47.156"
+TARGET_META_LABEL="alpha-ge183c58"
+TARGET_META_REV="e183c58"
 STAMP="$(date +%Y%m%d-%H%M%S 2>/dev/null || echo backup)"
 
 say() { printf '%s\n' "$*"; }
 sep() { say "------------------------------------------------------------"; }
+
+installed_openclash_version() {
+  if command -v opkg >/dev/null 2>&1; then
+    opkg status luci-app-openclash 2>/dev/null | awk -F ': ' '/^Version:/{print $2; exit}'
+  elif command -v apk >/dev/null 2>&1; then
+    apk info -e luci-app-openclash >/dev/null 2>&1 && apk info luci-app-openclash 2>/dev/null | head -n 1
+  fi
+}
+
+verify_exact_target() {
+  PKG_VER="$(installed_openclash_version)"
+  CORE_VER=""
+  [ -x "$CORE" ] && CORE_VER="$("$CORE" -v 2>&1 || true)"
+
+  if [ -n "$PKG_VER" ]; then
+    case "$PKG_VER" in
+      *"$TARGET_OPENCLASH"*) : ;;
+      *)
+        say "[ERROR] OpenClash tidak sesuai target. Terdeteksi: $PKG_VER; target: v$TARGET_OPENCLASH"
+        return 31
+        ;;
+    esac
+  else
+    say "[WARN] Versi paket OpenClash tidak dapat dideteksi."
+  fi
+
+  case "$(printf '%s' "$CORE_VER" | tr '[:upper:]' '[:lower:]')" in
+    *alpha*"$TARGET_META_REV"*) : ;;
+    *)
+      say "[ERROR] Mihomo core tidak sesuai target."
+      say "Target    : $TARGET_META_LABEL"
+      say "Terdeteksi: ${CORE_VER:-tidak ada}"
+      return 32
+      ;;
+  esac
+  say "[OK] Exact target verified: OpenClash v$TARGET_OPENCLASH + $TARGET_META_LABEL"
+  return 0
+}
 
 get_raw_config() {
   P=""
@@ -172,6 +213,12 @@ fi
 
 say ""
 sep
+say "EXACT TARGET CHECK"
+TARGET_RC=0
+verify_exact_target || TARGET_RC=$?
+
+say ""
+sep
 say "VALIDATION WITH OPENCLASH SAFE_PATHS"
 if [ -x "$CORE" ] && [ -f "$FINAL_CONFIG" ]; then
   SAFE_PATHS="$SAFE_PATHS_VALUE" "$CORE" -t -d "$BASE" -f "$FINAL_CONFIG"
@@ -179,6 +226,10 @@ if [ -x "$CORE" ] && [ -f "$FINAL_CONFIG" ]; then
 else
   say "Core atau final config tidak tersedia"
   RC=2
+fi
+if [ "$TARGET_RC" -ne 0 ]; then
+  RC="$TARGET_RC"
+  say "Exact target check failed: $TARGET_RC"
 fi
 say "Exit code: $RC"
 

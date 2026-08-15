@@ -16,10 +16,14 @@ set -u
 
 MODE="${1:-test}"
 SOURCE_URL="${SOURCE_URL:-https://raw.githubusercontent.com/adiorany3/AkunYaml/main/openclash_auto.yaml}"
+SOURCE_FILE="${SOURCE_FILE:-}"
 REFERENCE_URL="${REFERENCE_URL:-https://raw.githubusercontent.com/adiorany3/ConvertYAML/main/openclash_auto.yaml}"
 BASE="/etc/openclash"
 CORE="$BASE/core/clash_meta"
 SAFE_PATHS_VALUE="/usr/share/openclash:/etc/ssl"
+TARGET_OPENCLASH="0.47.156"
+TARGET_META_LABEL="alpha-ge183c58"
+TARGET_META_REV="e183c58"
 WORK="/tmp/openclash-exact-filter"
 SOURCE="$WORK/source.yaml"
 REFERENCE="$WORK/reference.yaml"
@@ -29,6 +33,44 @@ FILTERED="/root/openclash_auto_exact_filtered.yaml"
 say() { printf '%s\n' "$*"; }
 sep() { say "------------------------------------------------------------"; }
 
+installed_openclash_version() {
+  if command -v opkg >/dev/null 2>&1; then
+    opkg status luci-app-openclash 2>/dev/null | awk -F ': ' '/^Version:/{print $2; exit}'
+  elif command -v apk >/dev/null 2>&1; then
+    apk info -e luci-app-openclash >/dev/null 2>&1 && apk info luci-app-openclash 2>/dev/null | head -n 1
+  fi
+}
+
+verify_exact_target() {
+  PKG_VER="$(installed_openclash_version)"
+  CORE_VER=""
+  [ -x "$CORE" ] && CORE_VER="$("$CORE" -v 2>&1 || true)"
+
+  if [ -n "$PKG_VER" ]; then
+    case "$PKG_VER" in
+      *"$TARGET_OPENCLASH"*) : ;;
+      *)
+        say "[ERROR] OpenClash tidak sesuai target. Terdeteksi: $PKG_VER; target: v$TARGET_OPENCLASH"
+        return 31
+        ;;
+    esac
+  else
+    say "[WARN] Versi paket OpenClash tidak dapat dideteksi."
+  fi
+
+  case "$(printf '%s' "$CORE_VER" | tr '[:upper:]' '[:lower:]')" in
+    *alpha*"$TARGET_META_REV"*) : ;;
+    *)
+      say "[ERROR] Mihomo core tidak sesuai target."
+      say "Target    : $TARGET_META_LABEL"
+      say "Terdeteksi: ${CORE_VER:-tidak ada}"
+      return 32
+      ;;
+  esac
+  say "[OK] Exact target verified: OpenClash v$TARGET_OPENCLASH + $TARGET_META_LABEL"
+  return 0
+}
+
 mkdir -p "$WORK/proxy-tests"
 rm -f "$WORK/proxy-tests"/*.yaml "$WORK/failing_names.txt" 2>/dev/null || true
 
@@ -36,6 +78,8 @@ if [ ! -x "$CORE" ]; then
   say "[ERROR] Core tidak ditemukan: $CORE"
   exit 2
 fi
+
+verify_exact_target || exit $?
 
 if ! command -v ruby >/dev/null 2>&1; then
   say "[ERROR] Ruby tidak ditemukan. OpenClash biasanya memasang Ruby."
@@ -48,6 +92,19 @@ fetch() {
   curl -fL --connect-timeout 15 --max-time 60 \
     -A "Clash.meta" \
     "$URL" -o "$OUT"
+}
+
+fetch_source() {
+  if [ -n "$SOURCE_FILE" ]; then
+    if [ ! -f "$SOURCE_FILE" ]; then
+      say "[ERROR] SOURCE_FILE tidak ditemukan: $SOURCE_FILE"
+      return 1
+    fi
+    cp "$SOURCE_FILE" "$SOURCE"
+    say "[LOCAL] Source: $SOURCE_FILE"
+    return 0
+  fi
+  fetch "$SOURCE_URL" "$SOURCE"
 }
 
 test_cfg() {
@@ -67,8 +124,8 @@ direct_test() {
   sep
   say "DOWNLOAD SOURCE"
   say "$SOURCE_URL"
-  fetch "$SOURCE_URL" "$SOURCE" || {
-    say "[ERROR] source download gagal"
+  fetch_source || {
+    say "[ERROR] source load gagal"
     return 10
   }
 
@@ -324,7 +381,7 @@ case "$MODE" in
     exit "$RC"
     ;;
   isolate)
-    fetch "$SOURCE_URL" "$SOURCE" || exit 10
+    fetch_source || exit 10
     isolate_file "$SOURCE"
     ;;
   watch)

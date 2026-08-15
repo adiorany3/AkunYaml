@@ -36,7 +36,18 @@ import zipfile
 from pathlib import Path
 from typing import Iterable
 
-APP_VERSION = "2.4"
+from openclash_target import (
+    DEFAULT_ROUTER_CORE,
+    MIHOMO_TARGET_LABEL,
+    MIHOMO_TARGET_REVISION,
+    OPENCLASH_TARGET_VERSION,
+    assert_target_mihomo,
+    is_target_mihomo_version,
+    mihomo_version_text,
+    validate_yaml_file,
+)
+
+APP_VERSION = "2.5-target"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -50,7 +61,7 @@ REFERENCE_PROFILE_URL = (
 )
 REFERENCE_PROFILE_CACHE = ".reference/openclash_auto.reference.yaml"
 
-CORE_FILES = ("generate_yaml.py", "sumberyaml_core.py", "requirements.txt")
+CORE_FILES = ("generate_yaml.py", "sumberyaml_core.py", "requirements.txt", "openclash_target.py")
 OUTPUT_YAMLS = (
     "openclash_auto.yaml",
     "openclash_android.yaml",
@@ -66,6 +77,10 @@ DEFAULT_ENV = {
     "FRESH_POOL_NODES": "30",
     "REQUIRE_URL_TEST": "true",
     "REQUIRE_NEKOBOX_TEST": "false",
+    "OPENCLASH_TARGET_VERSION": OPENCLASH_TARGET_VERSION,
+    "MIHOMO_TARGET_REVISION": MIHOMO_TARGET_REVISION,
+    "REQUIRE_EXACT_MIHOMO_CORE": "true",
+    "FINAL_TARGET_VALIDATION": "true",
     "REQUIRE_OPENCLASH_COMPAT": "true",
     "OPENCLASH_COMPAT_TIMEOUT_SEC": "6",
     "OPENCLASH_COMPAT_WORKERS": "6",
@@ -88,9 +103,10 @@ DEFAULT_ENV = {
     "MAX_WORKERS": "64",
     "HEALTH_TIMEOUT_MS": "6000",
     "RULE_MODE": "Lite",
-    "REFERENCE_PROFILE_MODE": "locked",
+    "REFERENCE_PROFILE_MODE": "local-pinned",
+    "REFERENCE_PROFILE_FILE": "reference_profile_v047156.yaml",
     "REFERENCE_PROFILE_URL": REFERENCE_PROFILE_URL,
-    "ADBLOCK_PROFILE": "balanced",
+    "ADBLOCK_PROFILE": "off",
     "ADBLOCK_PROVIDER_INTERVAL": "43200",
     # Default off for maximum OpenClash portability. Security rules still block.
     "ADBLOCK_DNS_MODE": "off",
@@ -112,7 +128,16 @@ DEFAULT_ENV = {
     "OUTPUT_STAMP": "last_update.txt",
 }
 
-SECURITY_PROVIDERS = {}
+SECURITY_PROVIDERS = {
+    "tracker-domain": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "mrs",
+        "path": "./rule_providers/tracker.mrs",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tracker.mrs",
+        "interval": 43200,
+    }
+}
 
 YOUTUBE_PLAYBACK_DOMAINS = (
     "youtube.com",
@@ -279,14 +304,20 @@ def raw_github_url(repo: str, filename: str, branch: str = "main") -> str:
 
 
 def ensure_core_files(workdir: Path, refresh: bool) -> None:
-    targets = list(CORE_FILES) if refresh else [name for name in CORE_FILES if not (workdir / name).exists()]
-    if not targets:
-        log("Core ConvertYAML sudah tersedia")
-        return
-    for name in targets:
-        log(f"Mengunduh core: {name}")
-        download(raw_github_url(CORE_REPO, name), workdir / name)
-
+    """Verify the target-pinned source package without overwriting it from another repo."""
+    missing = [name for name in CORE_FILES if not (workdir / name).is_file()]
+    if missing:
+        raise RuntimeError(
+            "Paket target tidak lengkap. File hilang: " + ", ".join(missing)
+        )
+    if refresh:
+        log(
+            "--refresh-core diabaikan untuk source target-pinned. "
+            "generate_yaml.py dan sumberyaml_core.py tidak boleh ditimpa remote karena "
+            f"paket ini dikunci ke OpenClash {OPENCLASH_TARGET_VERSION} / {MIHOMO_TARGET_LABEL}."
+        )
+    else:
+        log("Source target-pinned lengkap")
 
 def ensure_input_files(workdir: Path) -> None:
     defaults = {
@@ -430,6 +461,63 @@ def ensure_binary(workdir: Path, repo: str, program: str, selector, refresh: boo
     return local
 
 
+def _core_version_or_error(path: Path) -> tuple[str, str | None]:
+    try:
+        return mihomo_version_text(path), None
+    except Exception as exc:
+        return "", str(exc)
+
+
+def select_target_mihomo(args, workdir: Path, config: dict[str, str]) -> Path:
+    """Prefer the exact target core and never silently validate with a different Mihomo."""
+    candidates: list[Path] = []
+    if getattr(args, "mihomo_path", None):
+        candidates.append(Path(args.mihomo_path).expanduser())
+    configured = os.environ.get("MIHOMO_PATH", "").strip() or str(config.get("MIHOMO_PATH", "")).strip()
+    if configured:
+        candidates.append(Path(configured).expanduser())
+    candidates.append(Path(DEFAULT_ROUTER_CORE))
+    candidates.append(workdir / ".local_bin" / executable_name("mihomo"))
+    for name in ("mihomo", "clash-meta", "clash_meta"):
+        found = shutil.which(name)
+        if found:
+            candidates.append(Path(found))
+
+    seen: set[str] = set()
+    mismatches: list[str] = []
+    for candidate in candidates:
+        key = str(candidate)
+        if key in seen or not candidate.is_file():
+            continue
+        seen.add(key)
+        version, error = _core_version_or_error(candidate)
+        if error:
+            mismatches.append(f"{candidate}: {error}")
+            continue
+        if is_target_mihomo_version(version):
+            path = candidate.resolve()
+            log(f"Mihomo exact target: {path}")
+            log(f"Versi: {version}")
+            return path
+        mismatches.append(f"{candidate}: {version}")
+
+    allow_other = bool(getattr(args, "allow_non_target_core", False)) or str(
+        config.get("REQUIRE_EXACT_MIHOMO_CORE", "true")
+    ).strip().lower() in {"0", "false", "no", "off"}
+    if allow_other:
+        log("[WARN] Exact target tidak ditemukan; mode non-target diizinkan.")
+        return ensure_binary(workdir, MIHOMO_REPO, "mihomo", select_mihomo_asset, args.refresh_binaries)
+
+    details = "\n".join("  - " + item for item in mismatches) or "  - tidak ada kandidat core lokal"
+    raise RuntimeError(
+        "Mihomo exact target tidak ditemukan.\n"
+        f"Target: OpenClash {OPENCLASH_TARGET_VERSION}, {MIHOMO_TARGET_LABEL}.\n"
+        "Gunakan --mihomo-path /path/ke/core atau set MIHOMO_PATH.\n"
+        f"Pada router OpenClash, lokasi normalnya {DEFAULT_ROUTER_CORE}.\n"
+        "Kandidat yang diperiksa:\n" + details
+    )
+
+
 def load_config(path: Path | None) -> dict[str, str]:
     if path is None:
         return {}
@@ -442,85 +530,12 @@ def load_config(path: Path | None) -> dict[str, str]:
 
 
 def patch_core_compatibility(workdir: Path) -> None:
-    changed = []
-    for filename in ("generate_yaml.py", "sumberyaml_core.py"):
-        path = workdir / filename
-        if not path.exists():
-            continue
-        source = path.read_text(encoding="utf-8", errors="ignore")
-        original = source
-
-        source = re.sub(
-            r"(?m)^[ \t]*[\"']global-client-fingerprint[\"'][ \t]*:[ \t]*[^\n]+?,[ \t]*\n",
-            "",
-            source,
-        )
-        source = re.sub(
-            r"(?m)^[ \t]*global-client-fingerprint[ \t]*:[ \t]*chrome[ \t]*\n",
-            "",
-            source,
-        )
-        if filename == "generate_yaml.py":
-            source = source.replace(
-                'refs_available = set(proxy_names) | set(keep_group_names) | {"REJECT", "GLOBAL"}',
-                'refs_available = set(proxy_names) | set(groups.keys()) | {"DIRECT", "REJECT", "GLOBAL"}',
-            )
-
-            compat_marker = "def _mihomo_openclash_compatibility_filter("
-            if compat_marker not in source:
-                compat_code = '\ndef _mihomo_openclash_compatibility_filter(\n    nodes: list[Any],\n    *,\n    label: str,\n) -> tuple[list[Any], list[dict[str, Any]]]:\n    """Keep only nodes accepted by the current Mihomo proxy parser.\n\n    Each node is tested in an isolated minimal configuration. A malformed or\n    obsolete account therefore cannot prevent the rest of the batch from\n    starting in OpenClash/Mihomo.\n    """\n    rows: list[dict[str, Any]] = []\n    if not nodes:\n        return [], rows\n    if not _env_bool("REQUIRE_OPENCLASH_COMPAT", True):\n        for node in nodes:\n            rows.append({\n                "source": label,\n                "name": _node_name(node),\n                "type": str((getattr(node, "clash", {}) or {}).get("type") or getattr(node, "type", "")),\n                "network": node_network(node),\n                "compatible": "skipped",\n                "reason": "compatibility filter disabled",\n            })\n        return nodes, rows\n\n    core_path = os.getenv("MIHOMO_PATH", "./mihomo").strip() or "./mihomo"\n    if not Path(core_path).exists():\n        raise SystemExit(\n            f"Mihomo binary tidak ditemukan di {core_path}; "\n            "OpenClash compatibility filter wajib aktif."\n        )\n\n    timeout_s = max(2.0, _env_float("OPENCLASH_COMPAT_TIMEOUT_SEC", 6.0))\n    workers = max(1, min(16, _env_int("OPENCLASH_COMPAT_WORKERS", 6)))\n\n    def check_one(index: int, node: Any) -> tuple[int, Any, dict[str, Any]]:\n        clash = dict(getattr(node, "clash", {}) or {})\n        name = str(clash.get("name") or _node_name(node) or f"NODE-{index + 1}")\n        proto = str(clash.get("type") or getattr(node, "type", "")).lower()\n        network = node_network(node)\n        row = {\n            "source": label,\n            "name": name,\n            "type": proto,\n            "network": network,\n            "compatible": "no",\n            "reason": "",\n        }\n        if not clash:\n            row["reason"] = "empty proxy config"\n            return index, node, row\n\n        clash["name"] = name\n        tmp_obj = tempfile.TemporaryDirectory(prefix="openclash-compat-")\n        tmpdir = Path(tmp_obj.name)\n        config_path = tmpdir / "config.yaml"\n        config = {\n            "proxies": [clash],\n            "proxy-groups": [\n                {\n                    "name": "OPENCLASH-COMPAT",\n                    "type": "select",\n                    "proxies": [name],\n                }\n            ],\n            "rules": ["MATCH,OPENCLASH-COMPAT"],\n        }\n        try:\n            config_path.write_text(\n                yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=140),\n                encoding="utf-8",\n            )\n            proc = subprocess.run(\n                [core_path, "-t", "-d", str(tmpdir), "-f", str(config_path)],\n                stdout=subprocess.PIPE,\n                stderr=subprocess.STDOUT,\n                text=True,\n                timeout=timeout_s,\n                check=False,\n            )\n            output = (proc.stdout or "").strip().replace("\\n", " | ")\n            if proc.returncode == 0:\n                row["compatible"] = "yes"\n                row["reason"] = "mihomo config test ok"\n            else:\n                row["reason"] = output[-500:] or f"mihomo exit {proc.returncode}"\n        except subprocess.TimeoutExpired:\n            row["reason"] = f"mihomo config test timeout > {timeout_s:.1f}s"\n        except Exception as exc:\n            row["reason"] = f"{type(exc).__name__}: {str(exc)[:300]}"\n        finally:\n            tmp_obj.cleanup()\n        return index, node, row\n\n    from concurrent.futures import ThreadPoolExecutor, as_completed\n\n    results: list[tuple[int, Any, dict[str, Any]]] = []\n    with ThreadPoolExecutor(max_workers=workers) as executor:\n        futures = [executor.submit(check_one, i, node) for i, node in enumerate(nodes)]\n        for future in as_completed(futures):\n            results.append(future.result())\n\n    results.sort(key=lambda item: item[0])\n    passed: list[Any] = []\n    for _index, node, row in results:\n        rows.append(row)\n        ok = row["compatible"] == "yes"\n        setattr(node, "openclash_compatible", ok)\n        setattr(node, "openclash_compat_status", row["reason"])\n        if ok:\n            passed.append(node)\n        else:\n            print(\n                f"[SKIP] OpenClash incompatible [{label}] "\n                f"{row[\'name\']} type={row[\'type\']} network={row[\'network\']}: {row[\'reason\']}"\n            )\n\n    print(f"[INFO] OpenClash compatibility [{label}]: {len(passed)}/{len(nodes)} passed")\n    return passed, rows\n\n\ndef _build_openclash_compat_report_csv(rows: list[dict[str, Any]]) -> str:\n    import csv\n    import io\n\n    fields = ["source", "name", "type", "network", "compatible", "reason"]\n    buffer = io.StringIO()\n    writer = csv.DictWriter(buffer, fieldnames=fields)\n    writer.writeheader()\n    for row in rows:\n        writer.writerow({field: row.get(field, "") for field in fields})\n    return buffer.getvalue()\n\n'
-                anchor = "def _mihomo_url_test_nodes("
-                if anchor in source:
-                    source = source.replace(anchor, compat_code + "\n" + anchor, 1)
-
-            report_anchor = '    output_nekobox_report = os.getenv("OUTPUT_NEKOBOX_REPORT", "nekobox_test_report.csv")\n'
-            if 'output_openclash_compat_report = os.getenv(' not in source and report_anchor in source:
-                source = source.replace(
-                    report_anchor,
-                    report_anchor + '    output_openclash_compat_report = os.getenv("OUTPUT_OPENCLASH_COMPAT_REPORT", "openclash_compat_report.csv")\n',
-                    1,
-                )
-
-            manual_anchor = '    manual_nodes, manual_skipped = parse_manual_nodes_unscreened(manual_text)\n'
-            if 'manual_compat_rows = _mihomo_openclash_compatibility_filter' not in source and manual_anchor in source:
-                source = source.replace(
-                    manual_anchor,
-                    manual_anchor + '    manual_nodes, manual_compat_rows = _mihomo_openclash_compatibility_filter(manual_nodes, label="manual")\n',
-                    1,
-                )
-
-            pool_anchor = '    urltest_pool_nodes = max(max_nodes, _env_int("URLTEST_POOL_NODES", max(30, max_nodes * 3)))\n'
-            if 'compat_pool_multiplier = max(1, _env_int("OPENCLASH_COMPAT_POOL_MULTIPLIER"' not in source and pool_anchor in source:
-                source = source.replace(
-                    pool_anchor,
-                    '    compat_pool_multiplier = max(1, _env_int("OPENCLASH_COMPAT_POOL_MULTIPLIER", 4))\n'
-                    + '    urltest_pool_nodes = max(max_nodes * compat_pool_multiplier, _env_int("URLTEST_POOL_NODES", max(30, max_nodes * 3)))\n',
-                    1,
-                )
-
-            auto_anchor = '    nekobox_pool_nodes = max(max_nodes, _env_int("NEKOBOX_POOL_NODES", max(20, max_nodes * 3)))\n'
-            if 'auto_compat_rows = _mihomo_openclash_compatibility_filter' not in source and auto_anchor in source:
-                source = source.replace(
-                    auto_anchor,
-                    '    auto_pool_nodes, auto_compat_rows = _mihomo_openclash_compatibility_filter(auto_pool_nodes, label="automatic")\n' + auto_anchor,
-                    1,
-                )
-
-            write_anchor = '    Path(output_nekobox_report).write_text(_build_nekobox_report_csv(nekobox_rows), encoding="utf-8")\n'
-            if '_build_openclash_compat_report_csv(auto_compat_rows + manual_compat_rows)' not in source and write_anchor in source:
-                source = source.replace(
-                    write_anchor,
-                    write_anchor + '    Path(output_openclash_compat_report).write_text(_build_openclash_compat_report_csv(auto_compat_rows + manual_compat_rows), encoding="utf-8")\n',
-                    1,
-                )
-
-        if source != original:
-            path.write_text(source, encoding="utf-8")
-            changed.append(filename)
-
-    if changed:
-        log("Core patched: " + ", ".join(changed))
-
+    """The packaged generator is already target-patched. Never mutate it at runtime."""
+    required = (workdir / "generate_yaml.py", workdir / "sumberyaml_core.py")
+    missing = [path.name for path in required if not path.is_file()]
+    if missing:
+        raise RuntimeError("Source generator hilang: " + ", ".join(missing))
+    log("Runtime source patch dinonaktifkan; menggunakan source target-pinned")
 
 def build_environment(args, workdir: Path, mihomo: Path, singbox: Path | None) -> dict[str, str]:
     env = os.environ.copy()
@@ -529,6 +544,8 @@ def build_environment(args, workdir: Path, mihomo: Path, singbox: Path | None) -
     env["MAX_NODES"] = str(args.max_nodes)
     env["MIN_OUTPUT_NODES"] = str(min(args.min_nodes, args.max_nodes))
     env["MIHOMO_PATH"] = str(mihomo.resolve())
+    if getattr(args, "allow_non_target_core", False):
+        env["REQUIRE_EXACT_MIHOMO_CORE"] = "false"
     if singbox is not None:
         env["SINGBOX_PATH"] = str(singbox.resolve())
     if args.no_nekobox:
@@ -923,20 +940,30 @@ def apply_reference_profile(
     if not isinstance(generated, dict):
         raise RuntimeError(f"{path.name}: root YAML bukan mapping")
 
+    mode = os.environ.get("REFERENCE_PROFILE_MODE", "local-pinned").strip().lower()
+    local_name = os.environ.get("REFERENCE_PROFILE_FILE", "reference_profile_v047156.yaml").strip() or "reference_profile_v047156.yaml"
+    local_path = workdir / local_name
     cache_path = workdir / REFERENCE_PROFILE_CACHE
     cache_path.parent.mkdir(parents=True, exist_ok=True)
 
-    try:
-        download(reference_url, cache_path)
-        log("Known-good OpenClash reference diperbarui")
-    except Exception as exc:
-        if not cache_path.exists():
-            raise RuntimeError(
-                f"Gagal mengambil known-good reference: {exc}"
-            ) from exc
-        log(f"Reference download gagal; menggunakan cache {cache_path}")
+    if mode == "local-pinned":
+        if not local_path.is_file():
+            raise RuntimeError(f"Reference profile lokal tidak ditemukan: {local_path}")
+        reference_path = local_path
+        log(f"Known-good reference lokal: {reference_path.name}")
+    else:
+        try:
+            download(reference_url, cache_path)
+            log("Known-good OpenClash reference diperbarui")
+        except Exception as exc:
+            if not cache_path.exists():
+                raise RuntimeError(
+                    f"Gagal mengambil known-good reference: {exc}"
+                ) from exc
+            log(f"Reference download gagal; menggunakan cache {cache_path}")
+        reference_path = cache_path
 
-    reference = yaml.safe_load(cache_path.read_text(encoding="utf-8")) or {}
+    reference = yaml.safe_load(reference_path.read_text(encoding="utf-8")) or {}
     if not isinstance(reference, dict):
         raise RuntimeError("Known-good reference YAML invalid")
 
@@ -1185,46 +1212,54 @@ def optimize_outputs(
         sanitize_yaml(path)
 
         if filename == "openclash_auto.yaml":
-            apply_reference_profile(path, workdir, reference_url)
-            sanitize_yaml(path)
-            log(f"Reference-locked profile diterapkan: {filename}")
+            reference_mode = os.environ.get("REFERENCE_PROFILE_MODE", "local-pinned").strip().lower()
+            if reference_mode not in {"off", "none", "generated"}:
+                apply_reference_profile(path, workdir, reference_url)
+                sanitize_yaml(path)
+                log(f"Reference profile diterapkan ({reference_mode}): {filename}")
 
     # Browser filters stay separate from the OpenClash YAML.
     write_youtube_filters(workdir, youtube_mode, youtube_filter_file)
 
 def validate_yaml(workdir: Path, mihomo: Path, files: Iterable[str]) -> bool:
     ok = True
+    strict = os.environ.get("REQUIRE_EXACT_MIHOMO_CORE", "true").strip().lower() not in {"0", "false", "no", "off"}
+    try:
+        version = assert_target_mihomo(mihomo, strict=strict)
+        log(f"Validator core: {version}")
+    except RuntimeError as exc:
+        print(f"[ERROR] {exc}")
+        return False
+
     for filename in files:
         path = workdir / filename
         if not path.exists():
             continue
-        log(f"Validasi Mihomo: {filename}")
-        result = subprocess.run(
-            [str(mihomo), "-t", "-d", str(workdir), "-f", str(path)],
-            cwd=workdir,
-            capture_output=True,
-            text=True,
-            check=False,
+        log(f"Validasi target: {filename}")
+        errors = validate_yaml_file(
+            path,
+            core_path=mihomo,
+            require_exact_core=strict,
+            parser_test=True,
         )
-        output = (result.stdout or "") + (result.stderr or "")
-        if output.strip():
-            print(output.rstrip())
-        if result.returncode != 0:
-            print(f"[ERROR] {filename} gagal validasi, exit={result.returncode}")
+        if errors:
             ok = False
+            print(f"[ERROR] {filename}")
+            for error in errors:
+                print("  - " + error)
         else:
             print(f"[OK] {filename}")
     return ok
 
-
 def network_test() -> int:
-    print(f"ConvertYAML Local Runner v{APP_VERSION}")
+    print(f"AkunYaml Target Runner v{APP_VERSION}")
     print(f"Python : {sys.version.split()[0]}")
     print(f"OpenSSL: {ssl.OPENSSL_VERSION}")
     print(f"curl   : {shutil.which('curl') or 'tidak ada'}")
     try:
         release = request_json(f"{GITHUB_API}/repos/{MIHOMO_REPO}/releases/latest")
-        print(f"GitHub : OK, latest Mihomo={release.get('tag_name')}")
+        print(f"GitHub : OK, API reachable (stable={release.get('tag_name')})")
+        print(f"Target : OpenClash {OPENCLASH_TARGET_VERSION}, {MIHOMO_TARGET_LABEL}")
         return 0
     except Exception as exc:
         print(f"GitHub : GAGAL\n{exc}")
@@ -1232,11 +1267,11 @@ def network_test() -> int:
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="ConvertYAML local runner v2.0")
+    parser = argparse.ArgumentParser(description=f"AkunYaml runner for OpenClash {OPENCLASH_TARGET_VERSION} + {MIHOMO_TARGET_LABEL}")
     parser.add_argument("--workdir", type=Path, default=Path.cwd())
     parser.add_argument("--config", type=Path, default=None)
-    parser.add_argument("--max-nodes", type=int, default=20)
-    parser.add_argument("--min-nodes", type=int, default=10)
+    parser.add_argument("--max-nodes", type=int, default=None, help="Override MAX_NODES dari local_config.json")
+    parser.add_argument("--min-nodes", type=int, default=None, help="Override MIN_OUTPUT_NODES dari local_config.json")
     parser.add_argument("--candidate-min", type=int)
     parser.add_argument("--urltest-pool", type=int)
     parser.add_argument("--nekobox-pool", type=int)
@@ -1249,6 +1284,16 @@ def parse_args():
     parser.add_argument("--adblock-profile", choices=("off", "balanced", "strict"))
     parser.add_argument("--dns-adblock", choices=("off", "geosite"))
     parser.add_argument("--youtube-mode", choices=("off", "safe", "enhanced"))
+    parser.add_argument(
+        "--mihomo-path",
+        type=Path,
+        help=f"Path Mihomo exact target {MIHOMO_TARGET_LABEL}; pada OpenClash biasanya {DEFAULT_ROUTER_CORE}",
+    )
+    parser.add_argument(
+        "--allow-non-target-core",
+        action="store_true",
+        help="Mode pengembangan saja: izinkan core selain target. Hasil tidak dianggap exact-target validated.",
+    )
     return parser.parse_args()
 
 
@@ -1261,8 +1306,26 @@ def main() -> int:
     workdir.mkdir(parents=True, exist_ok=True)
     log(f"Folder kerja: {workdir}")
 
+    preliminary = dict(DEFAULT_ENV)
+    preliminary.update(load_config(args.config))
+
+    def _config_int(name: str, fallback: int) -> int:
+        raw = str(preliminary.get(name, fallback)).strip()
+        try:
+            value = int(raw)
+        except ValueError:
+            value = fallback
+        return value
+
+    # CLI hanya meng-override jika user benar-benar memberikan argumen.
+    # Sebelumnya default argparse 20/10 selalu menimpa local_config.json 10/6.
+    args.max_nodes = args.max_nodes if args.max_nodes is not None else _config_int("MAX_NODES", 20)
+    args.min_nodes = args.min_nodes if args.min_nodes is not None else _config_int("MIN_OUTPUT_NODES", 10)
+    args.min_nodes = min(args.min_nodes, args.max_nodes)
     if args.max_nodes < 1 or args.min_nodes < 1:
         raise SystemExit("max/min nodes minimal 1")
+
+    log(f"Target output: max={args.max_nodes}, minimum={args.min_nodes}")
 
     ensure_core_files(workdir, args.refresh_core)
     patch_core_compatibility(workdir)
@@ -1270,11 +1333,11 @@ def main() -> int:
 
     if not args.no_install_deps:
         install_dependencies()
-
-    mihomo = ensure_binary(workdir, MIHOMO_REPO, "mihomo", select_mihomo_asset, args.refresh_binaries)
-
-    preliminary = dict(DEFAULT_ENV)
-    preliminary.update(load_config(args.config))
+    try:
+        mihomo = select_target_mihomo(args, workdir, preliminary)
+    except RuntimeError as exc:
+        print(f"[ERROR] {exc}")
+        return 2
     if args.no_nekobox:
         preliminary["REQUIRE_NEKOBOX_TEST"] = "false"
     need_singbox = str(preliminary.get("REQUIRE_NEKOBOX_TEST", "false")).strip().lower() in {"1", "true", "yes", "y", "on", "aktif"}
@@ -1299,9 +1362,9 @@ def main() -> int:
         env.get("OUTPUT_FRESH_YAML", OUTPUT_YAMLS[3]),
     )
 
-    profile = (args.adblock_profile or env.get("ADBLOCK_PROFILE", "balanced")).strip().lower()
+    profile = (args.adblock_profile or env.get("ADBLOCK_PROFILE", "off")).strip().lower()
     if profile not in {"off", "balanced", "strict"}:
-        profile = "balanced"
+        profile = "off"
 
     dns_mode = (args.dns_adblock or env.get("ADBLOCK_DNS_MODE", "off")).strip().lower()
     if dns_mode not in {"off", "geosite"}:
@@ -1318,6 +1381,14 @@ def main() -> int:
 
     youtube_filter_file = env.get("YOUTUBE_BROWSER_FILTER_FILE", "youtube_browser_filters.txt").strip() or "youtube_browser_filters.txt"
 
+    os.environ["REFERENCE_PROFILE_MODE"] = env.get(
+        "REFERENCE_PROFILE_MODE",
+        "local-pinned",
+    )
+    os.environ["REFERENCE_PROFILE_FILE"] = env.get(
+        "REFERENCE_PROFILE_FILE",
+        "reference_profile_v047156.yaml",
+    )
     os.environ["REFERENCE_PROFILE_URL"] = env.get(
         "REFERENCE_PROFILE_URL",
         REFERENCE_PROFILE_URL,

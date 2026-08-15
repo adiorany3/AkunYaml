@@ -1,0 +1,381 @@
+# Pinned routing/DNS reference for OpenClash v0.47.156 package.
+# Generated from the known-good openclash_auto.yaml included in this archive.
+profile:
+  store-selected: true
+  store-fake-ip: true
+sniffer:
+  enable: true
+  sniff:
+    TLS:
+      ports:
+      - 443
+      - 8443
+    HTTP:
+      ports:
+      - 80
+      - 8080-8880
+      override-destination: true
+  force-domain:
+  - +.v2ex.com
+  skip-domain:
+  - +.lan
+  - +.local
+dns:
+  enable: true
+  ipv6: false
+  listen: 0.0.0.0:7874
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+  - +.lan
+  - +.local
+  - localhost.ptlogin2.qq.com
+  - dns.msftncsi.com
+  - www.msftconnecttest.com
+  - connectivitycheck.gstatic.com
+  - connect.rom.miui.com
+  - time.*.com
+  - ntp.*.com
+  - +.pool.ntp.org
+  - router.asus.com
+  - tplinkwifi.net
+  - tendawifi.com
+  - +.bank*
+  - +.bca.co.id
+  - +.bni.co.id
+  - +.bri.co.id
+  - +.mandiri.co.id
+  default-nameserver:
+  - 1.1.1.1
+  - 8.8.8.8
+  nameserver:
+  - https://1.1.1.1/dns-query
+  - https://dns.google/dns-query
+  fallback:
+  - tls://1.1.1.1
+  - tls://8.8.8.8
+  fallback-filter:
+    geoip: true
+    geoip-code: ID
+    ipcidr:
+    - 240.0.0.0/4
+rule-providers:
+  ads_domain:
+    type: http
+    interval: 86400
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/ads_domain.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs
+  youtube_domain:
+    type: http
+    interval: 86400
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/youtube.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs
+rules:
+- DOMAIN-SUFFIX,local,DIRECT
+- DOMAIN-SUFFIX,lan,DIRECT
+- DOMAIN-SUFFIX,localhost,DIRECT
+- IP-CIDR,127.0.0.0/8,DIRECT
+- IP-CIDR,10.0.0.0/8,DIRECT
+- IP-CIDR,172.16.0.0/12,DIRECT
+- IP-CIDR,192.168.0.0/16,DIRECT
+- IP-CIDR,169.254.0.0/16,DIRECT
+- GEOIP,LAN,DIRECT,no-resolve
+- DOMAIN-SUFFIX,id,MANUAL
+- DOMAIN-SUFFIX,co.id,MANUAL
+- DOMAIN-SUFFIX,go.id,MANUAL
+- DOMAIN-SUFFIX,ac.id,MANUAL
+- DOMAIN-SUFFIX,or.id,MANUAL
+- DOMAIN-SUFFIX,sch.id,MANUAL
+- DOMAIN-SUFFIX,web.id,MANUAL
+- DOMAIN-SUFFIX,my.id,MANUAL
+- DOMAIN-SUFFIX,biz.id,MANUAL
+- DOMAIN-SUFFIX,desa.id,MANUAL
+- DOMAIN-SUFFIX,ponpes.id,MANUAL
+- DOMAIN-SUFFIX,net.id,MANUAL
+- DOMAIN-SUFFIX,tokopedia.com,MANUAL
+- DOMAIN-SUFFIX,tokopedia.net,MANUAL
+- DOMAIN-SUFFIX,shopee.co.id,MANUAL
+- DOMAIN-SUFFIX,shopee.com,MANUAL
+- DOMAIN-SUFFIX,shopeemobile.com,MANUAL
+- DOMAIN-SUFFIX,shopeefood.co.id,MANUAL
+- DOMAIN-SUFFIX,spaylater.co.id,MANUAL
+- DOMAIN-SUFFIX,lazada.co.id,MANUAL
+- DOMAIN-SUFFIX,lazada.com,MANUAL
+- DOMAIN-SUFFIX,blibli.com,MANUAL
+- DOMAIN-SUFFIX,bukalapak.com,MANUAL
+- DOMAIN-SUFFIX,tiktok.com,MANUAL
+- DOMAIN-SUFFIX,tiktokcdn.com,MANUAL
+- DOMAIN-SUFFIX,tiktokshop.com,MANUAL
+- DOMAIN-SUFFIX,tiktokv.com,MANUAL
+- DOMAIN-SUFFIX,olx.co.id,MANUAL
+- DOMAIN-SUFFIX,carousell.co.id,MANUAL
+- DOMAIN-SUFFIX,carousell.com,MANUAL
+- DOMAIN-SUFFIX,zalora.co.id,MANUAL
+- DOMAIN-SUFFIX,zalora.com,MANUAL
+- DOMAIN-SUFFIX,jakmall.com,MANUAL
+- DOMAIN-SUFFIX,bhinneka.com,MANUAL
+- DOMAIN-SUFFIX,ralali.com,MANUAL
+- DOMAIN-SUFFIX,sociolla.com,MANUAL
+- DOMAIN-SUFFIX,orami.co.id,MANUAL
+- DOMAIN-SUFFIX,ruparupa.com,MANUAL
+- DOMAIN-SUFFIX,aceshop.co.id,MANUAL
+- DOMAIN-SUFFIX,informa.co.id,MANUAL
+- DOMAIN-SUFFIX,gramedia.com,MANUAL
+- DOMAIN-SUFFIX,gramedia.net,MANUAL
+- DOMAIN-SUFFIX,periplus.com,MANUAL
+- DOMAIN-SUFFIX,erafone.com,MANUAL
+- DOMAIN-SUFFIX,eraspace.com,MANUAL
+- DOMAIN-SUFFIX,ibox.co.id,MANUAL
+- DOMAIN-SUFFIX,digimap.co.id,MANUAL
+- DOMAIN-SUFFIX,hartonoelektronika.com,MANUAL
+- DOMAIN-SUFFIX,klikindomaret.com,MANUAL
+- DOMAIN-SUFFIX,indomaret.co.id,MANUAL
+- DOMAIN-SUFFIX,alfagift.id,MANUAL
+- DOMAIN-SUFFIX,alfamartku.com,MANUAL
+- DOMAIN-SUFFIX,alfamart.co.id,MANUAL
+- DOMAIN-SUFFIX,myhartono.com,MANUAL
+- DOMAIN-SUFFIX,sayurbox.com,MANUAL
+- DOMAIN-SUFFIX,happyfresh.com,MANUAL
+- DOMAIN-SUFFIX,astro.com,MANUAL
+- DOMAIN-SUFFIX,segar.com,MANUAL
+- DOMAIN-SUFFIX,monotaro.id,MANUAL
+- DOMAIN-SUFFIX,alibaba.com,MANUAL
+- DOMAIN-SUFFIX,aliexpress.com,MANUAL
+- DOMAIN-SUFFIX,amazon.com,MANUAL
+- DOMAIN-SUFFIX,ebay.com,MANUAL
+- DOMAIN-SUFFIX,traveloka.com,MANUAL
+- DOMAIN-SUFFIX,tiket.com,MANUAL
+- DOMAIN-SUFFIX,pegipegi.com,MANUAL
+- DOMAIN-SUFFIX,airyrooms.com,MANUAL
+- DOMAIN-SUFFIX,reddoorz.com,MANUAL
+- DOMAIN-SUFFIX,agoda.com,MANUAL
+- DOMAIN-SUFFIX,booking.com,MANUAL
+- DOMAIN-SUFFIX,tripadvisor.com,MANUAL
+- DOMAIN-SUFFIX,kai.id,MANUAL
+- DOMAIN-SUFFIX,accessbykai.id,MANUAL
+- DOMAIN-SUFFIX,pelni.co.id,MANUAL
+- DOMAIN-SUFFIX,garuda-indonesia.com,MANUAL
+- DOMAIN-SUFFIX,citilink.co.id,MANUAL
+- DOMAIN-SUFFIX,lionair.co.id,MANUAL
+- DOMAIN-SUFFIX,batikair.com,MANUAL
+- DOMAIN-SUFFIX,superairjet.com,MANUAL
+- DOMAIN-SUFFIX,transnusa.co.id,MANUAL
+- DOMAIN-SUFFIX,gojek.com,MANUAL
+- DOMAIN-SUFFIX,gojekapi.com,MANUAL
+- DOMAIN-SUFFIX,gopay.co.id,MANUAL
+- DOMAIN-SUFFIX,grab.com,MANUAL
+- DOMAIN-SUFFIX,grabtaxi.com,MANUAL
+- DOMAIN-SUFFIX,ovo.id,MANUAL
+- DOMAIN-SUFFIX,dana.id,MANUAL
+- DOMAIN-SUFFIX,linkaja.id,MANUAL
+- DOMAIN-SUFFIX,flip.id,MANUAL
+- DOMAIN-SUFFIX,blu.co.id,MANUAL
+- DOMAIN-SUFFIX,jago.com,MANUAL
+- DOMAIN-SUFFIX,seabank.co.id,MANUAL
+- DOMAIN-SUFFIX,gofood.co.id,MANUAL
+- DOMAIN-SUFFIX,grabfood.com,MANUAL
+- DOMAIN-SUFFIX,airasia.com,MANUAL
+- DOMAIN-SUFFIX,midtrans.com,MANUAL
+- DOMAIN-SUFFIX,xendit.co,MANUAL
+- DOMAIN-SUFFIX,doku.com,MANUAL
+- DOMAIN-SUFFIX,faspay.co.id,MANUAL
+- DOMAIN-SUFFIX,nicepay.co.id,MANUAL
+- DOMAIN-SUFFIX,duitku.com,MANUAL
+- DOMAIN-SUFFIX,tripay.co.id,MANUAL
+- DOMAIN-SUFFIX,prismalink.co.id,MANUAL
+- DOMAIN-SUFFIX,finpay.co.id,MANUAL
+- DOMAIN-SUFFIX,ipaymu.com,MANUAL
+- DOMAIN-SUFFIX,oyindonesia.com,MANUAL
+- DOMAIN-SUFFIX,paper.id,MANUAL
+- DOMAIN-SUFFIX,moka.pos,MANUAL
+- DOMAIN-SUFFIX,majoo.id,MANUAL
+- DOMAIN-SUFFIX,qris.id,MANUAL
+- DOMAIN-SUFFIX,bi.go.id,MANUAL
+- DOMAIN-SUFFIX,ojk.go.id,MANUAL
+- DOMAIN-SUFFIX,lps.go.id,MANUAL
+- DOMAIN-SUFFIX,bca.co.id,MANUAL
+- DOMAIN-SUFFIX,klikbca.com,MANUAL
+- DOMAIN-SUFFIX,mybca.co.id,MANUAL
+- DOMAIN-SUFFIX,bankmandiri.co.id,MANUAL
+- DOMAIN-SUFFIX,livinbymandiri.co.id,MANUAL
+- DOMAIN-SUFFIX,bri.co.id,MANUAL
+- DOMAIN-SUFFIX,bni.co.id,MANUAL
+- DOMAIN-SUFFIX,btn.co.id,MANUAL
+- DOMAIN-SUFFIX,cimbniaga.co.id,MANUAL
+- DOMAIN-SUFFIX,octo.co.id,MANUAL
+- DOMAIN-SUFFIX,danamon.co.id,MANUAL
+- DOMAIN-SUFFIX,permatabank.com,MANUAL
+- DOMAIN-SUFFIX,panin.co.id,MANUAL
+- DOMAIN-SUFFIX,ocbc.id,MANUAL
+- DOMAIN-SUFFIX,ocbcnisp.com,MANUAL
+- DOMAIN-SUFFIX,maybank.co.id,MANUAL
+- DOMAIN-SUFFIX,hsbc.co.id,MANUAL
+- DOMAIN-SUFFIX,uob.co.id,MANUAL
+- DOMAIN-SUFFIX,dbs.com,MANUAL
+- DOMAIN-SUFFIX,dbs.id,MANUAL
+- DOMAIN-SUFFIX,sc.com,MANUAL
+- DOMAIN-SUFFIX,citibank.co.id,MANUAL
+- DOMAIN-SUFFIX,bankmega.com,MANUAL
+- DOMAIN-SUFFIX,bankmega.co.id,MANUAL
+- DOMAIN-SUFFIX,btpn.com,MANUAL
+- DOMAIN-SUFFIX,jenius.com,MANUAL
+- DOMAIN-SUFFIX,bankjago.com,MANUAL
+- DOMAIN-SUFFIX,bankneo.co.id,MANUAL
+- DOMAIN-SUFFIX,allobank.com,MANUAL
+- DOMAIN-SUFFIX,bankraya.co.id,MANUAL
+- DOMAIN-SUFFIX,bankaladin.co.id,MANUAL
+- DOMAIN-SUFFIX,bankina.co.id,MANUAL
+- DOMAIN-SUFFIX,bankbsi.co.id,MANUAL
+- DOMAIN-SUFFIX,bankmuamalat.co.id,MANUAL
+- DOMAIN-SUFFIX,bankmega-syariah.co.id,MANUAL
+- DOMAIN-SUFFIX,bcasyariah.co.id,MANUAL
+- DOMAIN-SUFFIX,btpnsyariah.com,MANUAL
+- DOMAIN-SUFFIX,bankvictoriasyariah.co.id,MANUAL
+- DOMAIN-SUFFIX,banksinarmas.com,MANUAL
+- DOMAIN-SUFFIX,bankmas.co.id,MANUAL
+- DOMAIN-SUFFIX,bankmestika.co.id,MANUAL
+- DOMAIN-SUFFIX,bankmayapada.com,MANUAL
+- DOMAIN-SUFFIX,bankcapital.co.id,MANUAL
+- DOMAIN-SUFFIX,bankganesha.co.id,MANUAL
+- DOMAIN-SUFFIX,bankindex.co.id,MANUAL
+- DOMAIN-SUFFIX,bankmayora.com,MANUAL
+- DOMAIN-SUFFIX,bankwoorisaudara.com,MANUAL
+- DOMAIN-SUFFIX,kebhana.co.id,MANUAL
+- DOMAIN-SUFFIX,shinhan.co.id,MANUAL
+- DOMAIN-SUFFIX,bankbisnis.com,MANUAL
+- DOMAIN-SUFFIX,banksampoerna.com,MANUAL
+- DOMAIN-SUFFIX,banknobu.com,MANUAL
+- DOMAIN-SUFFIX,bankbjb.co.id,MANUAL
+- DOMAIN-SUFFIX,bankdki.co.id,MANUAL
+- DOMAIN-SUFFIX,bankjateng.co.id,MANUAL
+- DOMAIN-SUFFIX,bankjatim.co.id,MANUAL
+- DOMAIN-SUFFIX,bpddiy.co.id,MANUAL
+- DOMAIN-SUFFIX,banksumut.co.id,MANUAL
+- DOMAIN-SUFFIX,bankaceh.co.id,MANUAL
+- DOMAIN-SUFFIX,banknagari.co.id,MANUAL
+- DOMAIN-SUFFIX,bankriaukepri.co.id,MANUAL
+- DOMAIN-SUFFIX,banksumselbabel.com,MANUAL
+- DOMAIN-SUFFIX,banklampung.co.id,MANUAL
+- DOMAIN-SUFFIX,bankkalbar.co.id,MANUAL
+- DOMAIN-SUFFIX,bankkalsel.co.id,MANUAL
+- DOMAIN-SUFFIX,bankkalteng.co.id,MANUAL
+- DOMAIN-SUFFIX,bankaltimtara.co.id,MANUAL
+- DOMAIN-SUFFIX,banksulselbar.co.id,MANUAL
+- DOMAIN-SUFFIX,banksulutgo.co.id,MANUAL
+- DOMAIN-SUFFIX,bankntbsyariah.co.id,MANUAL
+- DOMAIN-SUFFIX,bpdbali.co.id,MANUAL
+- DOMAIN-SUFFIX,bpdntt.co.id,MANUAL
+- DOMAIN-SUFFIX,bankmalukumalut.co.id,MANUAL
+- DOMAIN-SUFFIX,bankpapua.co.id,MANUAL
+- DOMAIN-SUFFIX,jne.co.id,MANUAL
+- DOMAIN-SUFFIX,jnt.co.id,MANUAL
+- DOMAIN-SUFFIX,jet.co.id,MANUAL
+- DOMAIN-SUFFIX,sicepat.com,MANUAL
+- DOMAIN-SUFFIX,anteraja.id,MANUAL
+- DOMAIN-SUFFIX,idexpress.com,MANUAL
+- DOMAIN-SUFFIX,spx.co.id,MANUAL
+- DOMAIN-SUFFIX,shopeexpress.co.id,MANUAL
+- DOMAIN-SUFFIX,paxel.co,MANUAL
+- DOMAIN-SUFFIX,ninjaxpress.co,MANUAL
+- DOMAIN-SUFFIX,ninjavan.co,MANUAL
+- DOMAIN-SUFFIX,lionparcel.com,MANUAL
+- DOMAIN-SUFFIX,posindonesia.co.id,MANUAL
+- DOMAIN-SUFFIX,posaja.id,MANUAL
+- DOMAIN-SUFFIX,wahana.com,MANUAL
+- DOMAIN-SUFFIX,tiki.id,MANUAL
+- DOMAIN-SUFFIX,gosend.co.id,MANUAL
+- DOMAIN-SUFFIX,grabexpress.com,MANUAL
+- DOMAIN-SUFFIX,deliveree.com,MANUAL
+- DOMAIN-SUFFIX,borzo.com,MANUAL
+- DOMAIN-SUFFIX,lalamove.com,MANUAL
+- DOMAIN-SUFFIX,telkomsel.com,MANUAL
+- DOMAIN-SUFFIX,mytelkomsel.com,MANUAL
+- DOMAIN-SUFFIX,indihome.co.id,MANUAL
+- DOMAIN-SUFFIX,telkom.co.id,MANUAL
+- DOMAIN-SUFFIX,xlaxiata.co.id,MANUAL
+- DOMAIN-SUFFIX,xl.co.id,MANUAL
+- DOMAIN-SUFFIX,axis.co.id,MANUAL
+- DOMAIN-SUFFIX,indosatooredoo.com,MANUAL
+- DOMAIN-SUFFIX,im3.id,MANUAL
+- DOMAIN-SUFFIX,tri.co.id,MANUAL
+- DOMAIN-SUFFIX,smartfren.com,MANUAL
+- DOMAIN-SUFFIX,byu.id,MANUAL
+- DOMAIN-SUFFIX,biznetnetworks.com,MANUAL
+- DOMAIN-SUFFIX,firstmedia.com,MANUAL
+- DOMAIN-SUFFIX,myrepublic.co.id,MANUAL
+- DOMAIN-SUFFIX,cbn.id,MANUAL
+- DOMAIN-SUFFIX,mncplay.id,MANUAL
+- DOMAIN-SUFFIX,oxygen.id,MANUAL
+- DOMAIN-SUFFIX,iconnet.id,MANUAL
+- DOMAIN-SUFFIX,detik.com,MANUAL
+- DOMAIN-SUFFIX,kompas.com,MANUAL
+- DOMAIN-SUFFIX,kompas.tv,MANUAL
+- DOMAIN-SUFFIX,tribunnews.com,MANUAL
+- DOMAIN-SUFFIX,liputan6.com,MANUAL
+- DOMAIN-SUFFIX,tempo.co,MANUAL
+- DOMAIN-SUFFIX,kumparan.com,MANUAL
+- DOMAIN-SUFFIX,suara.com,MANUAL
+- DOMAIN-SUFFIX,cnnindonesia.com,MANUAL
+- DOMAIN-SUFFIX,cnbcindonesia.com,MANUAL
+- DOMAIN-SUFFIX,katadata.co.id,MANUAL
+- DOMAIN-SUFFIX,merdeka.com,MANUAL
+- DOMAIN-SUFFIX,okezone.com,MANUAL
+- DOMAIN-SUFFIX,sindonews.com,MANUAL
+- DOMAIN-SUFFIX,viva.co.id,MANUAL
+- DOMAIN-SUFFIX,republika.co.id,MANUAL
+- DOMAIN-SUFFIX,jawapos.com,MANUAL
+- DOMAIN-SUFFIX,beritasatu.com,MANUAL
+- DOMAIN-SUFFIX,antaranews.com,MANUAL
+- DOMAIN-SUFFIX,metrotvnews.com,MANUAL
+- DOMAIN-SUFFIX,tirto.id,MANUAL
+- DOMAIN-SUFFIX,narasi.tv,MANUAL
+- DOMAIN-SUFFIX,jobstreet.co.id,MANUAL
+- DOMAIN-SUFFIX,glints.com,MANUAL
+- DOMAIN-SUFFIX,kalibrr.com,MANUAL
+- DOMAIN-SUFFIX,karir.com,MANUAL
+- DOMAIN-SUFFIX,linkedin.com,MANUAL
+- DOMAIN-SUFFIX,ruangguru.com,MANUAL
+- DOMAIN-SUFFIX,zenius.net,MANUAL
+- DOMAIN-SUFFIX,quipper.com,MANUAL
+- DOMAIN-SUFFIX,pahamify.com,MANUAL
+- DOMAIN-SUFFIX,skillacademy.com,MANUAL
+- DOMAIN-SUFFIX,prakerja.go.id,MANUAL
+- DOMAIN-SUFFIX,kemdikbud.go.id,MANUAL
+- DOMAIN-SUFFIX,kampusmerdeka.kemdikbud.go.id,MANUAL
+- DOMAIN-SUFFIX,reddit.com,MANUAL
+- DOMAIN-SUFFIX,redd.it,MANUAL
+- DOMAIN,old.reddit.com,MANUAL
+- DOMAIN-KEYWORD,reddit,MANUAL
+- DOMAIN-SUFFIX,satuin.tech,MANUAL
+- DOMAIN-KEYWORD,pulsa,MANUAL
+- DOMAIN-KEYWORD,kuota,MANUAL
+- DOMAIN-KEYWORD,reload,MANUAL
+- DOMAIN-KEYWORD,kios,MANUAL
+- DOMAIN-KEYWORD,agen,MANUAL
+- RULE-SET,ads_domain,REJECT
+- DOMAIN-SUFFIX,doubleclick.net,REJECT
+- DOMAIN-SUFFIX,googlesyndication.com,REJECT
+- DOMAIN-SUFFIX,googleadservices.com,REJECT
+- DOMAIN-KEYWORD,adservice,REJECT
+- DOMAIN-KEYWORD,analytics,REJECT
+- DOMAIN-KEYWORD,tracker,REJECT
+- RULE-SET,youtube_domain,YOUTUBE
+- DOMAIN-SUFFIX,youtube.com,YOUTUBE
+- DOMAIN-SUFFIX,youtu.be,YOUTUBE
+- DOMAIN-SUFFIX,ytimg.com,YOUTUBE
+- DOMAIN-SUFFIX,googlevideo.com,YOUTUBE
+- DOMAIN-SUFFIX,facebook.com,SOCIAL-MEDIA
+- DOMAIN-SUFFIX,fbcdn.net,SOCIAL-MEDIA
+- DOMAIN-SUFFIX,instagram.com,SOCIAL-MEDIA
+- DOMAIN-SUFFIX,cdninstagram.com,SOCIAL-MEDIA
+- DOMAIN-SUFFIX,tiktok.com,SOCIAL-MEDIA
+- DOMAIN-SUFFIX,tiktokcdn.com,SOCIAL-MEDIA
+- DOMAIN-SUFFIX,twitter.com,SOCIAL-MEDIA
+- DOMAIN-SUFFIX,x.com,SOCIAL-MEDIA
+- DOMAIN-SUFFIX,t.me,SOCIAL-MEDIA
+- DOMAIN-SUFFIX,telegram.org,SOCIAL-MEDIA
+- MATCH,GLOBAL
