@@ -229,3 +229,93 @@ Sumber yang digunakan oleh profil balanced:
 - HaGeZi Pop-Up Ads
 
 Profil strict menambahkan AdvertisingLite dari blackmatrix7/AWAvenue ecosystem.
+
+
+## YouTube Optimized v1.3
+
+Default:
+
+```json
+{
+  "YOUTUBE_ADBLOCK_MODE": "enhanced",
+  "YOUTUBE_BROWSER_FILTER_FILE": "youtube_browser_filters.txt"
+}
+```
+
+Mode tersedia:
+
+- `off`: tidak menerapkan perlakuan khusus YouTube.
+- `safe`: melindungi domain playback dari blokir jaringan yang terlalu agresif dan membuat cosmetic filter.
+- `enhanced`: sama seperti `safe`, ditambah filter request untuk endpoint iklan terpisah dari CDN video.
+
+Jalankan seluruh pipeline:
+
+```bash
+.venv/bin/python local_runner.py --config local_config.json --youtube-mode enhanced
+```
+
+Untuk YAML yang sudah ada tanpa mencari akun ulang:
+
+```bash
+.venv/bin/python apply_youtube_optimized.py --mode enhanced
+```
+
+Jika playback YouTube bermasalah:
+
+```bash
+.venv/bin/python apply_youtube_optimized.py --mode safe
+```
+
+Rollback:
+
+```bash
+.venv/bin/python apply_youtube_optimized.py --restore
+```
+
+### Filter browser
+
+File berikut dibuat otomatis:
+
+```text
+youtube_browser_filters.txt
+```
+
+Import file tersebut ke bagian custom filters / My filters pada blocker browser yang mendukung sintaks uBlock Origin/AdGuard.
+
+Runner sengaja tidak memblokir `googlevideo.com` pada level DNS. Domain tersebut dipakai untuk media utama, sehingga pemblokiran kasar dapat memutus playback.
+
+Optimasi YouTube tidak menjamin semua pre-roll atau mid-roll hilang setiap saat. YouTube mengubah player dan delivery iklan secara berkala. Gunakan filter bawaan blocker browser yang selalu diperbarui bersama file custom ini.
+
+
+## v1.4: Perbaikan SSL/TLS macOS + Conda
+
+Jika muncul:
+
+```text
+ssl.SSLEOFError: [SSL: UNEXPECTED_EOF_WHILE_READING]
+```
+
+runner v1.4 tidak menonaktifkan verifikasi SSL. Urutannya:
+
+1. Python `urllib` memakai verified `SSLContext`.
+2. Jika `certifi` tersedia, CA bundle certifi ikut dimuat.
+3. Request dicoba ulang beberapa kali.
+4. Jika jalur TLS Python/Conda tetap gagal, runner memakai `curl` sistem dengan verifikasi TLS aktif.
+5. Download ditulis ke file `.part` lalu dipindahkan setelah sukses agar file rusak tidak dianggap valid.
+6. Jika Mihomo atau sing-box sudah ada di `PATH`, runner dapat memakai binary tersebut tanpa mengakses GitHub release API.
+
+Tes koneksi:
+
+```bash
+python local_runner.py --network-test
+```
+
+Jalankan normal:
+
+```bash
+python local_runner.py
+```
+
+Jika ingin memasang binary dengan Homebrew secara terpisah, runner juga dapat mendeteksinya dari `PATH`. Tidak perlu mematikan SSL verification.
+
+Jika jaringan menggunakan VPN, proxy HTTPS, antivirus TLS inspection, atau captive portal dan bahkan `curl` gagal, selesaikan masalah koneksi tersebut terlebih dahulu.

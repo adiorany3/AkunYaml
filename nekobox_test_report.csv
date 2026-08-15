@@ -1,31 +1,29 @@
 name,type,network,original_server,bug_sni,mihomo_status,url_test_ms,nekobox_test_ms,nekobox_status,nekobox_ready
-AKUN-002-UNKNOWN-VLESS-WS-260MS,vless,ws,172.67.153.110,FRee.SeRver11pEEkcONFIg.WorkeRS.DEv,HTTP 204,576,649,HTTP 204,yes
-AKUN-003-UNKNOWN-VLESS-WS-244MS,vless,ws,104.21.85.253,z-e-u-s-um9pdt.shoameny.workers.dev,HTTP 204,782,5193,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-004-UNKNOWN-VLESS-WS-305MS,vless,ws,104.18.37.228,josni.hoyes.cloudns.ch,HTTP 204,830,5205,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-005-CLOUDFLARE-VLESS-WS-262MS,vless,ws,188.114.97.7,o94Yv7LIF0-aNXISd9eFehvvS7mxn6bH.Z-ULe-iKa-d-e-ne-K-e.wORkeRs.Dev,HTTP 204,3530,5221,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-006-SPEEDTEST-VLESS-WS-291MS,vless,ws,www.speedtest.net,BPb-dF66c5a8.yfjhKjl.WorKERS.dEv,HTTP 204,661,8184,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=8.0)",no
-AKUN-008-CLOUDFLARE-VLESS-WS-292MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,HTTP 204,721,8205,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=8.0)",no
-AKUN-009-UNKNOWN-VLESS-WS-271MS,vless,ws,104.18.37.228,hhlfy.twiladaphne.ndjp.net,HTTP 204,938,8172,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=8.0)",no
-AKUN-010-CLOUDFLARE-VLESS-WS-261MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,HTTP 204,839,644,HTTP 204,yes
-AKUN-013-SPEEDTEST-VLESS-WS-292MS,vless,ws,www.speedtest.net,O94yv7LIF0-AnXisD9EFEhVVS7mxN6Bh.Z-UlE-iKA-D-E-ne-k-e.wORkers.dEv,HTTP 204,572,8192,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=8.0)",no
-AKUN-014-SPEEDTEST-VLESS-WS-355MS,vless,ws,www.speedtest.net,luCky-LAB-AC6D.CAveyi8071.WoRkeRS.DEV,HTTP 204,569,334,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-015-NOTION-WEB-VLESS-WS-231MS,vless,ws,208.103.161.32,josni.hoyes.cloudns.ch,HTTP 204,684,5202,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-017-LEVIKOGJGFDD-VLESS-WS-322MS,vless,ws,millionaire.levikogjgfdd.ir,netlivpn5505.ffffdsaaa.workers.dev,HTTP 204,1162,1668,HTTP 204,yes
-AKUN-019-UNKNOWN-VLESS-WS-256MS,vless,ws,172.67.186.142,YDqbCJ3IE4sqJux1AH93x.l9yawn7wAgNMFd0-CnzjnDC1U24q.Workers.dEV,HTTP 204,991,5205,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-022-CLOUDFLARE-VLESS-WS-288MS,vless,ws,104.16.79.73,josni.hoyes.cloudns.ch,HTTP 204,788,429,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-026-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-238MS,vless,ws,flat-night-edd0.hosein9saleazhuongooyeh87.workers.dev,FLAT-night-EDD0.hOsEin9saLEAZhuongOoYeH87.wOrkerS.DeV,HTTP 204,639,8170,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=8.0)",no
-AKUN-027-UNKNOWN-VLESS-WS-262MS,vless,ws,104.21.234.13,FAncY-RAIn-136e.THisISaLee.WoRkeRS.DeV,HTTP 204,564,498,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-028-LEVIKOGJGFDD-VLESS-WS-270MS,vless,ws,millionaire.levikogjgfdd.ir,ezaccess-project-9138d4.5f6on.workers.dev,HTTP 204,589,5272,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-029-SPEEDTEST-VLESS-WS-247MS,vless,ws,www.speedtest.net,BPb-C4AfEfbB.djFvbKjDfV.woRKeRs.dev,HTTP 204,811,5213,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-030-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-291MS,vless,ws,russia.com,misaka.cndyw.ggff.net,HTTP 204,670,5258,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-031-NOTION-WEB-VLESS-WS-333MS,vless,ws,208.103.161.32,josni.hoyes.cloudns.ch,HTTP 204,548,8177,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=8.0)",no
-AKUN-032-UNKNOWN-VLESS-WS-255MS,vless,ws,104.17.28.89,workspace.evan00.dpdns.org,HTTP 204,1664,5211,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-034-UNKNOWN-VLESS-WS-303MS,vless,ws,104.16.147.125,urzpn8e9ub5s.shoameni2.workers.dev,HTTP 204,3148,5239,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-035-SPEEDTEST-VLESS-WS-283MS,vless,ws,www.speedtest.net,7X70yYVT7eQotx-iq9n3rjT1XN1JwKH9.ASDfSafdsAf.workErS.dev,HTTP 204,771,5296,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-037-BIGCOMMERCE-VLESS-WS-364MS,vless,ws,63.141.128.22,misty-tooth-78ca.fobogah414-e7b.workers.dev,HTTP 204,663,8183,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=8.0)",no
-AKUN-038-CLOUDFLARE-VLESS-WS-330MS,vless,ws,188.114.96.7,o94yv7lIF0-AnXiSd9EFeHVVS7mxn6Bh.z-ULe-IKA-d-e-Ne-k-E.WORKERs.DEv,HTTP 204,2163,5211,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-040-UNKNOWN-VLESS-WS-392MS,vless,ws,104.18.37.228,josni.hoyes.cloudns.ch,HTTP 204,562,814,HTTP 204,yes
-AKUN-042-DIGITALOCEAN-VLESS-WS-419MS,vless,ws,164.90.217.130,white-forest-2c01.alvlirm222.workers.dev,HTTP 204,1824,5213,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-044-UNKNOWN-VLESS-WS-304MS,vless,ws,141.101.114.8,noisy-term-e657.airdrop2014aa5168.workers.dev,HTTP 204,820,5202,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-048-CLOUDFLARE-VLESS-WS-333MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,HTTP 204,667,2026,HTTP 204,yes
-AKUN-052-UNKNOWN-VLESS-WS-657MS,vless,ws,104.18.1.1,terazhediii.info,HTTP 204,2135,8186,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=8.0)",no
+AKUN-001-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-232MS,vless,ws,cgxgqcheiamna-jks01fidlsnqojwf-s.aliama.workers.dev,CgxGqchEiAMnA-jkS01FiDlsnqOjwF-S.ALIAmA.WOrKErS.DeV,HTTP 204,389,3967,HTTP 204,yes
+AKUN-002-AIMALL-VLESS-WS-250MS,vless,ws,cf-vless-4cf55824.aimall.fr,cf-vless-4cf55824.aimall.fr,HTTP 204,381,428,HTTP 204,yes
+AKUN-003-CLOUDFLARE-VLESS-WS-257MS,vless,ws,104.18.188.115,z-e-u-s-panel-231cq2.nova-3bd4a6.workers.dev,HTTP 204,3685,4004,HTTP 204,yes
+AKUN-004-UNKNOWN-VLESS-WS-237MS,vless,ws,188.114.98.134,o94yv7LiF0-AnxIsd9EFehVvs7mXn6bh.z-UlE-ikA-d-e-nE-k-E.WorkeRs.dEv,HTTP 204,326,423,HTTP 204,yes
+AKUN-005-UNKNOWN-VLESS-WS-271MS,vless,ws,188.114.97.3,mxp6jvjacystdp-s4f.kjnnv3i410u6mq-itd.workers.dev,HTTP 204,1380,401,HTTP 204,yes
+AKUN-006-CLOUDFLARE-VLESS-WS-279MS,vless,ws,104.17.147.22,bpB-01c11365.HJdBcvDbKV.WORKErS.dEV,HTTP 204,1391,419,HTTP 204,yes
+AKUN-007-CLOUDFLARE-VLESS-WS-298MS,vless,ws,188.114.97.7,o94Yv7LIF0-aNXISd9eFehvvS7mxn6bH.Z-ULe-iKa-d-e-ne-K-e.wORkeRs.Dev,HTTP 204,355,377,HTTP 204,yes
+AKUN-008-CLOUDFLARE-VLESS-WS-272MS,vless,ws,104.17.147.22,netlivpn5002.whwbbb.workers.dev,HTTP 204,456,495,HTTP 204,yes
+AKUN-009-UNKNOWN-VLESS-WS-265MS,vless,ws,104.17.28.89,workspace.evan00.dpdns.org,HTTP 204,344,415,HTTP 204,yes
+AKUN-010-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-295MS,vless,ws,wgrcqwtkfyqujs43.ghydgdbdbddvv.workers.dev,wgrcqwtkfyqujs43.ghydgdbdbddvv.workers.dev,HTTP 204,356,481,HTTP 204,yes
+AKUN-011-CLOUDFLARE-VLESS-WS-294MS,vless,ws,188.114.96.3,maSterserVeR1-VSH.KaLlEH.WORkERs.DEV,HTTP 204,366,384,HTTP 204,yes
+AKUN-012-CLOUDFLARE-VLESS-WS-276MS,vless,ws,104.17.148.22,BPb-F23dDEdd.JCXkvlnDL.WOrkERS.deV,HTTP 204,333,270,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-013-SPEEDTEST-VLESS-WS-325MS,vless,ws,www.speedtest.net,SeeWORLD.uNaTTEneDpAy.KdnS.Fr,HTTP 204,420,343,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-014-SPEEDTEST-VLESS-WS-307MS,vless,ws,www.speedtest.net,BPb-E234adb8.xjGcjHVjkV.WorKERs.DEV,HTTP 204,1335,250,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-015-SPEEDTEST-VLESS-WS-223MS,vless,ws,www.speedtest.net,BPb-E234adb8.xjGcjHVjkV.WorKERs.DEV,HTTP 204,1392,1398,HTTP 204,yes
+AKUN-016-UNKNOWN-VLESS-WS-272MS,vless,ws,188.114.97.3,FanCy-raIn-136E.tHisIsaLEe.wOrKeRS.deV,HTTP 204,392,410,HTTP 204,yes
+AKUN-017-UNKNOWN-VLESS-WS-284MS,vless,ws,188.114.97.3,MxP6JvJACYStDP-s4f.KJNnV3I410u6MQ-ITd.WorkerS.dev,HTTP 204,357,419,HTTP 204,yes
+AKUN-018-CLOUDFLARE-VLESS-WS-270MS,vless,ws,104.17.147.22,ez-5FAAFb.EsmAoi.wORKeRs.DEv,HTTP 204,336,1266,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-019-CLOUDFLARE-VLESS-WS-285MS,vless,ws,188.114.96.7,JOlLY-rIcE-69EA.GAnJIaMIrALi273.WOrKers.dev,HTTP 204,367,269,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-020-UNKNOWN-VLESS-WS-311MS,vless,ws,104.16.71.7,FlorAL-Fire-1f55.VeeGshHEeHh.WOrKeRs.dev,HTTP 204,391,253,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-021-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-279MS,vless,ws,cgxgqcheiamna-jks01fidlsnqojwf-s.aliama.workers.dev,CgxGqchEiAMnA-jkS01FiDlsnqOjwF-S.ALIAmA.WOrKErS.DeV,HTTP 204,346,263,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-022-CLOUDFLARE-VLESS-WS-275MS,vless,ws,188.114.96.3,maSterserVeR1-VSH.KaLlEH.WORkERs.DEV,HTTP 204,337,266,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-023-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-297MS,vless,ws,muddy-math-c1fc.tmpnriqueau89.workers.dev,muddy-math-c1fc.tmpnriqueau89.workers.dev,HTTP 204,346,408,HTTP 204,yes
+AKUN-024-CLOUDFLARE-VLESS-WS-281MS,vless,ws,104.17.144.235,hhlfy.twiladaphne.ndjp.net,HTTP 204,343,380,HTTP 204,yes
+AKUN-025-CLOUDFLARE-VLESS-WS-256MS,vless,ws,188.114.97.7,o94Yv7LIF0-aNXISd9eFehvvS7mxn6bH.Z-ULe-iKa-d-e-ne-K-e.wORkeRs.Dev,HTTP 204,337,419,HTTP 204,yes
+AKUN-026-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-261MS,vless,ws,one-for-all.levikogjgfdd.ir,hhlfy.twiladaphne.ndjp.net,HTTP 204,355,401,HTTP 204,yes
+AKUN-027-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-783MS,vless,ws,odd-violet-5440.asdgrweeee13.workers.dev,odd-violet-5440.asdgrweeee13.workers.dev,HTTP 204,1142,1134,HTTP 204,yes
+AKUN-028-CLOUDFLARE-VLESS-WS-264MS,vless,ws,188.114.97.6,josni.hoyes.cloudns.ch,HTTP 204,409,377,HTTP 204,yes

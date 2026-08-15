@@ -28,6 +28,9 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import time
+import ssl
+import urllib.error
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -72,6 +75,8 @@ DEFAULT_ENV = {
     "RULE_MODE": "Lite",
     "ADBLOCK_PROFILE": "balanced",
     "ADBLOCK_PROVIDER_INTERVAL": "43200",
+    "YOUTUBE_ADBLOCK_MODE": "enhanced",
+    "YOUTUBE_BROWSER_FILTER_FILE": "youtube_browser_filters.txt",
     "SUBSCRIPTION_LINKS_FILE": "subscription_links.txt",
     "MANUAL_NODES_FILE": "manual_nodes.txt",
     "OUTPUT_YAML": "openclash_auto.yaml",
@@ -92,26 +97,198 @@ def log(message: str) -> None:
     print(f"[LOCAL] {message}", flush=True)
 
 
-def request_json(url: str) -> dict:
-    req = urllib.request.Request(
+def _github_headers(accept_json: bool = False) -> dict[str, str]:
+    headers = {
+        "User-Agent": "ConvertYAML-Local-Runner/1.4",
+    }
+    if accept_json:
+        headers["Accept"] = "application/vnd.github+json"
+        headers["X-GitHub-Api-Version"] = "2026-03-10"
+
+    token = os.environ.get("GITHUB_TOKEN", "").strip()
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    return headers
+
+
+def _ssl_context() -> ssl.SSLContext:
+    """Create a verified SSL context.
+
+    On Conda/Python installations, certifi may contain a more complete CA
+    bundle than the interpreter's configured default. Verification is never
+    disabled.
+    """
+    context = ssl.create_default_context()
+
+    try:
+        import certifi  # type: ignore
+        cafile = certifi.where()
+        if cafile and Path(cafile).exists():
+            context.load_verify_locations(cafile=cafile)
+    except Exception:
+        pass
+
+    return context
+
+
+def _curl_available() -> bool:
+    return shutil.which("curl") is not None
+
+
+def _curl_common_args() -> list[str]:
+    args = [
+        "curl",
+        "--fail",
+        "--location",
+        "--silent",
+        "--show-error",
+        "--retry", "4",
+        "--retry-delay", "2",
+        "--retry-max-time", "90",
+        "--connect-timeout", "20",
+        "--max-time", "180",
+        "--http1.1",
+        "-A", "ConvertYAML-Local-Runner/1.4",
+    ]
+    token = os.environ.get("GITHUB_TOKEN", "").strip()
+    if token:
+        args += ["-H", f"Authorization: Bearer {token}"]
+    return args
+
+
+def _curl_json(url: str) -> dict:
+    if not _curl_available():
+        raise RuntimeError("curl tidak tersedia.")
+
+    cmd = _curl_common_args() + [
+        "-H", "Accept: application/vnd.github+json",
+        "-H", "X-GitHub-Api-Version: 2026-03-10",
         url,
-        headers={
-            "Accept": "application/vnd.github+json",
-            "User-Agent": "ConvertYAML-Local-Runner/1.0",
-        },
+    ]
+    result = subprocess.run(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=False,
     )
-    with urllib.request.urlopen(req, timeout=45) as response:
-        return json.loads(response.read().decode("utf-8"))
+    if result.returncode != 0:
+        raise RuntimeError(
+            "curl gagal mengambil GitHub API: "
+            + (result.stderr.strip() or f"exit code {result.returncode}")
+        )
+    return json.loads(result.stdout)
+
+
+def _curl_download(url: str, destination: Path) -> None:
+    if not _curl_available():
+        raise RuntimeError("curl tidak tersedia.")
+
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temp_path = destination.with_suffix(destination.suffix + ".part")
+    temp_path.unlink(missing_ok=True)
+
+    cmd = _curl_common_args() + [
+        "--output", str(temp_path),
+        url,
+    ]
+    result = subprocess.run(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        temp_path.unlink(missing_ok=True)
+        raise RuntimeError(
+            "curl gagal mengunduh file: "
+            + (result.stderr.strip() or f"exit code {result.returncode}")
+        )
+
+    if not temp_path.exists() or temp_path.stat().st_size == 0:
+        temp_path.unlink(missing_ok=True)
+        raise RuntimeError("curl menghasilkan file kosong.")
+
+    temp_path.replace(destination)
+
+
+def request_json(url: str) -> dict:
+    """Fetch JSON with verified TLS, retries, then system curl fallback."""
+    errors: list[str] = []
+    headers = _github_headers(accept_json=True)
+
+    for attempt in range(1, 4):
+        try:
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(
+                req,
+                timeout=45,
+                context=_ssl_context(),
+            ) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except Exception as exc:
+            errors.append(f"urllib attempt {attempt}: {exc}")
+            if attempt < 3:
+                log(f"GitHub API gagal via Python, retry {attempt}/3...")
+                time.sleep(attempt * 2)
+
+    if _curl_available():
+        log("TLS Python/Conda gagal. Mencoba fallback curl sistem...")
+        try:
+            return _curl_json(url)
+        except Exception as exc:
+            errors.append(f"curl: {exc}")
+
+    raise RuntimeError(
+        "Tidak dapat mengakses GitHub API dengan TLS terverifikasi.\n"
+        + "\n".join(f"  - {item}" for item in errors)
+        + "\nCoba cek koneksi/VPN/proxy, atau jalankan: curl -I https://api.github.com"
+    )
 
 
 def download(url: str, destination: Path) -> None:
+    """Download with verified TLS and atomic write; curl is the fallback."""
     destination.parent.mkdir(parents=True, exist_ok=True)
-    req = urllib.request.Request(
-        url,
-        headers={"User-Agent": "ConvertYAML-Local-Runner/1.0"},
+    errors: list[str] = []
+    headers = _github_headers(accept_json=False)
+
+    for attempt in range(1, 4):
+        temp_path = destination.with_suffix(destination.suffix + ".part")
+        temp_path.unlink(missing_ok=True)
+        try:
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(
+                req,
+                timeout=120,
+                context=_ssl_context(),
+            ) as response, temp_path.open("wb") as out:
+                shutil.copyfileobj(response, out)
+
+            if not temp_path.exists() or temp_path.stat().st_size == 0:
+                raise RuntimeError("hasil download kosong")
+
+            temp_path.replace(destination)
+            return
+        except Exception as exc:
+            temp_path.unlink(missing_ok=True)
+            errors.append(f"urllib attempt {attempt}: {exc}")
+            if attempt < 3:
+                log(f"Download gagal via Python, retry {attempt}/3...")
+                time.sleep(attempt * 2)
+
+    if _curl_available():
+        log("Download via Python gagal. Mencoba fallback curl sistem...")
+        try:
+            _curl_download(url, destination)
+            return
+        except Exception as exc:
+            errors.append(f"curl: {exc}")
+
+    raise RuntimeError(
+        f"Gagal mengunduh {url}\n"
+        + "\n".join(f"  - {item}" for item in errors)
     )
-    with urllib.request.urlopen(req, timeout=120) as response, destination.open("wb") as out:
-        shutil.copyfileobj(response, out)
 
 
 def raw_github_url(repo: str, file_name: str, branch: str = "main") -> str:
@@ -309,10 +486,25 @@ def ensure_binary(
         log(f"{program} sudah tersedia: {output_path}")
         return output_path
 
+    if not force_download:
+        system_binary = shutil.which(exe) or shutil.which(program)
+        if system_binary:
+            system_path = Path(system_binary).resolve()
+            log(f"Menggunakan {program} dari PATH: {system_path}")
+            return system_path
+
     os_name, arch = normalized_platform()
     log(f"Mencari {program} terbaru untuk {os_name}/{arch}...")
 
-    release = request_json(f"{GITHUB_API}/repos/{repo}/releases/latest")
+    try:
+        release = request_json(f"{GITHUB_API}/repos/{repo}/releases/latest")
+    except Exception as exc:
+        raise RuntimeError(
+            f"Gagal mendapatkan metadata release {program} dari GitHub.\n"
+            f"{exc}\n\n"
+            "Runner tidak mematikan verifikasi SSL. Pada macOS/Conda, "
+            "fallback curl akan digunakan otomatis bila tersedia."
+        ) from exc
     assets = release.get("assets") or []
     asset = selector(assets, os_name, arch)
 
@@ -403,6 +595,245 @@ SECURITY_PROVIDERS = {
         "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/AdvertisingLite/AdvertisingLite_Domain.txt",
     },
 }
+
+
+
+YOUTUBE_PLAYBACK_DOMAINS = (
+    "youtube.com",
+    "youtu.be",
+    "youtube-nocookie.com",
+    "googlevideo.com",
+    "ytimg.com",
+    "youtubei.googleapis.com",
+    "youtube.googleapis.com",
+    "ggpht.com",
+)
+
+YOUTUBE_BROWSER_FILTERS_SAFE = """\
+! ConvertYAML Local Runner - YouTube Optimized
+! Mode: safe
+! Fokus: menyembunyikan slot iklan/promosi tanpa memblokir CDN video.
+! Kompatibel dengan uBlock Origin / AdGuard yang menerima sintaks filter ABP/uBO.
+!
+youtube.com##ytd-display-ad-renderer
+youtube.com##ytd-ad-slot-renderer
+youtube.com##ytd-promoted-video-renderer
+youtube.com##ytd-promoted-sparkles-web-renderer
+youtube.com##ytd-in-feed-ad-layout-renderer
+youtube.com##ytd-banner-promo-renderer
+youtube.com##ytd-companion-slot-renderer
+youtube.com##.ytp-ad-module
+youtube.com##.video-ads
+youtube.com##.ytp-ad-overlay-container
+youtube.com##.ytp-ad-player-overlay
+youtube.com##.ytp-ad-text-overlay
+youtube.com##.ytp-ad-image-overlay
+youtube.com##.ytp-ad-progress-list
+"""
+
+YOUTUBE_BROWSER_FILTERS_ENHANCED = """\
+! ConvertYAML Local Runner - YouTube Optimized
+! Mode: enhanced
+! Lapisan tambahan untuk endpoint iklan/telemetri yang terpisah dari CDN video.
+! Tidak memblokir googlevideo.com agar playback utama tetap aman.
+!
+||googleads.g.doubleclick.net^$domain=youtube.com
+||static.doubleclick.net^$domain=youtube.com
+||pagead2.googlesyndication.com^$domain=youtube.com
+||tpc.googlesyndication.com^$domain=youtube.com
+||www.googleadservices.com^$domain=youtube.com
+||youtube.com/api/stats/ads^$xhr,domain=youtube.com
+||youtube.com/pagead/*$xhr,domain=youtube.com
+||youtube.com/ptracking^$xhr,domain=youtube.com
+"""
+
+
+def _valid_policies(config: dict) -> set[str]:
+    names = {"DIRECT", "REJECT", "PASS", "COMPATIBLE"}
+    for proxy in config.get("proxies", []) or []:
+        if isinstance(proxy, dict) and proxy.get("name"):
+            names.add(str(proxy["name"]))
+    for group in config.get("proxy-groups", []) or []:
+        if isinstance(group, dict) and group.get("name"):
+            names.add(str(group["name"]))
+    return names
+
+
+def detect_default_routing_policy(config: dict) -> str:
+    """Return the final routing target already used by the generated YAML."""
+    valid = _valid_policies(config)
+    rules = config.get("rules") or []
+
+    for raw in reversed(rules):
+        parts = [p.strip() for p in str(raw).split(",")]
+        if len(parts) >= 2 and parts[0].upper() in {"MATCH", "FINAL"}:
+            policy = parts[1]
+            if policy in valid:
+                return policy
+
+    for preferred in ("GLOBAL", "PROXY", "Proxy", "AUTO", "Auto"):
+        if preferred in valid:
+            return preferred
+
+    groups = [
+        str(g["name"]) for g in config.get("proxy-groups", []) or []
+        if isinstance(g, dict) and g.get("name")
+    ]
+    if groups:
+        return groups[0]
+
+    proxies = [
+        str(p["name"]) for p in config.get("proxies", []) or []
+        if isinstance(p, dict) and p.get("name")
+    ]
+    if proxies:
+        return proxies[0]
+
+    return "DIRECT"
+
+
+def _normal_dns_resolvers(config: dict):
+    dns = config.get("dns")
+    if not isinstance(dns, dict):
+        return None
+    resolvers = dns.get("nameserver")
+    if isinstance(resolvers, list) and resolvers:
+        return list(resolvers)
+    if isinstance(resolvers, str) and resolvers.strip():
+        return resolvers.strip()
+    return None
+
+
+def apply_youtube_network_guard(path: Path, mode: str) -> bool:
+    """Keep YouTube playback/API domains away from broad DNS/ad reject rules.
+
+    This does not attempt to block video ads at DNS level. It preserves the
+    YAML's existing final routing policy and lets the browser filter handle
+    YouTube-specific page/request filtering.
+    """
+    if not path.exists():
+        return False
+
+    import yaml
+    config = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    if not isinstance(config, dict):
+        return False
+
+    changed = False
+    current_rules = config.get("rules")
+    if not isinstance(current_rules, list):
+        current_rules = []
+
+    managed_domains = set(YOUTUBE_PLAYBACK_DOMAINS)
+    cleaned_rules = []
+    for rule in current_rules:
+        value = str(rule)
+        parts = [p.strip() for p in value.split(",")]
+        if len(parts) >= 3 and parts[0].upper() in {"DOMAIN", "DOMAIN-SUFFIX"}:
+            if parts[1].lower() in managed_domains and parts[2] != "REJECT":
+                continue
+        cleaned_rules.append(value)
+
+    # Remove managed DNS guard entries when mode is off.
+    dns = config.get("dns")
+    if isinstance(dns, dict):
+        policy = dns.get("nameserver-policy")
+        if isinstance(policy, dict):
+            for domain in YOUTUBE_PLAYBACK_DOMAINS:
+                for key in (domain, f"+.{domain}"):
+                    if key in policy:
+                        policy.pop(key, None)
+                        changed = True
+
+    if mode == "off":
+        if cleaned_rules != current_rules:
+            config["rules"] = cleaned_rules
+            changed = True
+        if changed:
+            path.write_text(
+                yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=140),
+                encoding="utf-8",
+            )
+        return changed
+
+    route_policy = detect_default_routing_policy(config)
+    guard_rules = [
+        f"DOMAIN-SUFFIX,{domain},{route_policy}"
+        for domain in YOUTUBE_PLAYBACK_DOMAINS
+    ]
+
+    # Insert before security blockers. If none exist, put them at the beginning.
+    insert_at = 0
+    for i, rule in enumerate(cleaned_rules):
+        value = str(rule)
+        if value.startswith((
+            "RULE-SET,security-tif-mini,",
+            "RULE-SET,popup-ads,",
+            "RULE-SET,awavenue-ads,",
+            "GEOSITE,category-ads-all,",
+            "GEOSITE,tracker,",
+        )):
+            insert_at = i
+            break
+
+    new_rules = cleaned_rules[:insert_at] + guard_rules + cleaned_rules[insert_at:]
+    if new_rules != current_rules:
+        config["rules"] = new_rules
+        changed = True
+
+    # Prevent broad nameserver-policy ad/tracker matching from black-holing
+    # domains required for the player. Use the YAML's own normal resolver.
+    normal_resolvers = _normal_dns_resolvers(config)
+    dns = config.get("dns")
+    if isinstance(dns, dict) and normal_resolvers:
+        policy = dns.setdefault("nameserver-policy", {})
+        if isinstance(policy, dict):
+            # Rebuild policy so explicit YouTube domains appear before broad
+            # geosite rules in serialized output.
+            protected = {}
+            for domain in YOUTUBE_PLAYBACK_DOMAINS:
+                protected[f"+.{domain}"] = normal_resolvers
+            for key, value in policy.items():
+                if key not in protected:
+                    protected[key] = value
+            if protected != policy:
+                dns["nameserver-policy"] = protected
+                changed = True
+
+    if changed:
+        path.write_text(
+            yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=140),
+            encoding="utf-8",
+        )
+        log(f"YouTube network guard [{mode}] -> {path.name} | route={route_policy}")
+
+    return changed
+
+
+def write_youtube_browser_filters(workdir: Path, mode: str, filename: str) -> Path | None:
+    path = workdir / filename
+
+    if mode == "off":
+        if path.exists():
+            path.unlink()
+            log(f"Filter browser YouTube dihapus: {filename}")
+        return None
+
+    body = YOUTUBE_BROWSER_FILTERS_SAFE
+    if mode == "enhanced":
+        body += "\n" + YOUTUBE_BROWSER_FILTERS_ENHANCED
+
+    body += """\
+
+! Catatan:
+! - Jangan tambahkan ||googlevideo.com^ karena domain tersebut juga membawa video utama.
+! - Filter YouTube berubah dari waktu ke waktu. Gunakan filter bawaan blocker juga.
+! - Jika playback bermasalah, ganti mode ke safe atau off.
+"""
+    path.write_text(body, encoding="utf-8")
+    log(f"Filter browser YouTube [{mode}] dibuat: {filename}")
+    return path
+
 
 
 def patch_core_compatibility(workdir: Path) -> None:
@@ -639,7 +1070,14 @@ def apply_adblock_security(path: Path, profile: str, workdir: Path, interval: in
     return changed
 
 
-def optimize_outputs(workdir: Path, files: Iterable[str], profile: str, interval: int) -> None:
+def optimize_outputs(
+    workdir: Path,
+    files: Iterable[str],
+    profile: str,
+    interval: int,
+    youtube_mode: str = "enhanced",
+    youtube_filter_file: str = "youtube_browser_filters.txt",
+) -> None:
     for filename in files:
         path = workdir / filename
         if not path.exists():
@@ -647,8 +1085,11 @@ def optimize_outputs(workdir: Path, files: Iterable[str], profile: str, interval
         sanitize_generated_yaml(path)
         if apply_adblock_security(path, profile, workdir, interval):
             log(f"Adblock/security [{profile}] diterapkan: {filename}")
+        apply_youtube_network_guard(path, youtube_mode)
         # Re-sanitize because adding rules can expose an old invalid group.
         sanitize_generated_yaml(path)
+
+    write_youtube_browser_filters(workdir, youtube_mode, youtube_filter_file)
 
 
 def validate_yaml(workdir: Path, mihomo: Path, files: Iterable[str]) -> None:
@@ -676,6 +1117,7 @@ def print_outputs(workdir: Path) -> None:
         "nekobox_test_report.csv",
         "node_quality_report.md",
         "last_update.txt",
+        "youtube_browser_filters.txt",
     ]
     print("\nHasil:")
     for name in names:
@@ -732,6 +1174,17 @@ def parse_args():
         help="Profil pemblokiran: off, balanced (default), atau strict.",
     )
     parser.add_argument(
+        "--youtube-mode",
+        choices=("off", "safe", "enhanced"),
+        default=None,
+        help="Optimasi YouTube: off, safe, atau enhanced (default).",
+    )
+    parser.add_argument(
+        "--network-test",
+        action="store_true",
+        help="Tes koneksi TLS ke GitHub API lalu keluar.",
+    )
+    parser.add_argument(
         "--no-install-deps",
         action="store_true",
         help="Jangan memasang dependency Python otomatis.",
@@ -739,8 +1192,50 @@ def parse_args():
     return parser.parse_args()
 
 
+
+def run_network_test() -> int:
+    print("ConvertYAML network diagnostic")
+    print(f"Python       : {sys.version.split()[0]}")
+    print(f"Executable   : {sys.executable}")
+    print(f"OpenSSL      : {ssl.OPENSSL_VERSION}")
+    print(f"curl         : {shutil.which('curl') or 'tidak ditemukan'}")
+    try:
+        import certifi  # type: ignore
+        print(f"certifi CA   : {certifi.where()}")
+    except Exception:
+        print("certifi CA   : tidak tersedia")
+
+    url = f"{GITHUB_API}/repos/{MIHOMO_REPO}/releases/latest"
+
+    print("\n[1] Tes urllib/Python...")
+    try:
+        req = urllib.request.Request(url, headers=_github_headers(True))
+        with urllib.request.urlopen(
+            req,
+            timeout=20,
+            context=_ssl_context(),
+        ) as response:
+            print(f"    OK HTTP {getattr(response, 'status', '?')}")
+    except Exception as exc:
+        print(f"    GAGAL: {exc}")
+
+    print("[2] Tes jalur runner (dengan fallback curl)...")
+    try:
+        data = request_json(url)
+        print(f"    OK release: {data.get('tag_name', '(tanpa tag)')}")
+        return 0
+    except Exception as exc:
+        print(f"    GAGAL: {exc}")
+        return 1
+
+
+
 def main() -> int:
     args = parse_args()
+
+    if args.network_test:
+        return run_network_test()
+
     workdir = args.workdir.expanduser().resolve()
     workdir.mkdir(parents=True, exist_ok=True)
 
@@ -805,7 +1300,24 @@ def main() -> int:
     except ValueError:
         adblock_interval = 43200
 
-    optimize_outputs(workdir, generated_yaml_files, adblock_profile, adblock_interval)
+    youtube_mode = (
+        args.youtube_mode or env.get("YOUTUBE_ADBLOCK_MODE", "enhanced")
+    ).strip().lower()
+    if youtube_mode not in {"off", "safe", "enhanced"}:
+        youtube_mode = "enhanced"
+    youtube_filter_file = env.get(
+        "YOUTUBE_BROWSER_FILTER_FILE",
+        "youtube_browser_filters.txt",
+    ).strip() or "youtube_browser_filters.txt"
+
+    optimize_outputs(
+        workdir,
+        generated_yaml_files,
+        adblock_profile,
+        adblock_interval,
+        youtube_mode=youtube_mode,
+        youtube_filter_file=youtube_filter_file,
+    )
     validate_yaml(workdir, mihomo, generated_yaml_files)
 
     log("Selesai.")

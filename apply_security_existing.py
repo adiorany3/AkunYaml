@@ -33,6 +33,12 @@ def parse_args():
         default=43200,
         help="Interval update rule-provider dalam detik.",
     )
+    parser.add_argument(
+        "--youtube-mode",
+        choices=("off", "safe", "enhanced"),
+        default="enhanced",
+        help="Optimasi YouTube. Default: enhanced.",
+    )
     return parser.parse_args()
 
 
@@ -57,6 +63,8 @@ def main() -> int:
         existing,
         args.profile,
         max(3600, args.interval),
+        youtube_mode=args.youtube_mode,
+        youtube_filter_file="youtube_browser_filters.txt",
     )
 
     mihomo = workdir / ".local_bin" / (
@@ -81,7 +89,7 @@ def main() -> int:
         print("[ERROR] Ada YAML yang gagal validasi Mihomo.")
         return 1
 
-    print(f"[OK] Profil {args.profile} diterapkan dan semua YAML lolos validasi Mihomo.")
+    print(f"[OK] Profil {args.profile} + YouTube {args.youtube_mode} diterapkan dan semua YAML lolos validasi Mihomo.")
     return 0
 
 

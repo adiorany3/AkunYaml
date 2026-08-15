@@ -1,0 +1,38 @@
+! ConvertYAML Local Runner - YouTube Optimized
+! Mode: safe
+! Fokus: menyembunyikan slot iklan/promosi tanpa memblokir CDN video.
+! Kompatibel dengan uBlock Origin / AdGuard yang menerima sintaks filter ABP/uBO.
+!
+youtube.com##ytd-display-ad-renderer
+youtube.com##ytd-ad-slot-renderer
+youtube.com##ytd-promoted-video-renderer
+youtube.com##ytd-promoted-sparkles-web-renderer
+youtube.com##ytd-in-feed-ad-layout-renderer
+youtube.com##ytd-banner-promo-renderer
+youtube.com##ytd-companion-slot-renderer
+youtube.com##.ytp-ad-module
+youtube.com##.video-ads
+youtube.com##.ytp-ad-overlay-container
+youtube.com##.ytp-ad-player-overlay
+youtube.com##.ytp-ad-text-overlay
+youtube.com##.ytp-ad-image-overlay
+youtube.com##.ytp-ad-progress-list
+
+! ConvertYAML Local Runner - YouTube Optimized
+! Mode: enhanced
+! Lapisan tambahan untuk endpoint iklan/telemetri yang terpisah dari CDN video.
+! Tidak memblokir googlevideo.com agar playback utama tetap aman.
+!
+||googleads.g.doubleclick.net^$domain=youtube.com
+||static.doubleclick.net^$domain=youtube.com
+||pagead2.googlesyndication.com^$domain=youtube.com
+||tpc.googlesyndication.com^$domain=youtube.com
+||www.googleadservices.com^$domain=youtube.com
+||youtube.com/api/stats/ads^$xhr,domain=youtube.com
+||youtube.com/pagead/*$xhr,domain=youtube.com
+||youtube.com/ptracking^$xhr,domain=youtube.com
+
+! Catatan:
+! - Jangan tambahkan ||googlevideo.com^ karena domain tersebut juga membawa video utama.
+! - Filter YouTube berubah dari waktu ke waktu. Gunakan filter bawaan blocker juga.
+! - Jika playback bermasalah, ganti mode ke safe atau off.
