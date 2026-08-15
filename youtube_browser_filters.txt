@@ -7,6 +7,10 @@ youtube.com##ytd-promoted-sparkles-web-renderer
 youtube.com##ytd-in-feed-ad-layout-renderer
 youtube.com##ytd-banner-promo-renderer
 youtube.com##ytd-companion-slot-renderer
+youtube.com##ytd-action-companion-ad-renderer
+youtube.com##ytd-ad-engagement-panel-renderer
+youtube.com##ytd-player-legacy-desktop-watch-ads-renderer
+youtube.com##ytd-promoted-sparkles-text-search-renderer
 youtube.com##.ytp-ad-module
 youtube.com##.video-ads
 youtube.com##.ytp-ad-overlay-container
@@ -14,6 +18,16 @@ youtube.com##.ytp-ad-player-overlay
 youtube.com##.ytp-ad-text-overlay
 youtube.com##.ytp-ad-image-overlay
 youtube.com##.ytp-ad-progress-list
+
+! Additional endpoints separated from the main media CDN.
+||googleads.g.doubleclick.net^$domain=youtube.com
+||static.doubleclick.net^$domain=youtube.com
+||pagead2.googlesyndication.com^$domain=youtube.com
+||tpc.googlesyndication.com^$domain=youtube.com
+||www.googleadservices.com^$domain=youtube.com
+||youtube.com/api/stats/ads^$xhr,domain=youtube.com
+||youtube.com/pagead/*$xhr,domain=youtube.com
+||youtube.com/ptracking^$xhr,domain=youtube.com
 
 ! Keep the browser blocker's own filter lists enabled and updated.
 ! DNS/Mihomo alone cannot reliably distinguish every YouTube video ad from

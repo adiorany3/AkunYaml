@@ -47,7 +47,7 @@ from openclash_target import (
     validate_yaml_file,
 )
 
-APP_VERSION = "2.5-target"
+APP_VERSION = "2.6-youtube"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -129,6 +129,14 @@ DEFAULT_ENV = {
 }
 
 SECURITY_PROVIDERS = {
+    "ads_domain": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "mrs",
+        "path": "./rule_providers/ads_domain.mrs",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs",
+        "interval": 43200,
+    },
     "tracker-domain": {
         "type": "http",
         "behavior": "domain",
@@ -136,7 +144,7 @@ SECURITY_PROVIDERS = {
         "path": "./rule_providers/tracker.mrs",
         "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tracker.mrs",
         "interval": 43200,
-    }
+    },
 }
 
 YOUTUBE_PLAYBACK_DOMAINS = (
@@ -150,6 +158,21 @@ YOUTUBE_PLAYBACK_DOMAINS = (
     "ggpht.com",
 )
 
+# Enhanced mode blocks only ad/measurement endpoints that are separate from
+# YouTube's primary video CDN. Never add googlevideo.com here.
+YOUTUBE_NETWORK_AD_RULES = (
+    "DOMAIN,googleads.g.doubleclick.net,REJECT",
+    "DOMAIN,static.doubleclick.net,REJECT",
+    "DOMAIN,pagead2.googlesyndication.com,REJECT",
+    "DOMAIN,tpc.googlesyndication.com,REJECT",
+    "DOMAIN,www.googleadservices.com,REJECT",
+    "DOMAIN,imasdk.googleapis.com,REJECT",
+    "DOMAIN-SUFFIX,2mdn.net,REJECT",
+    "DOMAIN-SUFFIX,doubleclick.net,REJECT",
+    "DOMAIN-SUFFIX,googlesyndication.com,REJECT",
+    "DOMAIN-SUFFIX,googleadservices.com,REJECT",
+)
+
 YOUTUBE_BROWSER_FILTERS_SAFE = """\
 ! ConvertYAML Local Runner v2.0
 ! Cosmetic YouTube filters. Do not block googlevideo.com.
@@ -160,6 +183,10 @@ youtube.com##ytd-promoted-sparkles-web-renderer
 youtube.com##ytd-in-feed-ad-layout-renderer
 youtube.com##ytd-banner-promo-renderer
 youtube.com##ytd-companion-slot-renderer
+youtube.com##ytd-action-companion-ad-renderer
+youtube.com##ytd-ad-engagement-panel-renderer
+youtube.com##ytd-player-legacy-desktop-watch-ads-renderer
+youtube.com##ytd-promoted-sparkles-text-search-renderer
 youtube.com##.ytp-ad-module
 youtube.com##.video-ads
 youtube.com##.ytp-ad-overlay-container
@@ -1041,20 +1068,7 @@ def apply_reference_profile(
     return True
 
 def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_mode: str) -> bool:
-    """
-    OpenClash-safe security profile.
-
-    Generic DNS blocklist TXT providers from older runner versions are
-    intentionally removed. They are not native Mihomo rulesets, so one
-    incompatible domain expression can make the entire OpenClash config fail
-    with "invalid domain".
-
-    Safe default:
-      GEOSITE,category-ads-all,REJECT
-      RULE-SET,tracker-domain,REJECT
-
-    tracker-domain uses the official MetaCubeX MRS ruleset.
-    """
+    """Apply OpenClash-safe ad/tracker protection using native Mihomo MRS providers."""
     import yaml
 
     if not path.exists():
@@ -1070,25 +1084,20 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         config["rule-providers"] = providers
         changed = True
 
-    managed_names = {
-        "security-tif-mini",
-        "popup-ads",
-        "tracker-domain",
-        "hagezi-pro-mini",
-        "awavenue-ads",
-    }
-
-    # Always remove all security providers managed by old versions first.
-    for name in managed_names:
+    # Remove providers injected by older experimental builds. Keep/update only
+    # native MRS providers that the target Mihomo can parse directly.
+    for name in ("security-tif-mini", "popup-ads", "hagezi-pro-mini", "awavenue-ads"):
         if name in providers:
             providers.pop(name, None)
             changed = True
 
     if profile != "off":
-        provider = dict(SECURITY_PROVIDERS["tracker-domain"])
-        provider["interval"] = interval
-        providers["tracker-domain"] = provider
-        changed = True
+        for name in ("ads_domain", "tracker-domain"):
+            provider = dict(SECURITY_PROVIDERS[name])
+            provider["interval"] = interval
+            if providers.get(name) != provider:
+                providers[name] = provider
+                changed = True
 
     current_rules = [str(item) for item in config.get("rules", []) or []]
     managed_prefixes = (
@@ -1097,6 +1106,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         "RULE-SET,tracker-domain,",
         "RULE-SET,hagezi-pro-mini,",
         "RULE-SET,awavenue-ads,",
+        "RULE-SET,ads_domain,",
         "GEOSITE,category-ads-all,",
         "GEOSITE,tracker,",
     )
@@ -1104,10 +1114,9 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
 
     allow_rules = [f"DOMAIN-SUFFIX,{domain},DIRECT" for domain in load_allowlist(workdir)]
     security_rules = list(allow_rules)
-
     if profile != "off":
         security_rules.extend([
-            "GEOSITE,category-ads-all,REJECT",
+            "RULE-SET,ads_domain,REJECT",
             "RULE-SET,tracker-domain,REJECT",
         ])
 
@@ -1116,20 +1125,16 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         config["rules"] = new_rules
         changed = True
 
-    # Keep DNS-level ad blocking off by default. Network rules above remain
-    # active and are more portable across OpenClash installations.
+    # DNS-level blocking remains opt-in. Rule-based blocking is safer for
+    # YouTube because video and ad traffic may share delivery infrastructure.
     dns = config.get("dns")
     if isinstance(dns, dict):
         policy = dns.get("nameserver-policy")
         if isinstance(policy, dict):
-            for stale in (
-                "geosite:category-ads-all,tracker",
-                "geosite:tracker",
-            ):
+            for stale in ("geosite:category-ads-all,tracker", "geosite:tracker"):
                 if stale in policy:
                     policy.pop(stale, None)
                     changed = True
-
             if dns_mode == "off" or profile == "off":
                 if "geosite:category-ads-all" in policy:
                     policy.pop("geosite:category-ads-all", None)
@@ -1147,6 +1152,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     return changed
 
 def apply_youtube_guard(path: Path, mode: str) -> bool:
+    """Protect YouTube playback and add conservative ad endpoint rules."""
     import yaml
 
     if not path.exists():
@@ -1156,11 +1162,16 @@ def apply_youtube_guard(path: Path, mode: str) -> bool:
         return False
 
     current = [str(item) for item in config.get("rules", []) or []]
-    domains = set(YOUTUBE_PLAYBACK_DOMAINS)
+    playback_domains = set(YOUTUBE_PLAYBACK_DOMAINS)
+    managed_ad_rules = set(YOUTUBE_NETWORK_AD_RULES)
+
     cleaned = []
     for rule in current:
         parts = [part.strip() for part in rule.split(",")]
-        if len(parts) >= 3 and parts[0].upper() in {"DOMAIN", "DOMAIN-SUFFIX"} and parts[1].lower() in domains:
+        # Remove guard rules from previous runs so ordering stays deterministic.
+        if len(parts) >= 3 and parts[0].upper() in {"DOMAIN", "DOMAIN-SUFFIX"} and parts[1].lower() in playback_domains:
+            continue
+        if rule in managed_ad_rules:
             continue
         cleaned.append(rule)
 
@@ -1169,15 +1180,21 @@ def apply_youtube_guard(path: Path, mode: str) -> bool:
     else:
         route = _default_route(config)
         guard = [f"DOMAIN-SUFFIX,{domain},{route}" for domain in YOUTUBE_PLAYBACK_DOMAINS]
+        ad_rules = list(YOUTUBE_NETWORK_AD_RULES) if mode == "enhanced" else []
+
+        # Keep leading DIRECT exceptions (LAN and user allowlist) first.
         insert_at = 0
         for index, rule in enumerate(cleaned):
-            if rule.startswith((
-                "RULE-SET,tracker-domain,",
-                "GEOSITE,category-ads-all,",
-            )):
-                insert_at = index
-                break
-        new_rules = cleaned[:insert_at] + guard + cleaned[insert_at:]
+            parts = [part.strip() for part in rule.split(",")]
+            policy = parts[-1].upper() if parts else ""
+            if policy == "DIRECT" or (len(parts) >= 4 and parts[-2].upper() == "DIRECT"):
+                insert_at = index + 1
+                continue
+            break
+
+        # Endpoint-specific ad rules first. Then protect playback domains from
+        # broad ad/tracker lists. This avoids blocking googlevideo.com.
+        new_rules = cleaned[:insert_at] + ad_rules + guard + cleaned[insert_at:]
 
     if new_rules != current:
         config["rules"] = new_rules
@@ -1240,7 +1257,16 @@ def optimize_outputs(
                 sanitize_yaml(path)
                 log(f"Reference profile diterapkan ({reference_mode}): {filename}")
 
-    # Browser filters stay separate from the OpenClash YAML.
+        # Apply the same safe network protection to every output variant.
+        # This was previously defined but never called.
+        if apply_security(path, profile, workdir, interval, dns_mode):
+            log(f"Ad/tracker MRS diterapkan ({profile}): {filename}")
+        if apply_youtube_guard(path, youtube_mode):
+            log(f"YouTube guard diterapkan ({youtube_mode}): {filename}")
+        sanitize_yaml(path)
+
+    # Browser filters handle cosmetic/path-level YouTube ads that a router
+    # cannot reliably distinguish from normal video traffic by domain alone.
     write_youtube_filters(workdir, youtube_mode, youtube_filter_file)
 
 def validate_yaml(workdir: Path, mihomo: Path, files: Iterable[str]) -> bool:

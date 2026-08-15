@@ -98,6 +98,9 @@ ARGS=(
 echo "[RUN] Mencari, mengetes, dan memilih akun baru..."
 "${ARGS[@]}"
 
+echo "[ADBLOCK] Audit rule YouTube dan perlindungan playback..."
+"$PY" youtube_adblock_audit.py --mode enhanced
+
 echo "[VALIDATE] Memeriksa output final dengan exact core..."
 "$PY" validate_openclash_target.py --core "$CORE" \
   openclash_auto.yaml \
