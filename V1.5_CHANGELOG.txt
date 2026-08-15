@@ -1,0 +1,8 @@
+ConvertYAML Local Runner v1.5 OpenClash Fix
+- Replace GEOSITE,tracker with official MetaCubeX tracker.mrs rule-provider
+- Remove tracker from DNS geosite policy
+- Remove v1.3 YouTube nameserver-policy wildcard injection
+- Keep YouTube DOMAIN-SUFFIX routing guard
+- Remove deprecated global-client-fingerprint
+- Ensure HTTP rule-provider paths are relative/present
+- Preserve v1.4 TLS fallback

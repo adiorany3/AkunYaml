@@ -319,3 +319,51 @@ python local_runner.py
 Jika ingin memasang binary dengan Homebrew secara terpisah, runner juga dapat mendeteksinya dari `PATH`. Tidak perlu mematikan SSL verification.
 
 Jika jaringan menggunakan VPN, proxy HTTPS, antivirus TLS inspection, atau captive portal dan bahkan `curl` gagal, selesaikan masalah koneksi tersebut terlebih dahulu.
+
+
+## v1.5 OpenClash GeoData Fix
+
+Perbaikan ini dibuat untuk log OpenClash dengan pola:
+
+```text
+GEOSITE,tracker,REJECT ... list tracker not found in GeoSite.dat
+Parse config error: invalid domain
+```
+
+Perubahan:
+- `GEOSITE,tracker,REJECT` dihapus.
+- Tracker tetap diblokir melalui `tracker-domain.mrs` resmi MetaCubeX.
+- DNS blocking memakai `geosite:category-ads-all` saja.
+- Wildcard YouTube yang sebelumnya dimasukkan ke `dns.nameserver-policy` dihapus.
+- YouTube tetap dilindungi dari salah blokir melalui rule `DOMAIN-SUFFIX`.
+- `global-client-fingerprint` global dibersihkan.
+- Semua HTTP rule-provider dipastikan memiliki `path` relatif.
+
+### Memperbaiki YAML yang sudah ada
+
+Tidak perlu mencari akun ulang:
+
+```bash
+cd /Users/macbookpro/Downloads/ConvertYAML_Local_Runner
+python fix_openclash_v15.py
+```
+
+Lalu upload/test ulang:
+
+```text
+openclash_auto.yaml
+```
+
+Backup otomatis:
+
+```text
+openclash_auto.yaml.pre-v15-openclash.bak
+```
+
+### Generate ulang
+
+Untuk generasi berikutnya, gunakan `local_runner.py` v1.5:
+
+```bash
+python local_runner.py
+```

@@ -99,7 +99,7 @@ def log(message: str) -> None:
 
 def _github_headers(accept_json: bool = False) -> dict[str, str]:
     headers = {
-        "User-Agent": "ConvertYAML-Local-Runner/1.4",
+        "User-Agent": "ConvertYAML-Local-Runner/1.5",
     }
     if accept_json:
         headers["Accept"] = "application/vnd.github+json"
@@ -148,7 +148,7 @@ def _curl_common_args() -> list[str]:
         "--connect-timeout", "20",
         "--max-time", "180",
         "--http1.1",
-        "-A", "ConvertYAML-Local-Runner/1.4",
+        "-A", "ConvertYAML-Local-Runner/1.5",
     ]
     token = os.environ.get("GITHUB_TOKEN", "").strip()
     if token:
@@ -594,6 +594,14 @@ SECURITY_PROVIDERS = {
         "path": "./ruleset/awavenue-ads.txt",
         "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/AdvertisingLite/AdvertisingLite_Domain.txt",
     },
+    "tracker-domain": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "mrs",
+        "interval": 43200,
+        "path": "./ruleset/tracker.mrs",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tracker.mrs",
+    },
 }
 
 
@@ -770,6 +778,7 @@ def apply_youtube_network_guard(path: Path, mode: str) -> bool:
             "RULE-SET,security-tif-mini,",
             "RULE-SET,popup-ads,",
             "RULE-SET,awavenue-ads,",
+            "RULE-SET,tracker-domain,",
             "GEOSITE,category-ads-all,",
             "GEOSITE,tracker,",
         )):
@@ -781,24 +790,19 @@ def apply_youtube_network_guard(path: Path, mode: str) -> bool:
         config["rules"] = new_rules
         changed = True
 
-    # Prevent broad nameserver-policy ad/tracker matching from black-holing
-    # domains required for the player. Use the YAML's own normal resolver.
-    normal_resolvers = _normal_dns_resolvers(config)
+    # OpenClash compatibility:
+    # Do not inject YouTube wildcard domains into nameserver-policy.
+    # Older cores can be stricter when parsing domain policy keys. The routing
+    # rules above are sufficient to keep YouTube playback away from REJECT.
     dns = config.get("dns")
-    if isinstance(dns, dict) and normal_resolvers:
-        policy = dns.setdefault("nameserver-policy", {})
+    if isinstance(dns, dict):
+        policy = dns.get("nameserver-policy")
         if isinstance(policy, dict):
-            # Rebuild policy so explicit YouTube domains appear before broad
-            # geosite rules in serialized output.
-            protected = {}
             for domain in YOUTUBE_PLAYBACK_DOMAINS:
-                protected[f"+.{domain}"] = normal_resolvers
-            for key, value in policy.items():
-                if key not in protected:
-                    protected[key] = value
-            if protected != policy:
-                dns["nameserver-policy"] = protected
-                changed = True
+                for key in (domain, f"+.{domain}"):
+                    if key in policy:
+                        policy.pop(key, None)
+                        changed = True
 
     if changed:
         path.write_text(
@@ -922,7 +926,58 @@ def sanitize_generated_yaml(path: Path) -> bool:
     changed = False
     if "global-client-fingerprint" in config:
         config.pop("global-client-fingerprint", None)
+        log(f"{path.name}: hapus global-client-fingerprint yang sudah deprecated")
         changed = True
+
+    # Remove compatibility leftovers from older v1.2/v1.3 generated files.
+    dns = config.get("dns")
+    if isinstance(dns, dict):
+        ns_policy = dns.get("nameserver-policy")
+        if isinstance(ns_policy, dict):
+            old_combo = "geosite:category-ads-all,tracker"
+            if old_combo in ns_policy:
+                value = ns_policy.pop(old_combo)
+                ns_policy.setdefault("geosite:category-ads-all", value)
+                log(f"{path.name}: DNS geosite tracker lama dipisahkan dari category-ads-all")
+                changed = True
+
+            # v1.3 inserted these explicit wildcard policies. Remove them for
+            # maximum compatibility with OpenClash cores.
+            for domain in YOUTUBE_PLAYBACK_DOMAINS:
+                for key in (domain, f"+.{domain}"):
+                    if key in ns_policy:
+                        ns_policy.pop(key, None)
+                        changed = True
+
+    # Remove stale geosite:tracker rules. The security stage re-adds tracking
+    # protection through tracker-domain.mrs.
+    rules = config.get("rules")
+    if isinstance(rules, list):
+        fixed_rules = []
+        for rule in rules:
+            value = str(rule)
+            if value.startswith("GEOSITE,tracker,"):
+                log(f"{path.name}: hapus rule tidak kompatibel {value}")
+                changed = True
+                continue
+            fixed_rules.append(value)
+        config["rules"] = fixed_rules
+
+    providers = config.get("rule-providers")
+    if isinstance(providers, dict):
+        for provider_name, provider in providers.items():
+            if not isinstance(provider, dict):
+                continue
+            if str(provider.get("type") or "").lower() != "http":
+                continue
+            fmt = str(provider.get("format") or "yaml").lower()
+            ext = ".mrs" if fmt == "mrs" else ".txt" if fmt == "text" else ".yaml"
+            provider_path = str(provider.get("path") or "").strip()
+            if not provider_path or provider_path.startswith("/"):
+                safe_name = re.sub(r"[^A-Za-z0-9._-]+", "_", str(provider_name))
+                provider["path"] = f"./ruleset/{safe_name}{ext}"
+                log(f"{path.name}: set path provider {provider_name} -> {provider['path']}")
+                changed = True
 
     proxies = [
         p for p in config.get("proxies", [])
@@ -998,7 +1053,7 @@ def apply_adblock_security(path: Path, profile: str, workdir: Path, interval: in
         config["rule-providers"] = providers
         changed = True
 
-    selected = ["security-tif-mini", "popup-ads"]
+    selected = ["security-tif-mini", "popup-ads", "tracker-domain"]
     if profile == "strict":
         selected.append("awavenue-ads")
 
@@ -1018,7 +1073,14 @@ def apply_adblock_security(path: Path, profile: str, workdir: Path, interval: in
             policy = {}
             dns["nameserver-policy"] = policy
             changed = True
-        key = "geosite:category-ads-all,tracker"
+        # category-ads-all is present in the standard GeoSite.dat used by
+        # OpenClash. Tracker is handled by tracker-domain.mrs instead, because
+        # some OpenClash GeoSite.dat builds do not contain geosite:tracker.
+        old_key = "geosite:category-ads-all,tracker"
+        if old_key in policy:
+            policy.pop(old_key, None)
+            changed = True
+        key = "geosite:category-ads-all"
         if policy.get(key) != "rcode://success":
             policy[key] = "rcode://success"
             changed = True
@@ -1032,7 +1094,7 @@ def apply_adblock_security(path: Path, profile: str, workdir: Path, interval: in
         "RULE-SET,security-tif-mini,REJECT",
         "RULE-SET,popup-ads,REJECT",
         "GEOSITE,category-ads-all,REJECT",
-        "GEOSITE,tracker,REJECT",
+        "RULE-SET,tracker-domain,REJECT",
     ]
     if profile == "strict":
         security_rules.insert(len(allowlist_rules) + 2, "RULE-SET,awavenue-ads,REJECT")
@@ -1045,6 +1107,7 @@ def apply_adblock_security(path: Path, profile: str, workdir: Path, interval: in
         "RULE-SET,security-tif-mini,",
         "RULE-SET,popup-ads,",
         "RULE-SET,awavenue-ads,",
+        "RULE-SET,tracker-domain,",
         "GEOSITE,category-ads-all,",
         "GEOSITE,tracker,",
     )
