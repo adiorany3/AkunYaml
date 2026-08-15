@@ -1239,7 +1239,12 @@ def _build_lite_yaml_from_text(yaml_text: str) -> str:
     keep_group_names = ["GLOBAL", "PROXY", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK", "MANUAL"]
     proxies = [p for p in config.get("proxies", []) if isinstance(p, dict)]
     proxy_names = [str(p.get("name")) for p in proxies if p.get("name")]
-    refs_available = set(proxy_names) | set(groups.keys()) | {"DIRECT", "REJECT", "GLOBAL"}
+    # Hanya group yang benar-benar dipertahankan di profile Lite boleh menjadi target.
+    # Sebelumnya semua group dari profile full dimasukkan ke refs_available, sehingga
+    # GLOBAL/PROXY masih menunjuk ke SOCIAL-MEDIA, YOUTUBE, STREAMING, dll. setelah
+    # group-group tersebut dihapus dari openclash_lite.yaml.
+    kept_group_names = {name for name in keep_group_names if name in groups}
+    refs_available = set(proxy_names) | kept_group_names | {"DIRECT", "REJECT", "REJECT-DROP", "PASS", "COMPATIBLE"}
 
     lite_groups: list[dict[str, Any]] = []
     for name in keep_group_names:
@@ -1288,6 +1293,50 @@ def _build_lite_yaml_from_text(yaml_text: str) -> str:
         "MATCH,GLOBAL",
     ], target="MANUAL")
     config["log-level"] = "warning"
+    return yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=140)
+
+
+def _prune_missing_proxy_group_refs_yaml_text(yaml_text: str) -> str:
+    """Remove dangling proxy-group references after profile transformations.
+
+    This is intentionally run near final validation. It protects Lite and other
+    generated profiles when a transform removes a group but another group still
+    carries the old name in its `proxies` list.
+    """
+    config = yaml.safe_load(yaml_text) or {}
+    if not isinstance(config, dict):
+        return yaml_text
+
+    proxies = [p for p in config.get("proxies", []) if isinstance(p, dict)]
+    groups = [g for g in config.get("proxy-groups", []) if isinstance(g, dict)]
+    proxy_names = {str(p.get("name")).strip() for p in proxies if str(p.get("name", "")).strip()}
+    group_names = {str(g.get("name")).strip() for g in groups if str(g.get("name", "")).strip()}
+    builtins = {"DIRECT", "REJECT", "REJECT-DROP", "PASS", "COMPATIBLE"}
+    known = proxy_names | group_names | builtins
+
+    for group in groups:
+        refs = group.get("proxies")
+        if not isinstance(refs, list):
+            continue
+        cleaned = _dedupe_values([
+            str(ref).strip()
+            for ref in refs
+            if str(ref).strip() and str(ref).strip() in known
+        ])
+
+        gtype = str(group.get("type") or "").strip().lower()
+        if not cleaned and not group.get("use"):
+            # Keep the generated YAML structurally valid even if every old
+            # reference was removed. Health groups cannot be left empty.
+            if proxy_names:
+                cleaned = [sorted(proxy_names)[0]]
+            elif gtype == "select":
+                cleaned = ["DIRECT"]
+            else:
+                cleaned = ["REJECT"]
+        group["proxies"] = cleaned
+
+    config["proxy-groups"] = groups
     return yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=140)
 
 
@@ -1580,6 +1629,7 @@ def main() -> int:
     lite_yaml_text = _build_lite_yaml_from_text(yaml_text)
     lite_yaml_text = _enforce_no_selector_no_direct_yaml_text(lite_yaml_text)
     lite_yaml_text = _ensure_ping_check_group_yaml_text(lite_yaml_text)
+    lite_yaml_text = _prune_missing_proxy_group_refs_yaml_text(lite_yaml_text)
     node_quality_text = _build_node_quality_report(yaml_text, urltest_rows, nekobox_rows)
 
     fresh_pool_count = max(max_nodes, _env_int("FRESH_POOL_NODES", _env_int("NEKOBOX_POOL_NODES", max(25, max_nodes * 3))))
@@ -1602,6 +1652,12 @@ def main() -> int:
     akun_text = build_akun_txt(alive_nodes)
     manual_akun_text = build_akun_txt(manual_nodes)
     manual_skipped_text = "\n".join(manual_skipped) + ("\n" if manual_skipped else "")
+
+    # Final structural cleanup. This must happen after every group mutation.
+    yaml_text = _prune_missing_proxy_group_refs_yaml_text(yaml_text)
+    android_yaml_text = _prune_missing_proxy_group_refs_yaml_text(android_yaml_text)
+    lite_yaml_text = _prune_missing_proxy_group_refs_yaml_text(lite_yaml_text)
+    fresh_yaml_text = _prune_missing_proxy_group_refs_yaml_text(fresh_yaml_text)
 
     if _env_bool("FINAL_TARGET_VALIDATION", True):
         for _label, _text in (
