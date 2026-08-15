@@ -1,21 +1,27 @@
 name,type,network,original_server,bug_sni,mihomo_status,url_test_ms,nekobox_test_ms,nekobox_status,nekobox_ready
-AKUN-001-CLOUDFLARE-VLESS-WS-152MS,vless,ws,104.18.37.228,josni.hoyes.cloudns.ch,HTTP 204,1601,386,HTTP 204,yes
-AKUN-002-CLOUDFLARE-VLESS-WS-140MS,vless,ws,104.18.37.228,josni.hoyes.cloudns.ch,HTTP 204,338,424,HTTP 204,yes
-AKUN-003-CLOUDFLARE-VLESS-WS-145MS,vless,ws,104.18.37.228,josni.hoyes.cloudns.ch,HTTP 204,317,379,HTTP 204,yes
-AKUN-004-CLOUD-NETWORK-HK-VLESS-WS-174MS,vless,ws,38.180.189.21,cm1.jean01.dpdns.org,HTTP 204,322,401,HTTP 204,yes
-AKUN-005-CLOUDFLARE-VLESS-WS-146MS,vless,ws,104.18.37.228,josni.hoyes.cloudns.ch,HTTP 204,348,411,HTTP 204,yes
-AKUN-006-CLOUDFLARE-VLESS-WS-146MS,vless,ws,104.16.79.73,josni.hoyes.cloudns.ch,HTTP 204,347,374,HTTP 204,yes
-AKUN-007-CLOUDFLARE-VLESS-WS-141MS,vless,ws,104.16.79.73,josni.hoyes.cloudns.ch,HTTP 204,363,399,HTTP 204,yes
-AKUN-008-CLOUDFLARE-VLESS-WS-134MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,HTTP 204,352,399,HTTP 204,yes
-AKUN-009-NOTION-WEB-VLESS-WS-150MS,vless,ws,208.103.161.32,josni.hoyes.cloudns.ch,HTTP 204,350,1400,HTTP 204,yes
-AKUN-010-CLOUDFLARE-VLESS-WS-132MS,vless,ws,chat.openai.com,hhlfy.twiladaphne.ndjp.net,HTTP 204,336,429,HTTP 204,yes
-AKUN-011-CLOUDFLARE-VLESS-WS-154MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,HTTP 204,360,399,HTTP 204,yes
-AKUN-012-CLOUDFLARE-VLESS-WS-218MS,vless,ws,one-for-all.levikogjgfdd.ir,hhlfy.twiladaphne.ndjp.net,HTTP 204,347,425,HTTP 204,yes
-AKUN-013-CLOUDFLARE-VLESS-WS-183MS,vless,ws,104.18.37.228,josni.hoyes.cloudns.ch,HTTP 204,341,402,HTTP 204,yes
-AKUN-014-CLOUDFLARE-VLESS-WS-145MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,HTTP 204,360,409,HTTP 204,yes
-AKUN-015-CLOUDFLARE-VLESS-WS-187MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,HTTP 204,368,384,HTTP 204,yes
-AKUN-016-CLOUDFLARE-VLESS-WS-155MS,vless,ws,www.speedtest.net,luCky-LAB-AC6D.CAveyi8071.WoRkeRS.DEV,HTTP 204,364,405,HTTP 204,yes
-AKUN-017-CLOUDFLARE-VLESS-WS-171MS,vless,ws,104.18.37.228,hhlfy.twiladaphne.ndjp.net,HTTP 204,376,353,HTTP 204,yes
-AKUN-018-ZVC-VLESS-WS-125MS,vless,ws,170.114.46.6,support.zoom.us.yxls.eu.cc,HTTP 204,370,393,HTTP 204,yes
-AKUN-019-CLOUDFLARE-VLESS-WS-109MS,vless,ws,172.67.208.181,bIyapain.bIYApaiNbAcHe.WoRkers.DeV,HTTP 204,356,385,HTTP 204,yes
-AKUN-020-BIGCOMMERCE-VLESS-WS-174MS,vless,ws,63.141.128.22,misty-tooth-78ca.fobogah414-e7b.workers.dev,HTTP 204,361,386,HTTP 204,yes
+AKUN-001-CLOUDFLARE-VLESS-WS-114MS,vless,ws,104.18.34.124,hhlfy.twiladaphne.ndjp.net,HTTP 204,355,386,HTTP 204,yes
+AKUN-002-CLOUDFLARE-VLESS-WS-130MS,vless,ws,162.159.12.41,hhlfy.twiladaphne.ndjp.net,HTTP 204,383,402,HTTP 204,yes
+AKUN-003-CLOUDFLARE-VLESS-WS-125MS,vless,ws,1password.com,rAyAn-007.fOtOn.dPdNs.oRg,HTTP 204,310,412,HTTP 204,yes
+AKUN-004-CLOUDFLARE-VLESS-WS-160MS,vless,ws,mybb.com,rAyAn-007.nAsTaRaN.DpDnS.OrG,HTTP 204,337,392,HTTP 204,yes
+AKUN-005-CLOUDFLARE-VLESS-WS-155MS,vless,ws,www.speedtest.net,ez-5FAAFb.EsmAoi.wORKeRs.DEv,HTTP 204,353,388,HTTP 204,yes
+AKUN-006-CLOUDFLARE-VLESS-WS-128MS,vless,ws,05a5f9v5a6cm563ieoye7j-8tnpd.hsysyegegrygvvvdujhh.workers.dev,05a5f9v5a6cm563ieoye7j-8tnpd.hsysyegegrygvvvdujhh.workers.dev,HTTP 204,364,391,HTTP 204,yes
+AKUN-007-CLOUDFLARE-VLESS-WS-168MS,vless,ws,141.101.114.8,noisy-term-e657.airdrop2014aa5168.workers.dev,HTTP 204,368,410,HTTP 204,yes
+AKUN-008-CLOUDFLARE-VLESS-WS-184MS,vless,ws,172.67.137.154,tiny-leaf-f59f.my-lla-s-a-njo-s-e.workers.dev,HTTP 204,366,8179,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=8.0)",no
+AKUN-010-CLOUDFLARE-VLESS-WS-154MS,vless,ws,www.speedtest.net,BPb-E234adb8.xjGcjHVjkV.WorKERs.DEV,HTTP 204,352,429,HTTP 204,yes
+AKUN-011-CLOUDFLARE-VLESS-WS-151MS,vless,ws,www.speedtest.net,7X70yYVT7eQotx-iq9n3rjT1XN1JwKH9.ASDfSafdsAf.workErS.dev,HTTP 204,367,417,HTTP 204,yes
+AKUN-012-CLOUDFLARE-VLESS-WS-174MS,vless,ws,free.server11peekconfig.workers.dev,FRee.SeRver11pEEkcONFIg.WorkeRS.DEv,HTTP 204,366,397,HTTP 204,yes
+AKUN-013-NOTION-WEB-VLESS-WS-116MS,vless,ws,208.103.161.32,josni.hoyes.cloudns.ch,HTTP 204,353,393,HTTP 204,yes
+AKUN-014-CLOUDFLARE-VLESS-WS-181MS,vless,ws,104.18.37.228,josni.hoyes.cloudns.ch,HTTP 204,355,380,HTTP 204,yes
+AKUN-015-CLOUDFLARE-VLESS-WS-191MS,vless,ws,www.speedtest.net,LoG-SvC-27d1BE.CI-runNer-E5b8dd.workers.Dev,HTTP 204,404,413,HTTP 204,yes
+AKUN-016-CLOUDFLARE-VLESS-WS-162MS,vless,ws,www.speedtest.net,BPb-F23dDEdd.JCXkvlnDL.WOrkERS.deV,HTTP 204,326,270,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-017-UNKNOWN-VLESS-WS-204MS,vless,ws,63.141.128.22,misty-tooth-78ca.fobogah414-e7b.workers.dev,HTTP 204,373,391,HTTP 204,yes
+AKUN-018-DEV-VLESS-WS-136MS,vless,ws,7x70yyvt7eqotx-iq9n3rjt1xn1jwkh9.asdfsafdsaf.workers.dev,7x70yyvT7eQOtx-IQ9N3RJT1xn1jwkh9.asDFsAFdsAF.WORkerS.Dev,HTTP 204,350,423,HTTP 204,yes
+AKUN-019-UNKNOWN-VLESS-WS-177MS,vless,ws,188.114.97.6,josni.hoyes.cloudns.ch,HTTP 204,374,382,HTTP 204,yes
+AKUN-020-UNKNOWN-VLESS-WS-107MS,vless,ws,188.114.97.6,FrEe.SeRVEr14peekCoNfIG.WoRKErS.dEV,HTTP 204,369,270,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-021-CLOUDFLARE-VLESS-WS-176MS,vless,ws,104.18.37.228,hhlfy.twiladaphne.ndjp.net,HTTP 204,346,371,HTTP 204,yes
+AKUN-022-CLOUDFLARE-VLESS-WS-158MS,vless,ws,www.speedtest.net,BPb-C4AfEfbB.djFvbKjDfV.woRKeRs.dev,HTTP 204,363,415,HTTP 204,yes
+AKUN-023-CLOUDFLARE-VLESS-WS-178MS,vless,ws,www.speedtest.net,BPb-dF66c5a8.yfjhKjl.WorKERS.dEv,HTTP 204,378,398,HTTP 204,yes
+AKUN-024-UNKNOWN-VLESS-WS-197MS,vless,ws,188.114.97.3,FanCy-raIn-136E.tHisIsaLEe.wOrKeRS.deV,HTTP 204,354,271,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-025-UNKNOWN-VLESS-WS-152MS,vless,ws,188.114.97.6,SILENt-kiNG-5030.AipRoINteR.WorkErS.DEv,HTTP 204,349,272,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-026-UNKNOWN-VLESS-WS-189MS,vless,ws,172.67.135.69,v2ngfast-v2ngfast-v2ngfast-v2ngfast.jovego2551.workers.dev,HTTP 204,413,8167,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=8.0)",no
+AKUN-027-CCWU-VLESS-WS-200MS,vless,ws,vpn.renshengxuanze.ccwu.cc,vpn.renshengxuanze.ccwu.cc,HTTP 204,373,384,HTTP 204,yes
