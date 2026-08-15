@@ -112,6 +112,142 @@ def _node_name(node: Any) -> str:
     return str(node.clash.get("name") or node.name or "")
 
 
+
+def _mihomo_openclash_compatibility_filter(
+    nodes: list[Any],
+    *,
+    label: str,
+) -> tuple[list[Any], list[dict[str, Any]]]:
+    """Keep only nodes accepted by the current Mihomo proxy parser.
+
+    Each node is tested in an isolated minimal configuration. A malformed or
+    obsolete account therefore cannot prevent the rest of the batch from
+    starting in OpenClash/Mihomo.
+    """
+    rows: list[dict[str, Any]] = []
+    if not nodes:
+        return [], rows
+    if not _env_bool("REQUIRE_OPENCLASH_COMPAT", True):
+        for node in nodes:
+            rows.append({
+                "source": label,
+                "name": _node_name(node),
+                "type": str((getattr(node, "clash", {}) or {}).get("type") or getattr(node, "type", "")),
+                "network": node_network(node),
+                "compatible": "skipped",
+                "reason": "compatibility filter disabled",
+            })
+        return nodes, rows
+
+    core_path = os.getenv("MIHOMO_PATH", "./mihomo").strip() or "./mihomo"
+    if not Path(core_path).exists():
+        raise SystemExit(
+            f"Mihomo binary tidak ditemukan di {core_path}; "
+            "OpenClash compatibility filter wajib aktif."
+        )
+
+    timeout_s = max(2.0, _env_float("OPENCLASH_COMPAT_TIMEOUT_SEC", 6.0))
+    workers = max(1, min(16, _env_int("OPENCLASH_COMPAT_WORKERS", 6)))
+
+    def check_one(index: int, node: Any) -> tuple[int, Any, dict[str, Any]]:
+        clash = dict(getattr(node, "clash", {}) or {})
+        name = str(clash.get("name") or _node_name(node) or f"NODE-{index + 1}")
+        proto = str(clash.get("type") or getattr(node, "type", "")).lower()
+        network = node_network(node)
+        row = {
+            "source": label,
+            "name": name,
+            "type": proto,
+            "network": network,
+            "compatible": "no",
+            "reason": "",
+        }
+        if not clash:
+            row["reason"] = "empty proxy config"
+            return index, node, row
+
+        clash["name"] = name
+        tmp_obj = tempfile.TemporaryDirectory(prefix="openclash-compat-")
+        tmpdir = Path(tmp_obj.name)
+        config_path = tmpdir / "config.yaml"
+        config = {
+            "proxies": [clash],
+            "proxy-groups": [
+                {
+                    "name": "OPENCLASH-COMPAT",
+                    "type": "select",
+                    "proxies": [name],
+                }
+            ],
+            "rules": ["MATCH,OPENCLASH-COMPAT"],
+        }
+        try:
+            config_path.write_text(
+                yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=140),
+                encoding="utf-8",
+            )
+            proc = subprocess.run(
+                [core_path, "-t", "-d", str(tmpdir), "-f", str(config_path)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                timeout=timeout_s,
+                check=False,
+            )
+            output = (proc.stdout or "").strip().replace("\n", " | ")
+            if proc.returncode == 0:
+                row["compatible"] = "yes"
+                row["reason"] = "mihomo config test ok"
+            else:
+                row["reason"] = output[-500:] or f"mihomo exit {proc.returncode}"
+        except subprocess.TimeoutExpired:
+            row["reason"] = f"mihomo config test timeout > {timeout_s:.1f}s"
+        except Exception as exc:
+            row["reason"] = f"{type(exc).__name__}: {str(exc)[:300]}"
+        finally:
+            tmp_obj.cleanup()
+        return index, node, row
+
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    results: list[tuple[int, Any, dict[str, Any]]] = []
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        futures = [executor.submit(check_one, i, node) for i, node in enumerate(nodes)]
+        for future in as_completed(futures):
+            results.append(future.result())
+
+    results.sort(key=lambda item: item[0])
+    passed: list[Any] = []
+    for _index, node, row in results:
+        rows.append(row)
+        ok = row["compatible"] == "yes"
+        setattr(node, "openclash_compatible", ok)
+        setattr(node, "openclash_compat_status", row["reason"])
+        if ok:
+            passed.append(node)
+        else:
+            print(
+                f"[SKIP] OpenClash incompatible [{label}] "
+                f"{row['name']} type={row['type']} network={row['network']}: {row['reason']}"
+            )
+
+    print(f"[INFO] OpenClash compatibility [{label}]: {len(passed)}/{len(nodes)} passed")
+    return passed, rows
+
+
+def _build_openclash_compat_report_csv(rows: list[dict[str, Any]]) -> str:
+    import csv
+    import io
+
+    fields = ["source", "name", "type", "network", "compatible", "reason"]
+    buffer = io.StringIO()
+    writer = csv.DictWriter(buffer, fieldnames=fields)
+    writer.writeheader()
+    for row in rows:
+        writer.writerow({field: row.get(field, "") for field in fields})
+    return buffer.getvalue()
+
+
 def _mihomo_url_test_nodes(
     nodes: list[Any],
     *,
@@ -1297,6 +1433,7 @@ def main() -> int:
     output_manual_skipped = os.getenv("OUTPUT_MANUAL_SKIPPED", "manual_nodes_skipped.txt")
     output_urltest_report = os.getenv("OUTPUT_URLTEST_REPORT", "urltest_report.csv")
     output_nekobox_report = os.getenv("OUTPUT_NEKOBOX_REPORT", "nekobox_test_report.csv")
+    output_openclash_compat_report = os.getenv("OUTPUT_OPENCLASH_COMPAT_REPORT", "openclash_compat_report.csv")
     output_android_yaml = os.getenv("OUTPUT_ANDROID_YAML", "openclash_android.yaml")
     output_lite_yaml = os.getenv("OUTPUT_LITE_YAML", "openclash_lite.yaml")
     output_node_quality_report = os.getenv("OUTPUT_NODE_QUALITY_REPORT", "node_quality_report.md")
@@ -1321,6 +1458,7 @@ def main() -> int:
         # runs no longer contain original servers.
         Path(manual_file).write_text(manual_text, encoding="utf-8")
     manual_nodes, manual_skipped = parse_manual_nodes_unscreened(manual_text)
+    manual_nodes, manual_compat_rows = _mihomo_openclash_compatibility_filter(manual_nodes, label="manual")
 
     print("[INFO] Generate YAML OpenClash otomatis")
     print(f"[INFO] Target output otomatis: {max_nodes} node, minimal: {min_output_nodes} node")
@@ -1332,7 +1470,8 @@ def main() -> int:
     # Manual nodes must not be strict-filtered and must not reduce the automatic quota.
     # We first collect a small strict WS pool, then run a real URL test through Mihomo
     # and stop as soon as MAX_NODES alive nodes are found.
-    urltest_pool_nodes = max(max_nodes, _env_int("URLTEST_POOL_NODES", max(30, max_nodes * 3)))
+    compat_pool_multiplier = max(1, _env_int("OPENCLASH_COMPAT_POOL_MULTIPLIER", 4))
+    urltest_pool_nodes = max(max_nodes * compat_pool_multiplier, _env_int("URLTEST_POOL_NODES", max(30, max_nodes * 3)))
     print(f"[INFO] Pool kandidat sebelum URL test: {urltest_pool_nodes} node")
     auto_pool_nodes, all_nodes, fetch_logs, skipped = process_sources(
         links_text=links_text,
@@ -1358,6 +1497,7 @@ def main() -> int:
         test_batch_size=_env_int("TEST_BATCH_SIZE", 80),
     )
 
+    auto_pool_nodes, auto_compat_rows = _mihomo_openclash_compatibility_filter(auto_pool_nodes, label="automatic")
     nekobox_pool_nodes = max(max_nodes, _env_int("NEKOBOX_POOL_NODES", max(20, max_nodes * 3)))
     mihomo_pass_nodes, urltest_checked_count, urltest_reason, urltest_rows = _mihomo_url_test_nodes(
         auto_pool_nodes,
@@ -1442,6 +1582,7 @@ def main() -> int:
     Path(output_manual_skipped).write_text(manual_skipped_text, encoding="utf-8")
     Path(output_urltest_report).write_text(_build_urltest_report_csv(urltest_rows), encoding="utf-8")
     Path(output_nekobox_report).write_text(_build_nekobox_report_csv(nekobox_rows), encoding="utf-8")
+    Path(output_openclash_compat_report).write_text(_build_openclash_compat_report_csv(auto_compat_rows + manual_compat_rows), encoding="utf-8")
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
     summary = (

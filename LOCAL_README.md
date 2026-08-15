@@ -108,3 +108,45 @@ Jangan gunakan lagi:
 - `openclash_active_fix_v2.sh`
 
 Semua fungsi pentingnya sudah digabung ke v2.0.
+
+
+## v2.2 OpenClash Safe
+
+Jika OpenClash menunjukkan:
+
+```text
+Finished initial GeoSite rule category-ads-all => REJECT
+invalid domain
+```
+
+runner tidak lagi memasukkan HaGeZi TXT secara langsung sebagai Mihomo
+`rule-provider behavior: domain`.
+
+Default security sekarang hanya:
+
+```text
+GEOSITE,category-ads-all,REJECT
+RULE-SET,tracker-domain,REJECT
+```
+
+`tracker-domain` menggunakan `tracker.mrs` resmi MetaCubeX.
+
+Perbaiki YAML lama tanpa mencari akun ulang:
+
+```bash
+python fix_invalid_domain.py
+```
+
+Lalu unggah/subscription ulang `openclash_auto.yaml`.
+
+Cek router:
+
+```sh
+sh diagnose_invalid_domain.sh AkunBaru
+```
+
+Bagian `Legacy providers that must be gone` harus menampilkan:
+
+```text
+tidak ditemukan
+```

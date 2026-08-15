@@ -34,7 +34,7 @@ import zipfile
 from pathlib import Path
 from typing import Iterable
 
-APP_VERSION = "2.0"
+APP_VERSION = "2.2"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -57,7 +57,11 @@ DEFAULT_ENV = {
     "NEKOBOX_POOL_NODES": "30",
     "FRESH_POOL_NODES": "30",
     "REQUIRE_URL_TEST": "true",
-    "REQUIRE_NEKOBOX_TEST": "true",
+    "REQUIRE_NEKOBOX_TEST": "false",
+    "REQUIRE_OPENCLASH_COMPAT": "true",
+    "OPENCLASH_COMPAT_TIMEOUT_SEC": "6",
+    "OPENCLASH_COMPAT_WORKERS": "6",
+    "OPENCLASH_COMPAT_POOL_MULTIPLIER": "4",
     "URL_TEST_URL": "https://www.gstatic.com/generate_204",
     "NEKOBOX_TEST_URL": "https://www.gstatic.com/generate_204",
     "TEST_URL": "https://www.gstatic.com/generate_204",
@@ -93,27 +97,12 @@ DEFAULT_ENV = {
     "OUTPUT_MANUAL_AKUN": "akun_manual.txt",
     "OUTPUT_URLTEST_REPORT": "urltest_report.csv",
     "OUTPUT_NEKOBOX_REPORT": "nekobox_test_report.csv",
+    "OUTPUT_OPENCLASH_COMPAT_REPORT": "openclash_compat_report.csv",
     "OUTPUT_NODE_QUALITY_REPORT": "node_quality_report.md",
     "OUTPUT_STAMP": "last_update.txt",
 }
 
 SECURITY_PROVIDERS = {
-    "security-tif-mini": {
-        "type": "http",
-        "behavior": "domain",
-        "format": "text",
-        "interval": 43200,
-        "path": "./ruleset/security-tif-mini.txt",
-        "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.mini-onlydomains.txt",
-    },
-    "popup-ads": {
-        "type": "http",
-        "behavior": "domain",
-        "format": "text",
-        "interval": 43200,
-        "path": "./ruleset/popup-ads.txt",
-        "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/popupads-onlydomains.txt",
-    },
     "tracker-domain": {
         "type": "http",
         "behavior": "domain",
@@ -121,14 +110,6 @@ SECURITY_PROVIDERS = {
         "interval": 43200,
         "path": "./ruleset/tracker.mrs",
         "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tracker.mrs",
-    },
-    "hagezi-pro-mini": {
-        "type": "http",
-        "behavior": "domain",
-        "format": "text",
-        "interval": 43200,
-        "path": "./ruleset/hagezi-pro-mini.txt",
-        "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/pro.mini-onlydomains.txt",
     },
 }
 
@@ -484,6 +465,54 @@ def patch_core_compatibility(workdir: Path) -> None:
                 'refs_available = set(proxy_names) | set(groups.keys()) | {"DIRECT", "REJECT", "GLOBAL"}',
             )
 
+            compat_marker = "def _mihomo_openclash_compatibility_filter("
+            if compat_marker not in source:
+                compat_code = '\ndef _mihomo_openclash_compatibility_filter(\n    nodes: list[Any],\n    *,\n    label: str,\n) -> tuple[list[Any], list[dict[str, Any]]]:\n    """Keep only nodes accepted by the current Mihomo proxy parser.\n\n    Each node is tested in an isolated minimal configuration. A malformed or\n    obsolete account therefore cannot prevent the rest of the batch from\n    starting in OpenClash/Mihomo.\n    """\n    rows: list[dict[str, Any]] = []\n    if not nodes:\n        return [], rows\n    if not _env_bool("REQUIRE_OPENCLASH_COMPAT", True):\n        for node in nodes:\n            rows.append({\n                "source": label,\n                "name": _node_name(node),\n                "type": str((getattr(node, "clash", {}) or {}).get("type") or getattr(node, "type", "")),\n                "network": node_network(node),\n                "compatible": "skipped",\n                "reason": "compatibility filter disabled",\n            })\n        return nodes, rows\n\n    core_path = os.getenv("MIHOMO_PATH", "./mihomo").strip() or "./mihomo"\n    if not Path(core_path).exists():\n        raise SystemExit(\n            f"Mihomo binary tidak ditemukan di {core_path}; "\n            "OpenClash compatibility filter wajib aktif."\n        )\n\n    timeout_s = max(2.0, _env_float("OPENCLASH_COMPAT_TIMEOUT_SEC", 6.0))\n    workers = max(1, min(16, _env_int("OPENCLASH_COMPAT_WORKERS", 6)))\n\n    def check_one(index: int, node: Any) -> tuple[int, Any, dict[str, Any]]:\n        clash = dict(getattr(node, "clash", {}) or {})\n        name = str(clash.get("name") or _node_name(node) or f"NODE-{index + 1}")\n        proto = str(clash.get("type") or getattr(node, "type", "")).lower()\n        network = node_network(node)\n        row = {\n            "source": label,\n            "name": name,\n            "type": proto,\n            "network": network,\n            "compatible": "no",\n            "reason": "",\n        }\n        if not clash:\n            row["reason"] = "empty proxy config"\n            return index, node, row\n\n        clash["name"] = name\n        tmp_obj = tempfile.TemporaryDirectory(prefix="openclash-compat-")\n        tmpdir = Path(tmp_obj.name)\n        config_path = tmpdir / "config.yaml"\n        config = {\n            "proxies": [clash],\n            "proxy-groups": [\n                {\n                    "name": "OPENCLASH-COMPAT",\n                    "type": "select",\n                    "proxies": [name],\n                }\n            ],\n            "rules": ["MATCH,OPENCLASH-COMPAT"],\n        }\n        try:\n            config_path.write_text(\n                yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=140),\n                encoding="utf-8",\n            )\n            proc = subprocess.run(\n                [core_path, "-t", "-d", str(tmpdir), "-f", str(config_path)],\n                stdout=subprocess.PIPE,\n                stderr=subprocess.STDOUT,\n                text=True,\n                timeout=timeout_s,\n                check=False,\n            )\n            output = (proc.stdout or "").strip().replace("\\n", " | ")\n            if proc.returncode == 0:\n                row["compatible"] = "yes"\n                row["reason"] = "mihomo config test ok"\n            else:\n                row["reason"] = output[-500:] or f"mihomo exit {proc.returncode}"\n        except subprocess.TimeoutExpired:\n            row["reason"] = f"mihomo config test timeout > {timeout_s:.1f}s"\n        except Exception as exc:\n            row["reason"] = f"{type(exc).__name__}: {str(exc)[:300]}"\n        finally:\n            tmp_obj.cleanup()\n        return index, node, row\n\n    from concurrent.futures import ThreadPoolExecutor, as_completed\n\n    results: list[tuple[int, Any, dict[str, Any]]] = []\n    with ThreadPoolExecutor(max_workers=workers) as executor:\n        futures = [executor.submit(check_one, i, node) for i, node in enumerate(nodes)]\n        for future in as_completed(futures):\n            results.append(future.result())\n\n    results.sort(key=lambda item: item[0])\n    passed: list[Any] = []\n    for _index, node, row in results:\n        rows.append(row)\n        ok = row["compatible"] == "yes"\n        setattr(node, "openclash_compatible", ok)\n        setattr(node, "openclash_compat_status", row["reason"])\n        if ok:\n            passed.append(node)\n        else:\n            print(\n                f"[SKIP] OpenClash incompatible [{label}] "\n                f"{row[\'name\']} type={row[\'type\']} network={row[\'network\']}: {row[\'reason\']}"\n            )\n\n    print(f"[INFO] OpenClash compatibility [{label}]: {len(passed)}/{len(nodes)} passed")\n    return passed, rows\n\n\ndef _build_openclash_compat_report_csv(rows: list[dict[str, Any]]) -> str:\n    import csv\n    import io\n\n    fields = ["source", "name", "type", "network", "compatible", "reason"]\n    buffer = io.StringIO()\n    writer = csv.DictWriter(buffer, fieldnames=fields)\n    writer.writeheader()\n    for row in rows:\n        writer.writerow({field: row.get(field, "") for field in fields})\n    return buffer.getvalue()\n\n'
+                anchor = "def _mihomo_url_test_nodes("
+                if anchor in source:
+                    source = source.replace(anchor, compat_code + "\n" + anchor, 1)
+
+            report_anchor = '    output_nekobox_report = os.getenv("OUTPUT_NEKOBOX_REPORT", "nekobox_test_report.csv")\n'
+            if 'output_openclash_compat_report = os.getenv(' not in source and report_anchor in source:
+                source = source.replace(
+                    report_anchor,
+                    report_anchor + '    output_openclash_compat_report = os.getenv("OUTPUT_OPENCLASH_COMPAT_REPORT", "openclash_compat_report.csv")\n',
+                    1,
+                )
+
+            manual_anchor = '    manual_nodes, manual_skipped = parse_manual_nodes_unscreened(manual_text)\n'
+            if 'manual_compat_rows = _mihomo_openclash_compatibility_filter' not in source and manual_anchor in source:
+                source = source.replace(
+                    manual_anchor,
+                    manual_anchor + '    manual_nodes, manual_compat_rows = _mihomo_openclash_compatibility_filter(manual_nodes, label="manual")\n',
+                    1,
+                )
+
+            pool_anchor = '    urltest_pool_nodes = max(max_nodes, _env_int("URLTEST_POOL_NODES", max(30, max_nodes * 3)))\n'
+            if 'compat_pool_multiplier = max(1, _env_int("OPENCLASH_COMPAT_POOL_MULTIPLIER"' not in source and pool_anchor in source:
+                source = source.replace(
+                    pool_anchor,
+                    '    compat_pool_multiplier = max(1, _env_int("OPENCLASH_COMPAT_POOL_MULTIPLIER", 4))\n'
+                    + '    urltest_pool_nodes = max(max_nodes * compat_pool_multiplier, _env_int("URLTEST_POOL_NODES", max(30, max_nodes * 3)))\n',
+                    1,
+                )
+
+            auto_anchor = '    nekobox_pool_nodes = max(max_nodes, _env_int("NEKOBOX_POOL_NODES", max(20, max_nodes * 3)))\n'
+            if 'auto_compat_rows = _mihomo_openclash_compatibility_filter' not in source and auto_anchor in source:
+                source = source.replace(
+                    auto_anchor,
+                    '    auto_pool_nodes, auto_compat_rows = _mihomo_openclash_compatibility_filter(auto_pool_nodes, label="automatic")\n' + auto_anchor,
+                    1,
+                )
+
+            write_anchor = '    Path(output_nekobox_report).write_text(_build_nekobox_report_csv(nekobox_rows), encoding="utf-8")\n'
+            if '_build_openclash_compat_report_csv(auto_compat_rows + manual_compat_rows)' not in source and write_anchor in source:
+                source = source.replace(
+                    write_anchor,
+                    write_anchor + '    Path(output_openclash_compat_report).write_text(_build_openclash_compat_report_csv(auto_compat_rows + manual_compat_rows), encoding="utf-8")\n',
+                    1,
+                )
+
         if source != original:
             path.write_text(source, encoding="utf-8")
             changed.append(filename)
@@ -492,14 +521,15 @@ def patch_core_compatibility(workdir: Path) -> None:
         log("Core patched: " + ", ".join(changed))
 
 
-def build_environment(args, workdir: Path, mihomo: Path, singbox: Path) -> dict[str, str]:
+def build_environment(args, workdir: Path, mihomo: Path, singbox: Path | None) -> dict[str, str]:
     env = os.environ.copy()
     env.update(DEFAULT_ENV)
     env.update(load_config(args.config))
     env["MAX_NODES"] = str(args.max_nodes)
     env["MIN_OUTPUT_NODES"] = str(min(args.min_nodes, args.max_nodes))
     env["MIHOMO_PATH"] = str(mihomo.resolve())
-    env["SINGBOX_PATH"] = str(singbox.resolve())
+    if singbox is not None:
+        env["SINGBOX_PATH"] = str(singbox.resolve())
     if args.no_nekobox:
         env["REQUIRE_NEKOBOX_TEST"] = "false"
     if args.no_ws_only:
@@ -605,6 +635,20 @@ def sanitize_yaml(path: Path) -> bool:
                         policy.pop(key, None)
                         changed = True
 
+    legacy_security_providers = {
+        "security-tif-mini",
+        "popup-ads",
+        "hagezi-pro-mini",
+        "awavenue-ads",
+    }
+    providers0 = config.get("rule-providers")
+    if isinstance(providers0, dict):
+        for old_name in legacy_security_providers:
+            if old_name in providers0:
+                providers0.pop(old_name, None)
+                log(f"{path.name}: hapus provider TXT lama {old_name}")
+                changed = True
+
     providers = config.get("rule-providers")
     if providers is not None and not isinstance(providers, dict):
         config["rule-providers"] = {}
@@ -640,6 +684,14 @@ def sanitize_yaml(path: Path) -> bool:
         if not value:
             changed = True
             continue
+        if re.match(
+            r"(?i)^RULE-SET\s*,\s*(security-tif-mini|popup-ads|hagezi-pro-mini|awavenue-ads)\s*,",
+            value,
+        ):
+            log(f"{path.name}: hapus RULE-SET provider TXT lama")
+            changed = True
+            continue
+
         if re.match(r"(?i)^GEOSITE\s*,\s*tracker\s*,", value):
             log(f"{path.name}: hapus GEOSITE,tracker yang tidak portable")
             changed = True
@@ -714,6 +766,20 @@ def sanitize_yaml(path: Path) -> bool:
 
 
 def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_mode: str) -> bool:
+    """
+    OpenClash-safe security profile.
+
+    Generic DNS blocklist TXT providers from older runner versions are
+    intentionally removed. They are not native Mihomo rulesets, so one
+    incompatible domain expression can make the entire OpenClash config fail
+    with "invalid domain".
+
+    Safe default:
+      GEOSITE,category-ads-all,REJECT
+      RULE-SET,tracker-domain,REJECT
+
+    tracker-domain uses the official MetaCubeX MRS ruleset.
+    """
     import yaml
 
     if not path.exists():
@@ -729,24 +795,25 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         config["rule-providers"] = providers
         changed = True
 
-    managed_names = {"security-tif-mini", "popup-ads", "tracker-domain", "hagezi-pro-mini"}
-    if profile == "off":
-        selected: list[str] = []
-    else:
-        selected = ["security-tif-mini", "popup-ads", "tracker-domain"]
-        if profile == "strict":
-            selected.append("hagezi-pro-mini")
+    managed_names = {
+        "security-tif-mini",
+        "popup-ads",
+        "tracker-domain",
+        "hagezi-pro-mini",
+        "awavenue-ads",
+    }
 
-    for name in selected:
-        provider = dict(SECURITY_PROVIDERS[name])
-        provider["interval"] = interval
-        if providers.get(name) != provider:
-            providers[name] = provider
-            changed = True
-    for name in managed_names - set(selected):
+    # Always remove all security providers managed by old versions first.
+    for name in managed_names:
         if name in providers:
             providers.pop(name, None)
             changed = True
+
+    if profile != "off":
+        provider = dict(SECURITY_PROVIDERS["tracker-domain"])
+        provider["interval"] = interval
+        providers["tracker-domain"] = provider
+        changed = True
 
     current_rules = [str(item) for item in config.get("rules", []) or []]
     managed_prefixes = (
@@ -754,6 +821,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         "RULE-SET,popup-ads,",
         "RULE-SET,tracker-domain,",
         "RULE-SET,hagezi-pro-mini,",
+        "RULE-SET,awavenue-ads,",
         "GEOSITE,category-ads-all,",
         "GEOSITE,tracker,",
     )
@@ -761,28 +829,32 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
 
     allow_rules = [f"DOMAIN-SUFFIX,{domain},DIRECT" for domain in load_allowlist(workdir)]
     security_rules = list(allow_rules)
+
     if profile != "off":
-        security_rules += [
-            "RULE-SET,security-tif-mini,REJECT",
-            "RULE-SET,popup-ads,REJECT",
+        security_rules.extend([
             "GEOSITE,category-ads-all,REJECT",
             "RULE-SET,tracker-domain,REJECT",
-        ]
-        if profile == "strict":
-            security_rules.insert(len(allow_rules) + 2, "RULE-SET,hagezi-pro-mini,REJECT")
+        ])
 
     new_rules = security_rules + cleaned
     if new_rules != current_rules:
         config["rules"] = new_rules
         changed = True
 
+    # Keep DNS-level ad blocking off by default. Network rules above remain
+    # active and are more portable across OpenClash installations.
     dns = config.get("dns")
     if isinstance(dns, dict):
         policy = dns.get("nameserver-policy")
         if isinstance(policy, dict):
-            if "geosite:category-ads-all,tracker" in policy:
-                policy.pop("geosite:category-ads-all,tracker", None)
-                changed = True
+            for stale in (
+                "geosite:category-ads-all,tracker",
+                "geosite:tracker",
+            ):
+                if stale in policy:
+                    policy.pop(stale, None)
+                    changed = True
+
             if dns_mode == "off" or profile == "off":
                 if "geosite:category-ads-all" in policy:
                     policy.pop("geosite:category-ads-all", None)
@@ -798,7 +870,6 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
             encoding="utf-8",
         )
     return changed
-
 
 def apply_youtube_guard(path: Path, mode: str) -> bool:
     import yaml
@@ -826,9 +897,6 @@ def apply_youtube_guard(path: Path, mode: str) -> bool:
         insert_at = 0
         for index, rule in enumerate(cleaned):
             if rule.startswith((
-                "RULE-SET,security-tif-mini,",
-                "RULE-SET,popup-ads,",
-                "RULE-SET,hagezi-pro-mini,",
                 "RULE-SET,tracker-domain,",
                 "GEOSITE,category-ads-all,",
             )):
@@ -964,7 +1032,18 @@ def main() -> int:
         install_dependencies()
 
     mihomo = ensure_binary(workdir, MIHOMO_REPO, "mihomo", select_mihomo_asset, args.refresh_binaries)
-    singbox = ensure_binary(workdir, SINGBOX_REPO, "sing-box", select_singbox_asset, args.refresh_binaries)
+
+    preliminary = dict(DEFAULT_ENV)
+    preliminary.update(load_config(args.config))
+    if args.no_nekobox:
+        preliminary["REQUIRE_NEKOBOX_TEST"] = "false"
+    need_singbox = str(preliminary.get("REQUIRE_NEKOBOX_TEST", "false")).strip().lower() in {"1", "true", "yes", "y", "on", "aktif"}
+    singbox = None
+    if need_singbox:
+        singbox = ensure_binary(workdir, SINGBOX_REPO, "sing-box", select_singbox_asset, args.refresh_binaries)
+    else:
+        log("NekoBox/sing-box test nonaktif; download sing-box dilewati")
+
     env = build_environment(args, workdir, mihomo, singbox)
 
     log("Menjalankan generate_yaml.py")
@@ -1015,7 +1094,13 @@ def main() -> int:
         return 2
 
     print("\n[OK] Semua output yang tersedia lolos validasi Mihomo.")
-    for name in (*output_files, env.get("OUTPUT_AKUN", "akun.txt"), env.get("OUTPUT_CSV", "openclash_auto_report.csv"), youtube_filter_file):
+    for name in (
+        *output_files,
+        env.get("OUTPUT_AKUN", "akun.txt"),
+        env.get("OUTPUT_CSV", "openclash_auto_report.csv"),
+        env.get("OUTPUT_OPENCLASH_COMPAT_REPORT", "openclash_compat_report.csv"),
+        youtube_filter_file,
+    ):
         output_path = workdir / name
         if output_path.exists():
             print(f"  - {output_path}")
