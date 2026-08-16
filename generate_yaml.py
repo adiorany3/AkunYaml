@@ -340,6 +340,7 @@ def _mihomo_url_test_nodes(
             "listen": "127.0.0.1:0",
             "enhanced-mode": "fake-ip",
             "fake-ip-range": "198.18.0.1/16",
+            "cache-algorithm": "arc",
             "default-nameserver": ["1.1.1.1", "8.8.8.8"],
             "nameserver": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
         },
@@ -1161,9 +1162,9 @@ def _enforce_no_selector_no_direct_yaml_text(yaml_text: str) -> str:
         if str(group.get("type") or "").lower() == "select":
             group["type"] = "fallback"
             group.setdefault("url", "https://www.gstatic.com/generate_204")
-            group.setdefault("interval", 15 if name == "GLOBAL" else 30)
-            group.setdefault("lazy", False)
-            group.setdefault("timeout", 3000)
+            group.setdefault("interval", 30 if name == "GLOBAL" else 60)
+            group.setdefault("lazy", name != "GLOBAL")
+            group.setdefault("timeout", 2500)
             group.setdefault("expected-status", "200/204/301/302")
             group.setdefault("max-failed-times", 2)
         if isinstance(group.get("proxies"), list):
@@ -1207,10 +1208,10 @@ def _ensure_ping_check_group_yaml_text(yaml_text: str) -> str:
         "type": "url-test",
         "proxies": proxy_names,
         "url": os.getenv("PING_CHECK_URL", os.getenv("TEST_URL", "https://www.gstatic.com/generate_204")),
-        "interval": max(45, _env_int("PING_CHECK_INTERVAL", 60)),
+        "interval": max(120, _env_int("PING_CHECK_INTERVAL", 180)),
         "tolerance": _env_int("PING_CHECK_TOLERANCE", 100),
         "lazy": False,
-        "timeout": _env_int("PING_CHECK_TIMEOUT_MS", 5000),
+        "timeout": _env_int("PING_CHECK_TIMEOUT_MS", 4000),
         "expected-status": "200/204/301/302",
         "max-failed-times": 2,
     }

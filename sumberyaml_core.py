@@ -92,9 +92,9 @@ def _enforce_no_selector_no_direct_config(config: dict[str, Any]) -> dict[str, A
         if gtype == "select":
             group["type"] = "fallback"
             group.setdefault("url", "https://www.gstatic.com/generate_204")
-            group.setdefault("interval", 15 if name == "GLOBAL" else 30)
-            group.setdefault("lazy", False)
-            group.setdefault("timeout", 3000)
+            group.setdefault("interval", 30 if name == "GLOBAL" else 60)
+            group.setdefault("lazy", name != "GLOBAL")
+            group.setdefault("timeout", 2500)
             group.setdefault("expected-status", "200/204/301/302")
             group.setdefault("max-failed-times", 2)
         if isinstance(group.get("proxies"), list):
@@ -115,14 +115,14 @@ def _mihomo_keep_alive_config() -> dict[str, Any]:
     """Global TCP keep-alive tuning to reduce idle/hibernating proxy sessions."""
     return {
         "keep-alive-interval": _env_int_range("KEEP_ALIVE_INTERVAL", 15, 5, 120),
-        "keep-alive-idle": _env_int_range("KEEP_ALIVE_IDLE", 600, 15, 3600),
+        "keep-alive-idle": _env_int_range("KEEP_ALIVE_IDLE", 30, 15, 3600),
         "disable-keep-alive": False,
     }
 
 
 def _active_health_interval(interval: int) -> int:
     """Use a shorter active health-check interval without allowing extreme values."""
-    return _env_int_range("WAKEUP_INTERVAL", max(20, min(int(interval), 30)), 15, 300)
+    return _env_int_range("WAKEUP_INTERVAL", max(45, min(int(interval), 60)), 20, 300)
 
 
 def _delay_from_proxy_name(name: str) -> int:
@@ -171,7 +171,7 @@ def _select_warmup_names(names: list[str]) -> list[str]:
     ranked = _rank_names_by_delay(names)
     if not ranked:
         return []
-    limit = _env_int_range("WARMUP_NODE_LIMIT", 7, 3, 12)
+    limit = _env_int_range("WARMUP_NODE_LIMIT", 5, 3, 12)
     max_delay = _env_int_range("WARMUP_MAX_DELAY_MS", 180, 80, 1000)
     preferred = [name for name in ranked if _delay_from_proxy_name(name) <= max_delay]
     pool = preferred or ranked
@@ -1830,10 +1830,10 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
     streaming_or_direct = streaming_names or warmup_or_direct
     fallback_or_direct = fallback_names or direct_or_names
     active_interval = _active_health_interval(interval)
-    warmup_interval = _env_int_range("WARMUP_INTERVAL", 15, 10, 120)
-    cf_interval = _env_int_range("CF_WARMUP_INTERVAL", 20, 10, 120)
-    fallback_interval = max(active_interval, _env_int_range("FALLBACK_INTERVAL", 60, 30, 600))
-    balance_interval = max(fallback_interval, _env_int_range("BALANCE_INTERVAL", 90, 60, 600))
+    warmup_interval = _env_int_range("WARMUP_INTERVAL", 20, 10, 120)
+    cf_interval = _env_int_range("CF_WARMUP_INTERVAL", 30, 10, 120)
+    fallback_interval = max(active_interval, _env_int_range("FALLBACK_INTERVAL", 90, 30, 600))
+    balance_interval = max(fallback_interval, _env_int_range("BALANCE_INTERVAL", 180, 60, 600))
     base_timeout = int(health_timeout)
     warmup_timeout = _env_int_range("WARMUP_TIMEOUT_MS", min(3000, base_timeout), 1000, 10000)
     cf_timeout = _env_int_range("CF_WARMUP_TIMEOUT_MS", min(3000, base_timeout), 1000, 10000)
@@ -1841,12 +1841,12 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
     cf_test_url = os.getenv("CF_TEST_URL", "https://cp.cloudflare.com").strip() or "https://cp.cloudflare.com"
     streaming_test_url = os.getenv("STREAMING_TEST_URL", cf_test_url).strip() or cf_test_url
     ping_check_url = os.getenv("PING_CHECK_URL", test_url).strip() or test_url
-    ping_check_interval = _env_int_range("PING_CHECK_INTERVAL", 60, 45, 600)
+    ping_check_interval = _env_int_range("PING_CHECK_INTERVAL", 180, 45, 600)
     ping_check_timeout = _env_int_range("PING_CHECK_TIMEOUT_MS", max(5000, base_timeout), 2000, 15000)
 
     def selector(defaults: list[str] | None = None) -> list[str]:
         defaults = defaults or ["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]
-        return defaults + names
+        return defaults
 
     domain_provider = {
         "type": "http",
@@ -1988,12 +1988,12 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "name": "GLOBAL",
             "type": "select",
             # WARM-UP dibuat paling depan supaya fresh import langsung memakai pool kecil yang sudah dipanaskan.
-            "proxies": ["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK", "SOCIAL-MEDIA", "YOUTUBE", "EDUKASI", "STREAMING-FAST", "STREAMING", "CLEAN", "LOAD-BALANCE"] + names,
+            "proxies": ["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"],
         },
         {
             "name": "PROXY",
             "type": "select",
-            "proxies": ["GLOBAL", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "SOCIAL-MEDIA", "YOUTUBE", "EDUKASI", "STREAMING-FAST", "STREAMING", "CLEAN", "FALLBACK", "LOAD-BALANCE"] + names,
+            "proxies": ["GLOBAL", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"],
         },
         {
             "name": "SOCIAL-MEDIA",
@@ -2283,9 +2283,12 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "enhanced-mode": "fake-ip",
             "fake-ip-range": "198.18.0.1/16",
             "fake-ip-filter": _dns_fake_ip_filter(),
+            "cache-algorithm": "arc",
             "default-nameserver": ["1.1.1.1", "8.8.8.8"],
             "nameserver": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+            "proxy-server-nameserver": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
             "fallback": ["tls://1.1.1.1", "tls://8.8.8.8"],
+            "fallback-lazy-query": True,
             "fallback-filter": {"geoip": True, "geoip-code": "ID", "ipcidr": ["240.0.0.0/4"]},
         },
         "proxies": [node.clash for node in nodes],
@@ -2325,9 +2328,9 @@ def build_openclash_android_yaml(
     streaming_or_direct = streaming_names or warmup_or_direct
     fallback_or_direct = fallback_names or direct_or_names
     active_interval = _active_health_interval(interval)
-    warmup_interval = _env_int_range("WARMUP_INTERVAL", 15, 10, 120)
-    cf_interval = _env_int_range("CF_WARMUP_INTERVAL", 20, 10, 120)
-    fallback_interval = max(active_interval, _env_int_range("FALLBACK_INTERVAL", 60, 30, 600))
+    warmup_interval = _env_int_range("WARMUP_INTERVAL", 20, 10, 120)
+    cf_interval = _env_int_range("CF_WARMUP_INTERVAL", 30, 10, 120)
+    fallback_interval = max(active_interval, _env_int_range("FALLBACK_INTERVAL", 90, 30, 600))
     base_timeout = int(health_timeout)
     warmup_timeout = _env_int_range("WARMUP_TIMEOUT_MS", min(3000, base_timeout), 1000, 10000)
     cf_timeout = _env_int_range("CF_WARMUP_TIMEOUT_MS", min(3000, base_timeout), 1000, 10000)
@@ -2335,7 +2338,7 @@ def build_openclash_android_yaml(
     cf_test_url = os.getenv("CF_TEST_URL", "https://cp.cloudflare.com").strip() or "https://cp.cloudflare.com"
     streaming_test_url = os.getenv("STREAMING_TEST_URL", cf_test_url).strip() or cf_test_url
     ping_check_url = os.getenv("PING_CHECK_URL", test_url).strip() or test_url
-    ping_check_interval = _env_int_range("PING_CHECK_INTERVAL", 60, 45, 600)
+    ping_check_interval = _env_int_range("PING_CHECK_INTERVAL", 180, 45, 600)
     ping_check_timeout = _env_int_range("PING_CHECK_TIMEOUT_MS", max(5000, base_timeout), 2000, 15000)
 
     proxy_groups: list[dict[str, Any]] = [

@@ -1,4 +1,3 @@
-# Pinned routing/DNS reference for OpenClash v0.47.156 with balanced security hardening.
 profile:
   store-selected: true
   store-fake-ip: true
@@ -61,6 +60,11 @@ dns:
     geoip-code: ID
     ipcidr:
     - 240.0.0.0/4
+  cache-algorithm: arc
+  fallback-lazy-query: true
+  proxy-server-nameserver:
+  - https://1.1.1.1/dns-query
+  - https://dns.google/dns-query
 rule-providers:
   ads_domain:
     type: http
@@ -87,11 +91,11 @@ rules:
 - DOMAIN-SUFFIX,local,DIRECT
 - DOMAIN-SUFFIX,lan,DIRECT
 - DOMAIN-SUFFIX,localhost,DIRECT
-- IP-CIDR,127.0.0.0/8,DIRECT
-- IP-CIDR,10.0.0.0/8,DIRECT
-- IP-CIDR,172.16.0.0/12,DIRECT
-- IP-CIDR,192.168.0.0/16,DIRECT
-- IP-CIDR,169.254.0.0/16,DIRECT
+- IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+- IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
+- IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+- IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+- IP-CIDR,169.254.0.0/16,DIRECT,no-resolve
 - GEOIP,LAN,DIRECT,no-resolve
 - RULE-SET,threat-tif-mini,REJECT
 - DOMAIN-SUFFIX,id,MANUAL
@@ -386,3 +390,9 @@ rules:
 - DOMAIN-SUFFIX,t.me,SOCIAL-MEDIA
 - DOMAIN-SUFFIX,telegram.org,SOCIAL-MEDIA
 - MATCH,GLOBAL
+unified-delay: true
+tcp-concurrent: true
+find-process-mode: 'off'
+disable-keep-alive: false
+keep-alive-interval: 15
+keep-alive-idle: 30

@@ -161,11 +161,11 @@ LAN_DIRECT_RULES = (
     "DOMAIN-SUFFIX,local,DIRECT",
     "DOMAIN-SUFFIX,lan,DIRECT",
     "DOMAIN-SUFFIX,localhost,DIRECT",
-    "IP-CIDR,127.0.0.0/8,DIRECT",
-    "IP-CIDR,10.0.0.0/8,DIRECT",
-    "IP-CIDR,172.16.0.0/12,DIRECT",
-    "IP-CIDR,192.168.0.0/16,DIRECT",
-    "IP-CIDR,169.254.0.0/16,DIRECT",
+    "IP-CIDR,127.0.0.0/8,DIRECT,no-resolve",
+    "IP-CIDR,10.0.0.0/8,DIRECT,no-resolve",
+    "IP-CIDR,172.16.0.0/12,DIRECT,no-resolve",
+    "IP-CIDR,192.168.0.0/16,DIRECT,no-resolve",
+    "IP-CIDR,169.254.0.0/16,DIRECT,no-resolve",
     "GEOIP,LAN,DIRECT,no-resolve",
 )
 
@@ -1143,6 +1143,131 @@ def apply_network_hardening(path: Path) -> bool:
         )
     return changed
 
+def apply_responsiveness(path: Path) -> bool:
+    """Tune Mihomo/OpenClash for lower router overhead and faster steady-state response."""
+    import yaml
+
+    if not path.exists():
+        return False
+    config = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    if not isinstance(config, dict):
+        return False
+
+    before = yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=160)
+
+    config["unified-delay"] = True
+    config["tcp-concurrent"] = True
+    config["find-process-mode"] = "off"
+    config["disable-keep-alive"] = False
+    config["keep-alive-interval"] = 15
+    config["keep-alive-idle"] = 30
+
+    dns = config.get("dns")
+    if isinstance(dns, dict) and dns.get("enable") is not False:
+        dns["cache-algorithm"] = "arc"
+        if dns.get("fallback"):
+            dns["fallback-lazy-query"] = True
+        if dns.get("nameserver") and not dns.get("proxy-server-nameserver"):
+            dns["proxy-server-nameserver"] = [
+                "https://1.1.1.1/dns-query",
+                "https://dns.google/dns-query",
+            ]
+
+    # IP rules do not need a DNS lookup to decide private/LAN destinations.
+    private_prefixes = (
+        "IP-CIDR,127.0.0.0/8,DIRECT",
+        "IP-CIDR,10.0.0.0/8,DIRECT",
+        "IP-CIDR,172.16.0.0/12,DIRECT",
+        "IP-CIDR,192.168.0.0/16,DIRECT",
+        "IP-CIDR,169.254.0.0/16,DIRECT",
+    )
+    tuned_rules = []
+    for item in config.get("rules", []) or []:
+        rule = str(item)
+        if rule in private_prefixes:
+            rule += ",no-resolve"
+        tuned_rules.append(rule)
+    if tuned_rules:
+        config["rules"] = tuned_rules
+
+    groups = config.get("proxy-groups")
+    if isinstance(groups, list):
+        group_names = {str(g.get("name")) for g in groups if isinstance(g, dict) and g.get("name")}
+        compact = {
+            "GLOBAL": ["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"],
+            "PROXY": ["GLOBAL", "WARM-UP", "AUTO-FAST", "FALLBACK"],
+            "SOCIAL-MEDIA": ["WARM-UP", "AUTO-FAST", "FALLBACK"],
+            "YOUTUBE": ["WARM-UP-CF", "STREAMING-FAST", "AUTO-FAST", "FALLBACK"],
+            "EDUKASI": ["WARM-UP", "AUTO-FAST", "FALLBACK"],
+            "STREAMING": ["STREAMING-FAST", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"],
+            "CLEAN": ["WARM-UP", "AUTO-FAST", "FALLBACK"],
+        }
+        for g in groups:
+            if not isinstance(g, dict):
+                continue
+            name = str(g.get("name") or "")
+            gtype = str(g.get("type") or "").lower()
+            if name in compact:
+                refs = [x for x in compact[name] if x in group_names and x != name]
+                if refs:
+                    g["proxies"] = refs
+                if gtype == "fallback":
+                    g["interval"] = 30 if name == "GLOBAL" else 60
+                    g["lazy"] = name != "GLOBAL"
+                    g["timeout"] = 2500
+                    g["max-failed-times"] = 2
+            elif name == "WARM-UP":
+                if isinstance(g.get("proxies"), list):
+                    g["proxies"] = g["proxies"][:5]
+                g["interval"] = 20
+                g["lazy"] = False
+                g["timeout"] = min(int(g.get("timeout") or 2500), 2500)
+                g["tolerance"] = max(int(g.get("tolerance") or 0), 40)
+            elif name == "WARM-UP-CF":
+                if isinstance(g.get("proxies"), list):
+                    g["proxies"] = g["proxies"][:4]
+                g["interval"] = 30
+                g["lazy"] = False
+                g["timeout"] = min(int(g.get("timeout") or 2500), 2500)
+                g["tolerance"] = max(int(g.get("tolerance") or 0), 40)
+            elif name == "AUTO-FAST":
+                if isinstance(g.get("proxies"), list):
+                    g["proxies"] = g["proxies"][:8]
+                g["interval"] = 45
+                g["lazy"] = False
+                g["timeout"] = min(int(g.get("timeout") or 3000), 3000)
+                g["tolerance"] = max(int(g.get("tolerance") or 0), 50)
+            elif name == "STREAMING-FAST":
+                if isinstance(g.get("proxies"), list):
+                    g["proxies"] = g["proxies"][:6]
+                g["interval"] = 45
+                g["lazy"] = True
+                g["timeout"] = min(int(g.get("timeout") or 3000), 3000)
+                g["tolerance"] = max(int(g.get("tolerance") or 0), 50)
+            elif name == "PING-CHECK":
+                g["interval"] = 180
+                g["lazy"] = False
+                g["timeout"] = min(int(g.get("timeout") or 4000), 4000)
+            elif name == "FALLBACK":
+                g["interval"] = 90
+                g["lazy"] = True
+                g["timeout"] = min(int(g.get("timeout") or 4500), 4500)
+            elif name == "LOAD-BALANCE":
+                if isinstance(g.get("proxies"), list):
+                    g["proxies"] = g["proxies"][:5]
+                g["interval"] = 180
+                g["lazy"] = True
+            elif name == "MANUAL" and gtype in {"fallback", "url-test"}:
+                g["interval"] = 90
+                g["lazy"] = True
+                g["timeout"] = min(int(g.get("timeout") or 3500), 3500)
+
+    after = yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=160)
+    if after != before:
+        path.write_text(after, encoding="utf-8")
+        return True
+    return False
+
 def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_mode: str) -> bool:
     """Apply OpenClash-safe ad, tracker, and malware protection."""
     import yaml
@@ -1366,6 +1491,8 @@ def optimize_outputs(
         # Apply the same safe network protection to every output variant.
         if apply_network_hardening(path):
             log(f"Network hardening diterapkan: {filename}")
+        if apply_responsiveness(path):
+            log(f"Responsiveness tuning diterapkan: {filename}")
         if apply_security(path, profile, workdir, interval, dns_mode):
             log(f"Ad/tracker MRS diterapkan ({profile}): {filename}")
         if apply_youtube_guard(path, youtube_mode):
