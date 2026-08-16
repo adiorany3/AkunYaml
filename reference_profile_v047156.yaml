@@ -68,11 +68,11 @@ dns:
 rule-providers:
   ads_domain:
     type: http
-    interval: 86400
     behavior: domain
     format: mrs
     path: ./rule_providers/ads_domain.mrs
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs
+    interval: 43200
   youtube_domain:
     type: http
     interval: 86400
@@ -87,6 +87,13 @@ rule-providers:
     path: ./rule_providers/threat-tif-mini.txt
     url: https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.mini-onlydomains.txt
     interval: 43200
+  tracker-domain:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/tracker.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tracker.mrs
+    interval: 43200
 rules:
 - DOMAIN-SUFFIX,local,DIRECT
 - DOMAIN-SUFFIX,lan,DIRECT
@@ -97,7 +104,30 @@ rules:
 - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
 - IP-CIDR,169.254.0.0/16,DIRECT,no-resolve
 - GEOIP,LAN,DIRECT,no-resolve
+- DOMAIN,static.doubleclick.net,DIRECT
+- DOMAIN,jnn-pa.googleapis.com,DIRECT
+- DOMAIN,googleads.g.doubleclick.net,REJECT
+- DOMAIN,ad.doubleclick.net,REJECT
+- DOMAIN,pubads.g.doubleclick.net,REJECT
+- DOMAIN,securepubads.g.doubleclick.net,REJECT
+- DOMAIN,pagead2.googlesyndication.com,REJECT
+- DOMAIN,tpc.googlesyndication.com,REJECT
+- DOMAIN,www.googleadservices.com,REJECT
+- DOMAIN,imasdk.googleapis.com,REJECT
+- DOMAIN-SUFFIX,2mdn.net,REJECT
+- DOMAIN-SUFFIX,googlesyndication.com,REJECT
+- DOMAIN-SUFFIX,googleadservices.com,REJECT
+- DOMAIN-SUFFIX,youtube.com,DIRECT
+- DOMAIN-SUFFIX,youtu.be,DIRECT
+- DOMAIN-SUFFIX,youtube-nocookie.com,DIRECT
+- DOMAIN-SUFFIX,googlevideo.com,DIRECT
+- DOMAIN-SUFFIX,ytimg.com,DIRECT
+- DOMAIN-SUFFIX,youtubei.googleapis.com,DIRECT
+- DOMAIN-SUFFIX,youtube.googleapis.com,DIRECT
+- DOMAIN-SUFFIX,ggpht.com,DIRECT
 - RULE-SET,threat-tif-mini,REJECT
+- RULE-SET,ads_domain,REJECT
+- RULE-SET,tracker-domain,REJECT
 - DOMAIN-SUFFIX,id,MANUAL
 - DOMAIN-SUFFIX,co.id,MANUAL
 - DOMAIN-SUFFIX,go.id,MANUAL
@@ -370,15 +400,7 @@ rules:
 - DOMAIN-KEYWORD,reload,MANUAL
 - DOMAIN-KEYWORD,kios,MANUAL
 - DOMAIN-KEYWORD,agen,MANUAL
-- RULE-SET,ads_domain,REJECT
-- DOMAIN-SUFFIX,doubleclick.net,REJECT
-- DOMAIN-SUFFIX,googlesyndication.com,REJECT
-- DOMAIN-SUFFIX,googleadservices.com,REJECT
 - RULE-SET,youtube_domain,YOUTUBE
-- DOMAIN-SUFFIX,youtube.com,YOUTUBE
-- DOMAIN-SUFFIX,youtu.be,YOUTUBE
-- DOMAIN-SUFFIX,ytimg.com,YOUTUBE
-- DOMAIN-SUFFIX,googlevideo.com,YOUTUBE
 - DOMAIN-SUFFIX,facebook.com,SOCIAL-MEDIA
 - DOMAIN-SUFFIX,fbcdn.net,SOCIAL-MEDIA
 - DOMAIN-SUFFIX,instagram.com,SOCIAL-MEDIA

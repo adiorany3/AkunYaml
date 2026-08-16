@@ -2121,24 +2121,41 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         "IP-CIDR,169.254.0.0/16,DIRECT",
         "GEOIP,LAN,DIRECT,no-resolve",
 
-        # Cegah malware/phishing lebih dulu, lalu iklan/tracker.
+        # YouTube compatibility guard. Exact hosts are kept reachable before
+        # broad ad/tracker lists to avoid playback failures.
+        "DOMAIN,static.doubleclick.net,YOUTUBE",
+        "DOMAIN,jnn-pa.googleapis.com,YOUTUBE",
+
+        # Separable ad endpoints. Do not reject the entire doubleclick.net tree.
+        "DOMAIN,googleads.g.doubleclick.net,REJECT",
+        "DOMAIN,ad.doubleclick.net,REJECT",
+        "DOMAIN,pubads.g.doubleclick.net,REJECT",
+        "DOMAIN,securepubads.g.doubleclick.net,REJECT",
+        "DOMAIN,pagead2.googlesyndication.com,REJECT",
+        "DOMAIN,tpc.googlesyndication.com,REJECT",
+        "DOMAIN,www.googleadservices.com,REJECT",
+        "DOMAIN,imasdk.googleapis.com,REJECT",
+        "DOMAIN-SUFFIX,2mdn.net,REJECT",
+        "DOMAIN-SUFFIX,googlesyndication.com,REJECT",
+        "DOMAIN-SUFFIX,googleadservices.com,REJECT",
+
+        # Primary YouTube playback guard before broad ad/tracker providers.
+        "RULE-SET,youtube_domain,YOUTUBE",
+        "DOMAIN-SUFFIX,youtube.com,YOUTUBE",
+        "DOMAIN-SUFFIX,youtu.be,YOUTUBE",
+        "DOMAIN-SUFFIX,youtube-nocookie.com,YOUTUBE",
+        "DOMAIN-SUFFIX,ytimg.com,YOUTUBE",
+        "DOMAIN-SUFFIX,googlevideo.com,YOUTUBE",
+        "DOMAIN-SUFFIX,youtubei.googleapis.com,YOUTUBE",
+        "DOMAIN-SUFFIX,youtube.googleapis.com,YOUTUBE",
+        "DOMAIN-SUFFIX,ggpht.com,YOUTUBE",
+
+        # Cegah malware/phishing dan iklan/tracker umum setelah guard playback.
         "RULE-SET,threat-tif-mini,REJECT",
         "RULE-SET,ads_domain,REJECT",
         "RULE-SET,ads_classical,REJECT",
         "RULE-SET,privacy_classical,REJECT",
         "RULE-SET,hijacking_classical,REJECT",
-        "DOMAIN-SUFFIX,doubleclick.net,REJECT",
-        "DOMAIN-SUFFIX,googlesyndication.com,REJECT",
-        "DOMAIN-SUFFIX,googleadservices.com,REJECT",
-        "DOMAIN-SUFFIX,pagead2.googlesyndication.com,REJECT",
-
-        # YouTube khusus, sebelum Google umum/edukasi.
-        "RULE-SET,youtube_domain,YOUTUBE",
-        "DOMAIN-SUFFIX,youtube.com,YOUTUBE",
-        "DOMAIN-SUFFIX,youtu.be,YOUTUBE",
-        "DOMAIN-SUFFIX,ytimg.com,YOUTUBE",
-        "DOMAIN-SUFFIX,googlevideo.com,YOUTUBE",
-        "DOMAIN-SUFFIX,youtubei.googleapis.com,YOUTUBE",
 
         # Sosial media.
         "RULE-SET,telegram_domain,SOCIAL-MEDIA",

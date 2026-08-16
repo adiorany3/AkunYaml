@@ -47,7 +47,7 @@ from openclash_target import (
     validate_yaml_file,
 )
 
-APP_VERSION = "2.6-youtube"
+APP_VERSION = "2.8-android-ruleprovider"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -157,6 +157,47 @@ SECURITY_PROVIDERS = {
     },
 }
 
+# Clash Meta for Android compatibility profile.  Keep providers in classic YAML
+# and omit the `format` key because YAML is the rule-provider default.  This
+# avoids MRS/text parser requirements on Android builds with older bundled cores.
+ANDROID_SECURITY_PROVIDERS = {
+    "ads_domain": {
+        "type": "http",
+        "behavior": "classical",
+        "path": "./rule_providers/ads_domain.yaml",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/classical/category-ads-all.yaml",
+        "interval": 43200,
+    },
+    "tracker-domain": {
+        "type": "http",
+        "behavior": "classical",
+        "path": "./rule_providers/tracker.yaml",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/classical/tracker.yaml",
+        "interval": 43200,
+    },
+    "threat-malware": {
+        "type": "http",
+        "behavior": "domain",
+        "path": "./rule_providers/malware.yaml",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/malware.yaml",
+        "interval": 43200,
+    },
+    "threat-phishing": {
+        "type": "http",
+        "behavior": "domain",
+        "path": "./rule_providers/phishing.yaml",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/phishing.yaml",
+        "interval": 43200,
+    },
+    "threat-cryptominers": {
+        "type": "http",
+        "behavior": "domain",
+        "path": "./rule_providers/cryptominers.yaml",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/cryptominers.yaml",
+        "interval": 43200,
+    },
+}
+
 LAN_DIRECT_RULES = (
     "DOMAIN-SUFFIX,local,DIRECT",
     "DOMAIN-SUFFIX,lan,DIRECT",
@@ -188,17 +229,29 @@ YOUTUBE_PLAYBACK_DOMAINS = (
     "ggpht.com",
 )
 
-# Enhanced mode blocks only ad/measurement endpoints that are separate from
-# YouTube's primary video CDN. Never add googlevideo.com here.
+# Compatibility endpoints that must stay reachable before broad ad/tracker
+# providers. static.doubleclick.net can be required by YouTube's playback
+# validation, while jnn-pa.googleapis.com is used by some live playback flows.
+# Keep these as exact DOMAIN guards. Never allow the whole doubleclick.net tree.
+YOUTUBE_COMPAT_DOMAINS = (
+    "static.doubleclick.net",
+    "jnn-pa.googleapis.com",
+)
+
+# Enhanced mode blocks ad/measurement endpoints that are separable from
+# YouTube's primary media delivery. Never add googlevideo.com here. Avoid a
+# broad doubleclick.net suffix reject because static.doubleclick.net can be
+# required for playback validation.
 YOUTUBE_NETWORK_AD_RULES = (
     "DOMAIN,googleads.g.doubleclick.net,REJECT",
-    "DOMAIN,static.doubleclick.net,REJECT",
+    "DOMAIN,ad.doubleclick.net,REJECT",
+    "DOMAIN,pubads.g.doubleclick.net,REJECT",
+    "DOMAIN,securepubads.g.doubleclick.net,REJECT",
     "DOMAIN,pagead2.googlesyndication.com,REJECT",
     "DOMAIN,tpc.googlesyndication.com,REJECT",
     "DOMAIN,www.googleadservices.com,REJECT",
     "DOMAIN,imasdk.googleapis.com,REJECT",
     "DOMAIN-SUFFIX,2mdn.net,REJECT",
-    "DOMAIN-SUFFIX,doubleclick.net,REJECT",
     "DOMAIN-SUFFIX,googlesyndication.com,REJECT",
     "DOMAIN-SUFFIX,googleadservices.com,REJECT",
 )
@@ -228,14 +281,23 @@ youtube.com##.ytp-ad-progress-list
 
 YOUTUBE_BROWSER_FILTERS_ENHANCED = """\
 ! Additional endpoints separated from the main media CDN.
+! static.doubleclick.net is intentionally NOT blocked because some YouTube
+! playback validation depends on /instream/ad_status.js.
 ||googleads.g.doubleclick.net^$domain=youtube.com
-||static.doubleclick.net^$domain=youtube.com
+||ad.doubleclick.net^$domain=youtube.com
+||pubads.g.doubleclick.net^$domain=youtube.com
+||securepubads.g.doubleclick.net^$domain=youtube.com
 ||pagead2.googlesyndication.com^$domain=youtube.com
 ||tpc.googlesyndication.com^$domain=youtube.com
 ||www.googleadservices.com^$domain=youtube.com
 ||youtube.com/api/stats/ads^$xhr,domain=youtube.com
 ||youtube.com/pagead/*$xhr,domain=youtube.com
 ||youtube.com/ptracking^$xhr,domain=youtube.com
+
+! Conservative in-page pruning for browser blockers that support uBO scriptlets.
+youtube.com##+js(set-constant, ytInitialPlayerResponse.adPlacements, undefined)
+youtube.com##+js(set-constant, ytInitialPlayerResponse.adSlots, undefined)
+youtube.com##+js(set-constant, ytInitialPlayerResponse.playerAds, undefined)
 """
 
 
@@ -1269,7 +1331,7 @@ def apply_responsiveness(path: Path) -> bool:
     return False
 
 def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_mode: str) -> bool:
-    """Apply OpenClash-safe ad, tracker, and malware protection."""
+    """Apply ad, tracker, and threat protection with per-client provider compatibility."""
     import yaml
 
     if not path.exists():
@@ -1279,25 +1341,55 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         return False
 
     changed = False
+    android_output_name = os.environ.get("OUTPUT_ANDROID_YAML", "openclash_android.yaml").strip() or "openclash_android.yaml"
+    is_android = path.name == Path(android_output_name).name
+    provider_catalog = ANDROID_SECURITY_PROVIDERS if is_android else SECURITY_PROVIDERS
+
     providers = config.setdefault("rule-providers", {})
     if not isinstance(providers, dict):
         providers = {}
         config["rule-providers"] = providers
         changed = True
 
-    # Remove providers injected by older experimental builds. Keep/update only
-    # native MRS providers that the target Mihomo can parse directly.
-    for name in ("security-tif-mini", "popup-ads", "hagezi-pro-mini", "awavenue-ads"):
+    # Remove providers from old/other platform profiles so Android never keeps
+    # an MRS/text provider by accident, while router profiles keep their lean MRS set.
+    obsolete = {
+        "security-tif-mini", "popup-ads", "hagezi-pro-mini", "awavenue-ads",
+        "threat-tif-mini", "threat-malware", "threat-phishing", "threat-cryptominers",
+    }
+    obsolete -= set(provider_catalog)
+    for name in obsolete:
         if name in providers:
             providers.pop(name, None)
             changed = True
 
     if profile != "off":
-        for name in ("threat-tif-mini", "ads_domain", "tracker-domain"):
-            provider = dict(SECURITY_PROVIDERS[name])
+        for name, base_provider in provider_catalog.items():
+            provider = dict(base_provider)
             provider["interval"] = interval
             if providers.get(name) != provider:
                 providers[name] = provider
+                changed = True
+    elif is_android:
+        # Even with blocking disabled, an Android profile must not retain stale
+        # MRS/text security providers because some CMFA cores reject them while
+        # parsing the whole configuration.
+        for name in set(SECURITY_PROVIDERS) | set(ANDROID_SECURITY_PROVIDERS):
+            if name in providers:
+                providers.pop(name, None)
+                changed = True
+
+    if is_android:
+        # Last-resort compatibility guard for custom/legacy providers. Unknown
+        # MRS providers are removed instead of leaving an Android-import failure.
+        for name, provider in list(providers.items()):
+            if not isinstance(provider, dict):
+                continue
+            fmt = str(provider.get("format") or "").lower()
+            path_value = str(provider.get("path") or "").lower()
+            url_value = str(provider.get("url") or "").lower()
+            if fmt == "mrs" or path_value.endswith(".mrs") or url_value.endswith(".mrs"):
+                providers.pop(name, None)
                 changed = True
 
     current_rules = [str(item) for item in config.get("rules", []) or []]
@@ -1306,6 +1398,9 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         "RULE-SET,popup-ads,",
         "RULE-SET,tracker-domain,",
         "RULE-SET,threat-tif-mini,",
+        "RULE-SET,threat-malware,",
+        "RULE-SET,threat-phishing,",
+        "RULE-SET,threat-cryptominers,",
         "RULE-SET,hagezi-pro-mini,",
         "RULE-SET,awavenue-ads,",
         "RULE-SET,ads_domain,",
@@ -1317,41 +1412,68 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         if not rule.startswith(managed_prefixes) and rule not in OVERBROAD_AD_KEYWORD_RULES
     ]
 
+    # Android uses rule mode so blocklists are evaluated.  Unmatched traffic still
+    # goes to GLOBAL, preserving the previous global-routing behavior.
+    if is_android:
+        if config.get("mode") != "rule":
+            config["mode"] = "rule"
+            changed = True
+        cleaned = [rule for rule in cleaned if not rule.startswith(("MATCH,", "FINAL,"))]
+
     # Keep local/private traffic and explicit user allowlist ahead of all blocklists.
     lan_rules = [rule for rule in cleaned if rule in LAN_DIRECT_RULES]
     cleaned = [rule for rule in cleaned if rule not in LAN_DIRECT_RULES]
+    if is_android:
+        # The lightweight Android generator originally had no rules at all. Add
+        # standard private/LAN bypasses when converting it to rule mode.
+        lan_rules = list(LAN_DIRECT_RULES)
 
-    # Preserve YouTube guard order so apply_security + apply_youtube_guard is
-    # idempotent. Endpoint-specific ad rules and playback exceptions stay
-    # ahead of broad threat/ad/tracker providers.
+    # Preserve YouTube guard order so compatibility exceptions and playback hosts
+    # stay ahead of broad ad/tracker providers.
     youtube_ad_rules = [rule for rule in cleaned if rule in YOUTUBE_NETWORK_AD_RULES]
     playback_domains = set(YOUTUBE_PLAYBACK_DOMAINS)
+    compat_domains = set(YOUTUBE_COMPAT_DOMAINS)
+    youtube_compat_rules = []
     youtube_guard_rules = []
     remaining_rules = []
     for rule in cleaned:
         if rule in YOUTUBE_NETWORK_AD_RULES:
             continue
         parts = [part.strip() for part in rule.split(",")]
-        if (
-            len(parts) >= 3
-            and parts[0].upper() in {"DOMAIN", "DOMAIN-SUFFIX"}
-            and parts[1].lower() in playback_domains
-        ):
-            youtube_guard_rules.append(rule)
-        else:
-            remaining_rules.append(rule)
+        if len(parts) >= 3 and parts[0].upper() in {"DOMAIN", "DOMAIN-SUFFIX"}:
+            domain = parts[1].lower()
+            if parts[0].upper() == "DOMAIN" and domain in compat_domains:
+                youtube_compat_rules.append(rule)
+                continue
+            if domain in playback_domains:
+                youtube_guard_rules.append(rule)
+                continue
+        remaining_rules.append(rule)
     cleaned = remaining_rules
 
     allow_rules = [f"DOMAIN-SUFFIX,{domain},DIRECT" for domain in load_allowlist(workdir)]
-    security_rules = list(allow_rules) + lan_rules + youtube_ad_rules + youtube_guard_rules
+    security_rules = list(allow_rules) + lan_rules + youtube_compat_rules + youtube_ad_rules + youtube_guard_rules
     if profile != "off":
-        security_rules.extend([
-            "RULE-SET,threat-tif-mini,REJECT",
-            "RULE-SET,ads_domain,REJECT",
-            "RULE-SET,tracker-domain,REJECT",
-        ])
+        if is_android:
+            security_rules.extend([
+                "RULE-SET,threat-malware,REJECT",
+                "RULE-SET,threat-phishing,REJECT",
+                "RULE-SET,threat-cryptominers,REJECT",
+                "RULE-SET,ads_domain,REJECT",
+                "RULE-SET,tracker-domain,REJECT",
+            ])
+        else:
+            security_rules.extend([
+                "RULE-SET,threat-tif-mini,REJECT",
+                "RULE-SET,ads_domain,REJECT",
+                "RULE-SET,tracker-domain,REJECT",
+            ])
 
     new_rules = security_rules + cleaned
+    if is_android:
+        new_rules.append("MATCH,GLOBAL")
+    # Deduplicate while preserving order.
+    new_rules = list(dict.fromkeys(new_rules))
     if new_rules != current_rules:
         config["rules"] = new_rules
         changed = True
@@ -1394,15 +1516,23 @@ def apply_youtube_guard(path: Path, mode: str) -> bool:
 
     current = [str(item) for item in config.get("rules", []) or []]
     playback_domains = set(YOUTUBE_PLAYBACK_DOMAINS)
+    compat_domains = set(YOUTUBE_COMPAT_DOMAINS)
     managed_ad_rules = set(YOUTUBE_NETWORK_AD_RULES)
 
     cleaned = []
     for rule in current:
         parts = [part.strip() for part in rule.split(",")]
-        # Remove guard rules from previous runs so ordering stays deterministic.
-        if len(parts) >= 3 and parts[0].upper() in {"DOMAIN", "DOMAIN-SUFFIX"} and parts[1].lower() in playback_domains:
-            continue
+        # Remove managed guards/rules from previous runs so ordering stays deterministic.
+        if len(parts) >= 3 and parts[0].upper() in {"DOMAIN", "DOMAIN-SUFFIX"}:
+            domain = parts[1].lower()
+            if domain in playback_domains:
+                continue
+            if parts[0].upper() == "DOMAIN" and domain in compat_domains:
+                continue
         if rule in managed_ad_rules:
+            continue
+        # Remove the old over-broad YouTube-era doubleclick suffix reject.
+        if rule == "DOMAIN-SUFFIX,doubleclick.net,REJECT":
             continue
         cleaned.append(rule)
 
@@ -1410,6 +1540,7 @@ def apply_youtube_guard(path: Path, mode: str) -> bool:
         new_rules = cleaned
     else:
         route = _default_route(config)
+        compat_guard = [f"DOMAIN,{domain},{route}" for domain in YOUTUBE_COMPAT_DOMAINS]
         guard = [f"DOMAIN-SUFFIX,{domain},{route}" for domain in YOUTUBE_PLAYBACK_DOMAINS]
         ad_rules = list(YOUTUBE_NETWORK_AD_RULES) if mode == "enhanced" else []
 
@@ -1423,9 +1554,9 @@ def apply_youtube_guard(path: Path, mode: str) -> bool:
                 continue
             break
 
-        # Endpoint-specific ad rules first. Then protect playback domains from
-        # broad ad/tracker lists. This avoids blocking googlevideo.com.
-        new_rules = cleaned[:insert_at] + ad_rules + guard + cleaned[insert_at:]
+        # Exact compatibility exceptions first, then separable ad endpoints,
+        # then primary playback guards before broad ad/tracker lists.
+        new_rules = cleaned[:insert_at] + compat_guard + ad_rules + guard + cleaned[insert_at:]
 
     if new_rules != current:
         config["rules"] = new_rules
@@ -1494,7 +1625,7 @@ def optimize_outputs(
         if apply_responsiveness(path):
             log(f"Responsiveness tuning diterapkan: {filename}")
         if apply_security(path, profile, workdir, interval, dns_mode):
-            log(f"Ad/tracker MRS diterapkan ({profile}): {filename}")
+            log(f"Ad/tracker provider diterapkan ({profile}, Android-YAML jika perlu): {filename}")
         if apply_youtube_guard(path, youtube_mode):
             log(f"YouTube guard diterapkan ({youtube_mode}): {filename}")
         sanitize_yaml(path)

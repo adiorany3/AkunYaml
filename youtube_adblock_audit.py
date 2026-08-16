@@ -17,10 +17,14 @@ FILES = (
 REQUIRED_PROVIDERS = {"ads_domain", "tracker-domain"}
 REQUIRED_ENHANCED_RULES = {
     "DOMAIN,googleads.g.doubleclick.net,REJECT",
+    "DOMAIN,ad.doubleclick.net,REJECT",
     "DOMAIN,pagead2.googlesyndication.com,REJECT",
     "DOMAIN,imasdk.googleapis.com,REJECT",
-    "DOMAIN-SUFFIX,doubleclick.net,REJECT",
     "DOMAIN-SUFFIX,googlesyndication.com,REJECT",
+}
+COMPAT_DOMAINS = {
+    "static.doubleclick.net",
+    "jnn-pa.googleapis.com",
 }
 PLAYBACK_DOMAINS = {
     "youtube.com",
@@ -57,17 +61,22 @@ def audit_file(path: Path, enhanced: bool) -> list[str]:
         if missing_rules:
             errors.append("enhanced rule hilang: " + "; ".join(sorted(missing_rules)))
 
-    # Never reject primary playback hosts explicitly.
+    # Never reject primary playback or compatibility hosts explicitly.
     for rule in rules:
         parts = [p.strip() for p in rule.split(",")]
         if len(parts) < 3:
             continue
         if parts[0].upper() not in {"DOMAIN", "DOMAIN-SUFFIX"}:
             continue
-        if parts[1].lower() in PLAYBACK_DOMAINS and parts[2].upper().startswith("REJECT"):
+        domain = parts[1].lower()
+        if domain in PLAYBACK_DOMAINS and parts[2].upper().startswith("REJECT"):
             errors.append(f"playback domain terblokir: {rule}")
+        if domain in COMPAT_DOMAINS and parts[2].upper().startswith("REJECT"):
+            errors.append(f"compatibility domain terblokir: {rule}")
+        if rule == "DOMAIN-SUFFIX,doubleclick.net,REJECT":
+            errors.append("doubleclick.net diblokir terlalu luas; static.doubleclick.net dibutuhkan sebagian playback")
 
-    # googlevideo guard must be before broad MRS ad block.
+    # googlevideo and static.doubleclick guards must be before broad MRS ad block.
     try:
         guard_idx = next(i for i, r in enumerate(rules) if r.startswith("DOMAIN-SUFFIX,googlevideo.com,"))
         ads_idx = rules.index("RULE-SET,ads_domain,REJECT")
@@ -75,6 +84,14 @@ def audit_file(path: Path, enhanced: bool) -> list[str]:
             errors.append("googlevideo guard berada setelah ads_domain")
     except (StopIteration, ValueError):
         errors.append("googlevideo playback guard atau ads_domain tidak ditemukan")
+
+    try:
+        compat_idx = next(i for i, r in enumerate(rules) if r.startswith("DOMAIN,static.doubleclick.net,"))
+        ads_idx = rules.index("RULE-SET,ads_domain,REJECT")
+        if compat_idx >= ads_idx:
+            errors.append("static.doubleclick.net compatibility guard berada setelah ads_domain")
+    except (StopIteration, ValueError):
+        errors.append("static.doubleclick.net compatibility guard atau ads_domain tidak ditemukan")
 
     return errors
 
@@ -106,8 +123,11 @@ def main() -> int:
         if "googlevideo.com" in text and "||googlevideo.com" in text:
             failed = True
             print("[ERROR] youtube_browser_filters.txt memblokir googlevideo.com")
+        elif "||static.doubleclick.net" in text:
+            failed = True
+            print("[ERROR] browser filter memblokir static.doubleclick.net dan dapat merusak playback")
         else:
-            print("[OK] Browser filter tidak memblokir googlevideo.com")
+            print("[OK] Browser filter menjaga googlevideo.com dan static.doubleclick.net")
     else:
         print("[WARN] youtube_browser_filters.txt tidak ditemukan")
 
