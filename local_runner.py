@@ -1194,9 +1194,19 @@ def apply_network_hardening(path: Path) -> bool:
     sniffer = config.get("sniffer")
     if isinstance(sniffer, dict) and sniffer.get("enable") is True:
         sniff = sniffer.get("sniff")
-        if isinstance(sniff, dict) and "QUIC" not in sniff:
-            sniff["QUIC"] = {"ports": [443, 8443]}
-            changed = True
+        android_output_name = os.environ.get("OUTPUT_ANDROID_YAML", "openclash_android.yaml").strip() or "openclash_android.yaml"
+        is_android = path.name == Path(android_output_name).name
+        if isinstance(sniff, dict):
+            if is_android:
+                # Clash Meta for Android builds with older embedded cores may reject
+                # the QUIC sniffer with: "no find the sniffer QUIC". Keep HTTP/TLS
+                # sniffing for domain rules, but never inject QUIC into Android output.
+                if "QUIC" in sniff:
+                    sniff.pop("QUIC", None)
+                    changed = True
+            elif "QUIC" not in sniff:
+                sniff["QUIC"] = {"ports": [443, 8443]}
+                changed = True
 
     if changed:
         path.write_text(

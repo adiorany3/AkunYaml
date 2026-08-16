@@ -17,6 +17,12 @@ def audit(path: Path) -> list[str]:
     if str(data.get("mode", "")).lower() != "rule":
         errors.append("mode harus rule agar blocklist RULE-SET dievaluasi")
 
+    sniffer = data.get("sniffer") or {}
+    if isinstance(sniffer, dict):
+        sniff = sniffer.get("sniff") or {}
+        if isinstance(sniff, dict) and "QUIC" in sniff:
+            errors.append("sniffer QUIC tidak kompatibel dengan sebagian Clash Meta for Android; gunakan HTTP/TLS saja")
+
     providers = data.get("rule-providers") or {}
     if not isinstance(providers, dict):
         return errors + ["rule-providers bukan mapping"]
