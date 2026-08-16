@@ -23,9 +23,9 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=f"Repair existing YAML for OpenClash {OPENCLASH_TARGET_VERSION} + {MIHOMO_TARGET_LABEL}"
     )
-    parser.add_argument("--profile", choices=("off", "balanced", "strict"), default="off")
+    parser.add_argument("--profile", choices=("off", "balanced", "strict"), default="balanced")
     parser.add_argument("--dns-adblock", choices=("off", "geosite"), default="off")
-    parser.add_argument("--youtube-mode", choices=("off", "safe", "enhanced"), default="safe")
+    parser.add_argument("--youtube-mode", choices=("off", "safe", "enhanced"), default="enhanced")
     parser.add_argument("--interval", type=int, default=43200)
     parser.add_argument("--core", type=Path, help="Path Mihomo alpha-ge183c58")
     parser.add_argument("--static-only", action="store_true", help="Skip exact-core parser test")

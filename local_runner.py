@@ -106,9 +106,9 @@ DEFAULT_ENV = {
     "REFERENCE_PROFILE_MODE": "local-pinned",
     "REFERENCE_PROFILE_FILE": "reference_profile_v047156.yaml",
     "REFERENCE_PROFILE_URL": REFERENCE_PROFILE_URL,
-    "ADBLOCK_PROFILE": "off",
+    "ADBLOCK_PROFILE": "balanced",
     "ADBLOCK_PROVIDER_INTERVAL": "43200",
-    # Default off for maximum OpenClash portability. Security rules still block.
+    # DNS-level ad blocking remains off by default to reduce false positives.
     "ADBLOCK_DNS_MODE": "off",
     "YOUTUBE_ADBLOCK_MODE": "enhanced",
     "YOUTUBE_BROWSER_FILTER_FILE": "youtube_browser_filters.txt",
@@ -145,6 +145,36 @@ SECURITY_PROVIDERS = {
         "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tracker.mrs",
         "interval": 43200,
     },
+    # Router-friendly threat feed. Text/domain is natively supported by Mihomo.
+    # Mini is selected to keep RAM and provider download size reasonable.
+    "threat-tif-mini": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "text",
+        "path": "./rule_providers/threat-tif-mini.txt",
+        "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.mini-onlydomains.txt",
+        "interval": 43200,
+    },
+}
+
+LAN_DIRECT_RULES = (
+    "DOMAIN-SUFFIX,local,DIRECT",
+    "DOMAIN-SUFFIX,lan,DIRECT",
+    "DOMAIN-SUFFIX,localhost,DIRECT",
+    "IP-CIDR,127.0.0.0/8,DIRECT",
+    "IP-CIDR,10.0.0.0/8,DIRECT",
+    "IP-CIDR,172.16.0.0/12,DIRECT",
+    "IP-CIDR,192.168.0.0/16,DIRECT",
+    "IP-CIDR,169.254.0.0/16,DIRECT",
+    "GEOIP,LAN,DIRECT,no-resolve",
+)
+
+# Broad keyword rules can block legitimate sites such as analytics dashboards,
+# tracker documentation, or applications with those words in a hostname.
+OVERBROAD_AD_KEYWORD_RULES = {
+    "DOMAIN-KEYWORD,adservice,REJECT",
+    "DOMAIN-KEYWORD,analytics,REJECT",
+    "DOMAIN-KEYWORD,tracker,REJECT",
 }
 
 YOUTUBE_PLAYBACK_DOMAINS = (
@@ -1067,8 +1097,54 @@ def apply_reference_profile(
     )
     return True
 
+def apply_network_hardening(path: Path) -> bool:
+    """Reduce exposed management surface while preserving LAN proxy access."""
+    import yaml
+
+    if not path.exists():
+        return False
+    config = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    if not isinstance(config, dict):
+        return False
+
+    changed = False
+
+    controller = config.get("external-controller")
+    if isinstance(controller, str) and controller.strip():
+        port = controller.rsplit(":", 1)[-1].strip()
+        if port.isdigit():
+            hardened = f"127.0.0.1:{port}"
+            if controller != hardened:
+                config["external-controller"] = hardened
+                changed = True
+
+    if config.get("allow-lan") is True:
+        allowed = [
+            "127.0.0.0/8",
+            "10.0.0.0/8",
+            "172.16.0.0/12",
+            "192.168.0.0/16",
+        ]
+        if config.get("lan-allowed-ips") != allowed:
+            config["lan-allowed-ips"] = allowed
+            changed = True
+
+    sniffer = config.get("sniffer")
+    if isinstance(sniffer, dict) and sniffer.get("enable") is True:
+        sniff = sniffer.get("sniff")
+        if isinstance(sniff, dict) and "QUIC" not in sniff:
+            sniff["QUIC"] = {"ports": [443, 8443]}
+            changed = True
+
+    if changed:
+        path.write_text(
+            yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=160),
+            encoding="utf-8",
+        )
+    return changed
+
 def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_mode: str) -> bool:
-    """Apply OpenClash-safe ad/tracker protection using native Mihomo MRS providers."""
+    """Apply OpenClash-safe ad, tracker, and malware protection."""
     import yaml
 
     if not path.exists():
@@ -1092,7 +1168,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
             changed = True
 
     if profile != "off":
-        for name in ("ads_domain", "tracker-domain"):
+        for name in ("threat-tif-mini", "ads_domain", "tracker-domain"):
             provider = dict(SECURITY_PROVIDERS[name])
             provider["interval"] = interval
             if providers.get(name) != provider:
@@ -1104,18 +1180,48 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         "RULE-SET,security-tif-mini,",
         "RULE-SET,popup-ads,",
         "RULE-SET,tracker-domain,",
+        "RULE-SET,threat-tif-mini,",
         "RULE-SET,hagezi-pro-mini,",
         "RULE-SET,awavenue-ads,",
         "RULE-SET,ads_domain,",
         "GEOSITE,category-ads-all,",
         "GEOSITE,tracker,",
     )
-    cleaned = [rule for rule in current_rules if not rule.startswith(managed_prefixes)]
+    cleaned = [
+        rule for rule in current_rules
+        if not rule.startswith(managed_prefixes) and rule not in OVERBROAD_AD_KEYWORD_RULES
+    ]
+
+    # Keep local/private traffic and explicit user allowlist ahead of all blocklists.
+    lan_rules = [rule for rule in cleaned if rule in LAN_DIRECT_RULES]
+    cleaned = [rule for rule in cleaned if rule not in LAN_DIRECT_RULES]
+
+    # Preserve YouTube guard order so apply_security + apply_youtube_guard is
+    # idempotent. Endpoint-specific ad rules and playback exceptions stay
+    # ahead of broad threat/ad/tracker providers.
+    youtube_ad_rules = [rule for rule in cleaned if rule in YOUTUBE_NETWORK_AD_RULES]
+    playback_domains = set(YOUTUBE_PLAYBACK_DOMAINS)
+    youtube_guard_rules = []
+    remaining_rules = []
+    for rule in cleaned:
+        if rule in YOUTUBE_NETWORK_AD_RULES:
+            continue
+        parts = [part.strip() for part in rule.split(",")]
+        if (
+            len(parts) >= 3
+            and parts[0].upper() in {"DOMAIN", "DOMAIN-SUFFIX"}
+            and parts[1].lower() in playback_domains
+        ):
+            youtube_guard_rules.append(rule)
+        else:
+            remaining_rules.append(rule)
+    cleaned = remaining_rules
 
     allow_rules = [f"DOMAIN-SUFFIX,{domain},DIRECT" for domain in load_allowlist(workdir)]
-    security_rules = list(allow_rules)
+    security_rules = list(allow_rules) + lan_rules + youtube_ad_rules + youtube_guard_rules
     if profile != "off":
         security_rules.extend([
+            "RULE-SET,threat-tif-mini,REJECT",
             "RULE-SET,ads_domain,REJECT",
             "RULE-SET,tracker-domain,REJECT",
         ])
@@ -1258,7 +1364,8 @@ def optimize_outputs(
                 log(f"Reference profile diterapkan ({reference_mode}): {filename}")
 
         # Apply the same safe network protection to every output variant.
-        # This was previously defined but never called.
+        if apply_network_hardening(path):
+            log(f"Network hardening diterapkan: {filename}")
         if apply_security(path, profile, workdir, interval, dns_mode):
             log(f"Ad/tracker MRS diterapkan ({profile}): {filename}")
         if apply_youtube_guard(path, youtube_mode):

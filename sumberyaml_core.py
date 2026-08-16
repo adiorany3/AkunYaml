@@ -1866,9 +1866,23 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         "behavior": "classical",
         "format": "yaml",
     }
+    text_domain_provider = {
+        "type": "http",
+        "interval": 43200,
+        "behavior": "domain",
+        "format": "text",
+    }
 
     rule_providers: dict[str, Any] = {
-        # Block iklan, tracking, privacy-leak, dan hijacking/malware ringan.
+        # Threat feed mini memblokir malware, phishing, scam, spam, dan C2
+        # dengan footprint yang masih masuk akal untuk router.
+        "threat-tif-mini": {
+            **text_domain_provider,
+            "path": "./rule_providers/threat-tif-mini.txt",
+            "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.mini-onlydomains.txt",
+        },
+
+        # Block iklan, tracking, privacy-leak, dan hijacking.
         "ads_domain": {
             **domain_provider,
             "path": "./rule_providers/ads_domain.mrs",
@@ -2107,7 +2121,8 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         "IP-CIDR,169.254.0.0/16,DIRECT",
         "GEOIP,LAN,DIRECT,no-resolve",
 
-        # Block iklan, tracker, privacy leak, hijacking/malware sebelum kategori lain.
+        # Cegah malware/phishing lebih dulu, lalu iklan/tracker.
+        "RULE-SET,threat-tif-mini,REJECT",
         "RULE-SET,ads_domain,REJECT",
         "RULE-SET,ads_classical,REJECT",
         "RULE-SET,privacy_classical,REJECT",
@@ -2116,9 +2131,6 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         "DOMAIN-SUFFIX,googlesyndication.com,REJECT",
         "DOMAIN-SUFFIX,googleadservices.com,REJECT",
         "DOMAIN-SUFFIX,pagead2.googlesyndication.com,REJECT",
-        "DOMAIN-KEYWORD,adservice,REJECT",
-        "DOMAIN-KEYWORD,analytics,REJECT",
-        "DOMAIN-KEYWORD,tracker,REJECT",
 
         # YouTube khusus, sebelum Google umum/edukasi.
         "RULE-SET,youtube_domain,YOUTUBE",
@@ -2215,10 +2227,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "DOMAIN-SUFFIX,doubleclick.net,REJECT",
             "DOMAIN-SUFFIX,googlesyndication.com,REJECT",
             "DOMAIN-SUFFIX,googleadservices.com,REJECT",
-            "DOMAIN-KEYWORD,adservice,REJECT",
-            "DOMAIN-KEYWORD,analytics,REJECT",
-            "DOMAIN-KEYWORD,tracker,REJECT",
-            "RULE-SET,youtube_domain,YOUTUBE",
+                        "RULE-SET,youtube_domain,YOUTUBE",
             "DOMAIN-SUFFIX,youtube.com,YOUTUBE",
             "DOMAIN-SUFFIX,youtu.be,YOUTUBE",
             "DOMAIN-SUFFIX,ytimg.com,YOUTUBE",
@@ -2243,6 +2252,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         "tproxy-port": 7895,
         "allow-lan": True,
         "bind-address": "*",
+        "lan-allowed-ips": ["127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"],
         "mode": "rule",
         "log-level": "warning",
         "ipv6": False,
@@ -2250,7 +2260,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         "tcp-concurrent": True,
         "find-process-mode": "off",
         **_mihomo_keep_alive_config(),
-        "external-controller": os.getenv("MIHOMO_EXTERNAL_CONTROLLER", "0.0.0.0:9090"),
+        "external-controller": os.getenv("MIHOMO_EXTERNAL_CONTROLLER", "127.0.0.1:9090"),
         "secret": os.getenv("MIHOMO_SECRET", "reyre"),
         "profile": {
             "store-selected": True,
@@ -2261,6 +2271,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "sniff": {
                 "TLS": {"ports": [443, 8443]},
                 "HTTP": {"ports": [80, "8080-8880"], "override-destination": True},
+                "QUIC": {"ports": [443, 8443]},
             },
             "force-domain": ["+.v2ex.com"],
             "skip-domain": ["+.lan", "+.local"],

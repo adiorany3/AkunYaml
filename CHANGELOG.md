@@ -1,3 +1,15 @@
+# v2.5 Security Hardening - 2026-08-16
+
+- Menambahkan `threat-tif-mini` berbasis HaGeZi Threat Intelligence Feeds Mini untuk memblokir malware, phishing, scam, spam, dan domain C2.
+- Menggunakan rule-provider `behavior: domain` + `format: text`, yang didukung native oleh Mihomo.
+- Menempatkan LAN/private dan allowlist sebelum blocklist untuk mengurangi false positive pada layanan lokal.
+- Menghapus rule terlalu luas `DOMAIN-KEYWORD,adservice`, `analytics`, dan `tracker`.
+- Menambahkan QUIC sniffing pada 443/8443 agar rule domain lebih efektif pada HTTP/3.
+- Membatasi `external-controller` ke `127.0.0.1:9090` secara default.
+- Membatasi klien proxy LAN ke RFC1918 + loopback melalui `lan-allowed-ips`.
+- Menetapkan profil adblock default ke `balanced`; DNS-level adblock tetap `off` untuk kompatibilitas dan false-positive lebih rendah.
+- Memperbarui semua output utama: `openclash_auto.yaml`, `openclash_lite.yaml`, `openclash_fresh_pool.yaml`, dan `openclash_android.yaml`.
+
 # v2.0 Final
 
 - Menggabungkan seluruh patch v1.1 sampai v1.5.

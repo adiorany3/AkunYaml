@@ -28,7 +28,8 @@ Paket ini dikunci ke target di atas. Generator tidak lagi menganggap Mihomo terb
    - Mendeteksi core dari `--mihomo-path`, `MIHOMO_PATH`, `/etc/openclash/core/clash_meta`, `.local_bin/mihomo`, atau PATH.
    - Core selain `alpha-ge183c58` ditolak secara default.
    - Reference profile memakai snapshot lokal `reference_profile_v047156.yaml`.
-   - Default adblock profile dibuat `off` agar jalur default tidak tergantung provider tambahan.
+   - Default adblock profile `balanced` mengaktifkan ads, tracker, dan HaGeZi TIF Mini.
+   - DNS-level adblock tetap `off` untuk mengurangi false positive dan menjaga kompatibilitas.
 
 4. `openclash_target.py`
    - Satu modul validasi target.
