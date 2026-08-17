@@ -1,3 +1,8 @@
+
+## v3.5 Threat-Safe
+- Profil baru `threat-safe`: anti-scam/fake + threat intelligence domain.
+- TIF IP extension aktif pada Auto/Fresh, dilewati pada Lite dan Android untuk performa/kompatibilitas.
+- Audit regresi baru: `threat_safe_audit.py`.
 # v3.3 Popup & Game Ad Protection
 
 - Tambah fallback popup/popunder dan mobile-game ad SDK tanpa provider HTTP baru.

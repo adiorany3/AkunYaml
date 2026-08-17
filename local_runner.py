@@ -47,7 +47,7 @@ from openclash_target import (
     validate_yaml_file,
 )
 
-APP_VERSION = "3.1-highscore-childsafe"
+APP_VERSION = "3.5-threatsafe"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -229,6 +229,30 @@ ANDROID_STRICT_SECURITY_PROVIDERS = {
         "behavior": "classical",
         "path": "./rule_providers/privacy-extra.yaml",
         "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Privacy/Privacy.yaml",
+        "interval": 43200,
+    },
+}
+
+# Threat-safe adds focused scam/fake protection. The IP extension is only used
+# on non-Lite router outputs to keep the Lite and Android profiles lean.
+ROUTER_THREAT_SAFE_SECURITY_PROVIDERS = {
+    "threat-fake-scam": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "text",
+        "path": "./rule_providers/threat-fake-scam.txt",
+        "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/fake-onlydomains.txt",
+        "interval": 43200,
+    },
+}
+
+ROUTER_THREAT_IP_PROVIDER = {
+    "threat-tif-ip": {
+        "type": "http",
+        "behavior": "ipcidr",
+        "format": "text",
+        "path": "./rule_providers/threat-tif-ip.txt",
+        "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/ips/tif.txt",
         "interval": 43200,
     },
 }
@@ -1578,29 +1602,37 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     changed = False
     android_output_name = os.environ.get("OUTPUT_ANDROID_YAML", "openclash_android.yaml").strip() or "openclash_android.yaml"
     is_android = path.name == Path(android_output_name).name
+    lite_output_name = os.environ.get("OUTPUT_LITE_YAML", "openclash_lite.yaml").strip() or "openclash_lite.yaml"
+    is_lite = path.name == Path(lite_output_name).name
     if is_android:
         provider_catalog = dict(ANDROID_SECURITY_PROVIDERS)
-        if profile in {"strict", "child-safe", "app-safe"}:
+        if profile in {"strict", "child-safe", "app-safe", "threat-safe"}:
             provider_catalog.update(ANDROID_STRICT_SECURITY_PROVIDERS)
     else:
         provider_catalog = dict(SECURITY_PROVIDERS)
-        if profile in {"strict", "child-safe", "app-safe"}:
+        if profile in {"strict", "child-safe", "app-safe", "threat-safe"}:
             provider_catalog.update(ROUTER_STRICT_SECURITY_PROVIDERS)
+        if profile == "threat-safe":
+            provider_catalog.update(ROUTER_THREAT_SAFE_SECURITY_PROVIDERS)
+            # IP threat intelligence is useful against hard-coded C2/IP traffic,
+            # but costs more memory. Skip it in the Lite profile by design.
+            if not is_lite:
+                provider_catalog.update(ROUTER_THREAT_IP_PROVIDER)
 
-    turtlecute_domains = load_turtlecute_domains(workdir) if profile in {"child-safe", "app-safe"} else []
-    if profile in {"child-safe", "app-safe"} and turtlecute_domains and not is_android:
+    turtlecute_domains = load_turtlecute_domains(workdir) if profile in {"child-safe", "app-safe", "threat-safe"} else []
+    if profile in {"child-safe", "app-safe", "threat-safe"} and turtlecute_domains and not is_android:
         provider_catalog["turtlecute-coverage"] = {
             "type": "inline",
             "behavior": "domain",
             "payload": turtlecute_domains,
         }
-    if profile in {"child-safe", "app-safe"} and not is_android:
+    if profile in {"child-safe", "app-safe", "threat-safe"} and not is_android:
         provider_catalog["streaming-ad-safe"] = {
             "type": "inline",
             "behavior": "domain",
             "payload": list(STREAMING_SAFE_AD_DOMAINS),
         }
-    if profile == "app-safe" and not is_android:
+    if profile in {"app-safe", "threat-safe"} and not is_android:
         app_payload = list(APP_SAFE_EXACT_DOMAINS) + [f".{domain}" for domain in APP_SAFE_SUFFIXES]
         provider_catalog["app-ad-safe"] = {
             "type": "inline",
@@ -1620,6 +1652,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         "security-tif-mini", "popup-ads", "hagezi-pro-mini", "awavenue-ads",
         "privacy-extra", "threat-tif-mini", "threat-malware", "threat-phishing", "threat-cryptominers",
         "turtlecute-coverage", "streaming-ad-safe", "app-ad-safe",
+        "threat-fake-scam", "threat-tif-ip",
     }
     obsolete -= set(provider_catalog)
     for name in obsolete:
@@ -1639,7 +1672,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         # Even with blocking disabled, an Android profile must not retain stale
         # MRS/text security providers because some CMFA cores reject them while
         # parsing the whole configuration.
-        for name in set(SECURITY_PROVIDERS) | set(ANDROID_SECURITY_PROVIDERS) | set(ROUTER_STRICT_SECURITY_PROVIDERS) | set(ANDROID_STRICT_SECURITY_PROVIDERS):
+        for name in set(SECURITY_PROVIDERS) | set(ANDROID_SECURITY_PROVIDERS) | set(ROUTER_STRICT_SECURITY_PROVIDERS) | set(ANDROID_STRICT_SECURITY_PROVIDERS) | set(ROUTER_THREAT_SAFE_SECURITY_PROVIDERS) | set(ROUTER_THREAT_IP_PROVIDER):
             if name in providers:
                 providers.pop(name, None)
                 changed = True
@@ -1673,6 +1706,8 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         "RULE-SET,turtlecute-coverage,",
         "RULE-SET,streaming-ad-safe,",
         "RULE-SET,app-ad-safe,",
+        "RULE-SET,threat-fake-scam,",
+        "RULE-SET,threat-tif-ip,",
         "RULE-SET,ads_domain,",
         "GEOSITE,category-ads-all,",
         "GEOSITE,tracker,",
@@ -1735,14 +1770,14 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
                 "RULE-SET,threat-phishing,REJECT",
                 "RULE-SET,threat-cryptominers,REJECT",
             ])
-            if profile in {"strict", "child-safe", "app-safe"}:
+            if profile in {"strict", "child-safe", "app-safe", "threat-safe"}:
                 security_rules.append("RULE-SET,privacy-extra,REJECT")
-            if profile in {"child-safe", "app-safe"} and turtlecute_domains:
+            if profile in {"child-safe", "app-safe", "threat-safe"} and turtlecute_domains:
                 security_rules.extend(f"DOMAIN,{domain},REJECT" for domain in turtlecute_domains)
-            if profile in {"child-safe", "app-safe"}:
+            if profile in {"child-safe", "app-safe", "threat-safe"}:
                 security_rules.extend(f"DOMAIN,{domain},REJECT" for domain in STREAMING_SAFE_AD_DOMAINS)
                 security_rules.extend(f"DOMAIN-SUFFIX,{domain},REJECT" for domain in INTRUSIVE_AD_SUFFIXES)
-            if profile == "app-safe":
+            if profile in {"app-safe", "threat-safe"}:
                 security_rules.extend(f"DOMAIN,{domain},REJECT" for domain in APP_SAFE_EXACT_DOMAINS)
                 security_rules.extend(f"DOMAIN-SUFFIX,{domain},REJECT" for domain in APP_SAFE_SUFFIXES)
             security_rules.extend([
@@ -1751,18 +1786,22 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
             ])
         else:
             security_rules.append("RULE-SET,threat-tif-mini,REJECT")
-            if profile in {"strict", "child-safe", "app-safe"}:
+            if profile in {"strict", "child-safe", "app-safe", "threat-safe"}:
                 security_rules.extend([
                     "RULE-SET,hagezi-pro-mini,REJECT",
                     "RULE-SET,popup-ads,REJECT",
                 ])
-            if profile in {"child-safe", "app-safe"} and turtlecute_domains:
+            if profile in {"child-safe", "app-safe", "threat-safe"} and turtlecute_domains:
                 security_rules.append("RULE-SET,turtlecute-coverage,REJECT")
-            if profile in {"child-safe", "app-safe"}:
+            if profile in {"child-safe", "app-safe", "threat-safe"}:
                 security_rules.append("RULE-SET,streaming-ad-safe,REJECT")
                 security_rules.extend(f"DOMAIN-SUFFIX,{domain},REJECT" for domain in INTRUSIVE_AD_SUFFIXES)
-            if profile == "app-safe":
+            if profile in {"app-safe", "threat-safe"}:
                 security_rules.append("RULE-SET,app-ad-safe,REJECT")
+            if profile == "threat-safe":
+                security_rules.append("RULE-SET,threat-fake-scam,REJECT")
+                if not is_lite:
+                    security_rules.append("RULE-SET,threat-tif-ip,REJECT,no-resolve")
             security_rules.extend([
                 "RULE-SET,ads_domain,REJECT",
                 "RULE-SET,tracker-domain,REJECT",
@@ -1796,7 +1835,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
                     policy["geosite:category-ads-all"] = "rcode://success"
                     changed = True
 
-        if profile in {"child-safe", "app-safe"}:
+        if profile in {"child-safe", "app-safe", "threat-safe"}:
             family_dns = list(CHILD_SAFE_DNS)
             if dns.get("nameserver") != family_dns:
                 dns["nameserver"] = family_dns
@@ -2004,7 +2043,7 @@ def parse_args():
     parser.add_argument("--no-ws-only", action="store_true")
     parser.add_argument("--no-install-deps", action="store_true")
     parser.add_argument("--network-test", action="store_true")
-    parser.add_argument("--adblock-profile", choices=("off", "balanced", "strict", "child-safe", "app-safe"))
+    parser.add_argument("--adblock-profile", choices=("off", "balanced", "strict", "child-safe", "app-safe", "threat-safe"))
     parser.add_argument("--dns-adblock", choices=("off", "geosite"))
     parser.add_argument("--youtube-mode", choices=("off", "safe", "enhanced"))
     parser.add_argument(
@@ -2086,7 +2125,7 @@ def main() -> int:
     )
 
     profile = (args.adblock_profile or env.get("ADBLOCK_PROFILE", "off")).strip().lower()
-    if profile not in {"off", "balanced", "strict", "child-safe", "app-safe"}:
+    if profile not in {"off", "balanced", "strict", "child-safe", "app-safe", "threat-safe"}:
         profile = "off"
 
     dns_mode = (args.dns_adblock or env.get("ADBLOCK_DNS_MODE", "off")).strip().lower()

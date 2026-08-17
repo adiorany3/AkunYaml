@@ -27,6 +27,8 @@ MANAGED = {
     "hagezi-pro-mini",
     "popup-ads",
     "privacy-extra",
+    "threat-fake-scam",
+    "threat-tif-ip",
 }
 
 
