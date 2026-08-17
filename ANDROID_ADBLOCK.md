@@ -93,6 +93,3 @@ Sniffer Android hanya memakai HTTP dan TLS. QUIC sniffer tidak ditambahkan karen
 Pemblokiran pada level domain tidak dapat membedakan seluruh iklan YouTube dari trafik video biasa karena sebagian infrastruktur dapat dipakai bersama. Karena itu konfigurasi menjaga domain playback seperti `googlevideo.com` tetap tidak diblokir.
 
 File `youtube_browser_filters.txt` disediakan untuk browser/content blocker yang mendukung filter kosmetik dan request-level. Jangan memasukkan file itu sebagai Clash rule-provider.
-
-## v3.3 Popup & game ads
-Profil `child-safe` juga memuat fallback lokal untuk jaringan popup/popunder dan SDK iklan game/mobile. Rule memakai `DOMAIN-SUFFIX` dan tidak menambah HTTP provider baru. Jika game bergantung pada rewarded ads, tombol reward dapat menjadi tidak tersedia. Ini lebih aman daripada memblokir CDN atau server asset game secara luas.

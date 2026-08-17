@@ -250,6 +250,3 @@ Catatan: filter DNS tidak dapat mengidentifikasi kategori setiap iklan video yan
 ## Adblock High-Score v3.1
 
 Profil child-safe sekarang menambahkan coverage kecil untuk host yang diuji Turtlecute. Router memakai inline domain provider, sedangkan Android memakai exact DOMAIN rules untuk kompatibilitas. Snapshot dapat diperbarui ketika generator dijalankan dengan `REFRESH_TURTLECUTE=true`. Filter browser opsional di `youtube_browser_filters.txt` menangani cosmetic/script checks yang tidak dapat dilakukan oleh DNS/OpenClash.
-
-## v3.3 popup/game ads
-Child-safe menambahkan 31 suffix lokal untuk popunder dan mobile/game ad SDK tanpa provider HTTP tambahan. Companion browser lengkap: `browser_filters_complete_v3.3.txt`.

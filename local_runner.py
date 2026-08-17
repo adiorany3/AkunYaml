@@ -300,6 +300,103 @@ MOBILE_GAME_AD_SUFFIXES = (
 
 INTRUSIVE_AD_SUFFIXES = tuple(dict.fromkeys(POPUNDER_AD_SUFFIXES + MOBILE_GAME_AD_SUFFIXES))
 
+# v3.4 App-Safe layer. Curated to target advertising namespaces used by
+# Android apps, OEM recommendation systems, Windows/macOS app surfaces, and
+# common mobile ad SDKs. Keep login, update, push, media, and general CDN
+# namespaces out of this list to reduce breakage.
+APP_SDK_AD_SUFFIXES = (
+    "smaato.com",
+    "smaato.net",
+    "ogury.com",
+    "ogury.co",
+    "pubnative.net",
+    "hyprmx.com",
+    "mobilefuse.com",
+    "amazon-adsystem.com",
+    "mopub.com",
+    "adjoe.io",
+)
+
+ANDROID_OEM_APP_AD_DOMAINS = (
+    # Xiaomi / MIUI advertising and recommendation endpoints.
+    "adv.sec.intl.miui.com",
+    "adv.l7.34.sec.miui.com",
+    "adv.sec.miui.com",
+    "ad.miui.com",
+    "api.ads.xiaomi.com",
+    "ad.eu.xiaomi.com",
+    "ad.quickapp.hybrid.xiaomi.com",
+    "ad.india.xiaomi.com",
+    "ad.intl.xiaomi.com",
+    "xadx.file.market.xiaomi.com",
+    "wtradv.market.xiaomi.com",
+    "ad.cdn.pandora.xiaomi.com",
+    # OPPO / Realme / HeyTap advertising endpoints.
+    "ads.heytapmobi.com",
+    "ads.heytapmobile.com",
+    "ads-bdapi-my.heytapmobile.com",
+    "ads-bdapi-ph.heytapmobile.com",
+    "ads-bdapi-th.heytapmobile.com",
+    "ads-bdapi-vn.heytapmobile.com",
+    "ad-growth-in.heytapmobile.com",
+    "ad-growth-ru.heytapmobile.com",
+    "ad-growth-sg.heytapmobile.com",
+    "adx-ads-fr.heytapmobile.com",
+    "adx-ads-ru.heytapmobile.com",
+    "bdapi-ads-sg.heytapmobile.com",
+    "cldata-ads-fr.heytapmobile.com",
+    "cldata-ads-ru.heytapmobile.com",
+    "sms-ads-in.heytapmobile.com",
+    "sms-ads-ru.heytapmobile.com",
+    "stgdata-ads-fr.heytapmobile.com",
+    "ads.oppomobile.com",
+    "adsfs.oppomobile.com",
+)
+
+DESKTOP_APP_AD_DOMAINS = (
+    # Microsoft / Windows / Office / MSN advertising endpoints.
+    "ads.bing.com",
+    "adserver.bing.com",
+    "outlookads.live.com",
+    "ads.microsoft.com",
+    "adsdk.microsoft.com",
+    "advertising.microsoft.com",
+    "bingads.microsoft.com",
+    "msadsscale.microsoft.com",
+    "ads.eu.msn.com",
+    "rmads.eu.msn.com",
+    "ads.jp.msn.com",
+    "advertising.jp.msn.com",
+    "ad.msn.com",
+    "adevents.msn.com",
+    "ads.msn.com",
+    "ads1.msn.com",
+    "mobileads.msn.com",
+    "rads.msn.com",
+    "rmads.msn.com",
+    "srtb.msn.com",
+    "prod.editor.ads.trafficmanager.net",
+    "ads-msn-com-profile.trafficmanager.net",
+    "adsdk.trafficmanager.net",
+    "dsp-ad-cache-tm.trafficmanager.net",
+    "ssp-prod-eastus-nonmutt.trafficmanager.net",
+    "msads.net",
+    # Apple/macOS app advertising endpoints only, not general Apple services.
+    "advertising.apple.com",
+    "advp.apple.com",
+    "api-adservices.apple.com",
+    "iad.apple.com",
+    "iadcontent.apple.com",
+    "iadmoo.apple.com",
+    "iadsdk.apple.com",
+    "iadworkbench.apple.com",
+    "searchads.apple.com",
+)
+
+APP_SAFE_EXACT_DOMAINS = tuple(dict.fromkeys(ANDROID_OEM_APP_AD_DOMAINS + DESKTOP_APP_AD_DOMAINS))
+APP_SAFE_SUFFIXES = tuple(dict.fromkeys(APP_SDK_AD_SUFFIXES))
+
+
 def load_turtlecute_domains(workdir: Path) -> list[str]:
     snapshot = workdir / TURTLECUTE_SNAPSHOT_FILE
     # Refresh only when explicitly requested by the updater. A short, single
@@ -1483,25 +1580,32 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     is_android = path.name == Path(android_output_name).name
     if is_android:
         provider_catalog = dict(ANDROID_SECURITY_PROVIDERS)
-        if profile in {"strict", "child-safe"}:
+        if profile in {"strict", "child-safe", "app-safe"}:
             provider_catalog.update(ANDROID_STRICT_SECURITY_PROVIDERS)
     else:
         provider_catalog = dict(SECURITY_PROVIDERS)
-        if profile in {"strict", "child-safe"}:
+        if profile in {"strict", "child-safe", "app-safe"}:
             provider_catalog.update(ROUTER_STRICT_SECURITY_PROVIDERS)
 
-    turtlecute_domains = load_turtlecute_domains(workdir) if profile == "child-safe" else []
-    if profile == "child-safe" and turtlecute_domains and not is_android:
+    turtlecute_domains = load_turtlecute_domains(workdir) if profile in {"child-safe", "app-safe"} else []
+    if profile in {"child-safe", "app-safe"} and turtlecute_domains and not is_android:
         provider_catalog["turtlecute-coverage"] = {
             "type": "inline",
             "behavior": "domain",
             "payload": turtlecute_domains,
         }
-    if profile == "child-safe" and not is_android:
+    if profile in {"child-safe", "app-safe"} and not is_android:
         provider_catalog["streaming-ad-safe"] = {
             "type": "inline",
             "behavior": "domain",
             "payload": list(STREAMING_SAFE_AD_DOMAINS),
+        }
+    if profile == "app-safe" and not is_android:
+        app_payload = list(APP_SAFE_EXACT_DOMAINS) + [f".{domain}" for domain in APP_SAFE_SUFFIXES]
+        provider_catalog["app-ad-safe"] = {
+            "type": "inline",
+            "behavior": "domain",
+            "payload": app_payload,
         }
 
     providers = config.setdefault("rule-providers", {})
@@ -1515,7 +1619,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     obsolete = {
         "security-tif-mini", "popup-ads", "hagezi-pro-mini", "awavenue-ads",
         "privacy-extra", "threat-tif-mini", "threat-malware", "threat-phishing", "threat-cryptominers",
-        "turtlecute-coverage", "streaming-ad-safe",
+        "turtlecute-coverage", "streaming-ad-safe", "app-ad-safe",
     }
     obsolete -= set(provider_catalog)
     for name in obsolete:
@@ -1568,16 +1672,19 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         "RULE-SET,awavenue-ads,",
         "RULE-SET,turtlecute-coverage,",
         "RULE-SET,streaming-ad-safe,",
+        "RULE-SET,app-ad-safe,",
         "RULE-SET,ads_domain,",
         "GEOSITE,category-ads-all,",
         "GEOSITE,tracker,",
     )
     intrusive_managed_rules = {f"DOMAIN-SUFFIX,{domain},REJECT" for domain in INTRUSIVE_AD_SUFFIXES}
+    app_managed_rules = ({f"DOMAIN,{domain},REJECT" for domain in APP_SAFE_EXACT_DOMAINS} | {f"DOMAIN-SUFFIX,{domain},REJECT" for domain in APP_SAFE_SUFFIXES})
     cleaned = [
         rule for rule in current_rules
         if not rule.startswith(managed_prefixes)
         and rule not in OVERBROAD_AD_KEYWORD_RULES
         and rule not in intrusive_managed_rules
+        and rule not in app_managed_rules
     ]
 
     # Android uses rule mode so blocklists are evaluated.  Unmatched traffic still
@@ -1628,29 +1735,34 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
                 "RULE-SET,threat-phishing,REJECT",
                 "RULE-SET,threat-cryptominers,REJECT",
             ])
-            if profile in {"strict", "child-safe"}:
+            if profile in {"strict", "child-safe", "app-safe"}:
                 security_rules.append("RULE-SET,privacy-extra,REJECT")
-            if profile == "child-safe" and turtlecute_domains:
+            if profile in {"child-safe", "app-safe"} and turtlecute_domains:
                 security_rules.extend(f"DOMAIN,{domain},REJECT" for domain in turtlecute_domains)
-            if profile == "child-safe":
+            if profile in {"child-safe", "app-safe"}:
                 security_rules.extend(f"DOMAIN,{domain},REJECT" for domain in STREAMING_SAFE_AD_DOMAINS)
                 security_rules.extend(f"DOMAIN-SUFFIX,{domain},REJECT" for domain in INTRUSIVE_AD_SUFFIXES)
+            if profile == "app-safe":
+                security_rules.extend(f"DOMAIN,{domain},REJECT" for domain in APP_SAFE_EXACT_DOMAINS)
+                security_rules.extend(f"DOMAIN-SUFFIX,{domain},REJECT" for domain in APP_SAFE_SUFFIXES)
             security_rules.extend([
                 "RULE-SET,ads_domain,REJECT",
                 "RULE-SET,tracker-domain,REJECT",
             ])
         else:
             security_rules.append("RULE-SET,threat-tif-mini,REJECT")
-            if profile in {"strict", "child-safe"}:
+            if profile in {"strict", "child-safe", "app-safe"}:
                 security_rules.extend([
                     "RULE-SET,hagezi-pro-mini,REJECT",
                     "RULE-SET,popup-ads,REJECT",
                 ])
-            if profile == "child-safe" and turtlecute_domains:
+            if profile in {"child-safe", "app-safe"} and turtlecute_domains:
                 security_rules.append("RULE-SET,turtlecute-coverage,REJECT")
-            if profile == "child-safe":
+            if profile in {"child-safe", "app-safe"}:
                 security_rules.append("RULE-SET,streaming-ad-safe,REJECT")
                 security_rules.extend(f"DOMAIN-SUFFIX,{domain},REJECT" for domain in INTRUSIVE_AD_SUFFIXES)
+            if profile == "app-safe":
+                security_rules.append("RULE-SET,app-ad-safe,REJECT")
             security_rules.extend([
                 "RULE-SET,ads_domain,REJECT",
                 "RULE-SET,tracker-domain,REJECT",
@@ -1684,7 +1796,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
                     policy["geosite:category-ads-all"] = "rcode://success"
                     changed = True
 
-        if profile == "child-safe":
+        if profile in {"child-safe", "app-safe"}:
             family_dns = list(CHILD_SAFE_DNS)
             if dns.get("nameserver") != family_dns:
                 dns["nameserver"] = family_dns
@@ -1892,7 +2004,7 @@ def parse_args():
     parser.add_argument("--no-ws-only", action="store_true")
     parser.add_argument("--no-install-deps", action="store_true")
     parser.add_argument("--network-test", action="store_true")
-    parser.add_argument("--adblock-profile", choices=("off", "balanced", "strict", "child-safe"))
+    parser.add_argument("--adblock-profile", choices=("off", "balanced", "strict", "child-safe", "app-safe"))
     parser.add_argument("--dns-adblock", choices=("off", "geosite"))
     parser.add_argument("--youtube-mode", choices=("off", "safe", "enhanced"))
     parser.add_argument(
@@ -1974,7 +2086,7 @@ def main() -> int:
     )
 
     profile = (args.adblock_profile or env.get("ADBLOCK_PROFILE", "off")).strip().lower()
-    if profile not in {"off", "balanced", "strict", "child-safe"}:
+    if profile not in {"off", "balanced", "strict", "child-safe", "app-safe"}:
         profile = "off"
 
     dns_mode = (args.dns_adblock or env.get("ADBLOCK_DNS_MODE", "off")).strip().lower()
