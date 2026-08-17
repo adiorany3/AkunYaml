@@ -1,0 +1,34 @@
+! AkunYaml v3.3 - browser companion for popup/popunder + game/mobile ad networks
+! Compatible with uBlock Origin / AdGuard-style network filtering.
+! Conservative: no global *$popup rule because it can break legitimate OAuth/login windows.
+||popads.net^
+||popcash.net^
+||propellerads.com^
+||adsterra.com^
+||onclickalgo.com^
+||onclickperformance.com^
+||hilltopads.net^
+||richads.com^
+||clickadu.com^
+||adcash.com^
+||applovin.com^
+||applvn.com^
+||unityads.unity3d.com^
+||supersonicads.com^
+||ironsrc.com^
+||vungle.com^
+||vunglecloud.com^
+||chartboost.com^
+||inmobi.com^
+||adcolony.com^
+||mintegral.com^
+||mtgglobals.com^
+||rayjump.com^
+||pangle.io^
+||pangleglobal.com^
+||tapjoy.com^
+||tapjoyads.com^
+||startappservice.com^
+||startapp.com^
+||fyber.com^
+||inner-active.mobi^

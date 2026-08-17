@@ -1,3 +1,9 @@
+# v3.3 Popup & Game Ad Protection
+
+- Tambah fallback popup/popunder dan mobile-game ad SDK tanpa provider HTTP baru.
+- Tambah browser companion filter dan audit khusus.
+- Pertahankan child-safe, streaming-safe, YouTube guard, dan Turtlecute coverage.
+
 # v2.5 Security Hardening - 2026-08-16
 
 - Menambahkan `threat-tif-mini` berbasis HaGeZi Threat Intelligence Feeds Mini untuk memblokir malware, phishing, scam, spam, dan domain C2.

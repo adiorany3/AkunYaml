@@ -1,0 +1,89 @@
+! AkunYaml v3.3 Complete Browser Companion
+! Use with a browser/content blocker that supports AdGuard/uBlock-style filters.
+! Network-level protection remains in OpenClash/Android YAML.
+
+! === YouTube cosmetic + conservative endpoints ===
+! ConvertYAML Local Runner v2.0
+! Cosmetic YouTube filters. Do not block googlevideo.com.
+youtube.com##ytd-display-ad-renderer
+youtube.com##ytd-ad-slot-renderer
+youtube.com##ytd-promoted-video-renderer
+youtube.com##ytd-promoted-sparkles-web-renderer
+youtube.com##ytd-in-feed-ad-layout-renderer
+youtube.com##ytd-banner-promo-renderer
+youtube.com##ytd-companion-slot-renderer
+youtube.com##ytd-action-companion-ad-renderer
+youtube.com##ytd-ad-engagement-panel-renderer
+youtube.com##ytd-player-legacy-desktop-watch-ads-renderer
+youtube.com##ytd-promoted-sparkles-text-search-renderer
+youtube.com##.ytp-ad-module
+youtube.com##.video-ads
+youtube.com##.ytp-ad-overlay-container
+youtube.com##.ytp-ad-player-overlay
+youtube.com##.ytp-ad-text-overlay
+youtube.com##.ytp-ad-image-overlay
+youtube.com##.ytp-ad-progress-list
+
+! Additional endpoints separated from the main media CDN.
+! static.doubleclick.net is intentionally NOT blocked because some YouTube
+! playback validation depends on /instream/ad_status.js.
+||googleads.g.doubleclick.net^$domain=youtube.com
+||ad.doubleclick.net^$domain=youtube.com
+||pubads.g.doubleclick.net^$domain=youtube.com
+||securepubads.g.doubleclick.net^$domain=youtube.com
+||pagead2.googlesyndication.com^$domain=youtube.com
+||tpc.googlesyndication.com^$domain=youtube.com
+||www.googleadservices.com^$domain=youtube.com
+||youtube.com/api/stats/ads^$xhr,domain=youtube.com
+||youtube.com/pagead/*$xhr,domain=youtube.com
+||youtube.com/ptracking^$xhr,domain=youtube.com
+
+! Conservative in-page pruning for browser blockers that support uBO scriptlets.
+youtube.com##+js(set-constant, ytInitialPlayerResponse.adPlacements, undefined)
+youtube.com##+js(set-constant, ytInitialPlayerResponse.adSlots, undefined)
+youtube.com##+js(set-constant, ytInitialPlayerResponse.playerAds, undefined)
+
+! Keep the browser blocker's own filter lists enabled and updated.
+! DNS/Mihomo alone cannot reliably distinguish every YouTube video ad from
+! normal media when they share delivery infrastructure.
+
+! === Streaming exact hosts ===
+! Exact hosts only.
+||video-akpcw.spotifycdn.com^
+||805ba.v.fwmrm.net^
+||tvm-mtv-freewheel.akamaized.net^
+
+! === Popup / mobile game ad networks ===
+! Compatible with uBlock Origin / AdGuard-style network filtering.
+! Conservative: no global *$popup rule because it can break legitimate OAuth/login windows.
+||popads.net^
+||popcash.net^
+||propellerads.com^
+||adsterra.com^
+||onclickalgo.com^
+||onclickperformance.com^
+||hilltopads.net^
+||richads.com^
+||clickadu.com^
+||adcash.com^
+||applovin.com^
+||applvn.com^
+||unityads.unity3d.com^
+||supersonicads.com^
+||ironsrc.com^
+||vungle.com^
+||vunglecloud.com^
+||chartboost.com^
+||inmobi.com^
+||adcolony.com^
+||mintegral.com^
+||mtgglobals.com^
+||rayjump.com^
+||pangle.io^
+||pangleglobal.com^
+||tapjoy.com^
+||tapjoyads.com^
+||startappservice.com^
+||startapp.com^
+||fyber.com^
+||inner-active.mobi^

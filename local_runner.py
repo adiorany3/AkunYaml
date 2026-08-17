@@ -258,6 +258,48 @@ STREAMING_SAFE_AD_DOMAINS = (
     "tvm-mtv-freewheel.akamaized.net",
 )
 
+# Small local fallback for intrusive popunders and mobile/game ad SDKs.
+# These are advertising namespaces, not game/CDN namespaces. Keeping them inline
+# avoids another HTTP provider and limits rule-evaluation overhead.
+POPUNDER_AD_SUFFIXES = (
+    "popads.net",
+    "popcash.net",
+    "propellerads.com",
+    "adsterra.com",
+    "onclickalgo.com",
+    "onclickperformance.com",
+    "hilltopads.net",
+    "richads.com",
+    "clickadu.com",
+    "adcash.com",
+)
+
+MOBILE_GAME_AD_SUFFIXES = (
+    "applovin.com",
+    "applvn.com",
+    "unityads.unity3d.com",
+    "supersonicads.com",
+    "ironsrc.com",
+    "vungle.com",
+    "vunglecloud.com",
+    "chartboost.com",
+    "inmobi.com",
+    "adcolony.com",
+    "mintegral.com",
+    "mtgglobals.com",
+    "rayjump.com",
+    "pangle.io",
+    "pangleglobal.com",
+    "tapjoy.com",
+    "tapjoyads.com",
+    "startappservice.com",
+    "startapp.com",
+    "fyber.com",
+    "inner-active.mobi",
+)
+
+INTRUSIVE_AD_SUFFIXES = tuple(dict.fromkeys(POPUNDER_AD_SUFFIXES + MOBILE_GAME_AD_SUFFIXES))
+
 def load_turtlecute_domains(workdir: Path) -> list[str]:
     snapshot = workdir / TURTLECUTE_SNAPSHOT_FILE
     # Refresh only when explicitly requested by the updater. A short, single
@@ -1530,9 +1572,12 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         "GEOSITE,category-ads-all,",
         "GEOSITE,tracker,",
     )
+    intrusive_managed_rules = {f"DOMAIN-SUFFIX,{domain},REJECT" for domain in INTRUSIVE_AD_SUFFIXES}
     cleaned = [
         rule for rule in current_rules
-        if not rule.startswith(managed_prefixes) and rule not in OVERBROAD_AD_KEYWORD_RULES
+        if not rule.startswith(managed_prefixes)
+        and rule not in OVERBROAD_AD_KEYWORD_RULES
+        and rule not in intrusive_managed_rules
     ]
 
     # Android uses rule mode so blocklists are evaluated.  Unmatched traffic still
@@ -1589,6 +1634,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
                 security_rules.extend(f"DOMAIN,{domain},REJECT" for domain in turtlecute_domains)
             if profile == "child-safe":
                 security_rules.extend(f"DOMAIN,{domain},REJECT" for domain in STREAMING_SAFE_AD_DOMAINS)
+                security_rules.extend(f"DOMAIN-SUFFIX,{domain},REJECT" for domain in INTRUSIVE_AD_SUFFIXES)
             security_rules.extend([
                 "RULE-SET,ads_domain,REJECT",
                 "RULE-SET,tracker-domain,REJECT",
@@ -1604,6 +1650,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
                 security_rules.append("RULE-SET,turtlecute-coverage,REJECT")
             if profile == "child-safe":
                 security_rules.append("RULE-SET,streaming-ad-safe,REJECT")
+                security_rules.extend(f"DOMAIN-SUFFIX,{domain},REJECT" for domain in INTRUSIVE_AD_SUFFIXES)
             security_rules.extend([
                 "RULE-SET,ads_domain,REJECT",
                 "RULE-SET,tracker-domain,REJECT",
