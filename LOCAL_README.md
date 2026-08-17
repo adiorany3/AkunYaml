@@ -28,7 +28,10 @@ Paket ini dikunci ke target di atas. Generator tidak lagi menganggap Mihomo terb
    - Mendeteksi core dari `--mihomo-path`, `MIHOMO_PATH`, `/etc/openclash/core/clash_meta`, `.local_bin/mihomo`, atau PATH.
    - Core selain `alpha-ge183c58` ditolak secara default.
    - Reference profile memakai snapshot lokal `reference_profile_v047156.yaml`.
-   - Default adblock profile `balanced` mengaktifkan ads, tracker, dan HaGeZi TIF Mini.
+   - Default adblock profile `balanced` mengaktifkan ads, tracker, dan threat protection pada router serta Android.
+   - Android memakai rule-provider YAML agar tidak bergantung pada MRS.
+   - Profil `strict` menambah HaGeZi PRO Mini + Pop-Up Ads pada router dan privacy list tambahan pada Android.
+   - Provider diperbarui otomatis setiap 12 jam secara default.
    - DNS-level adblock tetap `off` untuk mengurangi false positive dan menjaga kompatibilitas.
 
 4. `openclash_target.py`
@@ -61,6 +64,9 @@ Paket ini dikunci ke target di atas. Generator tidak lagi menganggap Mihomo terb
 - `reference_profile_v047156.yaml`: baseline DNS, sniffer, provider, dan rules yang dipin lokal.
 - `local_config.json`: konfigurasi default target.
 - `openclash_router_fix.sh`: audit dan fix config pada router.
+- `ANDROID_ADBLOCK.md`: panduan adblock dan threat protection Android.
+- `SECURITY_OPTIMIZATION.md`: detail profil balanced/strict dan sumber provider.
+- `adblock_provider_audit.py`: audit interval, URL, format provider, dan opsional cek upstream.
 - `openclash_exact_core_filter.sh`: isolate proxy dengan exact core router.
 
 ## Generate di OpenWrt atau Linux
@@ -154,6 +160,23 @@ python apply_existing.py --static-only
 ```
 
 Script membuat backup di `backup_target/`. Jika validasi gagal setelah perubahan, script otomatis rollback.
+
+
+## Adblock multi-platform
+
+Default tetap balanced:
+
+```bash
+python apply_existing.py --static-only --profile balanced
+```
+
+Untuk proteksi lebih agresif:
+
+```bash
+python apply_existing.py --static-only --profile strict
+```
+
+Android menggunakan `openclash_android.yaml`. Rule-provider Android memakai YAML dan akan memperbarui daftar dari upstream sesuai interval provider. Tambahkan false positive ke `adblock_allowlist.txt`.
 
 ## Audit router
 

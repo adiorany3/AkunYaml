@@ -161,11 +161,14 @@ SECURITY_PROVIDERS = {
 # and omit the `format` key because YAML is the rule-provider default.  This
 # avoids MRS/text parser requirements on Android builds with older bundled cores.
 ANDROID_SECURITY_PROVIDERS = {
+    # Android uses YAML-only providers to preserve compatibility with older
+    # Clash Meta for Android builds. Chocolate4U publishes a compact domain
+    # category derived from multiple ad/tracker sources and maintains YAML output.
     "ads_domain": {
         "type": "http",
-        "behavior": "classical",
+        "behavior": "domain",
         "path": "./rule_providers/ads_domain.yaml",
-        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/classical/category-ads-all.yaml",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/category-ads-all.yaml",
         "interval": 43200,
     },
     "tracker-domain": {
@@ -194,6 +197,38 @@ ANDROID_SECURITY_PROVIDERS = {
         "behavior": "domain",
         "path": "./rule_providers/cryptominers.yaml",
         "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/cryptominers.yaml",
+        "interval": 43200,
+    },
+}
+
+# Optional strict layer. Balanced remains the default to keep RAM use and false
+# positives under control. Strict is intended for users who specifically want
+# stronger popup/ad/tracker filtering and are willing to maintain an allowlist.
+ROUTER_STRICT_SECURITY_PROVIDERS = {
+    "hagezi-pro-mini": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "text",
+        "path": "./rule_providers/hagezi-pro-mini.txt",
+        "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.mini-onlydomains.txt",
+        "interval": 43200,
+    },
+    "popup-ads": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "text",
+        "path": "./rule_providers/popup-ads.txt",
+        "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/popupads-onlydomains.txt",
+        "interval": 43200,
+    },
+}
+
+ANDROID_STRICT_SECURITY_PROVIDERS = {
+    "privacy-extra": {
+        "type": "http",
+        "behavior": "classical",
+        "path": "./rule_providers/privacy-extra.yaml",
+        "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Privacy/Privacy.yaml",
         "interval": 43200,
     },
 }
@@ -923,8 +958,6 @@ def sanitize_yaml(path: Path) -> bool:
 
     legacy_security_providers = {
         "security-tif-mini",
-        "popup-ads",
-        "hagezi-pro-mini",
         "awavenue-ads",
     }
     providers0 = config.get("rule-providers")
@@ -971,7 +1004,7 @@ def sanitize_yaml(path: Path) -> bool:
             changed = True
             continue
         if re.match(
-            r"(?i)^RULE-SET\s*,\s*(security-tif-mini|popup-ads|hagezi-pro-mini|awavenue-ads)\s*,",
+            r"(?i)^RULE-SET\s*,\s*(security-tif-mini|awavenue-ads)\s*,",
             value,
         ):
             log(f"{path.name}: hapus RULE-SET provider TXT lama")
@@ -1353,7 +1386,14 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     changed = False
     android_output_name = os.environ.get("OUTPUT_ANDROID_YAML", "openclash_android.yaml").strip() or "openclash_android.yaml"
     is_android = path.name == Path(android_output_name).name
-    provider_catalog = ANDROID_SECURITY_PROVIDERS if is_android else SECURITY_PROVIDERS
+    if is_android:
+        provider_catalog = dict(ANDROID_SECURITY_PROVIDERS)
+        if profile == "strict":
+            provider_catalog.update(ANDROID_STRICT_SECURITY_PROVIDERS)
+    else:
+        provider_catalog = dict(SECURITY_PROVIDERS)
+        if profile == "strict":
+            provider_catalog.update(ROUTER_STRICT_SECURITY_PROVIDERS)
 
     providers = config.setdefault("rule-providers", {})
     if not isinstance(providers, dict):
@@ -1365,7 +1405,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     # an MRS/text provider by accident, while router profiles keep their lean MRS set.
     obsolete = {
         "security-tif-mini", "popup-ads", "hagezi-pro-mini", "awavenue-ads",
-        "threat-tif-mini", "threat-malware", "threat-phishing", "threat-cryptominers",
+        "privacy-extra", "threat-tif-mini", "threat-malware", "threat-phishing", "threat-cryptominers",
     }
     obsolete -= set(provider_catalog)
     for name in obsolete:
@@ -1384,7 +1424,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         # Even with blocking disabled, an Android profile must not retain stale
         # MRS/text security providers because some CMFA cores reject them while
         # parsing the whole configuration.
-        for name in set(SECURITY_PROVIDERS) | set(ANDROID_SECURITY_PROVIDERS):
+        for name in set(SECURITY_PROVIDERS) | set(ANDROID_SECURITY_PROVIDERS) | set(ROUTER_STRICT_SECURITY_PROVIDERS) | set(ANDROID_STRICT_SECURITY_PROVIDERS):
             if name in providers:
                 providers.pop(name, None)
                 changed = True
@@ -1406,6 +1446,8 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     managed_prefixes = (
         "RULE-SET,security-tif-mini,",
         "RULE-SET,popup-ads,",
+        "RULE-SET,hagezi-pro-mini,",
+        "RULE-SET,privacy-extra,",
         "RULE-SET,tracker-domain,",
         "RULE-SET,threat-tif-mini,",
         "RULE-SET,threat-malware,",
@@ -1469,12 +1511,21 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
                 "RULE-SET,threat-malware,REJECT",
                 "RULE-SET,threat-phishing,REJECT",
                 "RULE-SET,threat-cryptominers,REJECT",
+            ])
+            if profile == "strict":
+                security_rules.append("RULE-SET,privacy-extra,REJECT")
+            security_rules.extend([
                 "RULE-SET,ads_domain,REJECT",
                 "RULE-SET,tracker-domain,REJECT",
             ])
         else:
+            security_rules.append("RULE-SET,threat-tif-mini,REJECT")
+            if profile == "strict":
+                security_rules.extend([
+                    "RULE-SET,hagezi-pro-mini,REJECT",
+                    "RULE-SET,popup-ads,REJECT",
+                ])
             security_rules.extend([
-                "RULE-SET,threat-tif-mini,REJECT",
                 "RULE-SET,ads_domain,REJECT",
                 "RULE-SET,tracker-domain,REJECT",
             ])
