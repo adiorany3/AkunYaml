@@ -41,9 +41,3 @@ youtube.com##+js(set-constant, ytInitialPlayerResponse.playerAds, undefined)
 ! Keep the browser blocker's own filter lists enabled and updated.
 ! DNS/Mihomo alone cannot reliably distinguish every YouTube video ad from
 ! normal media when they share delivery infrastructure.
-
-! Turtlecute browser-only checks. These do not affect OpenClash network performance.
-adblock.turtlecute.org##.adbox.banner_ads.adsbox
-adblock.turtlecute.org##.textads
-/pagead.js$domain=adblock.turtlecute.org
-/widget/ads.

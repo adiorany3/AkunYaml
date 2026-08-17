@@ -249,6 +249,15 @@ TURTLECUTE_HOST_URL = "https://raw.githubusercontent.com/Turtlecute33/adblocktes
 TURTLECUTE_SNAPSHOT_FILE = "turtlecute_d3host.txt"
 TURTLECUTE_EXCLUDE = {"static.doubleclick.net"}
 
+# Conservative streaming-ad layer. Exact hosts only. Never block whole
+# spotifycdn.com/fwmrm.net/akamaized.net suffixes because those namespaces can
+# also carry playback, licensing, artwork, or app control traffic.
+STREAMING_SAFE_AD_DOMAINS = (
+    "video-akpcw.spotifycdn.com",
+    "805ba.v.fwmrm.net",
+    "tvm-mtv-freewheel.akamaized.net",
+)
+
 def load_turtlecute_domains(workdir: Path) -> list[str]:
     snapshot = workdir / TURTLECUTE_SNAPSHOT_FILE
     # Refresh only when explicitly requested by the updater. A short, single
@@ -1446,6 +1455,12 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
             "behavior": "domain",
             "payload": turtlecute_domains,
         }
+    if profile == "child-safe" and not is_android:
+        provider_catalog["streaming-ad-safe"] = {
+            "type": "inline",
+            "behavior": "domain",
+            "payload": list(STREAMING_SAFE_AD_DOMAINS),
+        }
 
     providers = config.setdefault("rule-providers", {})
     if not isinstance(providers, dict):
@@ -1458,7 +1473,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     obsolete = {
         "security-tif-mini", "popup-ads", "hagezi-pro-mini", "awavenue-ads",
         "privacy-extra", "threat-tif-mini", "threat-malware", "threat-phishing", "threat-cryptominers",
-        "turtlecute-coverage",
+        "turtlecute-coverage", "streaming-ad-safe",
     }
     obsolete -= set(provider_catalog)
     for name in obsolete:
@@ -1510,6 +1525,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         "RULE-SET,hagezi-pro-mini,",
         "RULE-SET,awavenue-ads,",
         "RULE-SET,turtlecute-coverage,",
+        "RULE-SET,streaming-ad-safe,",
         "RULE-SET,ads_domain,",
         "GEOSITE,category-ads-all,",
         "GEOSITE,tracker,",
@@ -1571,6 +1587,8 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
                 security_rules.append("RULE-SET,privacy-extra,REJECT")
             if profile == "child-safe" and turtlecute_domains:
                 security_rules.extend(f"DOMAIN,{domain},REJECT" for domain in turtlecute_domains)
+            if profile == "child-safe":
+                security_rules.extend(f"DOMAIN,{domain},REJECT" for domain in STREAMING_SAFE_AD_DOMAINS)
             security_rules.extend([
                 "RULE-SET,ads_domain,REJECT",
                 "RULE-SET,tracker-domain,REJECT",
@@ -1584,6 +1602,8 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
                 ])
             if profile == "child-safe" and turtlecute_domains:
                 security_rules.append("RULE-SET,turtlecute-coverage,REJECT")
+            if profile == "child-safe":
+                security_rules.append("RULE-SET,streaming-ad-safe,REJECT")
             security_rules.extend([
                 "RULE-SET,ads_domain,REJECT",
                 "RULE-SET,tracker-domain,REJECT",
