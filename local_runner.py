@@ -47,7 +47,7 @@ from openclash_target import (
     validate_yaml_file,
 )
 
-APP_VERSION = "3.0-childsafe"
+APP_VERSION = "3.1-highscore-childsafe"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -241,6 +241,41 @@ CHILD_SAFE_DNS = (
     "https://family.dns.bebasid.com/dns-query",
     "tls://family.dns.bebasid.com:853",
 )
+
+# Small benchmark-coverage list. It is refreshed at generation time and stored
+# inline so Mihomo does not need another runtime HTTP provider. One compatibility
+# host is intentionally excluded to preserve YouTube playback reliability.
+TURTLECUTE_HOST_URL = "https://raw.githubusercontent.com/Turtlecute33/adblocktest/master/src/d3host.txt"
+TURTLECUTE_SNAPSHOT_FILE = "turtlecute_d3host.txt"
+TURTLECUTE_EXCLUDE = {"static.doubleclick.net"}
+
+def load_turtlecute_domains(workdir: Path) -> list[str]:
+    snapshot = workdir / TURTLECUTE_SNAPSHOT_FILE
+    # Refresh only when explicitly requested by the updater. A short, single
+    # request avoids delaying normal generation when GitHub/DNS is unavailable.
+    if os.environ.get("REFRESH_TURTLECUTE", "false").strip().lower() in {"1", "true", "yes", "on"}:
+        try:
+            req = urllib.request.Request(TURTLECUTE_HOST_URL, headers=_headers(False))
+            with urllib.request.urlopen(req, timeout=8, context=_ssl_context()) as response:
+                data = response.read()
+            if data:
+                snapshot.write_bytes(data)
+                log("Turtlecute snapshot diperbarui")
+        except Exception as exc:
+            log(f"Turtlecute refresh gagal, pakai snapshot lokal: {exc}")
+    if not snapshot.exists():
+        return []
+    domains: list[str] = []
+    for raw in snapshot.read_text(encoding="utf-8", errors="ignore").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = line.split()
+        if len(parts) >= 2 and parts[0] in {"0.0.0.0", "127.0.0.1"}:
+            domain = parts[1].strip().lower().rstrip(".")
+            if domain and domain not in TURTLECUTE_EXCLUDE and domain not in domains:
+                domains.append(domain)
+    return domains
 
 LAN_DIRECT_RULES = (
     "DOMAIN-SUFFIX,local,DIRECT",
@@ -1404,6 +1439,14 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         if profile in {"strict", "child-safe"}:
             provider_catalog.update(ROUTER_STRICT_SECURITY_PROVIDERS)
 
+    turtlecute_domains = load_turtlecute_domains(workdir) if profile == "child-safe" else []
+    if profile == "child-safe" and turtlecute_domains and not is_android:
+        provider_catalog["turtlecute-coverage"] = {
+            "type": "inline",
+            "behavior": "domain",
+            "payload": turtlecute_domains,
+        }
+
     providers = config.setdefault("rule-providers", {})
     if not isinstance(providers, dict):
         providers = {}
@@ -1415,6 +1458,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     obsolete = {
         "security-tif-mini", "popup-ads", "hagezi-pro-mini", "awavenue-ads",
         "privacy-extra", "threat-tif-mini", "threat-malware", "threat-phishing", "threat-cryptominers",
+        "turtlecute-coverage",
     }
     obsolete -= set(provider_catalog)
     for name in obsolete:
@@ -1425,7 +1469,8 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     if profile != "off":
         for name, base_provider in provider_catalog.items():
             provider = dict(base_provider)
-            provider["interval"] = interval
+            if provider.get("type") != "inline":
+                provider["interval"] = interval
             if providers.get(name) != provider:
                 providers[name] = provider
                 changed = True
@@ -1464,6 +1509,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         "RULE-SET,threat-cryptominers,",
         "RULE-SET,hagezi-pro-mini,",
         "RULE-SET,awavenue-ads,",
+        "RULE-SET,turtlecute-coverage,",
         "RULE-SET,ads_domain,",
         "GEOSITE,category-ads-all,",
         "GEOSITE,tracker,",
@@ -1523,6 +1569,8 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
             ])
             if profile in {"strict", "child-safe"}:
                 security_rules.append("RULE-SET,privacy-extra,REJECT")
+            if profile == "child-safe" and turtlecute_domains:
+                security_rules.extend(f"DOMAIN,{domain},REJECT" for domain in turtlecute_domains)
             security_rules.extend([
                 "RULE-SET,ads_domain,REJECT",
                 "RULE-SET,tracker-domain,REJECT",
@@ -1534,6 +1582,8 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
                     "RULE-SET,hagezi-pro-mini,REJECT",
                     "RULE-SET,popup-ads,REJECT",
                 ])
+            if profile == "child-safe" and turtlecute_domains:
+                security_rules.append("RULE-SET,turtlecute-coverage,REJECT")
             security_rules.extend([
                 "RULE-SET,ads_domain,REJECT",
                 "RULE-SET,tracker-domain,REJECT",
