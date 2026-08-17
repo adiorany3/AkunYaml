@@ -47,7 +47,7 @@ from openclash_target import (
     validate_yaml_file,
 )
 
-APP_VERSION = "2.8-android-ruleprovider"
+APP_VERSION = "3.0-childsafe"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -232,6 +232,15 @@ ANDROID_STRICT_SECURITY_PROVIDERS = {
         "interval": 43200,
     },
 }
+
+# Child-safe profile uses a family DNS resolver that blocks ads, trackers,
+# malware, adult content, and gambling categories.  Keep proxy-server DNS
+# separate so proxy hostnames can still resolve even if a family category
+# classifies a proxy endpoint unexpectedly.
+CHILD_SAFE_DNS = (
+    "https://family.dns.bebasid.com/dns-query",
+    "tls://family.dns.bebasid.com:853",
+)
 
 LAN_DIRECT_RULES = (
     "DOMAIN-SUFFIX,local,DIRECT",
@@ -1388,11 +1397,11 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     is_android = path.name == Path(android_output_name).name
     if is_android:
         provider_catalog = dict(ANDROID_SECURITY_PROVIDERS)
-        if profile == "strict":
+        if profile in {"strict", "child-safe"}:
             provider_catalog.update(ANDROID_STRICT_SECURITY_PROVIDERS)
     else:
         provider_catalog = dict(SECURITY_PROVIDERS)
-        if profile == "strict":
+        if profile in {"strict", "child-safe"}:
             provider_catalog.update(ROUTER_STRICT_SECURITY_PROVIDERS)
 
     providers = config.setdefault("rule-providers", {})
@@ -1512,7 +1521,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
                 "RULE-SET,threat-phishing,REJECT",
                 "RULE-SET,threat-cryptominers,REJECT",
             ])
-            if profile == "strict":
+            if profile in {"strict", "child-safe"}:
                 security_rules.append("RULE-SET,privacy-extra,REJECT")
             security_rules.extend([
                 "RULE-SET,ads_domain,REJECT",
@@ -1520,7 +1529,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
             ])
         else:
             security_rules.append("RULE-SET,threat-tif-mini,REJECT")
-            if profile == "strict":
+            if profile in {"strict", "child-safe"}:
                 security_rules.extend([
                     "RULE-SET,hagezi-pro-mini,REJECT",
                     "RULE-SET,popup-ads,REJECT",
@@ -1557,6 +1566,17 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
                 if policy.get("geosite:category-ads-all") != "rcode://success":
                     policy["geosite:category-ads-all"] = "rcode://success"
                     changed = True
+
+        if profile == "child-safe":
+            family_dns = list(CHILD_SAFE_DNS)
+            if dns.get("nameserver") != family_dns:
+                dns["nameserver"] = family_dns
+                changed = True
+            # Router outputs may contain a fallback resolver. Keep fallback under
+            # the same family policy so blocked categories cannot bypass it.
+            if "fallback" in dns and dns.get("fallback") != family_dns:
+                dns["fallback"] = family_dns
+                changed = True
 
     if changed:
         path.write_text(
@@ -1755,7 +1775,7 @@ def parse_args():
     parser.add_argument("--no-ws-only", action="store_true")
     parser.add_argument("--no-install-deps", action="store_true")
     parser.add_argument("--network-test", action="store_true")
-    parser.add_argument("--adblock-profile", choices=("off", "balanced", "strict"))
+    parser.add_argument("--adblock-profile", choices=("off", "balanced", "strict", "child-safe"))
     parser.add_argument("--dns-adblock", choices=("off", "geosite"))
     parser.add_argument("--youtube-mode", choices=("off", "safe", "enhanced"))
     parser.add_argument(
@@ -1837,7 +1857,7 @@ def main() -> int:
     )
 
     profile = (args.adblock_profile or env.get("ADBLOCK_PROFILE", "off")).strip().lower()
-    if profile not in {"off", "balanced", "strict"}:
+    if profile not in {"off", "balanced", "strict", "child-safe"}:
         profile = "off"
 
     dns_mode = (args.dns_adblock or env.get("ADBLOCK_DNS_MODE", "off")).strip().lower()

@@ -228,3 +228,21 @@ Generator tidak mengambil DNS, sniffer, providers, atau rules dari repo remote d
 Paket tidak menyertakan binary Mihomo target. Gunakan core milik router atau binary yang sesuai OS/arsitektur Anda.
 
 Keempat YAML bawaan sudah melewati static validator paket ini. Exact Mihomo parser test harus dilakukan menggunakan binary `alpha-ge183c58` pada perangkat Anda.
+
+
+## Profil child-safe v3.0
+
+Profil `child-safe` ditujukan untuk perangkat anak dan jaringan keluarga. Profil ini:
+
+- memakai lapisan pemblokiran setara `strict`;
+- mengarahkan DNS pengguna ke resolver keluarga yang memblokir iklan, tracker, malware, konten dewasa, dan kategori judi;
+- menjaga DNS khusus proxy tetap terpisah agar hostname node proxy tetap dapat di-resolve;
+- tetap mempertahankan guard playback YouTube dan tidak memblokir `googlevideo.com`.
+
+Terapkan ke output yang sudah ada:
+
+```bash
+python3 apply_existing.py --static-only --profile child-safe
+```
+
+Catatan: filter DNS tidak dapat mengidentifikasi kategori setiap iklan video yang disisipkan langsung oleh YouTube dari infrastruktur yang sama dengan media. Untuk akun anak, gunakan juga Restricted Mode/supervision dan pembatasan topik iklan sensitif pada akun Google.
