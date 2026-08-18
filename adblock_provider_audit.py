@@ -18,6 +18,7 @@ FILES = (
 )
 
 MANAGED = {
+    "ads_indonesia",
     "ads_domain",
     "tracker-domain",
     "threat-tif-mini",
@@ -108,6 +109,12 @@ def audit(path: Path, network: bool, timeout: float) -> list[str]:
             ok, detail = check_url(url, timeout)
             if not ok:
                 errors.append(f"provider {name} upstream gagal: {detail}")
+
+    if path.name != "openclash_android.yaml":
+        if "ads_indonesia" not in providers:
+            errors.append("provider ads_indonesia wajib ada pada output router")
+        if "ads_indonesia" not in used:
+            errors.append("RULE-SET ads_indonesia wajib dipakai pada output router")
 
     if path.name == "openclash_android.yaml":
         for name, provider in providers.items():

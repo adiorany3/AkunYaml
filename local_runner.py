@@ -119,6 +119,7 @@ DEFAULT_ENV = {
     "REFERENCE_PROFILE_URL": REFERENCE_PROFILE_URL,
     "ADBLOCK_PROFILE": "balanced",
     "ADBLOCK_PROVIDER_INTERVAL": "43200",
+    "INDONESIA_ADBLOCK": "true",
     "THREAT_SAFE_FAMILY_DNS": "true",
     # DNS-level ad blocking remains off by default to reduce false positives.
     "ADBLOCK_DNS_MODE": "off",
@@ -147,6 +148,17 @@ DEFAULT_ENV = {
 }
 
 SECURITY_PROVIDERS = {
+    # Regional DNS-level ad list for Indonesian/Malaysian sites. ABPindo's
+    # domain feed intentionally contains only ad-server/third-party domains,
+    # which is safer for router-level blocking than importing browser/cosmetic rules.
+    "ads_indonesia": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "text",
+        "path": "./rule_providers/ads_indonesia.txt",
+        "url": "https://raw.githubusercontent.com/ABPindo/indonesianadblockrules/master/subscriptions/domain.txt",
+        "interval": 43200,
+    },
     "ads_domain": {
         "type": "http",
         "behavior": "domain",
@@ -1718,6 +1730,9 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
             provider_catalog.update(ANDROID_STRICT_SECURITY_PROVIDERS)
     else:
         provider_catalog = dict(SECURITY_PROVIDERS)
+        indonesia_ads_enabled = os.environ.get("INDONESIA_ADBLOCK", "true").strip().lower() not in {"0", "false", "no", "off"}
+        if not indonesia_ads_enabled:
+            provider_catalog.pop("ads_indonesia", None)
         if profile in {"strict", "child-safe", "app-safe", "threat-safe"}:
             provider_catalog.update(ROUTER_STRICT_SECURITY_PROVIDERS)
         if profile == "threat-safe":
@@ -1772,7 +1787,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         "security-tif-mini", "popup-ads", "hagezi-pro-mini", "awavenue-ads",
         "privacy-extra", "threat-tif-mini", "threat-malware", "threat-phishing", "threat-cryptominers",
         "turtlecute-coverage", "streaming-ad-safe", "app-ad-safe",
-        "threat-fake-scam", "threat-tif-ip",
+        "threat-fake-scam", "threat-tif-ip", "ads_indonesia",
     }
     obsolete -= set(provider_catalog)
     for name in obsolete:
@@ -2007,6 +2022,8 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
             if profile == "threat-safe":
                 if not is_lite:
                     security_rules.append("RULE-SET,threat-tif-ip,REJECT,no-resolve")
+            if "ads_indonesia" in provider_catalog:
+                security_rules.append("RULE-SET,ads_indonesia,REJECT")
             security_rules.extend([
                 "RULE-SET,ads_domain,REJECT",
                 "RULE-SET,tracker-domain,REJECT",

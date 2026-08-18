@@ -2103,6 +2103,14 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "url": "https://ruleset.skk.moe/Clash/ip/ai.txt",
         },
 
+        # Regional ad feed for Indonesian/Malaysian sites. Use the DNS/domain
+        # variant, not the full browser filter, to reduce router false positives.
+        "ads_indonesia": {
+            **text_domain_provider,
+            "path": "./rule_providers/ads_indonesia.txt",
+            "url": "https://raw.githubusercontent.com/ABPindo/indonesianadblockrules/master/subscriptions/domain.txt",
+        },
+
         # Block iklan, tracking, privacy-leak, dan hijacking.
         "ads_domain": {
             **domain_provider,
@@ -2404,6 +2412,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
 
         # Cegah malware/phishing dan iklan/tracker umum setelah guard playback.
         "RULE-SET,threat-tif-mini,REJECT",
+        "RULE-SET,ads_indonesia,REJECT",
         "RULE-SET,ads_domain,REJECT",
         "RULE-SET,ads_classical,REJECT",
         "RULE-SET,privacy_classical,REJECT",
@@ -2487,6 +2496,11 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
                 "path": "./rule_providers/chatgpt_voice.txt",
                 "url": "https://ruleset.skk.moe/Clash/ip/ai.txt",
             },
+            "ads_indonesia": {
+                **text_domain_provider,
+                "path": "./rule_providers/ads_indonesia.txt",
+                "url": "https://raw.githubusercontent.com/ABPindo/indonesianadblockrules/master/subscriptions/domain.txt",
+            },
             "ads_domain": {
                 **domain_provider,
                 "path": "./rule_providers/ads_domain.mrs",
@@ -2512,6 +2526,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "RULE-SET,openai_domain,AI-OPENAI",
             "RULE-SET,ai_category,AI-OTHER",
             "RULE-SET,chatgpt_voice,AI-OPENAI,no-resolve",
+            "RULE-SET,ads_indonesia,REJECT",
             "RULE-SET,ads_domain,REJECT",
             "DOMAIN-SUFFIX,doubleclick.net,REJECT",
             "DOMAIN-SUFFIX,googlesyndication.com,REJECT",
