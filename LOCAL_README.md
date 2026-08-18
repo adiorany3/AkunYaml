@@ -279,22 +279,19 @@ Konfigurasi ada di `local_config.json`:
 
 v4.0 adds an efficient health-check profile, persistent subscription cache, persistent provider/RDAP cache, adaptive candidate windows, and a global multi-host variant budget. See `PERFORMANCE_V4.md` for settings and `performance_budget_audit.py` for regression checks.
 
-## Android cold fallback v4.2
+## Android multi-host primary fallback v4.1
 
-Android sekarang memakai `BUG_SERVERS[0]` sebagai satu-satunya host normal. Host kedua dan seterusnya tidak lagi dibuat sebagai fallback per akun dan tidak dimasukkan ke hot pool. Backup dikelompokkan berdasarkan host dan hanya tersedia melalui `ANDROID-COLD-BACKUP`.
+Pada Android, multi-host tidak lagi diekspansi sebagai kandidat sejajar di policy group utama. `BUG_SERVERS[0]` selalu menjadi host utama untuk setiap akun. Host berikutnya hanya dipakai oleh fallback per akun ketika host sebelumnya gagal.
 
 Setting utama di `local_config.json`:
 
 ```json
-"ANDROID_MULTI_HOST_MODE": "primary-cold-fallback",
+"ANDROID_MULTI_HOST_MODE": "primary-fallback",
 "ANDROID_FALLBACK_HOST_LIMIT": "3",
 "ANDROID_FALLBACK_TOTAL_CAP": "24",
-"ANDROID_FALLBACK_INTERVAL": "300",
-"ANDROID_FALLBACK_LAZY": "true",
-"ANDROID_GLOBAL_FALLBACK_INTERVAL": "180",
-"ANDROID_GLOBAL_FALLBACK_LAZY": "true",
-"ANDROID_AUTO_FAST_LAZY": "true"
+"ANDROID_FALLBACK_INTERVAL": "180",
+"ANDROID_FALLBACK_LAZY": "true"
 ```
 
-`primary-fallback` tetap diterima sebagai alias kompatibilitas. Gunakan hanya host/server yang Anda miliki atau berhak gunakan. Lihat `ANDROID_COLD_FALLBACK_v4.2.md`.
+Gunakan hanya host/server yang Anda miliki atau berhak gunakan. Lihat `ANDROID_MULTI_HOST_FALLBACK_v4.1.md`.
 

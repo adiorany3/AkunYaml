@@ -27,6 +27,14 @@ from security_policy import (
     provider_catalog as shared_security_provider_catalog,
     provider_reject_rules as shared_security_provider_reject_rules,
 )
+from android_marketplace_policy import (
+    enabled as android_marketplace_live_enabled,
+    route_policy as android_marketplace_live_policy,
+    guard_rules as android_marketplace_live_guard_rules,
+    fake_ip_filters as android_marketplace_live_fake_ip_filters,
+    sniffer_skip_domains as android_marketplace_live_sniffer_skip_domains,
+    dns_policy_domains as android_marketplace_live_dns_policy_domains,
+)
 
 
 class _NoAliasDumper(yaml.SafeDumper):
@@ -3410,6 +3418,23 @@ def build_openclash_android_yaml(
         "proxies": [node.clash for node in nodes],
         "proxy-groups": proxy_groups,
     }
+    if android_marketplace_live_enabled():
+        # Marketplace live uses first-party session/CDN endpoints that can be
+        # disrupted by Fake-IP, TLS sniffing, family-category DNS, or broad
+        # ad/tracker feeds.  Keep DNS resolution real and skip destination
+        # override for these endpoints.
+        dns_cfg = config.get("dns") if isinstance(config.get("dns"), dict) else {}
+        fake_filter = list(dns_cfg.get("fake-ip-filter") or [])
+        dns_cfg["fake-ip-filter"] = list(dict.fromkeys(fake_filter + android_marketplace_live_fake_ip_filters()))
+        normal_dns = ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"]
+        ns_policy = dns_cfg.setdefault("nameserver-policy", {})
+        if isinstance(ns_policy, dict):
+            for domain in android_marketplace_live_dns_policy_domains():
+                ns_policy[f"+.{domain}"] = list(normal_dns)
+        sniff_cfg = config.get("sniffer") if isinstance(config.get("sniffer"), dict) else {}
+        skip_domain = list(sniff_cfg.get("skip-domain") or [])
+        sniff_cfg["skip-domain"] = list(dict.fromkeys(skip_domain + android_marketplace_live_sniffer_skip_domains()))
+
     family_dns_enabled = security_profile == "child-safe" or (
         security_profile == "threat-safe"
         and _env_bool_value("THREAT_SAFE_FAMILY_DNS", True)
@@ -3436,13 +3461,25 @@ def build_openclash_android_yaml(
         *_ai_proxy_rules(),
     ]
     if security_profile != "off":
-        android_rules.extend(shared_security_provider_reject_rules(
+        provider_rules = shared_security_provider_reject_rules(
             platform="android",
             profile=security_profile,
             indonesia_ads=indonesia_ads_enabled,
             threat_ip=False,
             android_snapshot_exists=android_snapshot_exists,
-        ))
+        )
+        critical_threat_prefixes = (
+            "RULE-SET,threat-malware,",
+            "RULE-SET,threat-phishing,",
+            "RULE-SET,threat-cryptominers,",
+        )
+        critical_rules = [r for r in provider_rules if r.startswith(critical_threat_prefixes)]
+        remaining_provider_rules = [r for r in provider_rules if not r.startswith(critical_threat_prefixes)]
+        android_rules.extend(critical_rules)
+        android_rules.extend(android_marketplace_live_guard_rules(android_marketplace_live_policy()))
+        android_rules.extend(remaining_provider_rules)
+    elif android_marketplace_live_enabled():
+        android_rules.extend(android_marketplace_live_guard_rules(android_marketplace_live_policy()))
     android_rules.append("MATCH,GLOBAL")
     config["rules"] = android_rules
     config = _enforce_no_selector_no_direct_config(config)

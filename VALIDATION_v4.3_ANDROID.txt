@@ -1,0 +1,37 @@
+AkunYaml v4.3 Android Marketplace Live Validation
+==================================================
+
+[OK] Python compile: android_marketplace_policy.py, sumberyaml_core.py, local_runner.py
+[OK] Direct Android builder: threat -> marketplace -> privacy/ad ordering
+[OK] Android marketplace-live compatibility audit
+[OK] Android H1 primary + host-level cold fallback audit
+[OK] Android YAML-only rule-provider audit
+[OK] Threat-safe audit
+[OK] YouTube/adblock audit
+[OK] App ads audit
+[OK] Streaming ads audit
+[OK] Popup/game ads audit
+[OK] Security hardening audit
+[OK] Multi-host budget audit
+[OK] Performance budget audit
+[OK] Cache self-test
+[OK] Static OpenClash target validation
+
+Android active direct probes/min: ~4.0
+
+Security ordering:
+  critical malware/phishing/cryptominer
+  -> marketplace-live compatibility
+  -> privacy/ad/tracker filters
+
+Compatibility layers:
+  - fake-ip bypass for marketplace/live domains
+  - normal public DoH nameserver policy
+  - sniffer skip for marketplace/live domains
+  - route via GLOBAL
+
+Whole tiktok.com is NOT whitelisted.
+Explicit ads.tiktok.com REJECT remains present.
+
+Exact-core parser was not executed in this Linux environment because the bundled
+Mihomo binary is Mach-O ARM64 macOS. Static target validation passed.

@@ -1,8 +1,5 @@
 # Android Multi-Host Primary Fallback v4.1
 
-> Catatan: v4.1 telah digantikan oleh `ANDROID_COLD_FALLBACK_v4.2.md` karena fallback per akun dapat menambah health-check bertingkat pada Android.
-
-
 v4.1 mengubah strategi multi-host khusus output `openclash_android.yaml`.
 
 ## Perilaku baru
