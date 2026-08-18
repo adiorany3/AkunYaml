@@ -47,7 +47,7 @@ from openclash_target import (
     validate_yaml_file,
 )
 
-APP_VERSION = "3.6-precision-threatsafe-adblock-v3"
+APP_VERSION = "3.8-security-hardening"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -61,7 +61,7 @@ REFERENCE_PROFILE_URL = (
 )
 REFERENCE_PROFILE_CACHE = ".reference/openclash_auto.reference.yaml"
 
-CORE_FILES = ("generate_yaml.py", "sumberyaml_core.py", "requirements.txt", "openclash_target.py")
+CORE_FILES = ("generate_yaml.py", "sumberyaml_core.py", "security_policy.py", "feed_guard.py", "requirements.txt", "openclash_target.py")
 OUTPUT_YAMLS = (
     "openclash_auto.yaml",
     "openclash_android.yaml",
@@ -120,6 +120,11 @@ DEFAULT_ENV = {
     "ADBLOCK_PROFILE": "balanced",
     "ADBLOCK_PROVIDER_INTERVAL": "43200",
     "INDONESIA_ADBLOCK": "true",
+    "THREAT_IP_BLOCKING": "true",
+    "SECURITY_FEED_GUARD": "true",
+    "REFRESH_SECURITY_FEEDS": "true",
+    "FEED_MAX_DROP_RATIO": "0.65",
+    "FEED_MAX_GROWTH_RATIO": "4.0",
     "THREAT_SAFE_FAMILY_DNS": "true",
     # DNS-level ad blocking remains off by default to reduce false positives.
     "ADBLOCK_DNS_MODE": "off",
@@ -147,171 +152,17 @@ DEFAULT_ENV = {
     "OUTPUT_STAMP": "last_update.txt",
 }
 
-SECURITY_PROVIDERS = {
-    # Regional DNS-level ad list for Indonesian/Malaysian sites. ABPindo's
-    # domain feed intentionally contains only ad-server/third-party domains,
-    # which is safer for router-level blocking than importing browser/cosmetic rules.
-    "ads_indonesia": {
-        "type": "http",
-        "behavior": "domain",
-        "format": "text",
-        "path": "./rule_providers/ads_indonesia.txt",
-        "url": "https://raw.githubusercontent.com/ABPindo/indonesianadblockrules/master/subscriptions/domain.txt",
-        "interval": 43200,
-    },
-    "ads_domain": {
-        "type": "http",
-        "behavior": "domain",
-        "format": "mrs",
-        "path": "./rule_providers/ads_domain.mrs",
-        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs",
-        "interval": 43200,
-    },
-    "tracker-domain": {
-        "type": "http",
-        "behavior": "domain",
-        "format": "mrs",
-        "path": "./rule_providers/tracker.mrs",
-        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tracker.mrs",
-        "interval": 43200,
-    },
-    # Router-friendly threat feed. Text/domain is natively supported by Mihomo.
-    # Mini is selected to keep RAM and provider download size reasonable.
-    "threat-tif-mini": {
-        "type": "http",
-        "behavior": "domain",
-        "format": "text",
-        "path": "./rule_providers/threat-tif-mini.txt",
-        "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.mini-onlydomains.txt",
-        "interval": 43200,
-    },
-}
-
-# Clash Meta for Android compatibility profile.  Keep providers in classic YAML
-# and omit the `format` key because YAML is the rule-provider default.  This
-# avoids MRS/text parser requirements on Android builds with older bundled cores.
-ANDROID_SECURITY_PROVIDERS = {
-    # Android uses YAML-only providers to preserve compatibility with older
-    # Clash Meta for Android builds. Chocolate4U publishes a compact domain
-    # category derived from multiple ad/tracker sources and maintains YAML output.
-    "ads_domain": {
-        "type": "http",
-        "behavior": "domain",
-        "path": "./rule_providers/ads_domain.yaml",
-        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/category-ads-all.yaml",
-        "interval": 43200,
-    },
-    "tracker-domain": {
-        "type": "http",
-        "behavior": "classical",
-        "path": "./rule_providers/tracker.yaml",
-        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/classical/tracker.yaml",
-        "interval": 43200,
-    },
-    "threat-malware": {
-        "type": "http",
-        "behavior": "domain",
-        "path": "./rule_providers/malware.yaml",
-        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/malware.yaml",
-        "interval": 43200,
-    },
-    "threat-phishing": {
-        "type": "http",
-        "behavior": "domain",
-        "path": "./rule_providers/phishing.yaml",
-        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/phishing.yaml",
-        "interval": 43200,
-    },
-    "threat-cryptominers": {
-        "type": "http",
-        "behavior": "domain",
-        "path": "./rule_providers/cryptominers.yaml",
-        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/cryptominers.yaml",
-        "interval": 43200,
-    },
-}
-
-# Optional strict layer. Balanced remains the default to keep RAM use and false
-# positives under control. Strict is intended for users who specifically want
-# stronger popup/ad/tracker filtering and are willing to maintain an allowlist.
-ROUTER_STRICT_SECURITY_PROVIDERS = {
-    "hagezi-pro-mini": {
-        "type": "http",
-        "behavior": "domain",
-        "format": "text",
-        "path": "./rule_providers/hagezi-pro-mini.txt",
-        "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.mini-onlydomains.txt",
-        "interval": 43200,
-    },
-    "popup-ads": {
-        "type": "http",
-        "behavior": "domain",
-        "format": "text",
-        "path": "./rule_providers/popup-ads.txt",
-        "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/popupads-onlydomains.txt",
-        "interval": 43200,
-    },
-}
-
-ANDROID_STRICT_SECURITY_PROVIDERS = {
-    "privacy-extra": {
-        "type": "http",
-        "behavior": "classical",
-        "path": "./rule_providers/privacy-extra.yaml",
-        "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Privacy/Privacy.yaml",
-        "interval": 43200,
-    },
-}
-
-# Threat-safe adds focused scam/fake protection. The IP extension is only used
-# on non-Lite router outputs to keep the Lite and Android profiles lean.
-ROUTER_THREAT_SAFE_SECURITY_PROVIDERS = {
-    # High-confidence category feeds are evaluated before the broader TIF layer.
-    # Keeping malware/phishing separate makes auditing and allowlisting precise.
-    "threat-malware": {
-        "type": "http",
-        "behavior": "domain",
-        "format": "text",
-        "path": "./rule_providers/threat-malware.txt",
-        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/malware.txt",
-        "interval": 43200,
-    },
-    "threat-phishing": {
-        "type": "http",
-        "behavior": "domain",
-        "format": "text",
-        "path": "./rule_providers/threat-phishing.txt",
-        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/phishing.txt",
-        "interval": 43200,
-    },
-    "threat-cryptominers": {
-        "type": "http",
-        "behavior": "domain",
-        "format": "text",
-        "path": "./rule_providers/threat-cryptominers.txt",
-        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/cryptominers.txt",
-        "interval": 43200,
-    },
-    "threat-fake-scam": {
-        "type": "http",
-        "behavior": "domain",
-        "format": "text",
-        "path": "./rule_providers/threat-fake-scam.txt",
-        "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/fake-onlydomains.txt",
-        "interval": 43200,
-    },
-}
-
-ROUTER_THREAT_IP_PROVIDER = {
-    "threat-tif-ip": {
-        "type": "http",
-        "behavior": "ipcidr",
-        "format": "text",
-        "path": "./rule_providers/threat-tif-ip.txt",
-        "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/ips/tif.txt",
-        "interval": 43200,
-    },
-}
+from security_policy import (
+    ANDROID_BASE_PROVIDERS as ANDROID_SECURITY_PROVIDERS,
+    ANDROID_STRICT_PROVIDERS as ANDROID_STRICT_SECURITY_PROVIDERS,
+    ROUTER_BASE_PROVIDERS as SECURITY_PROVIDERS,
+    ROUTER_STRICT_PROVIDERS as ROUTER_STRICT_SECURITY_PROVIDERS,
+    ROUTER_THREAT_SAFE_PROVIDERS as ROUTER_THREAT_SAFE_SECURITY_PROVIDERS,
+    ROUTER_THREAT_IP_PROVIDERS as ROUTER_THREAT_IP_PROVIDER,
+    managed_provider_names,
+    provider_catalog as shared_provider_catalog,
+    provider_reject_rules as shared_provider_reject_rules,
+)
 
 # Child-safe profile uses a family DNS resolver that blocks ads, trackers,
 # malware, adult content, and gambling categories.  Keep proxy-server DNS
@@ -1724,31 +1575,23 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     is_lite = path.name == Path(lite_output_name).name
     dedup_mode = os.environ.get("ADBLOCK_DEDUP_MODE", "lean").strip().lower()
     lean_router = (not is_android) and dedup_mode in {"lean", "optimized", "v3"}
-    if is_android:
-        provider_catalog = dict(ANDROID_SECURITY_PROVIDERS)
-        if profile in {"strict", "child-safe", "app-safe", "threat-safe"}:
-            provider_catalog.update(ANDROID_STRICT_SECURITY_PROVIDERS)
-    else:
-        provider_catalog = dict(SECURITY_PROVIDERS)
-        indonesia_ads_enabled = os.environ.get("INDONESIA_ADBLOCK", "true").strip().lower() not in {"0", "false", "no", "off"}
-        if not indonesia_ads_enabled:
-            provider_catalog.pop("ads_indonesia", None)
-        if profile in {"strict", "child-safe", "app-safe", "threat-safe"}:
-            provider_catalog.update(ROUTER_STRICT_SECURITY_PROVIDERS)
-        if profile == "threat-safe":
-            provider_catalog.update(ROUTER_THREAT_SAFE_SECURITY_PROVIDERS)
-            # IP threat intelligence is useful against hard-coded C2/IP traffic,
-            # but costs more memory. Skip it in the Lite profile by design.
-            if not is_lite:
-                provider_catalog.update(ROUTER_THREAT_IP_PROVIDER)
+    indonesia_ads_enabled = os.environ.get("INDONESIA_ADBLOCK", "true").strip().lower() not in {"0", "false", "no", "off"}
+    threat_ip_enabled = os.environ.get("THREAT_IP_BLOCKING", "true").strip().lower() not in {"0", "false", "no", "off"}
+    android_snapshot = workdir / "rule_providers" / "ads_indonesia_android.yaml"
+    provider_catalog = shared_provider_catalog(
+        platform="android" if is_android else "router",
+        profile=profile,
+        lite=is_lite,
+        indonesia_ads=indonesia_ads_enabled,
+        threat_ip=threat_ip_enabled,
+        interval=interval,
+        android_snapshot_exists=android_snapshot.exists(),
+    )
 
-        # Adblock v3 lean mode keeps MetaCubeX MRS ads/tracker as the broad
-        # network layer. HaGeZi popup/pro-mini and benchmark coverage overlap
-        # heavily with that layer and add provider downloads/rule evaluation.
-        # They remain available by setting ADBLOCK_DEDUP_MODE=full.
-        if lean_router:
-            provider_catalog.pop("hagezi-pro-mini", None)
-            provider_catalog.pop("popup-ads", None)
+    # Lean router mode deliberately skips overlapping strict provider layers.
+    if lean_router:
+        provider_catalog.pop("hagezi-pro-mini", None)
+        provider_catalog.pop("popup-ads", None)
 
     turtlecute_domains = (
         load_turtlecute_domains(workdir)
@@ -1798,7 +1641,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     if profile != "off":
         for name, base_provider in provider_catalog.items():
             provider = dict(base_provider)
-            if provider.get("type") != "inline":
+            if provider.get("type") == "http":
                 provider["interval"] = interval
             if providers.get(name) != provider:
                 providers[name] = provider
@@ -1807,7 +1650,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         # Even with blocking disabled, an Android profile must not retain stale
         # MRS/text security providers because some CMFA cores reject them while
         # parsing the whole configuration.
-        for name in set(SECURITY_PROVIDERS) | set(ANDROID_SECURITY_PROVIDERS) | set(ROUTER_STRICT_SECURITY_PROVIDERS) | set(ANDROID_STRICT_SECURITY_PROVIDERS) | set(ROUTER_THREAT_SAFE_SECURITY_PROVIDERS) | set(ROUTER_THREAT_IP_PROVIDER):
+        for name in managed_provider_names():
             if name in providers:
                 providers.pop(name, None)
                 changed = True
@@ -1850,6 +1693,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         "RULE-SET,app-ad-safe,",
         "RULE-SET,threat-fake-scam,",
         "RULE-SET,threat-tif-ip,",
+        "RULE-SET,ads_indonesia,",
         "RULE-SET,ads_domain,",
         "GEOSITE,category-ads-all,",
         "GEOSITE,tracker,",
@@ -1969,14 +1813,31 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     allow_rules = [f"DOMAIN-SUFFIX,{domain},DIRECT" for domain in load_allowlist(workdir)]
     security_rules = lan_rules + ai_guard_rules + list(allow_rules) + youtube_compat_rules + youtube_ad_rules + youtube_guard_rules
     if profile != "off":
+        provider_rules = shared_provider_reject_rules(
+            platform="android" if is_android else "router",
+            profile=profile,
+            lite=is_lite,
+            indonesia_ads="ads_indonesia" in provider_catalog,
+            threat_ip="threat-tif-ip" in provider_catalog,
+            android_snapshot_exists="ads_indonesia" in provider_catalog,
+        )
+        if lean_router:
+            provider_rules = [
+                rule for rule in provider_rules
+                if not rule.startswith(("RULE-SET,hagezi-pro-mini,", "RULE-SET,popup-ads,"))
+            ]
+
+        # Keep high-confidence threat/privacy providers before local ad rules, then
+        # regional/global ad providers last. This preserves the same ordering on
+        # every generation path while still allowing platform-specific inline rules.
+        ad_start = len(provider_rules)
+        for idx, rule in enumerate(provider_rules):
+            if rule.startswith(("RULE-SET,ads_indonesia,", "RULE-SET,ads_domain,", "RULE-SET,tracker-domain,")):
+                ad_start = idx
+                break
+        security_rules.extend(provider_rules[:ad_start])
+
         if is_android:
-            security_rules.extend([
-                "RULE-SET,threat-malware,REJECT",
-                "RULE-SET,threat-phishing,REJECT",
-                "RULE-SET,threat-cryptominers,REJECT",
-            ])
-            if profile in {"strict", "child-safe", "app-safe", "threat-safe"}:
-                security_rules.append("RULE-SET,privacy-extra,REJECT")
             if profile in {"child-safe", "app-safe", "threat-safe"} and turtlecute_domains:
                 security_rules.extend(f"DOMAIN,{domain},REJECT" for domain in turtlecute_domains)
             if profile in {"child-safe", "app-safe", "threat-safe"}:
@@ -1985,49 +1846,19 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
             if profile in {"app-safe", "threat-safe"}:
                 security_rules.extend(f"DOMAIN,{domain},REJECT" for domain in APP_SAFE_EXACT_DOMAINS)
                 security_rules.extend(f"DOMAIN-SUFFIX,{domain},REJECT" for domain in APP_SAFE_SUFFIXES)
-            security_rules.extend([
-                "RULE-SET,ads_domain,REJECT",
-                "RULE-SET,tracker-domain,REJECT",
-            ])
         else:
-            if profile == "threat-safe":
-                # Precision tier: explicit active-threat categories first, then
-                # fake/scam and the broader TIF mini safety net.
-                security_rules.extend([
-                    "RULE-SET,threat-malware,REJECT",
-                    "RULE-SET,threat-phishing,REJECT",
-                    "RULE-SET,threat-cryptominers,REJECT",
-                    "RULE-SET,threat-fake-scam,REJECT",
-                    "RULE-SET,threat-tif-mini,REJECT",
-                ])
-            else:
-                security_rules.append("RULE-SET,threat-tif-mini,REJECT")
-            if profile in {"strict", "child-safe", "app-safe", "threat-safe"} and not lean_router:
-                security_rules.extend([
-                    "RULE-SET,hagezi-pro-mini,REJECT",
-                    "RULE-SET,popup-ads,REJECT",
-                ])
             if profile in {"child-safe", "app-safe", "threat-safe"} and turtlecute_domains and not lean_router:
                 security_rules.append("RULE-SET,turtlecute-coverage,REJECT")
             if profile in {"child-safe", "app-safe", "threat-safe"}:
                 if lean_router:
-                    # Three exact streaming-ad endpoints cost less as direct
-                    # rules than maintaining another provider.
                     security_rules.extend(f"DOMAIN,{domain},REJECT" for domain in STREAMING_SAFE_AD_DOMAINS)
                 else:
                     security_rules.append("RULE-SET,streaming-ad-safe,REJECT")
                 security_rules.extend(f"DOMAIN-SUFFIX,{domain},REJECT" for domain in INTRUSIVE_AD_SUFFIXES)
             if profile in {"app-safe", "threat-safe"}:
                 security_rules.append("RULE-SET,app-ad-safe,REJECT")
-            if profile == "threat-safe":
-                if not is_lite:
-                    security_rules.append("RULE-SET,threat-tif-ip,REJECT,no-resolve")
-            if "ads_indonesia" in provider_catalog:
-                security_rules.append("RULE-SET,ads_indonesia,REJECT")
-            security_rules.extend([
-                "RULE-SET,ads_domain,REJECT",
-                "RULE-SET,tracker-domain,REJECT",
-            ])
+
+        security_rules.extend(provider_rules[ad_start:])
 
     new_rules = security_rules + cleaned
     if is_android:
@@ -2455,6 +2286,32 @@ def main() -> int:
         log("NekoBox/sing-box test nonaktif; download sing-box dilewati")
 
     env = build_environment(args, workdir, mihomo, singbox)
+
+    # apply_security() and feed_guard run in this process, while generate_yaml.py
+    # receives `env` as a subprocess environment. Mirror security settings here
+    # so both generation paths evaluate the exact same policy.
+    security_env_keys = (
+        "ADBLOCK_PROFILE", "ADBLOCK_PROVIDER_INTERVAL", "INDONESIA_ADBLOCK",
+        "THREAT_IP_BLOCKING", "SECURITY_FEED_GUARD", "REFRESH_SECURITY_FEEDS",
+        "FEED_MAX_DROP_RATIO", "FEED_MAX_GROWTH_RATIO", "ADBLOCK_DEDUP_MODE",
+        "THREAT_SAFE_FAMILY_DNS",
+    )
+    for key in security_env_keys:
+        if key in env:
+            os.environ[key] = str(env[key])
+
+    if env.get("SECURITY_FEED_GUARD", "true").strip().lower() not in {"0", "false", "no", "off"}:
+        try:
+            from feed_guard import refresh_security_feeds
+            refresh_security_feeds(
+                workdir,
+                refresh=env.get("REFRESH_SECURITY_FEEDS", "true").strip().lower() not in {"0", "false", "no", "off"},
+                log=log,
+            )
+        except Exception as exc:
+            # Feed preflight is intentionally non-fatal. Remote Mihomo providers
+            # keep their normal cache/update behavior if the workstation is offline.
+            log(f"Security feed guard dilewati: {exc}")
 
     log("Menjalankan generate_yaml.py")
     result = subprocess.run([sys.executable, "generate_yaml.py"], cwd=workdir, env=env, check=False)

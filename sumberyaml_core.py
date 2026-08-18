@@ -19,6 +19,11 @@ from urllib.parse import parse_qs, quote, unquote, urlparse
 import requests
 import yaml
 
+from security_policy import (
+    provider_catalog as shared_security_provider_catalog,
+    provider_reject_rules as shared_security_provider_reject_rules,
+)
+
 
 class _NoAliasDumper(yaml.SafeDumper):
     def ignore_aliases(self, data):
@@ -2075,15 +2080,24 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         "format": "text",
     }
 
-    rule_providers: dict[str, Any] = {
-        # Threat feed mini memblokir malware, phishing, scam, spam, dan C2
-        # dengan footprint yang masih masuk akal untuk router.
-        "threat-tif-mini": {
-            **text_domain_provider,
-            "path": "./rule_providers/threat-tif-mini.txt",
-            "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.mini-onlydomains.txt",
-        },
+    security_profile = os.getenv("ADBLOCK_PROFILE", "balanced").strip().lower() or "balanced"
+    if security_profile not in {"off", "balanced", "strict", "child-safe", "app-safe", "threat-safe"}:
+        security_profile = "balanced"
+    indonesia_ads_enabled = os.getenv("INDONESIA_ADBLOCK", "true").strip().lower() not in {"0", "false", "no", "off"}
+    threat_ip_enabled = os.getenv("THREAT_IP_BLOCKING", "true").strip().lower() not in {"0", "false", "no", "off"}
+    security_interval = _env_int_range("ADBLOCK_PROVIDER_INTERVAL", 43200, 3600, 604800)
+    is_lite_mode = str(rule_mode).strip().lower() == "lite"
+    shared_security_providers = shared_security_provider_catalog(
+        platform="router",
+        profile=security_profile,
+        lite=is_lite_mode,
+        indonesia_ads=indonesia_ads_enabled,
+        threat_ip=threat_ip_enabled,
+        interval=security_interval,
+    )
 
+    rule_providers: dict[str, Any] = {
+        **shared_security_providers,
         # Hybrid AI rules: service-specific static guards remain authoritative,
         # while remote providers catch newly-added endpoints between generator runs.
         "openai_domain": {
@@ -2103,20 +2117,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "url": "https://ruleset.skk.moe/Clash/ip/ai.txt",
         },
 
-        # Regional ad feed for Indonesian/Malaysian sites. Use the DNS/domain
-        # variant, not the full browser filter, to reduce router false positives.
-        "ads_indonesia": {
-            **text_domain_provider,
-            "path": "./rule_providers/ads_indonesia.txt",
-            "url": "https://raw.githubusercontent.com/ABPindo/indonesianadblockrules/master/subscriptions/domain.txt",
-        },
-
-        # Block iklan, tracking, privacy-leak, dan hijacking.
-        "ads_domain": {
-            **domain_provider,
-            "path": "./rule_providers/ads_domain.mrs",
-            "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs",
-        },
+        # Additional classical privacy/hijacking layers.
         "ads_classical": {
             **classical_provider,
             "path": "./rule_providers/Advertising.yaml",
@@ -2410,10 +2411,14 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         "DOMAIN-SUFFIX,youtube.googleapis.com,YOUTUBE",
         "DOMAIN-SUFFIX,ggpht.com,YOUTUBE",
 
-        # Cegah malware/phishing dan iklan/tracker umum setelah guard playback.
-        "RULE-SET,threat-tif-mini,REJECT",
-        "RULE-SET,ads_indonesia,REJECT",
-        "RULE-SET,ads_domain,REJECT",
+        # Shared security policy is authoritative across direct generator and local runner.
+        *shared_security_provider_reject_rules(
+            platform="router",
+            profile=security_profile,
+            lite=False,
+            indonesia_ads=indonesia_ads_enabled,
+            threat_ip=threat_ip_enabled,
+        ),
         "RULE-SET,ads_classical,REJECT",
         "RULE-SET,privacy_classical,REJECT",
         "RULE-SET,hijacking_classical,REJECT",
@@ -2480,6 +2485,14 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         # Rule Lite lebih ringan untuk router/OpenClash kecil: provider lebih sedikit, import lebih cepat,
         # tetapi kategori utama tetap ada.
         rule_providers = {
+            **shared_security_provider_catalog(
+                platform="router",
+                profile=security_profile,
+                lite=True,
+                indonesia_ads=indonesia_ads_enabled,
+                threat_ip=False,
+                interval=security_interval,
+            ),
             "openai_domain": {
                 **domain_provider,
                 "path": "./rule_providers/openai.mrs",
@@ -2495,16 +2508,6 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
                 "interval": 43200,
                 "path": "./rule_providers/chatgpt_voice.txt",
                 "url": "https://ruleset.skk.moe/Clash/ip/ai.txt",
-            },
-            "ads_indonesia": {
-                **text_domain_provider,
-                "path": "./rule_providers/ads_indonesia.txt",
-                "url": "https://raw.githubusercontent.com/ABPindo/indonesianadblockrules/master/subscriptions/domain.txt",
-            },
-            "ads_domain": {
-                **domain_provider,
-                "path": "./rule_providers/ads_domain.mrs",
-                "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs",
             },
             "youtube_domain": {
                 **domain_provider,
@@ -2526,16 +2529,36 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "RULE-SET,openai_domain,AI-OPENAI",
             "RULE-SET,ai_category,AI-OTHER",
             "RULE-SET,chatgpt_voice,AI-OPENAI,no-resolve",
-            "RULE-SET,ads_indonesia,REJECT",
-            "RULE-SET,ads_domain,REJECT",
-            "DOMAIN-SUFFIX,doubleclick.net,REJECT",
-            "DOMAIN-SUFFIX,googlesyndication.com,REJECT",
-            "DOMAIN-SUFFIX,googleadservices.com,REJECT",
-                        "RULE-SET,youtube_domain,YOUTUBE",
+            # Exact compatibility endpoints stay reachable before ad providers.
+            "DOMAIN,static.doubleclick.net,YOUTUBE",
+            "DOMAIN,jnn-pa.googleapis.com,YOUTUBE",
+            # Exact/separable advertising endpoints only. Never reject the full doubleclick.net suffix.
+            "DOMAIN,googleads.g.doubleclick.net,REJECT",
+            "DOMAIN,ad.doubleclick.net,REJECT",
+            "DOMAIN,pubads.g.doubleclick.net,REJECT",
+            "DOMAIN,securepubads.g.doubleclick.net,REJECT",
+            "DOMAIN,pagead2.googlesyndication.com,REJECT",
+            "DOMAIN,tpc.googlesyndication.com,REJECT",
+            "DOMAIN,www.googleadservices.com,REJECT",
+            "DOMAIN,imasdk.googleapis.com,REJECT",
+            "DOMAIN,ads.youtube.com,REJECT",
+            "DOMAIN-SUFFIX,2mdn.net,REJECT",
+            "RULE-SET,youtube_domain,YOUTUBE",
             "DOMAIN-SUFFIX,youtube.com,YOUTUBE",
             "DOMAIN-SUFFIX,youtu.be,YOUTUBE",
+            "DOMAIN-SUFFIX,youtube-nocookie.com,YOUTUBE",
             "DOMAIN-SUFFIX,ytimg.com,YOUTUBE",
             "DOMAIN-SUFFIX,googlevideo.com,YOUTUBE",
+            "DOMAIN-SUFFIX,youtubei.googleapis.com,YOUTUBE",
+            "DOMAIN-SUFFIX,youtube.googleapis.com,YOUTUBE",
+            "DOMAIN-SUFFIX,ggpht.com,YOUTUBE",
+            *shared_security_provider_reject_rules(
+                platform="router",
+                profile=security_profile,
+                lite=True,
+                indonesia_ads=indonesia_ads_enabled,
+                threat_ip=False,
+            ),
             "DOMAIN-SUFFIX,facebook.com,SOCIAL-MEDIA",
             "DOMAIN-SUFFIX,fbcdn.net,SOCIAL-MEDIA",
             "DOMAIN-SUFFIX,instagram.com,SOCIAL-MEDIA",
@@ -2621,12 +2644,11 @@ def build_openclash_android_yaml(
     test_url: str,
     health_timeout: int = DEFAULT_HEALTH_TIMEOUT_MS,
 ) -> str:
-    """Build a lightweight Clash/OpenClash-for-Android config without rule providers.
+    """Build the Android compatibility profile.
 
-    This output is intended for Android clients that only need the active accounts.
-    It deliberately omits rule-providers, custom category rules, redir-port, and
-    tproxy-port. Traffic is handled in global mode and the user can select
-    AUTO-FAST, FALLBACK, or a specific node in the client UI.
+    Remote security providers remain YAML-only for older bundled cores. The
+    regional ad feed is included only when feed_guard.py has produced its local
+    YAML snapshot. No MRS/text security provider is emitted for Android.
     """
     names = [node.clash["name"] for node in nodes]
     direct_or_names = names or ["DIRECT"]
@@ -2664,6 +2686,21 @@ def build_openclash_android_yaml(
     ai_other_test_url = os.getenv("AI_OTHER_TEST_URL", "https://www.gstatic.com/generate_204").strip() or "https://www.gstatic.com/generate_204"
     ai_interval = _env_int_range("AI_HEALTH_INTERVAL", 300, 60, 1800)
     ai_timeout = _env_int_range("AI_HEALTH_TIMEOUT_MS", max(5000, base_timeout), 2000, 15000)
+    security_profile = os.getenv("ADBLOCK_PROFILE", "balanced").strip().lower() or "balanced"
+    if security_profile not in {"off", "balanced", "strict", "child-safe", "app-safe", "threat-safe"}:
+        security_profile = "balanced"
+    indonesia_ads_enabled = os.getenv("INDONESIA_ADBLOCK", "true").strip().lower() not in {"0", "false", "no", "off"}
+    security_interval = _env_int_range("ADBLOCK_PROVIDER_INTERVAL", 43200, 3600, 604800)
+    android_snapshot_exists = os.path.isfile(os.path.join("rule_providers", "ads_indonesia_android.yaml"))
+    android_security_providers = shared_security_provider_catalog(
+        platform="android",
+        profile=security_profile,
+        lite=False,
+        indonesia_ads=indonesia_ads_enabled,
+        threat_ip=False,
+        interval=security_interval,
+        android_snapshot_exists=android_snapshot_exists,
+    )
 
     proxy_groups: list[dict[str, Any]] = [
         {
@@ -2808,6 +2845,30 @@ def build_openclash_android_yaml(
         "proxies": [node.clash for node in nodes],
         "proxy-groups": proxy_groups,
     }
+    if security_profile != "off":
+        config["mode"] = "rule"
+        config["rule-providers"] = android_security_providers
+        android_rules = [
+            "DOMAIN-SUFFIX,local,DIRECT",
+            "DOMAIN-SUFFIX,lan,DIRECT",
+            "DOMAIN-SUFFIX,localhost,DIRECT",
+            "IP-CIDR,127.0.0.0/8,DIRECT,no-resolve",
+            "IP-CIDR,10.0.0.0/8,DIRECT,no-resolve",
+            "IP-CIDR,172.16.0.0/12,DIRECT,no-resolve",
+            "IP-CIDR,192.168.0.0/16,DIRECT,no-resolve",
+            "IP-CIDR,169.254.0.0/16,DIRECT,no-resolve",
+            "GEOIP,LAN,DIRECT,no-resolve",
+            *_ai_proxy_rules(),
+            *shared_security_provider_reject_rules(
+                platform="android",
+                profile=security_profile,
+                indonesia_ads=indonesia_ads_enabled,
+                threat_ip=False,
+                android_snapshot_exists=android_snapshot_exists,
+            ),
+            "MATCH,GLOBAL",
+        ]
+        config["rules"] = android_rules
     config = _enforce_no_selector_no_direct_config(config)
     return dump_yaml_no_alias(config)
 

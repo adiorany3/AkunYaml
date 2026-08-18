@@ -59,6 +59,9 @@ Paket ini dikunci ke target di atas. Generator tidak lagi menganggap Mihomo terb
 - `generate_yaml.py`: generator utama.
 - `sumberyaml_core.py`: parser dan builder YAML.
 - `openclash_target.py`: validator target.
+- `security_policy.py`: satu sumber katalog provider security dan urutan rule.
+- `feed_guard.py`: validasi feed, Last-Known-Good, dan snapshot YAML Android.
+- `security_hardening_audit.py`: audit regresi hardening v3.8.
 - `validate_openclash_target.py`: validator CLI.
 - `apply_existing.py`: perbaiki YAML yang sudah ada dengan rollback otomatis jika validasi gagal.
 - `reference_profile_v047156.yaml`: baseline DNS, sniffer, provider, dan rules yang dipin lokal.

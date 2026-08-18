@@ -1,3 +1,12 @@
+# v3.8 Security Hardening
+
+- Security provider dipusatkan di `security_policy.py`.
+- Feed preflight + Last-Known-Good ditambahkan melalui `feed_guard.py`.
+- Lite tidak lagi memiliki broad `doubleclick.net` reject pada generator inti.
+- `THREAT_IP_BLOCKING` menjadi sakelar terpisah.
+- Snapshot YAML iklan regional Android dibuat otomatis setelah feed lolos validasi.
+- Audit baru: `security_hardening_audit.py`.
+
 ## Adblock v3 - YouTube / Streaming Optimization
 - Routing YouTube sekarang selalu menuju grup `YOUTUBE`, tidak lagi ter-shadow oleh `GLOBAL`.
 - Grup `YOUTUBE` memakai fallback otomatis, health-check 120 detik, lazy, timeout 3000 ms.
