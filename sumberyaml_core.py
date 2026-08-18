@@ -696,8 +696,19 @@ BUG_MAX_VARIANTS_PER_NODE = _safe_target_env_int("BUG_MAX_VARIANTS_PER_NODE", 3,
 # Total cap applies to duplicated variants only. Base accounts are never dropped.
 BUG_TOTAL_VARIANTS_CAP = _safe_target_env_int("BUG_TOTAL_VARIANTS_CAP", 24, 1, 512)
 BUG_MIN_BASE_NODES = _safe_target_env_int("BUG_MIN_BASE_NODES", 8, 1, 128)
+
+# Android uses a stricter multi-host strategy. The first configured host is always
+# the primary endpoint. Additional hosts are exposed only behind per-account
+# fallback groups, so normal Android routing never races all host variants.
+ANDROID_MULTI_HOST_MODE = (os.getenv("ANDROID_MULTI_HOST_MODE", "primary-fallback").strip().lower() or "primary-fallback")
+if ANDROID_MULTI_HOST_MODE not in {"primary-fallback", "primary", "inherit"}:
+    ANDROID_MULTI_HOST_MODE = "primary-fallback"
+ANDROID_FALLBACK_HOST_LIMIT = _safe_target_env_int("ANDROID_FALLBACK_HOST_LIMIT", 3, 1, 8)
+ANDROID_FALLBACK_TOTAL_CAP = _safe_target_env_int("ANDROID_FALLBACK_TOTAL_CAP", 24, 1, 512)
+ANDROID_FALLBACK_INTERVAL = _safe_target_env_int("ANDROID_FALLBACK_INTERVAL", 180, 30, 1800)
+ANDROID_FALLBACK_LAZY = os.getenv("ANDROID_FALLBACK_LAZY", "true").strip().lower() not in {"0", "false", "no", "off"}
 ONLY_PORT = 443
-USER_AGENT = "Mozilla/5.0 SumberYAML-OpenClash-BugCompat/4.0"
+USER_AGENT = "Mozilla/5.0 SumberYAML-OpenClash-BugCompat/4.1"
 URI_RE = re.compile(r"(?:vless|vmess|trojan|ss)://[^\s<'\"`]+", re.IGNORECASE)
 FAST_TEST_URL = "http://cp.cloudflare.com/generate_204"
 ALT_TEST_URL = "https://www.gstatic.com/generate_204"
@@ -2423,6 +2434,101 @@ def expand_multi_host_variants(nodes: list[ProxyNode]) -> list[ProxyNode]:
         out.append(clone)
     return out
 
+def _android_primary_fallback_nodes(
+    nodes: list[ProxyNode],
+    test_url: str,
+    health_timeout: int,
+) -> tuple[list[ProxyNode], list[str], list[dict[str, Any]]]:
+    """Build Android endpoints with the first target host as strict primary.
+
+    Unlike the generic multi-host expansion, Android receives one logical
+    fallback group per base account. Host #1 is always first. Host #2+ are used
+    only when that primary endpoint is unavailable. This avoids putting all host
+    variants into url-test groups at the same level, which can make Android
+    clients oscillate or take longer to establish a connection.
+    """
+    if not nodes:
+        return [], [], []
+
+    # Explicit inheritance keeps the old v4.0 behavior available for users who
+    # need it. Primary mode forces only host #1 with no duplicated endpoints.
+    if ANDROID_MULTI_HOST_MODE == "inherit":
+        expanded = expand_multi_host_variants(nodes)
+        return expanded, [node.clash["name"] for node in expanded], []
+
+    primary = TARGET_SERVERS[0]
+    if ANDROID_MULTI_HOST_MODE == "primary" or len(TARGET_SERVERS) <= 1:
+        out: list[ProxyNode] = []
+        for node in nodes:
+            clone = copy.deepcopy(node)
+            clone.output_server = primary
+            clone.clash["server"] = primary
+            out.append(clone)
+        return out, [node.clash["name"] for node in out], []
+
+    host_limit = min(len(TARGET_SERVERS), ANDROID_FALLBACK_HOST_LIMIT)
+    hosts = list(TARGET_SERVERS[:host_limit])
+    base_count = len(nodes)
+    effective_cap = max(base_count, min(ANDROID_FALLBACK_TOTAL_CAP, base_count * host_limit))
+
+    # Allocate host #1 to every account first, then distribute fallback hosts
+    # round-robin. The first host can therefore never be displaced by the cap.
+    allocations: list[list[str]] = [[primary] for _ in nodes]
+    used = base_count
+    for host in hosts[1:]:
+        for idx in range(base_count):
+            if used >= effective_cap:
+                break
+            allocations[idx].append(host)
+            used += 1
+        if used >= effective_cap:
+            break
+
+    expanded: list[ProxyNode] = []
+    logical_names: list[str] = []
+    fallback_groups: list[dict[str, Any]] = []
+    fallback_timeout = max(2000, int(health_timeout))
+
+    for idx, (node, servers) in enumerate(zip(nodes, allocations), start=1):
+        base_name = str(node.clash.get("name") or node.name or f"NODE-{idx:03d}")
+        variant_names: list[str] = []
+        for host_index, server in enumerate(servers, start=1):
+            clone = copy.deepcopy(node)
+            clone.output_server = server
+            clone.clash["server"] = server
+            suffix = f"-H{host_index}"
+            max_base = max(1, 64 - len(suffix))
+            variant_name = safe_proxy_name(base_name[:max_base] + suffix, f"NODE-{idx:03d}-H{host_index}")
+            clone.name = variant_name
+            clone.clash["name"] = variant_name
+            expanded.append(clone)
+            variant_names.append(variant_name)
+
+        if len(variant_names) == 1:
+            logical_names.append(variant_names[0])
+            continue
+
+        # Preserve the base name at the beginning so MANUAL-/provider hints and
+        # embedded delay labels remain useful to the existing ranking helpers.
+        suffix = "-FB"
+        max_base = max(1, 64 - len(suffix))
+        group_name = safe_proxy_name(base_name[:max_base] + suffix, f"NODE-{idx:03d}-FB")
+        logical_names.append(group_name)
+        fallback_groups.append({
+            "name": group_name,
+            "type": "fallback",
+            "proxies": variant_names,
+            "url": test_url,
+            "interval": ANDROID_FALLBACK_INTERVAL,
+            "lazy": ANDROID_FALLBACK_LAZY,
+            "timeout": fallback_timeout,
+            "expected-status": "200/204/301/302",
+            "max-failed-times": 1,
+        })
+
+    return expanded, logical_names, fallback_groups
+
+
 def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, test_url: str, health_timeout: int = DEFAULT_HEALTH_TIMEOUT_MS, rule_mode: str = "Lengkap") -> str:
     nodes = expand_multi_host_variants(nodes)
     names = [node.clash["name"] for node in nodes]
@@ -3063,8 +3169,9 @@ def build_openclash_android_yaml(
     regional ad feed is included only when feed_guard.py has produced its local
     YAML snapshot. No MRS/text security provider is emitted for Android.
     """
-    nodes = expand_multi_host_variants(nodes)
-    names = [node.clash["name"] for node in nodes]
+    nodes, names, android_host_fallback_groups = _android_primary_fallback_nodes(
+        nodes, test_url=test_url, health_timeout=health_timeout
+    )
     direct_or_names = names or ["DIRECT"]
     warmup_names = _select_warmup_names(names)
     cf_warmup_names = _select_cf_warmup_names(names)
@@ -3215,6 +3322,9 @@ def build_openclash_android_yaml(
             "max-failed-times": 3,
         },
     ]
+    # Per-account Android host failover groups are intentionally not exposed in
+    # GLOBAL. They act as logical nodes underneath the normal policy groups.
+    proxy_groups.extend(android_host_fallback_groups)
 
     config: dict[str, Any] = {
         "mixed-port": 7890,

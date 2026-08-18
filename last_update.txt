@@ -1,4 +1,4 @@
-Last update: 2026-08-18 11:06:20 UTC
+Last update: 2026-08-18 11:26:36 UTC
 Mode: FAST10 + Mihomo URL test + NekoBox/sing-box test early-stop
 OpenClash YAML: openclash_auto.yaml
 Android YAML: openclash_android.yaml
@@ -21,4 +21,4 @@ Skipped raw URI: 173504
 Skipped manual URI: 0
 Manual server normalized: 0 link
 Manual nodes source file: manual_nodes.txt
-Target hosts: 104.17.3.81,162.159.130.11,104.21.24.201,13.225.4.129 | mode=distribute
+Target hosts: 104.17.3.81 | mode=fallback

@@ -278,3 +278,20 @@ Konfigurasi ada di `local_config.json`:
 ## Performance v4.0
 
 v4.0 adds an efficient health-check profile, persistent subscription cache, persistent provider/RDAP cache, adaptive candidate windows, and a global multi-host variant budget. See `PERFORMANCE_V4.md` for settings and `performance_budget_audit.py` for regression checks.
+
+## Android multi-host primary fallback v4.1
+
+Pada Android, multi-host tidak lagi diekspansi sebagai kandidat sejajar di policy group utama. `BUG_SERVERS[0]` selalu menjadi host utama untuk setiap akun. Host berikutnya hanya dipakai oleh fallback per akun ketika host sebelumnya gagal.
+
+Setting utama di `local_config.json`:
+
+```json
+"ANDROID_MULTI_HOST_MODE": "primary-fallback",
+"ANDROID_FALLBACK_HOST_LIMIT": "3",
+"ANDROID_FALLBACK_TOTAL_CAP": "24",
+"ANDROID_FALLBACK_INTERVAL": "180",
+"ANDROID_FALLBACK_LAZY": "true"
+```
+
+Gunakan hanya host/server yang Anda miliki atau berhak gunakan. Lihat `ANDROID_MULTI_HOST_FALLBACK_v4.1.md`.
+

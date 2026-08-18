@@ -1,3 +1,12 @@
+# v4.1 Android Primary-Fallback
+
+- Android multi-host sekarang selalu memakai `BUG_SERVERS[0]` sebagai host utama.
+- Host ke-2 dan seterusnya hanya berada di fallback per akun, bukan menjadi kandidat sejajar di group utama.
+- Tambah `ANDROID_MULTI_HOST_MODE=primary-fallback` (default), `primary`, dan `inherit`.
+- Tambah batas host/cap/interval fallback Android.
+- Profil router Auto/Lite/Fresh Pool tidak diubah.
+- Lihat `ANDROID_MULTI_HOST_FALLBACK_v4.1.md`.
+
 # v4.0 Performance
 
 - Health-check aktif dikonsolidasikan ke hot pool kecil.
