@@ -32,5 +32,8 @@
   "REQUIRE_EXACT_MIHOMO_CORE": "true",
   "FINAL_TARGET_VALIDATION": "true",
   "REFERENCE_PROFILE_FILE": "reference_profile_v047156.yaml",
-  "REFRESH_TURTLECUTE": "true"
+  "REFRESH_TURTLECUTE": "true",
+  "AI_TEST_URL": "https://chatgpt.com/favicon.ico",
+  "AI_HEALTH_INTERVAL": "120",
+  "AI_HEALTH_TIMEOUT_MS": "6000"
 }

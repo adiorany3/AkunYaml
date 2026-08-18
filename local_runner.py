@@ -88,6 +88,9 @@ DEFAULT_ENV = {
     "URL_TEST_URL": "https://www.gstatic.com/generate_204",
     "NEKOBOX_TEST_URL": "https://www.gstatic.com/generate_204",
     "TEST_URL": "https://www.gstatic.com/generate_204",
+    "AI_TEST_URL": "https://chatgpt.com/favicon.ico",
+    "AI_HEALTH_INTERVAL": "120",
+    "AI_HEALTH_TIMEOUT_MS": "6000",
     "URL_TEST_TIMEOUT_MS": "6000",
     "NEKOBOX_TEST_TIMEOUT_MS": "8000",
     "FORCE_WS_ONLY": "true",
@@ -468,6 +471,46 @@ OVERBROAD_AD_KEYWORD_RULES = {
     "DOMAIN-KEYWORD,analytics,REJECT",
     "DOMAIN-KEYWORD,tracker,REJECT",
 }
+
+AI_PROXY_EXACT_DOMAINS = (
+    "gemini.google.com",
+    "aistudio.google.com",
+    "ai.google.dev",
+    "generativelanguage.googleapis.com",
+    "aiplatform.googleapis.com",
+    "copilot.microsoft.com",
+    "copilot.cloud.microsoft",
+    "sydney.bing.com",
+    "api.githubcopilot.com",
+    "copilot-proxy.githubusercontent.com",
+)
+
+AI_PROXY_DOMAIN_SUFFIXES = (
+    "chatgpt.com",
+    "openai.com",
+    "oaistatic.com",
+    "oaiusercontent.com",
+    "sora.com",
+    "claude.ai",
+    "anthropic.com",
+    "perplexity.ai",
+    "grok.com",
+    "x.ai",
+    "poe.com",
+    "deepseek.com",
+    "mistral.ai",
+    "meta.ai",
+    "qwen.ai",
+    "kimi.com",
+    "cohere.com",
+    "githubcopilot.com",
+)
+
+def ai_proxy_rules(target: str = "AI") -> list[str]:
+    rules = [f"DOMAIN,{domain},{target}" for domain in AI_PROXY_EXACT_DOMAINS]
+    rules.extend(f"DOMAIN-SUFFIX,{domain},{target}" for domain in AI_PROXY_DOMAIN_SUFFIXES)
+    return rules
+
 
 YOUTUBE_PLAYBACK_DOMAINS = (
     "youtube.com",
@@ -1537,6 +1580,12 @@ def apply_responsiveness(path: Path) -> bool:
                     g["lazy"] = name != "GLOBAL"
                     g["timeout"] = 2500
                     g["max-failed-times"] = 2
+            elif name == "AI":
+                g["url"] = os.environ.get("AI_TEST_URL", "https://chatgpt.com/favicon.ico").strip() or "https://chatgpt.com/favicon.ico"
+                g["interval"] = max(30, min(int(os.environ.get("AI_HEALTH_INTERVAL", "120") or 120), 600))
+                g["lazy"] = False
+                g["timeout"] = max(2000, min(int(os.environ.get("AI_HEALTH_TIMEOUT_MS", "6000") or 6000), 15000))
+                g["max-failed-times"] = 3
             elif name == "WARM-UP":
                 if isinstance(g.get("proxies"), list):
                     g["proxies"] = g["proxies"][:5]
@@ -1738,6 +1787,17 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         # standard private/LAN bypasses when converting it to rule mode.
         lan_rules = list(LAN_DIRECT_RULES)
 
+    # Preserve AI routes ahead of broad ad/tracker/threat providers. This avoids
+    # false positives and guarantees supported AI services use the dedicated proxy group.
+    managed_ai_sequence = ai_proxy_rules("AI")
+    managed_ai_rules = set(managed_ai_sequence)
+    has_ai_group = any(
+        isinstance(group, dict) and str(group.get("name") or "") == "AI"
+        for group in (config.get("proxy-groups") or [])
+    )
+    ai_guard_rules = list(managed_ai_sequence) if has_ai_group else [rule for rule in cleaned if rule in managed_ai_rules]
+    cleaned = [rule for rule in cleaned if rule not in managed_ai_rules]
+
     # Preserve YouTube guard order so compatibility exceptions and playback hosts
     # stay ahead of broad ad/tracker providers.
     youtube_ad_rules = [rule for rule in cleaned if rule in YOUTUBE_NETWORK_AD_RULES]
@@ -1762,7 +1822,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     cleaned = remaining_rules
 
     allow_rules = [f"DOMAIN-SUFFIX,{domain},DIRECT" for domain in load_allowlist(workdir)]
-    security_rules = list(allow_rules) + lan_rules + youtube_compat_rules + youtube_ad_rules + youtube_guard_rules
+    security_rules = lan_rules + ai_guard_rules + list(allow_rules) + youtube_compat_rules + youtube_ad_rules + youtube_guard_rules
     if profile != "off":
         if is_android:
             security_rules.extend([

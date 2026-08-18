@@ -54,6 +54,7 @@ def _enforce_no_selector_no_direct_config(config: dict[str, Any]) -> dict[str, A
         "WARM-UP-CF",
         "AUTO-FAST",
         "STREAMING-FAST",
+        "AI",
         "FALLBACK",
         "LOAD-BALANCE",
         "PING-CHECK",
@@ -100,6 +101,49 @@ def _enforce_no_selector_no_direct_config(config: dict[str, Any]) -> dict[str, A
         if isinstance(group.get("proxies"), list):
             group["proxies"] = clean_refs(name, group.get("proxies"))
     return config
+
+
+# AI services are routed before ad/threat providers so legitimate API and web
+# endpoints are not accidentally rejected by broad third-party blocklists.
+AI_PROXY_EXACT_DOMAINS = (
+    "gemini.google.com",
+    "aistudio.google.com",
+    "ai.google.dev",
+    "generativelanguage.googleapis.com",
+    "aiplatform.googleapis.com",
+    "copilot.microsoft.com",
+    "copilot.cloud.microsoft",
+    "sydney.bing.com",
+    "api.githubcopilot.com",
+    "copilot-proxy.githubusercontent.com",
+)
+
+AI_PROXY_DOMAIN_SUFFIXES = (
+    "chatgpt.com",
+    "openai.com",
+    "oaistatic.com",
+    "oaiusercontent.com",
+    "sora.com",
+    "claude.ai",
+    "anthropic.com",
+    "perplexity.ai",
+    "grok.com",
+    "x.ai",
+    "poe.com",
+    "deepseek.com",
+    "mistral.ai",
+    "meta.ai",
+    "qwen.ai",
+    "kimi.com",
+    "cohere.com",
+    "githubcopilot.com",
+)
+
+def _ai_proxy_rules(target: str = "AI") -> list[str]:
+    rules = [f"DOMAIN,{domain},{target}" for domain in AI_PROXY_EXACT_DOMAINS]
+    rules.extend(f"DOMAIN-SUFFIX,{domain},{target}" for domain in AI_PROXY_DOMAIN_SUFFIXES)
+    return rules
+
 
 def _env_int_range(name: str, default: int, minimum: int, maximum: int) -> int:
     """Read integer env safely and clamp it for stable generated YAML."""
@@ -1843,6 +1887,9 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
     ping_check_url = os.getenv("PING_CHECK_URL", test_url).strip() or test_url
     ping_check_interval = _env_int_range("PING_CHECK_INTERVAL", 180, 45, 600)
     ping_check_timeout = _env_int_range("PING_CHECK_TIMEOUT_MS", max(5000, base_timeout), 2000, 15000)
+    ai_test_url = os.getenv("AI_TEST_URL", "https://chatgpt.com/favicon.ico").strip() or "https://chatgpt.com/favicon.ico"
+    ai_interval = _env_int_range("AI_HEALTH_INTERVAL", 120, 30, 600)
+    ai_timeout = _env_int_range("AI_HEALTH_TIMEOUT_MS", max(5000, base_timeout), 2000, 15000)
 
     def selector(defaults: list[str] | None = None) -> list[str]:
         defaults = defaults or ["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]
@@ -1996,6 +2043,19 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "proxies": ["GLOBAL", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"],
         },
         {
+            "name": "AI",
+            "type": "fallback",
+            # Direct physical-node fallback keeps the egress IP stable during long
+            # AI sessions and only changes node after a real health failure.
+            "proxies": fallback_or_direct,
+            "url": ai_test_url,
+            "interval": ai_interval,
+            "lazy": False,
+            "timeout": ai_timeout,
+            "expected-status": "200/204/301/302",
+            "max-failed-times": 3,
+        },
+        {
             "name": "SOCIAL-MEDIA",
             "type": "select",
             "proxies": selector(["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]),
@@ -2121,6 +2181,9 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         "IP-CIDR,169.254.0.0/16,DIRECT",
         "GEOIP,LAN,DIRECT,no-resolve",
 
+        # AI guard must be evaluated before broad ad/tracker/threat providers.
+        *_ai_proxy_rules("AI"),
+
         # YouTube compatibility guard. Exact hosts are kept reachable before
         # broad ad/tracker lists to avoid playback failures.
         "DOMAIN,static.doubleclick.net,YOUTUBE",
@@ -2240,6 +2303,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "IP-CIDR,192.168.0.0/16,DIRECT",
             "IP-CIDR,169.254.0.0/16,DIRECT",
             "GEOIP,LAN,DIRECT,no-resolve",
+            *_ai_proxy_rules("AI"),
             "RULE-SET,ads_domain,REJECT",
             "DOMAIN-SUFFIX,doubleclick.net,REJECT",
             "DOMAIN-SUFFIX,googlesyndication.com,REJECT",
@@ -2357,12 +2421,26 @@ def build_openclash_android_yaml(
     ping_check_url = os.getenv("PING_CHECK_URL", test_url).strip() or test_url
     ping_check_interval = _env_int_range("PING_CHECK_INTERVAL", 180, 45, 600)
     ping_check_timeout = _env_int_range("PING_CHECK_TIMEOUT_MS", max(5000, base_timeout), 2000, 15000)
+    ai_test_url = os.getenv("AI_TEST_URL", "https://chatgpt.com/favicon.ico").strip() or "https://chatgpt.com/favicon.ico"
+    ai_interval = _env_int_range("AI_HEALTH_INTERVAL", 120, 30, 600)
+    ai_timeout = _env_int_range("AI_HEALTH_TIMEOUT_MS", max(5000, base_timeout), 2000, 15000)
 
     proxy_groups: list[dict[str, Any]] = [
         {
             "name": "GLOBAL",
             "type": "select",
             "proxies": ["WARM-UP-CF", "STREAMING-FAST", "WARM-UP", "AUTO-FAST", "FALLBACK"] + names,
+        },
+        {
+            "name": "AI",
+            "type": "fallback",
+            "proxies": fallback_or_direct,
+            "url": ai_test_url,
+            "interval": ai_interval,
+            "lazy": False,
+            "timeout": ai_timeout,
+            "expected-status": "200/204/301/302",
+            "max-failed-times": 3,
         },
         {
             "name": "PING-CHECK",
