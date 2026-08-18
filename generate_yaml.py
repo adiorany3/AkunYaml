@@ -28,6 +28,8 @@ from sumberyaml_core import (
     ALT_TEST_URL,
     DEFAULT_LINKS,
     TARGET_SERVER,
+    TARGET_SERVERS,
+    BUG_MODE,
     ONLY_PORT,
     b64decode_text,
     build_akun_txt,
@@ -35,6 +37,7 @@ from sumberyaml_core import (
     build_openclash_android_yaml,
     build_openclash_yaml,
     extract_uris,
+    expand_multi_host_variants,
     looks_like_ip,
     node_network,
     normalize_name,
@@ -803,12 +806,11 @@ def build_links_text() -> str:
 
 
 def normalize_manual_uri_server(raw: str, target_server: str = TARGET_SERVER) -> str:
-    """Return manual URI with its outbound server changed to the bug server.
+    """Return manual URI with its outbound server changed to the selected target host.
 
     This is intentionally done before manual nodes are parsed, so manual_nodes.txt
     itself can be normalized and committed by GitHub Actions. SNI/Host/path and
-    credentials are preserved; only the connect server and port are changed to
-    104.17.3.81:443.
+    credentials are preserved; only the connect server and port are changed to the configured primary target on port 443.
     """
     raw = str(raw or "").strip()
     if not raw or "://" not in raw:
@@ -850,7 +852,7 @@ def normalize_manual_uri_server(raw: str, target_server: str = TARGET_SERVER) ->
 
 
 def normalize_manual_nodes_text(manual_text: str) -> tuple[str, int]:
-    """Normalize every supported URI in manual_nodes.txt to TARGET_SERVER:443.
+    """Normalize every supported URI in manual_nodes.txt to the primary target when multi-host is inactive.
 
     Comments and blank lines are preserved when a line only contains comments or
     text. URI lines are rewritten as one URI per line to avoid leaving stale
@@ -952,6 +954,7 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
     if not manual_nodes:
         return config
 
+    manual_nodes = expand_multi_host_variants(manual_nodes)
     manual_names = [str(node.clash.get("name") or node.name) for node in manual_nodes if node.clash.get("name")]
     if not manual_names:
         return config
@@ -1596,11 +1599,16 @@ def main() -> int:
 
     links_text = build_links_text()
     manual_text = _read_text_file(manual_file)
-    manual_text, manual_server_changes = normalize_manual_nodes_text(manual_text)
-    if manual_text:
-        # GitHub Actions will commit this normalized manual_nodes.txt, so future
-        # runs no longer contain original servers.
-        Path(manual_file).write_text(manual_text, encoding="utf-8")
+    multi_host_active = len(TARGET_SERVERS) > 1 and BUG_MODE in {"fallback", "distribute"}
+    if multi_host_active:
+        # Preserve original connect host/SNI information. Multi-host target
+        # replacement happens after parsing, otherwise the source account data
+        # would be destroyed before endpoint variants are built.
+        manual_server_changes = 0
+    else:
+        manual_text, manual_server_changes = normalize_manual_nodes_text(manual_text)
+        if manual_text:
+            Path(manual_file).write_text(manual_text, encoding="utf-8")
     manual_nodes, manual_skipped = parse_manual_nodes_unscreened(manual_text)
     manual_nodes, manual_compat_rows = _mihomo_openclash_compatibility_filter(manual_nodes, label="manual")
 
@@ -1608,7 +1616,10 @@ def main() -> int:
     print(f"[INFO] Target output otomatis: {max_nodes} node, minimal: {min_output_nodes} node")
     print(f"[INFO] Links subscription: {len([x for x in links_text.splitlines() if x.strip()])}")
     print(f"[INFO] Manual nodes parsed: {len(manual_nodes)}; skipped: {len(manual_skipped)}")
-    print(f"[INFO] Manual node server normalized to {TARGET_SERVER}:{ONLY_PORT}: {manual_server_changes} link")
+    if multi_host_active:
+        print(f"[INFO] Multi-host aktif ({BUG_MODE}): {len(TARGET_SERVERS)} target; manual source dipertahankan")
+    else:
+        print(f"[INFO] Manual node server normalized to {TARGET_SERVER}:{ONLY_PORT}: {manual_server_changes} link")
 
     # Important: manual_text is intentionally NOT passed into process_sources.
     # Manual nodes must not be strict-filtered and must not reduce the automatic quota.
@@ -1778,7 +1789,7 @@ def main() -> int:
         f"Skipped manual URI: {len(manual_skipped)}\n"
         f"Manual server normalized: {manual_server_changes} link\n"
         f"Manual nodes source file: {manual_file}\n"
-        f"Bug server for akun txt/manual_nodes: {TARGET_SERVER}:443\n"
+        f"Target hosts: {','.join(TARGET_SERVERS)} | mode={BUG_MODE}\n"
     )
     Path(output_stamp).write_text(summary, encoding="utf-8")
 

@@ -47,7 +47,7 @@ from openclash_target import (
     validate_yaml_file,
 )
 
-APP_VERSION = "3.8-security-hardening"
+APP_VERSION = "3.9-multi-host"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -125,6 +125,12 @@ DEFAULT_ENV = {
     "REFRESH_SECURITY_FEEDS": "true",
     "FEED_MAX_DROP_RATIO": "0.65",
     "FEED_MAX_GROWTH_RATIO": "4.0",
+    # Multi-host failover. Only configure hosts/IPs you own or are authorized to use.
+    "BUG_SERVERS": "[\"104.17.3.81\"]",
+    "BUG_MODE": "fallback",
+    "BUG_HEALTH_CHECK": "true",
+    "BUG_HEALTH_ATTEMPTS": "1",
+    "BUG_MAX_VARIANTS_PER_NODE": "3",
     "THREAT_SAFE_FAMILY_DNS": "true",
     # DNS-level ad blocking remains off by default to reduce false positives.
     "ADBLOCK_DNS_MODE": "off",
@@ -848,7 +854,15 @@ def load_config(path: Path | None) -> dict[str, str]:
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise ValueError("Config JSON harus object")
-    return {str(key): str(value) for key, value in data.items()}
+    normalized: dict[str, str] = {}
+    for key, value in data.items():
+        if isinstance(value, (list, dict)):
+            normalized[str(key)] = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+        elif isinstance(value, bool):
+            normalized[str(key)] = "true" if value else "false"
+        else:
+            normalized[str(key)] = str(value)
+    return normalized
 
 
 def patch_core_compatibility(workdir: Path) -> None:
@@ -2295,6 +2309,7 @@ def main() -> int:
         "THREAT_IP_BLOCKING", "SECURITY_FEED_GUARD", "REFRESH_SECURITY_FEEDS",
         "FEED_MAX_DROP_RATIO", "FEED_MAX_GROWTH_RATIO", "ADBLOCK_DEDUP_MODE",
         "THREAT_SAFE_FAMILY_DNS",
+        "BUG_SERVERS", "BUG_MODE", "BUG_HEALTH_CHECK", "BUG_HEALTH_ATTEMPTS", "BUG_MAX_VARIANTS_PER_NODE",
     )
     for key in security_env_keys:
         if key in env:

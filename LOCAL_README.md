@@ -257,3 +257,20 @@ Profil child-safe sekarang menambahkan coverage kecil untuk host yang diuji Turt
 ## Indonesia Adblock Layer v3.7
 
 Output router menggunakan provider regional `ads_indonesia` berbasis ABPindo DNS/domain list. Aktif secara default melalui `INDONESIA_ADBLOCK=true`. Detail ada di `INDONESIA_ADBLOCK.md`.
+
+
+## Multi-Host Failover v3.9
+
+Konfigurasi ada di `local_config.json`:
+
+```json
+{
+  "BUG_SERVERS": ["104.17.3.81"],
+  "BUG_MODE": "fallback",
+  "BUG_HEALTH_CHECK": "true",
+  "BUG_HEALTH_ATTEMPTS": "1",
+  "BUG_MAX_VARIANTS_PER_NODE": "3"
+}
+```
+
+`BUG_SERVERS` menerima sampai 8 hostname/IP tanpa protokol dan tanpa port. Tambahkan hanya host/server yang Anda miliki atau berhak gunakan. `fallback` membuat varian endpoint untuk runtime health-check Mihomo, `distribute` membagi akun ke beberapa host tanpa duplikasi, sedangkan `primary` memakai host pertama saja.

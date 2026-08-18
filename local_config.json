@@ -56,5 +56,15 @@
   "SECURITY_FEED_GUARD": "true",
   "REFRESH_SECURITY_FEEDS": "true",
   "FEED_MAX_DROP_RATIO": "0.65",
-  "FEED_MAX_GROWTH_RATIO": "4.0"
+  "FEED_MAX_GROWTH_RATIO": "4.0",
+  "BUG_SERVERS": [
+    "104.17.3.81",
+    "162.159.130.11",
+    "104.21.24.201",
+    "13.225.4.129"
+  ],
+  "BUG_MODE": "distribute",
+  "BUG_HEALTH_CHECK": "true",
+  "BUG_HEALTH_ATTEMPTS": "1",
+  "BUG_MAX_VARIANTS_PER_NODE": "3"
 }

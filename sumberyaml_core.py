@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import concurrent.futures
+import copy
 import csv
 import html
 import io
@@ -626,7 +627,69 @@ DEFAULT_LINKS = [
     "https://raw.githubusercontent.com/sakha1370/OpenRay/refs/heads/main/output/kind/trojan.txt",
 ]
 
-TARGET_SERVER = "104.17.3.81"
+DEFAULT_TARGET_SERVER = "104.17.3.81"
+
+
+def _valid_target_host(value: str) -> bool:
+    """Accept a plain hostname or IP only. URLs, paths and host:port are rejected."""
+    value = str(value or "").strip().rstrip(".")
+    if not value or len(value) > 253 or "://" in value or "/" in value or "@" in value:
+        return False
+    # IPv6 literals are intentionally excluded because generated proxy server
+    # values currently assume the existing IPv4/hostname path and port 443.
+    if ":" in value:
+        return False
+    if re.fullmatch(r"(?:\d{1,3}\.){3}\d{1,3}", value):
+        try:
+            return all(0 <= int(part) <= 255 for part in value.split("."))
+        except ValueError:
+            return False
+    return bool(re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9.-]{0,251}[A-Za-z0-9])?", value)) and ".." not in value
+
+
+def _parse_target_servers(raw: str | None) -> tuple[str, ...]:
+    """Parse BUG_SERVERS from JSON array or comma/semicolon/newline-separated text."""
+    source = str(raw or "").strip()
+    values: list[str] = []
+    if source:
+        try:
+            decoded = json.loads(source)
+            if isinstance(decoded, list):
+                values = [str(item).strip() for item in decoded]
+            elif isinstance(decoded, str):
+                values = [decoded.strip()]
+        except Exception:
+            values = [part.strip() for part in re.split(r"[,;\n]+", source)]
+    out: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        normalized = value.rstrip(".")
+        key = normalized.lower()
+        if not _valid_target_host(normalized) or key in seen:
+            continue
+        seen.add(key)
+        out.append(normalized)
+    if not out:
+        out = [DEFAULT_TARGET_SERVER]
+    return tuple(out[:8])
+
+
+TARGET_SERVERS = _parse_target_servers(os.getenv("BUG_SERVERS", DEFAULT_TARGET_SERVER))
+TARGET_SERVER = TARGET_SERVERS[0]
+BUG_MODE = (os.getenv("BUG_MODE", "fallback").strip().lower() or "fallback")
+if BUG_MODE not in {"primary", "fallback", "distribute"}:
+    BUG_MODE = "fallback"
+BUG_HEALTH_CHECK = os.getenv("BUG_HEALTH_CHECK", "true").strip().lower() not in {"0", "false", "no", "off"}
+
+def _safe_target_env_int(name: str, default: int, minimum: int, maximum: int) -> int:
+    try:
+        value = int(str(os.getenv(name, str(default)) or default).strip())
+    except (TypeError, ValueError):
+        value = default
+    return max(minimum, min(value, maximum))
+
+BUG_HEALTH_ATTEMPTS = _safe_target_env_int("BUG_HEALTH_ATTEMPTS", 1, 1, 3)
+BUG_MAX_VARIANTS_PER_NODE = _safe_target_env_int("BUG_MAX_VARIANTS_PER_NODE", 3, 1, 8)
 ONLY_PORT = 443
 USER_AGENT = "Mozilla/5.0 SumberYAML-OpenClash-BugCompat/3.0"
 URI_RE = re.compile(r"(?:vless|vmess|trojan|ss)://[^\s<'\"`]+", re.IGNORECASE)
@@ -760,6 +823,7 @@ class ProxyNode:
     original_ip: str = ""
     tier: str = ""
     original_name: str = ""
+    output_server: str = ""
     key: str = field(default="")
 
 
@@ -813,7 +877,7 @@ def unique_names(nodes: list[ProxyNode], provider_names: bool = True) -> None:
     """Replace all proxy names with safe unique aliases.
 
     If provider_names is enabled, the alias uses provider/ASN information from
-    the original server, not from the forced bug IP 104.17.3.81. Provider lookup
+    the original server, not from the configured target host. Provider lookup
     is bounded and concurrent because RDAP/DNS latency can otherwise dominate
     generation when the compatibility pool contains dozens of nodes.
     """
@@ -1275,7 +1339,7 @@ def node_network(node: ProxyNode) -> str:
 
 
 def protocol_priority_rank(node: ProxyNode) -> int:
-    """Prefer protocols that usually work better with bug server + SNI/Host."""
+    """Prefer protocols that usually work better with configured target host + SNI/Host."""
     return {"vless": 0, "trojan": 1, "vmess": 2, "ss": 3}.get(str(node.type or "").lower(), 9)
 
 
@@ -1500,11 +1564,11 @@ def update_raw_uri_name(raw: str, new_name: str) -> str:
 
 
 def update_raw_uri_name_and_server(raw: str, new_name: str, target_server: str = TARGET_SERVER) -> str:
-    """Return a shareable URI using the bug server plus updated display name.
+    """Return a shareable URI using the selected target host plus updated display name.
 
-    YAML output already forces ``server`` to TARGET_SERVER. This function makes
+    YAML output uses a configured target host. This function makes
     ``akun.txt`` consistent with that YAML: vless/trojan/ss links use
-    ``@104.17.3.81:443`` while keeping SNI/Host/path query parameters intact.
+    the share link use the same target while keeping SNI/Host/path query parameters intact.
     VMess links update the JSON ``add``/``server`` and ``port`` fields, while
     keeping transport fields such as ``host`` and ``sni`` unchanged.
     """
@@ -1545,16 +1609,26 @@ def update_raw_uri_name_and_server(raw: str, new_name: str, target_server: str =
 
 
 def build_akun_txt(nodes: list[ProxyNode]) -> str:
-    """Build akun.txt from final nodes using bug server 104.17.3.81."""
+    """Build shareable links using configured authorized target hosts."""
     lines: list[str] = []
     for node in nodes:
         if str(node.type or "").lower() not in {"vless", "vmess", "trojan", "ss"}:
             continue
-        uri = update_raw_uri_name_and_server(node.raw, node.clash.get("name") or node.name, TARGET_SERVER)
-        if uri:
-            lines.append(uri)
+        preferred = str(node.output_server or node.clash.get("server") or TARGET_SERVER).strip() or TARGET_SERVER
+        if BUG_MODE == "fallback" and len(TARGET_SERVERS) > 1:
+            servers = _ordered_target_servers(preferred)[:BUG_MAX_VARIANTS_PER_NODE]
+        elif BUG_MODE == "distribute" and len(TARGET_SERVERS) > 1:
+            servers = [preferred if preferred in TARGET_SERVERS else _distributed_target_order(node)[0]]
+        else:
+            servers = [preferred]
+        for index, server in enumerate(servers, start=1):
+            display_name = str(node.clash.get("name") or node.name)
+            if len(servers) > 1:
+                display_name = f"{display_name}-HOST{index}"
+            uri = update_raw_uri_name_and_server(node.raw, display_name, server)
+            if uri:
+                lines.append(uri)
     return "\n".join(lines) + ("\n" if lines else "")
-
 
 def node_identity_key(node: ProxyNode) -> tuple[str, str, str, str, str]:
     """Hard duplicate key: same protocol/account/host/path should appear only once."""
@@ -1813,9 +1887,10 @@ def validate_complete_node(node: ProxyNode) -> tuple[bool, str]:
             missing.append("password")
         # Plain Shadowsocks cannot carry SNI/Host when the server is replaced by
         # the bug IP. Keeping it would often create YAML that imports but cannot
-        # connect through 104.17.3.81.
-        if str(node.original_server).strip() != TARGET_SERVER:
-            missing.append("ss tidak kompatibel dengan bug server tanpa SNI/Host")
+        # connect through a different target host.
+        output_server = str(node.clash.get("server") or node.output_server or TARGET_SERVER).strip()
+        if str(node.original_server).strip() != output_server:
+            missing.append("ss tidak kompatibel dengan target host berbeda tanpa SNI/Host")
     else:
         missing.append("protocol unsupported")
 
@@ -1830,14 +1905,15 @@ def validate_complete_node(node: ProxyNode) -> tuple[bool, str]:
     return True, "complete"
 
 
-def tls_bug_delay(node: ProxyNode, timeout: float, attempts: int) -> tuple[bool, dict[str, Any]]:
-    """Measure whether TARGET_SERVER:443 can complete TLS with the node SNI/Host.
+def tls_bug_delay(node: ProxyNode, timeout: float, attempts: int, target_server: str | None = None) -> tuple[bool, dict[str, Any]]:
+    """Measure whether a configured target host can complete TLS with the node SNI/Host.
 
-    This is the important check when the YAML output forces server to 104.17.3.81.
+    This protects the generated YAML from selecting a target that cannot complete the account TLS handshake.
     It does not replace OpenClash url-test, but it prevents many accounts whose SNI/Host
     cannot work through the selected bug IP from entering the generated YAML.
     """
     attempts = max(1, int(attempts))
+    target_server = str(target_server or node.output_server or node.clash.get("server") or TARGET_SERVER).strip() or TARGET_SERVER
     sni = node_sni_host(node)
     node.bug_sni = sni
     delays: list[int] = []
@@ -1848,7 +1924,7 @@ def tls_bug_delay(node: ProxyNode, timeout: float, attempts: int) -> tuple[bool,
     for attempt_index in range(attempts):
         start = time.perf_counter()
         try:
-            raw = socket.create_connection((TARGET_SERVER, ONLY_PORT), timeout=timeout)
+            raw = socket.create_connection((target_server, ONLY_PORT), timeout=timeout)
             raw.settimeout(timeout)
             with raw:
                 with context.wrap_socket(raw, server_hostname=sni):
@@ -1883,13 +1959,14 @@ def tls_bug_delay(node: ProxyNode, timeout: float, attempts: int) -> tuple[bool,
     }
 
 
-def ws_upgrade_delay(node: ProxyNode, timeout: float, attempts: int) -> tuple[bool, dict[str, Any]]:
+def ws_upgrade_delay(node: ProxyNode, timeout: float, attempts: int, target_server: str | None = None) -> tuple[bool, dict[str, Any]]:
     """Check TLS + WebSocket Upgrade through the selected bug IP.
 
     A node can complete TLS with Cloudflare but still fail OpenClash health check
     if the WS path/Host is wrong. This check only accepts HTTP 101 Switching Protocols.
     """
     attempts = max(1, int(attempts))
+    target_server = str(target_server or node.output_server or node.clash.get("server") or TARGET_SERVER).strip() or TARGET_SERVER
     sni = node_sni_host(node)
     host = ws_host_header(node)
     path = ws_path(node)
@@ -1903,7 +1980,7 @@ def ws_upgrade_delay(node: ProxyNode, timeout: float, attempts: int) -> tuple[bo
     for attempt_index in range(attempts):
         start = time.perf_counter()
         try:
-            raw = socket.create_connection((TARGET_SERVER, ONLY_PORT), timeout=timeout)
+            raw = socket.create_connection((target_server, ONLY_PORT), timeout=timeout)
             raw.settimeout(timeout)
             with raw:
                 with context.wrap_socket(raw, server_hostname=sni) as sock:
@@ -1965,16 +2042,72 @@ def ws_upgrade_delay(node: ProxyNode, timeout: float, attempts: int) -> tuple[bo
     }
 
 
+def _ordered_target_servers(preferred: str = "") -> list[str]:
+    preferred = str(preferred or "").strip()
+    values = list(TARGET_SERVERS)
+    if preferred and preferred in values:
+        values.remove(preferred)
+        values.insert(0, preferred)
+    return values
+
+
+def _distributed_target_order(node: ProxyNode) -> list[str]:
+    values = list(TARGET_SERVERS)
+    if len(values) <= 1:
+        return values
+    seed = str(node.key or node.original_server or node.name)
+    slot = sum((index + 1) * ord(ch) for index, ch in enumerate(seed)) % len(values)
+    return values[slot:] + values[:slot]
+
+
 def check_node_bug_compat(node: ProxyNode, timeout: float, attempts: int, require_original: bool, require_ws_upgrade: bool = True) -> ProxyNode:
+    """Validate an account against one or more authorized target hosts.
+
+    With BUG_HEALTH_CHECK enabled, configured hosts are probed with a small
+    preflight and the best working host becomes the node's preferred endpoint.
+    Runtime fallback variants are produced later by the YAML builder.
+    """
     attempts = max(1, int(attempts))
     harden_ws_node(node)
-    if require_ws_upgrade and node_network(node) == "ws":
-        bug_ok, bug_info = ws_upgrade_delay(node, timeout, attempts)
-    else:
-        bug_ok, bug_info = tls_bug_delay(node, timeout, attempts)
 
-    # Optimasi penting: kalau original server tidak diwajibkan, jangan dites.
-    # Seleksi YAML memang memakai delay ke bug server, jadi cek original hanya menambah waktu proses.
+    target_candidates = _distributed_target_order(node) if BUG_MODE == "distribute" else list(TARGET_SERVERS)
+    if BUG_MODE == "primary" or len(target_candidates) <= 1 or not BUG_HEALTH_CHECK:
+        target_candidates = target_candidates[:1]
+
+    probe_attempts = min(attempts, BUG_HEALTH_ATTEMPTS)
+    probe_results: list[tuple[str, bool, dict[str, Any]]] = []
+    for target in target_candidates:
+        if require_ws_upgrade and node_network(node) == "ws":
+            ok, info = ws_upgrade_delay(node, timeout, probe_attempts, target)
+        else:
+            ok, info = tls_bug_delay(node, timeout, probe_attempts, target)
+        probe_results.append((target, ok, info))
+
+    working = [item for item in probe_results if item[1]]
+    if working:
+        if BUG_MODE == "distribute":
+            selected_server, _probe_ok, _probe_info = working[0]
+        else:
+            selected_server, _probe_ok, _probe_info = min(
+                working,
+                key=lambda item: (int(item[2].get("score", 999999)), TARGET_SERVERS.index(item[0]) if item[0] in TARGET_SERVERS else 999),
+            )
+        if require_ws_upgrade and node_network(node) == "ws":
+            bug_ok, bug_info = ws_upgrade_delay(node, timeout, attempts, selected_server)
+        else:
+            bug_ok, bug_info = tls_bug_delay(node, timeout, attempts, selected_server)
+    else:
+        selected_server = target_candidates[0] if target_candidates else TARGET_SERVER
+        if probe_results:
+            bug_ok, bug_info = probe_results[0][1], probe_results[0][2]
+        elif require_ws_upgrade and node_network(node) == "ws":
+            bug_ok, bug_info = ws_upgrade_delay(node, timeout, attempts, selected_server)
+        else:
+            bug_ok, bug_info = tls_bug_delay(node, timeout, attempts, selected_server)
+
+    node.output_server = selected_server
+    node.clash["server"] = selected_server
+
     if require_original:
         orig_ok, orig_info = stability_check(node.original_server, node.port, timeout, attempts)
     else:
@@ -1992,7 +2125,6 @@ def check_node_bug_compat(node: ProxyNode, timeout: float, attempts: int, requir
     node.original_best_delay_ms = orig_info["best_delay_ms"]
     node.original_success_count = orig_info["success_count"]
 
-    # Selection uses bug delay because output server is the bug IP.
     node.best_delay_ms = node.bug_best_delay_ms
     node.avg_delay_ms = node.bug_avg_delay_ms
     node.jitter_ms = node.bug_jitter_ms
@@ -2002,17 +2134,64 @@ def check_node_bug_compat(node: ProxyNode, timeout: float, attempts: int, requir
 
     if not bug_ok:
         node.status = "dead"
-        node.reason = "bug server gagal: " + str(bug_info["reason"])[:120]
+        node.reason = f"target host {selected_server} gagal: " + str(bug_info["reason"])[:120]
     elif require_original and not orig_ok:
         node.status = "dead"
         node.reason = "original server gagal: " + str(orig_info["reason"])[:120]
     else:
         node.status = "alive"
-        node.reason = "bug server alive" + (" + original alive" if orig_ok else " + original skipped")
+        node.reason = f"target host alive via {selected_server}" + (" + original alive" if orig_ok else " + original skipped")
     return node
 
 
+def expand_multi_host_variants(nodes: list[ProxyNode]) -> list[ProxyNode]:
+    """Create runtime failover variants for every configured authorized host.
+
+    primary: keep one endpoint per account.
+    distribute: spread accounts across configured hosts without duplication.
+    fallback: duplicate each account across configured hosts, capped by
+    BUG_MAX_VARIANTS_PER_NODE. Existing url-test/fallback groups then perform
+    runtime health checks and automatically avoid failed variants.
+    """
+    if not nodes:
+        return []
+    if len(TARGET_SERVERS) <= 1 or BUG_MODE == "primary":
+        for node in nodes:
+            server = str(node.output_server or node.clash.get("server") or TARGET_SERVER).strip() or TARGET_SERVER
+            node.output_server = server
+            node.clash["server"] = server
+        return nodes
+
+    if BUG_MODE == "distribute":
+        out: list[ProxyNode] = []
+        for node in nodes:
+            clone = copy.deepcopy(node)
+            preferred = str(node.output_server or "").strip()
+            server = preferred if preferred in TARGET_SERVERS else _distributed_target_order(node)[0]
+            clone.output_server = server
+            clone.clash["server"] = server
+            out.append(clone)
+        return out
+
+    out: list[ProxyNode] = []
+    for node in nodes:
+        preferred = str(node.output_server or node.clash.get("server") or TARGET_SERVER).strip() or TARGET_SERVER
+        servers = _ordered_target_servers(preferred)[:BUG_MAX_VARIANTS_PER_NODE]
+        base_name = str(node.clash.get("name") or node.name)
+        for index, server in enumerate(servers, start=1):
+            clone = copy.deepcopy(node)
+            clone.output_server = server
+            clone.clash["server"] = server
+            suffix = f"-HOST{index}"
+            max_base = max(1, 64 - len(suffix))
+            variant_name = safe_proxy_name(base_name[:max_base] + suffix, f"HOST-{index}")
+            clone.name = variant_name
+            clone.clash["name"] = variant_name
+            out.append(clone)
+    return out
+
 def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, test_url: str, health_timeout: int = DEFAULT_HEALTH_TIMEOUT_MS, rule_mode: str = "Lengkap") -> str:
+    nodes = expand_multi_host_variants(nodes)
     names = [node.clash["name"] for node in nodes]
     direct_or_names = names or ["DIRECT"]
     warmup_names = _select_warmup_names(names)
@@ -2650,6 +2829,7 @@ def build_openclash_android_yaml(
     regional ad feed is included only when feed_guard.py has produced its local
     YAML snapshot. No MRS/text security provider is emitted for Android.
     """
+    nodes = expand_multi_host_variants(nodes)
     names = [node.clash["name"] for node in nodes]
     direct_or_names = names or ["DIRECT"]
     warmup_names = _select_warmup_names(names)
@@ -2913,7 +3093,7 @@ def build_csv(nodes: list[ProxyNode]) -> str:
             node.original_ip,
             node.original_provider,
             node.bug_sni,
-            TARGET_SERVER,
+            str(node.output_server or node.clash.get("server") or TARGET_SERVER),
             node.port,
             node.status,
             node.tier,
