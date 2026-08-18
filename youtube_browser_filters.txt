@@ -32,6 +32,12 @@ youtube.com##ytd-watch-next-secondary-results-renderer ytd-ad-slot-renderer
 ||pagead2.googlesyndication.com^$domain=youtube.com
 ||tpc.googlesyndication.com^$domain=youtube.com
 ||www.googleadservices.com^$domain=youtube.com
+||adservice.google.com^$domain=youtube.com
+||pagead2.googleadservices.com^$domain=youtube.com
+||afs.googlesyndication.com^$domain=youtube.com
+||stats.g.doubleclick.net^$domain=youtube.com
+||m.doubleclick.net^$domain=youtube.com
+||mediavisor.doubleclick.net^$domain=youtube.com
 ||ads.youtube.com^$domain=youtube.com
 ||youtube.com/api/stats/ads^$xhr,domain=youtube.com
 ||youtube.com/pagead/*$xhr,domain=youtube.com

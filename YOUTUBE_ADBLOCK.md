@@ -109,3 +109,28 @@ python3 validate_openclash_target.py --static-only \
 Referensi kompatibilitas playback yang menjadi dasar keputusan untuk tidak memblokir `static.doubleclick.net` secara luas:
 
 - HaGeZi issue #9446, 19 Maret 2026: https://github.com/hagezi/dns-blocklists/issues/9446
+## v4.6 OpenWrt playback-safe layer
+
+OpenWrt Auto, Lite, dan Fresh Pool menambahkan enam exact-host sebelum playback guard:
+
+- `adservice.google.com`
+- `pagead2.googleadservices.com`
+- `afs.googlesyndication.com`
+- `stats.g.doubleclick.net`
+- `m.doubleclick.net`
+- `mediavisor.doubleclick.net`
+
+Layer ini dikendalikan oleh:
+
+```json
+"YOUTUBE_ROUTER_EXTRA_ADS": "true"
+```
+
+Paket sengaja tidak menambahkan broad `DOMAIN-SUFFIX,doubleclick.net,REJECT`, dan tidak memblokir `googlevideo.com`. Android tidak memakai layer router-only ini.
+
+Audit tambahan:
+
+```bash
+python3 youtube_playback_safe_audit.py
+```
+

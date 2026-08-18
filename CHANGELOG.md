@@ -1,3 +1,12 @@
+# v4.6 YouTube Playback-Safe Adblock
+
+- OpenWrt Auto/Lite/Fresh menambah enam exact-host Google Ads/DoubleClick yang dapat dipisahkan dari CDN video.
+- `googlevideo.com`, `ytimg.com`, `youtubei.googleapis.com`, dan `static.doubleclick.net` tetap diproteksi dari REJECT.
+- Android tidak menerima layer router baru.
+- Browser companion filter ikut menambah exact-host yang sama untuk konteks youtube.com.
+- Tambah `YOUTUBE_ROUTER_EXTRA_ADS=true` untuk mematikan layer ekstra tanpa menghapus kode.
+- Tambah `youtube_playback_safe_audit.py` sebagai regression guard.
+
 # v4.5 OpenWrt Enhanced Adblock
 
 - OpenWrt Auto/Fresh memakai `OPENWRT_ADBLOCK_LEVEL=enhanced`.

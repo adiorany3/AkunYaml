@@ -1,0 +1,78 @@
+AkunYaml v4.6 YouTube Playback-Safe Validation
+Date: 2026-08-18
+
+[OK] YouTube playback-safe router audit: openclash_auto.yaml
+[OK] YouTube playback-safe router audit: openclash_lite.yaml
+[OK] YouTube playback-safe router audit: openclash_fresh_pool.yaml
+[OK] Android remains outside router-only YouTube extra layer
+[OK] YouTube playback-safe v4.6 audit
+[OK] YouTube/adblock v3 audit: openclash_auto.yaml
+[OK] YouTube/adblock v3 audit: openclash_android.yaml
+[OK] YouTube/adblock v3 audit: openclash_lite.yaml
+[OK] YouTube/adblock v3 audit: openclash_fresh_pool.yaml
+[OK] Browser filter menjaga playback dan menambah ads.youtube.com
+[OK] openclash_auto.yaml: threat-safe domain+IP
+[OK] openclash_lite.yaml: threat-safe domain-only
+[OK] openclash_fresh_pool.yaml: threat-safe domain+IP
+[OK] openclash_android.yaml: threat-safe domain-only
+[OK] openclash_auto.yaml: 66 exact + 10 suffix app-ad targets
+[OK] openclash_lite.yaml: 66 exact + 10 suffix app-ad targets
+[OK] openclash_fresh_pool.yaml: 66 exact + 10 suffix app-ad targets
+[OK] openclash_android.yaml: 66 exact + 10 suffix app-ad targets
+[OK] openclash_auto.yaml: conservative streaming layer active (lean-exact)
+[OK] openclash_android.yaml: conservative streaming layer active (lean-exact)
+[OK] openclash_lite.yaml: conservative streaming layer active (lean-exact)
+[OK] openclash_fresh_pool.yaml: conservative streaming layer active (lean-exact)
+[OK] openclash_auto.yaml: 31/31 intrusive-ad suffixes, no broad media CDN block
+[OK] openclash_lite.yaml: 31/31 intrusive-ad suffixes, no broad media CDN block
+[OK] openclash_fresh_pool.yaml: 31/31 intrusive-ad suffixes, no broad media CDN block
+[OK] openclash_android.yaml: 31/31 intrusive-ad suffixes, no broad media CDN block
+[OK] core uses shared security provider catalog
+[OK] local runner uses shared security provider catalog
+[OK] runner no longer owns duplicate threat-safe provider definitions
+[OK] router threat-safe provider present: threat-malware
+[OK] router threat-safe provider present: threat-phishing
+[OK] router threat-safe provider present: threat-cryptominers
+[OK] router threat-safe provider present: threat-fake-scam
+[OK] router threat-safe provider present: threat-tif-mini
+[OK] router threat-safe provider present: threat-tif-ip
+[OK] router threat-safe provider present: ads_indonesia
+[OK] Lite skips IP threat provider
+[OK] Android Indonesia provider uses local YAML snapshot
+[OK] Android security providers remain YAML/file compatible
+[OK] threat providers stay ahead of regional/global ads
+[OK] output exists: openclash_auto.yaml
+[OK] no broad doubleclick suffix reject: openclash_auto.yaml
+[OK] YouTube compatibility guard retained: openclash_auto.yaml
+[OK] output exists: openclash_lite.yaml
+[OK] no broad doubleclick suffix reject: openclash_lite.yaml
+[OK] YouTube compatibility guard retained: openclash_lite.yaml
+[OK] output exists: openclash_fresh_pool.yaml
+[OK] no broad doubleclick suffix reject: openclash_fresh_pool.yaml
+[OK] YouTube compatibility guard retained: openclash_fresh_pool.yaml
+[OK] output exists: openclash_android.yaml
+[OK] no broad doubleclick suffix reject: openclash_android.yaml
+[OK] YouTube compatibility guard retained: openclash_android.yaml
+[OK] feed guard promotes a valid refresh
+[OK] feed guard rejects suspicious/too-small refresh
+[OK] rejected refresh does not overwrite Last-Known-Good
+[OK] Security hardening audit complete
+[OK] OpenWrt adblock v4.5: enhanced Auto/Fresh, compact Lite, Android unchanged
+[PERF] openclash_auto.yaml: proxies=14 active_direct_probes/min=9.33 bytes=38697
+[PERF] openclash_lite.yaml: proxies=14 active_direct_probes/min=9.33 bytes=26034
+[PERF] openclash_android.yaml: proxies=14 active_direct_probes/min=4.0 bytes=33114
+[PERF] openclash_fresh_pool.yaml: proxies=34 active_direct_probes/min=9.33 bytes=40028
+[OK] performance budget v4.0
+Target: OpenClash v0.47.156 + Mihomo alpha-ge183c58
+[OK] openclash_auto.yaml (static)
+[OK] openclash_lite.yaml (static)
+[OK] openclash_fresh_pool.yaml (static)
+[OK] openclash_android.yaml (static)
+
+Android hash:
+87fe571a19a225213ae5bd270dd3c8731f300dd0d6f420c81017264303b7db27  openclash_android.yaml
+
+Router output hashes:
+b5d71d66bc0fed0f5c411c37adf213fa116cab2c2cc062a08cfb499d6bb5999c  openclash_auto.yaml
+c0e1f87afd2c655f7a60e834be40873b77e189537312669c60979d0875ff6b58  openclash_lite.yaml
+6cc5723f091177200af5cf0c6b52d1c4d73281639715627f6173838feed9a6e8  openclash_fresh_pool.yaml

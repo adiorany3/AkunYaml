@@ -47,7 +47,7 @@ from openclash_target import (
     validate_yaml_file,
 )
 
-APP_VERSION = "4.5-openwrt-adblock-enhanced"
+APP_VERSION = "4.6-youtube-playback-safe"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -193,6 +193,9 @@ DEFAULT_ENV = {
     # over overlapping popup/benchmark/streaming provider stacks.
     "ADBLOCK_DEDUP_MODE": "lean",
     "YOUTUBE_ADBLOCK_MODE": "enhanced",
+    # Router-only extra exact ad endpoints. This never blocks googlevideo.com
+    # or static.doubleclick.net and does not alter Android output.
+    "YOUTUBE_ROUTER_EXTRA_ADS": "true",
     "YOUTUBE_TEST_URL": "https://www.gstatic.com/generate_204",
     "YOUTUBE_HEALTH_INTERVAL": "120",
     "YOUTUBE_HEALTH_TIMEOUT_MS": "3000",
@@ -531,6 +534,18 @@ YOUTUBE_NETWORK_AD_RULES = (
     "DOMAIN-SUFFIX,googleadservices.com,REJECT",
 )
 
+# Router-only exact ad/measurement endpoints. These are intentionally not
+# suffix rules because parts of doubleclick.net are used by YouTube playback.
+# Keep Android conservative and preserve static.doubleclick.net.
+YOUTUBE_ROUTER_EXTRA_AD_RULES = (
+    "DOMAIN,adservice.google.com,REJECT",
+    "DOMAIN,pagead2.googleadservices.com,REJECT",
+    "DOMAIN,afs.googlesyndication.com,REJECT",
+    "DOMAIN,stats.g.doubleclick.net,REJECT",
+    "DOMAIN,m.doubleclick.net,REJECT",
+    "DOMAIN,mediavisor.doubleclick.net,REJECT",
+)
+
 YOUTUBE_BROWSER_FILTERS_SAFE = """\
 ! ConvertYAML Local Runner v2.0
 ! Cosmetic YouTube filters. Do not block googlevideo.com.
@@ -568,6 +583,12 @@ YOUTUBE_BROWSER_FILTERS_ENHANCED = """\
 ||pagead2.googlesyndication.com^$domain=youtube.com
 ||tpc.googlesyndication.com^$domain=youtube.com
 ||www.googleadservices.com^$domain=youtube.com
+||adservice.google.com^$domain=youtube.com
+||pagead2.googleadservices.com^$domain=youtube.com
+||afs.googlesyndication.com^$domain=youtube.com
+||stats.g.doubleclick.net^$domain=youtube.com
+||m.doubleclick.net^$domain=youtube.com
+||mediavisor.doubleclick.net^$domain=youtube.com
 ||ads.youtube.com^$domain=youtube.com
 ||youtube.com/api/stats/ads^$xhr,domain=youtube.com
 ||youtube.com/pagead/*$xhr,domain=youtube.com
@@ -2158,7 +2179,10 @@ def apply_youtube_guard(path: Path, mode: str) -> bool:
     current = [str(item) for item in config.get("rules", []) or []]
     playback_domains = set(YOUTUBE_PLAYBACK_DOMAINS)
     compat_domains = set(YOUTUBE_COMPAT_DOMAINS)
+    is_android_output = path.name.lower() == "openclash_android.yaml"
     managed_ad_rules = set(YOUTUBE_NETWORK_AD_RULES)
+    if not is_android_output:
+        managed_ad_rules.update(YOUTUBE_ROUTER_EXTRA_AD_RULES)
 
     cleaned = []
     for rule in current:
@@ -2253,6 +2277,9 @@ def apply_youtube_guard(path: Path, mode: str) -> bool:
                 guard.append(f"RULE-SET,youtube_domain,{route}")
         guard.extend(f"DOMAIN-SUFFIX,{domain},{route}" for domain in YOUTUBE_PLAYBACK_DOMAINS)
         ad_rules = list(YOUTUBE_NETWORK_AD_RULES) if mode == "enhanced" else []
+        router_extra_enabled = str(os.environ.get("YOUTUBE_ROUTER_EXTRA_ADS", "true")).strip().lower() in {"1", "true", "yes", "y", "on", "aktif"}
+        if mode == "enhanced" and router_extra_enabled and not is_android_output:
+            ad_rules.extend(YOUTUBE_ROUTER_EXTRA_AD_RULES)
 
         # Keep LAN/user DIRECT exceptions and all AI routing guards ahead of
         # YouTube/ad rules. Otherwise this post-processing step could move a
