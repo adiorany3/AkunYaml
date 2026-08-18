@@ -1,0 +1,52 @@
+AkunYaml v4.5 OpenWrt Enhanced Adblock Validation
+Date: 2026-08-18
+
+[OK] Python compile
+[OK] OpenWrt adblock v4.5 audit
+[OK] Threat-safe audit
+[OK] YouTube/adblock audit
+[OK] Android rule-provider audit
+[OK] App ads audit
+[OK] Streaming ads audit
+[OK] Popup/game ads audit
+[OK] Security hardening audit
+[OK] Performance budget audit
+[OK] Multi-host audit
+[OK] Android Banking Safe audit
+[OK] Android Marketplace Live audit
+[OK] OpenClash target static validation
+
+OpenWrt Auto:
+- hagezi-pro-plus-mini: enabled
+- popup-ads: enabled
+- ads_indonesia: enabled
+- ads_domain: enabled
+- tracker-domain: enabled
+
+OpenWrt Fresh Pool:
+- hagezi-pro-plus-mini: enabled
+- popup-ads: enabled
+- ads_indonesia: enabled
+- ads_domain: enabled
+- tracker-domain: enabled
+
+OpenWrt Lite:
+- popup-ads: enabled
+- hagezi-pro-plus-mini: disabled by default for RAM efficiency
+- ads_indonesia: enabled
+- ads_domain: enabled
+- tracker-domain: enabled
+
+Android:
+- unchanged from v4.4
+- SHA-256 openclash_android.yaml: 87fe571a19a225213ae5bd270dd3c8731f300dd0d6f420c81017264303b7db27
+
+Performance:
+- Auto active direct probes: ~9.33/min
+- Lite active direct probes: ~9.33/min
+- Fresh Pool active direct probes: ~9.33/min
+- Android active direct probes: ~4.00/min
+
+Exact-core parser:
+- Not executed in this Linux environment because bundled Mihomo is Mach-O ARM64 macOS.
+- Static validation target: OpenClash v0.47.156 + Mihomo alpha-ge183c58: OK.

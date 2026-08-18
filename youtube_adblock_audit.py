@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 import yaml
@@ -68,7 +69,16 @@ def audit_file(path: Path, enhanced: bool, lean: bool) -> list[str]:
         errors.append("provider youtube_domain MRS tidak ada pada profil router")
 
     if lean and not is_android:
-        overlap = sorted(provider_names & LEAN_OVERLAP_PROVIDERS)
+        allowed_overlap: set[str] = set()
+        try:
+            cfg = json.loads((path.parent / "local_config.json").read_text(encoding="utf-8"))
+            level_key = "OPENWRT_LITE_ADBLOCK_LEVEL" if path.name == "openclash_lite.yaml" else "OPENWRT_ADBLOCK_LEVEL"
+            level = str(cfg.get(level_key, "standard")).strip().lower()
+            if level in {"compact", "enhanced"}:
+                allowed_overlap.add("popup-ads")
+        except Exception:
+            pass
+        overlap = sorted((provider_names & LEAN_OVERLAP_PROVIDERS) - allowed_overlap)
         if overlap:
             errors.append("provider overlap masih aktif dalam lean mode: " + ", ".join(overlap))
 

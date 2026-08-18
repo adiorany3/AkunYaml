@@ -81,6 +81,22 @@ ROUTER_STRICT_PROVIDERS: dict[str, dict[str, Any]] = {
     ),
 }
 
+
+# OpenWrt-only enhanced ad blocking.  Pro++ Mini keeps the same domain blocking
+# coverage as the normal Pro++ wildcard list with a smaller ruleset footprint,
+# while popup-ads catches aggressive redirect/pop-under infrastructure that may
+# not be present in the generic category-ads provider yet.
+ROUTER_ENHANCED_AD_PROVIDERS: dict[str, dict[str, Any]] = {
+    "hagezi-pro-plus-mini": _http_domain(
+        "./rule_providers/hagezi-pro-plus-mini.txt",
+        "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.plus.mini-onlydomains.txt",
+    ),
+    "popup-ads": _http_domain(
+        "./rule_providers/popup-ads.txt",
+        "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/popupads-onlydomains.txt",
+    ),
+}
+
 ROUTER_THREAT_SAFE_PROVIDERS: dict[str, dict[str, Any]] = {
     "threat-malware": _http_domain(
         "./rule_providers/threat-malware.txt",
@@ -167,10 +183,14 @@ def provider_catalog(
     threat_ip: bool = True,
     interval: int = DEFAULT_PROVIDER_INTERVAL,
     android_snapshot_exists: bool = True,
+    router_adblock_level: str = "standard",
 ) -> dict[str, dict[str, Any]]:
     """Return the complete provider catalog required by the selected profile."""
     profile = (profile or "balanced").strip().lower()
     platform = platform.strip().lower()
+    router_adblock_level = (router_adblock_level or "standard").strip().lower()
+    if router_adblock_level not in {"standard", "compact", "enhanced"}:
+        router_adblock_level = "standard"
     if profile == "off":
         return {}
 
@@ -187,6 +207,15 @@ def provider_catalog(
         out.pop("ads_indonesia", None)
     if profile in {"strict", "child-safe", "app-safe", "threat-safe"} and not lite:
         out.update(_with_interval(ROUTER_STRICT_PROVIDERS, interval))
+    if router_adblock_level == "compact":
+        # Compact mode is designed for Lite/low-RAM routers: only add the focused
+        # popup/redirect feed, not the larger Pro++ Mini layer.
+        out["popup-ads"] = _with_interval(ROUTER_ENHANCED_AD_PROVIDERS, interval)["popup-ads"]
+    elif router_adblock_level == "enhanced":
+        # Enhanced OpenWrt mode replaces the overlapping Pro Mini provider with
+        # Pro++ Mini, while retaining the focused popup list.
+        out.pop("hagezi-pro-mini", None)
+        out.update(_with_interval(ROUTER_ENHANCED_AD_PROVIDERS, interval))
     if profile == "threat-safe":
         out.update(_with_interval(ROUTER_THREAT_SAFE_PROVIDERS, interval))
         if threat_ip and not lite:
@@ -202,10 +231,14 @@ def provider_reject_rules(
     indonesia_ads: bool = True,
     threat_ip: bool = True,
     android_snapshot_exists: bool = True,
+    router_adblock_level: str = "standard",
 ) -> list[str]:
     """Return provider-backed REJECT rules in deterministic precision order."""
     profile = (profile or "balanced").strip().lower()
     platform = platform.strip().lower()
+    router_adblock_level = (router_adblock_level or "standard").strip().lower()
+    if router_adblock_level not in {"standard", "compact", "enhanced"}:
+        router_adblock_level = "standard"
     if profile == "off":
         return []
 
@@ -237,7 +270,14 @@ def provider_reject_rules(
     else:
         rules.append("RULE-SET,threat-tif-mini,REJECT")
 
-    if profile in {"strict", "child-safe", "app-safe", "threat-safe"} and not lite:
+    if router_adblock_level == "compact":
+        rules.append("RULE-SET,popup-ads,REJECT")
+    elif router_adblock_level == "enhanced":
+        rules.extend([
+            "RULE-SET,hagezi-pro-plus-mini,REJECT",
+            "RULE-SET,popup-ads,REJECT",
+        ])
+    elif profile in {"strict", "child-safe", "app-safe", "threat-safe"} and not lite:
         rules.extend([
             "RULE-SET,hagezi-pro-mini,REJECT",
             "RULE-SET,popup-ads,REJECT",
@@ -258,6 +298,7 @@ def managed_provider_names() -> set[str]:
     for catalog in (
         ROUTER_BASE_PROVIDERS,
         ROUTER_STRICT_PROVIDERS,
+        ROUTER_ENHANCED_AD_PROVIDERS,
         ROUTER_THREAT_SAFE_PROVIDERS,
         ROUTER_THREAT_IP_PROVIDERS,
         ANDROID_BASE_PROVIDERS,

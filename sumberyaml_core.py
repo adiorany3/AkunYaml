@@ -2640,8 +2640,15 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         security_profile = "balanced"
     indonesia_ads_enabled = os.getenv("INDONESIA_ADBLOCK", "true").strip().lower() not in {"0", "false", "no", "off"}
     threat_ip_enabled = os.getenv("THREAT_IP_BLOCKING", "true").strip().lower() not in {"0", "false", "no", "off"}
+    router_adblock_level = os.getenv("OPENWRT_ADBLOCK_LEVEL", "enhanced").strip().lower()
+    lite_adblock_level = os.getenv("OPENWRT_LITE_ADBLOCK_LEVEL", "compact").strip().lower()
+    if router_adblock_level not in {"standard", "compact", "enhanced"}:
+        router_adblock_level = "enhanced"
+    if lite_adblock_level not in {"standard", "compact", "enhanced"}:
+        lite_adblock_level = "compact"
     security_interval = _env_int_range("ADBLOCK_PROVIDER_INTERVAL", 43200, 3600, 604800)
     is_lite_mode = str(rule_mode).strip().lower() == "lite"
+    selected_router_adblock_level = lite_adblock_level if is_lite_mode else router_adblock_level
     shared_security_providers = shared_security_provider_catalog(
         platform="router",
         profile=security_profile,
@@ -2649,6 +2656,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         indonesia_ads=indonesia_ads_enabled,
         threat_ip=threat_ip_enabled,
         interval=security_interval,
+        router_adblock_level=selected_router_adblock_level,
     )
 
     rule_providers: dict[str, Any] = {
@@ -2973,6 +2981,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             lite=False,
             indonesia_ads=indonesia_ads_enabled,
             threat_ip=threat_ip_enabled,
+            router_adblock_level=router_adblock_level,
         ),
         "RULE-SET,ads_classical,REJECT",
         "RULE-SET,privacy_classical,REJECT",
@@ -3047,6 +3056,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
                 indonesia_ads=indonesia_ads_enabled,
                 threat_ip=False,
                 interval=security_interval,
+                router_adblock_level=lite_adblock_level,
             ),
             "openai_domain": {
                 **domain_provider,
@@ -3113,6 +3123,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
                 lite=True,
                 indonesia_ads=indonesia_ads_enabled,
                 threat_ip=False,
+                router_adblock_level=lite_adblock_level,
             ),
             "DOMAIN-SUFFIX,facebook.com,SOCIAL-MEDIA",
             "DOMAIN-SUFFIX,fbcdn.net,SOCIAL-MEDIA",

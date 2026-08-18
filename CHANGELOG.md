@@ -1,3 +1,12 @@
+# v4.5 OpenWrt Enhanced Adblock
+
+- OpenWrt Auto/Fresh memakai `OPENWRT_ADBLOCK_LEVEL=enhanced`.
+- Menambahkan HaGeZi Pro++ Mini dan focused popup/redirect provider di router.
+- OpenWrt Lite memakai `OPENWRT_LITE_ADBLOCK_LEVEL=compact`, sehingga hanya menambah popup provider tanpa Pro++ Mini.
+- ABPindo Indonesia, MetaCubeX ads/tracker, app ads, streaming ads, threat-safe, dan allowlist tetap dipertahankan.
+- Android tidak menerima provider router baru dan tetap identik dengan v4.4.
+- Feed Guard memvalidasi provider enhanced sebelum menyimpan Last-Known-Good.
+
 # v4.3 Android Marketplace Live Compatibility
 
 - Android-only compatibility guard for marketplace live/video sessions.

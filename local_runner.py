@@ -47,7 +47,7 @@ from openclash_target import (
     validate_yaml_file,
 )
 
-APP_VERSION = "4.4-android-banking-safe"
+APP_VERSION = "4.5-openwrt-adblock-enhanced"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -181,6 +181,12 @@ DEFAULT_ENV = {
     "LOAD_BALANCE_LAZY": "true",
     "AI_SERVICE_NODE_LIMIT": "8",
     "THREAT_SAFE_FAMILY_DNS": "true",
+    # OpenWrt router adblock tier. Enhanced adds a compact HaGeZi Pro++ Mini
+    # layer plus focused popup/redirect blocking. Android is not affected.
+    "OPENWRT_ADBLOCK_LEVEL": "enhanced",
+    # Lite stays conservative by default for low-RAM routers. Set enhanced only
+    # when the router has enough memory for the additional text provider.
+    "OPENWRT_LITE_ADBLOCK_LEVEL": "compact",
     # DNS-level ad blocking remains off by default to reduce false positives.
     "ADBLOCK_DNS_MODE": "off",
     # v3 lean mode prefers compact MRS providers + high-confidence local rules
@@ -1682,6 +1688,13 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     lean_router = (not is_android) and dedup_mode in {"lean", "optimized", "v3"}
     indonesia_ads_enabled = os.environ.get("INDONESIA_ADBLOCK", "true").strip().lower() not in {"0", "false", "no", "off"}
     threat_ip_enabled = os.environ.get("THREAT_IP_BLOCKING", "true").strip().lower() not in {"0", "false", "no", "off"}
+    router_adblock_level = os.environ.get("OPENWRT_ADBLOCK_LEVEL", "enhanced").strip().lower()
+    lite_adblock_level = os.environ.get("OPENWRT_LITE_ADBLOCK_LEVEL", "standard").strip().lower()
+    if router_adblock_level not in {"standard", "compact", "enhanced"}:
+        router_adblock_level = "enhanced"
+    if lite_adblock_level not in {"standard", "compact", "enhanced"}:
+        lite_adblock_level = "compact"
+    selected_router_adblock_level = lite_adblock_level if is_lite else router_adblock_level
     android_snapshot = workdir / "rule_providers" / "ads_indonesia_android.yaml"
     provider_catalog = shared_provider_catalog(
         platform="android" if is_android else "router",
@@ -1691,12 +1704,14 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         threat_ip=threat_ip_enabled,
         interval=interval,
         android_snapshot_exists=android_snapshot.exists(),
+        router_adblock_level=selected_router_adblock_level,
     )
 
     # Lean router mode deliberately skips overlapping strict provider layers.
     if lean_router:
         provider_catalog.pop("hagezi-pro-mini", None)
-        provider_catalog.pop("popup-ads", None)
+        if selected_router_adblock_level == "standard":
+            provider_catalog.pop("popup-ads", None)
 
     turtlecute_domains = (
         load_turtlecute_domains(workdir)
@@ -1732,7 +1747,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     # Remove providers from old/other platform profiles so Android never keeps
     # an MRS/text provider by accident, while router profiles keep their lean MRS set.
     obsolete = {
-        "security-tif-mini", "popup-ads", "hagezi-pro-mini", "awavenue-ads",
+        "security-tif-mini", "popup-ads", "hagezi-pro-mini", "hagezi-pro-plus-mini", "awavenue-ads",
         "privacy-extra", "threat-tif-mini", "threat-malware", "threat-phishing", "threat-cryptominers",
         "turtlecute-coverage", "streaming-ad-safe", "app-ad-safe",
         "threat-fake-scam", "threat-tif-ip", "ads_indonesia",
@@ -1785,6 +1800,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         "RULE-SET,security-tif-mini,",
         "RULE-SET,popup-ads,",
         "RULE-SET,hagezi-pro-mini,",
+        "RULE-SET,hagezi-pro-plus-mini,",
         "RULE-SET,privacy-extra,",
         "RULE-SET,tracker-domain,",
         "RULE-SET,threat-tif-mini,",
@@ -1966,11 +1982,15 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
             indonesia_ads="ads_indonesia" in provider_catalog,
             threat_ip="threat-tif-ip" in provider_catalog,
             android_snapshot_exists="ads_indonesia" in provider_catalog,
+            router_adblock_level=selected_router_adblock_level,
         )
         if lean_router:
+            blocked_lean_prefixes = ["RULE-SET,hagezi-pro-mini,"]
+            if selected_router_adblock_level == "standard":
+                blocked_lean_prefixes.append("RULE-SET,popup-ads,")
             provider_rules = [
                 rule for rule in provider_rules
-                if not rule.startswith(("RULE-SET,hagezi-pro-mini,", "RULE-SET,popup-ads,"))
+                if not rule.startswith(tuple(blocked_lean_prefixes))
             ]
 
         # Keep high-confidence threat/privacy providers before local ad rules, then
@@ -2468,6 +2488,7 @@ def main() -> int:
         "ADBLOCK_PROFILE", "ADBLOCK_PROVIDER_INTERVAL", "INDONESIA_ADBLOCK",
         "THREAT_IP_BLOCKING", "SECURITY_FEED_GUARD", "REFRESH_SECURITY_FEEDS",
         "FEED_MAX_DROP_RATIO", "FEED_MAX_GROWTH_RATIO", "ADBLOCK_DEDUP_MODE",
+        "OPENWRT_ADBLOCK_LEVEL", "OPENWRT_LITE_ADBLOCK_LEVEL",
         "THREAT_SAFE_FAMILY_DNS",
         "BUG_SERVERS", "BUG_MODE", "BUG_HEALTH_CHECK", "BUG_HEALTH_ATTEMPTS", "BUG_MAX_VARIANTS_PER_NODE",
         "BUG_TOTAL_VARIANTS_CAP", "BUG_MIN_BASE_NODES",

@@ -4,9 +4,11 @@ A refresh is promoted only after format/count sanity checks. Suspicious updates 
 
 | Provider | Status | Entries | SHA-256 |
 |---|---:|---:|---|
-| `ads_indonesia` | last-known-good | 152 | `9f6ae5cc7bd96ced` |
+| `ads_indonesia` | updated | 152 | `9f6ae5cc7bd96ced` |
+| `hagezi-pro-plus-mini` | updated | 68940 | `eba7571d1ebdabd3` |
+| `popup-ads` | updated | 54029 | `49c665e111d17b0c` |
 | `threat-cryptominers` | updated | 297 | `0b2089ce6ce3a2bf` |
-| `threat-fake-scam` | last-known-good | 16964 | `fdf3f260db405c3c` |
+| `threat-fake-scam` | updated | 16964 | `fdf3f260db405c3c` |
 | `threat-malware` | updated | 473 | `b4b5ff9f99850d24` |
 | `threat-phishing` | updated | 36247 | `e409568ebfc40fc4` |
 | `threat-tif-ip` | last-known-good | 55764 | `1a042864d08636b8` |
