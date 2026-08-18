@@ -1,15 +1,58 @@
-# YouTube Ad Blocking
+# YouTube Ad Blocking v3
 
-Mode default paket ini adalah `balanced + enhanced`.
+Mode default paket ini adalah `threat-safe + enhanced + lean`.
 
-## Strategi v2.7
+## Arsitektur
 
-Konfigurasi memakai dua lapisan agar pemblokiran lebih kuat tanpa mengorbankan playback.
+YouTube v3 memakai dua lapisan. OpenClash/Mihomo menangani host iklan yang dapat dipisahkan dengan aman, tracker, threat feed, serta routing streaming. `youtube_browser_filters.txt` menangani elemen dan request berbasis path yang tidak dapat dibedakan hanya dari domain/IP.
 
-### 1. Router / Mihomo
+Urutan rule penting:
 
-Rule router memblokir endpoint iklan yang dapat dipisahkan dari media utama:
+1. LAN/private dan routing AI
+2. YouTube compatibility hosts
+3. exact/high-confidence YouTube ad hosts
+4. YouTube playback routing
+5. threat / general ads / tracker
+6. kategori routing lain
 
+Dengan urutan ini, endpoint iklan seperti `ads.youtube.com` ditolak sebelum `DOMAIN-SUFFIX,youtube.com,YOUTUBE` sempat menangkapnya.
+
+## Routing YouTube
+
+Semua output sekarang memiliki grup `YOUTUBE`. Grup menggunakan `fallback` agar pemilihan jalur streaming otomatis dan egress tidak berganti tanpa alasan.
+
+Default health-check:
+
+```yaml
+url: https://www.gstatic.com/generate_204
+interval: 120
+lazy: true
+timeout: 3000
+max-failed-times: 2
+```
+
+Profil router menggunakan `youtube_domain.mrs` dari MetaCubeX ditambah explicit playback guards. Profil Android sengaja tidak memakai MRS untuk menjaga kompatibilitas dengan core Clash Meta for Android yang lebih lama. Android tetap memiliki explicit guards.
+
+Playback/compatibility yang selalu menuju `YOUTUBE` sebelum broad ad lists:
+
+- `static.doubleclick.net`
+- `jnn-pa.googleapis.com`
+- `youtube.com`
+- `youtu.be`
+- `youtube-nocookie.com`
+- `googlevideo.com`
+- `ytimg.com`
+- `youtubei.googleapis.com`
+- `youtube.googleapis.com`
+- `ggpht.com`
+
+Jangan memblokir `googlevideo.com` secara global. Video normal dan iklan dapat berbagi infrastruktur media. `static.doubleclick.net` juga sengaja tidak diblokir karena ada kasus playback browser yang gagal ketika `instream/ad_status.js` tidak dapat dimuat.
+
+## Exact/high-confidence ad rules
+
+Rule berikut dievaluasi sebelum playback guard:
+
+- `ads.youtube.com`
 - `googleads.g.doubleclick.net`
 - `ad.doubleclick.net`
 - `pubads.g.doubleclick.net`
@@ -22,67 +65,47 @@ Rule router memblokir endpoint iklan yang dapat dipisahkan dari media utama:
 - `googlesyndication.com`
 - `googleadservices.com`
 
-`REJECT` dipakai agar koneksi iklan gagal cepat dan tidak menunggu timeout panjang.
+Policy tetap `REJECT` agar request gagal cepat. Paket tidak memakai `REJECT-DROP` untuk lapisan ini.
 
-### 2. Playback compatibility guard
+## Adblock dedup v3
 
-Host berikut sengaja diizinkan sebelum blocklist iklan umum:
-
-- `static.doubleclick.net`
-- `jnn-pa.googleapis.com`
-
-`static.doubleclick.net` dapat dibutuhkan oleh validasi playback YouTube. Jangan menggantinya dengan `DOMAIN-SUFFIX,doubleclick.net,REJECT`.
-
-Domain media utama berikut juga selalu dijaga agar tidak terkena blocklist umum:
-
-- `youtube.com`
-- `youtu.be`
-- `youtube-nocookie.com`
-- `googlevideo.com`
-- `ytimg.com`
-- `youtubei.googleapis.com`
-- `youtube.googleapis.com`
-- `ggpht.com`
-
-`googlevideo.com` tidak boleh diberi policy `REJECT` karena video utama dan sebagian iklan dapat memakai infrastruktur media yang sama.
-
-### 3. Browser filter
-
-File `youtube_browser_filters.txt` menangani bagian yang tidak dapat dibedakan di tingkat DNS/router, termasuk:
-
-- elemen iklan feed dan player
-- request `api/stats/ads`
-- request `pagead`
-- request `ptracking`
-- pruning konservatif `adPlacements`, `adSlots`, dan `playerAds` pada respons awal halaman
-
-Gunakan file ini sebagai custom filter pada content blocker yang kompatibel dengan sintaks uBlock Origin jika ingin hasil terbaik di browser.
-
-## Profil
-
-Default `local_config.json`:
+Router menggunakan mode `lean` secara default:
 
 ```json
-"ADBLOCK_PROFILE": "balanced",
-"ADBLOCK_DNS_MODE": "off",
-"YOUTUBE_ADBLOCK_MODE": "enhanced"
+"ADBLOCK_DEDUP_MODE": "lean"
 ```
 
-`ADBLOCK_DNS_MODE` tetap `off`. Rule routing lebih aman untuk YouTube karena DNS tidak dapat membedakan request berdasarkan path dan tidak dapat membedakan iklan dari media jika host delivery sama.
+Mode ini mempertahankan:
+
+- `ads_domain` MetaCubeX MRS
+- `tracker-domain` MetaCubeX MRS
+- `threat-tif-mini`
+- threat fake/scam dan IP intelligence sesuai profil
+- `app-ad-safe`
+- explicit intrusive/game-ad suffixes
+- tiga exact streaming-ad hosts
+- explicit YouTube ad rules
+
+Provider yang overlap seperti `hagezi-pro-mini`, `popup-ads`, `turtlecute-coverage`, dan `streaming-ad-safe` tidak dipasang pada router dalam mode lean. Ini mengurangi provider runtime dan file YAML. Untuk eksperimen coverage lama, set `ADBLOCK_DEDUP_MODE=full` sebelum menjalankan generator.
+
+## Browser filter
+
+`youtube_browser_filters.txt` menambahkan cosmetic filters untuk slot/promoted UI, request `api/stats/ads`, `pagead`, `ptracking`, exact `ads.youtube.com`, serta pruning konservatif `adPlacements`, `adSlots`, dan `playerAds`.
+
+File tersebut tidak memblokir `googlevideo.com` maupun `static.doubleclick.net`.
+
+DNS-level blocking tetap `off` secara default karena DNS tidak melihat path request dan tidak bisa membedakan iklan dari playback ketika keduanya berbagi host.
 
 ## Validasi
 
-Jalankan:
-
 ```bash
-python3 youtube_adblock_audit.py --mode enhanced
+python3 youtube_adblock_audit.py --mode enhanced --dedup lean
+python3 android_ruleprovider_audit.py
+python3 validate_openclash_target.py --static-only \
+  openclash_auto.yaml openclash_android.yaml \
+  openclash_lite.yaml openclash_fresh_pool.yaml
 ```
 
-Audit memeriksa bahwa:
+Referensi kompatibilitas playback yang menjadi dasar keputusan untuk tidak memblokir `static.doubleclick.net` secara luas:
 
-- provider ad dan tracker tersedia
-- endpoint iklan utama tetap diblokir
-- `googlevideo.com` tidak diblokir
-- `static.doubleclick.net` tidak diblokir
-- rule compatibility berada sebelum blocklist umum
-- browser filter tidak memblokir media utama
+- HaGeZi issue #9446, 19 Maret 2026: https://github.com/hagezi/dns-blocklists/issues/9446

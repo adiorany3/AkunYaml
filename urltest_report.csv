@@ -1,33 +1,41 @@
 name,type,network,original_server,bug_sni,handshake_ms,ws_upgrade_ms,url_test_ms,url_test_status,url_test_success
-AKUN-001-CLOUDFLARE-VLESS-WS-103MS,vless,ws,104.18.37.228,josni.hoyes.cloudns.ch,103,,326,HTTP 204,yes
-AKUN-002-CLOUDFLARE-VLESS-WS-105MS,vless,ws,188.114.97.6,hhlfy.twiladaphne.ndjp.net,105,,312,HTTP 204,yes
-AKUN-003-CLOUDFLARE-VLESS-WS-110MS,vless,ws,vpn.renshengxuanze.ccwu.cc,vpn.renshengxuanze.ccwu.cc,110,,330,HTTP 204,yes
-AKUN-004-CLOUDFLARE-VLESS-WS-108MS,vless,ws,time.is,fREE.sERVer6PeeKCOnFIG.wOrkErs.dEv.,108,,296,HTTP 204,yes
-AKUN-005-CLOUDFLARE-VLESS-WS-109MS,vless,ws,dx.mmhh.eu.cc,hhlfy.twiladaphne.ndjp.net,109,,308,HTTP 204,yes
-AKUN-006-CLOUDFLARE-VLESS-WS-100MS,vless,ws,104.18.37.228,hhlfy.twiladaphne.ndjp.net,100,,6146,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
-AKUN-007-CLOUDFLARE-VLESS-WS-100MS,vless,ws,www.speedtest.net,LoG-SvC-27d1BE.CI-runNer-E5b8dd.workers.Dev,100,,321,HTTP 204,yes
-AKUN-008-CLOUDFLARE-VLESS-WS-114MS,vless,ws,104.18.37.228,hhlfy.twiladaphne.ndjp.net,114,,320,HTTP 204,yes
-AKUN-009-CLOUDFLARE-VLESS-WS-108MS,vless,ws,188.114.99.0,josni.hoyes.cloudns.ch,108,,321,HTTP 204,yes
-AKUN-010-CLOUDFLARE-VLESS-WS-94MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,94,,321,HTTP 204,yes
-AKUN-011-CLOUDFLARE-VLESS-WS-110MS,vless,ws,104.18.37.228,josni.hoyes.cloudns.ch,110,,305,HTTP 204,yes
-AKUN-012-CLOUDFLARE-VLESS-WS-103MS,vless,ws,one-for-all.levikogjgfdd.ir,hhlfy.twiladaphne.ndjp.net,103,,326,HTTP 204,yes
-AKUN-013-BIGCOMMERCE-VLESS-WS-104MS,vless,ws,63.141.128.22,misty-tooth-78ca.fobogah414-e7b.workers.dev,104,,345,HTTP 204,yes
-AKUN-014-CLOUDFLARE-VLESS-WS-107MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,107,,343,HTTP 204,yes
-AKUN-015-CLOUDFLARE-VLESS-WS-107MS,vless,ws,104.18.37.228,josni.hoyes.cloudns.ch,107,,3331,HTTP 204,yes
-AKUN-016-CLOUDFLARE-VLESS-WS-112MS,vless,ws,cf.levikogjgfdd.ir,josni.hoyes.cloudns.ch,112,,320,HTTP 204,yes
-AKUN-017-CLOUDFLARE-VLESS-WS-79MS,vless,ws,104.18.37.228,josni.hoyes.cloudns.ch,79,,308,HTTP 204,yes
-AKUN-018-CLOUDFLARE-VLESS-WS-107MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,107,,321,HTTP 204,yes
-AKUN-019-CLOUDFLARE-VLESS-WS-107MS,vless,ws,104.21.234.13,FAncY-RAIn-136e.THisISaLee.WoRkeRS.DeV,107,,307,HTTP 204,yes
-AKUN-020-CLOUDFLARE-VLESS-WS-109MS,vless,ws,162.159.44.195,hhlfy.twiladaphne.ndjp.net,109,,317,HTTP 204,yes
-AKUN-021-CLOUDFLARE-VLESS-WS-114MS,vless,ws,141.101.120.73,noisy-term-e657.airdrop2014aa5168.workers.dev,114,,1364,HTTP 204,yes
-AKUN-022-CLOUDFLARE-VLESS-WS-105MS,vless,ws,www.speedtest.net,BPb-F23dDEdd.JCXkvlnDL.WOrkERS.deV,105,,307,HTTP 204,yes
-AKUN-023-CLOUDFLARE-VLESS-WS-113MS,vless,ws,104.18.37.228,hhlfy.twiladaphne.ndjp.net,113,,305,HTTP 204,yes
-AKUN-024-CLOUDFLARE-VLESS-WS-143MS,vless,ws,104.18.37.228,hhlfy.twiladaphne.ndjp.net,143,,6138,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
-AKUN-025-CLOUDFLARE-VLESS-WS-110MS,vless,ws,medium.com,rAyAn-007.mAxImA.DpDnS.OrG,110,,310,HTTP 204,yes
-AKUN-026-CLOUDFLARE-VLESS-WS-122MS,vless,ws,104.16.79.73,josni.hoyes.cloudns.ch,122,,310,HTTP 204,yes
-AKUN-027-CLOUDFLARE-VLESS-WS-141MS,vless,ws,104.16.117.43,josni.hoyes.cloudns.ch,141,,1307,HTTP 204,yes
-AKUN-028-CLOUDFLARE-VLESS-WS-98MS,vless,ws,172.67.135.69,v2ngfast-v2ngfast-v2ngfast-v2ngfast.jovego2551.workers.dev,98,,1331,HTTP 204,yes
-AKUN-029-CLOUDFLARE-VLESS-WS-103MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,103,,314,HTTP 204,yes
-AKUN-030-CLOUDFLARE-VLESS-WS-136MS,vless,ws,104.16.79.73,josni.hoyes.cloudns.ch,136,,317,HTTP 204,yes
-AKUN-031-CLOUDFLARE-VLESS-WS-106MS,vless,ws,172.67.137.154,tiny-leaf-f59f.my-lla-s-a-njo-s-e.workers.dev,106,,325,HTTP 204,yes
-AKUN-032-CLOUDFLARE-VLESS-WS-108MS,vless,ws,www.speedtest.net,BPb-E234adb8.xjGcjHVjkV.WorKERs.DEV,108,,334,HTTP 204,yes
+AKUN-001-UNKNOWN-VLESS-WS-213MS,vless,ws,63.141.128.22,misty-tooth-78ca.fobogah414-e7b.workers.dev,213,,966,HTTP 204,yes
+AKUN-002-CLOUDFLARE-VLESS-WS-205MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,205,,681,HTTP 204,yes
+AKUN-003-CLOUDFLARE-VLESS-WS-240MS,vless,ws,188.114.97.6,hhlfy.twiladaphne.ndjp.net,240,,648,HTTP 204,yes
+AKUN-004-UNKNOWN-VLESS-WS-235MS,vless,ws,208.103.161.32,josni.hoyes.cloudns.ch,235,,474,HTTP 204,yes
+AKUN-005-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-241MS,vless,ws,cf.levikogjgfdd.ir,josni.hoyes.cloudns.ch,241,,662,HTTP 204,yes
+AKUN-006-CLOUDFLARE-VLESS-WS-242MS,vless,ws,104.18.37.228,josni.hoyes.cloudns.ch,242,,555,HTTP 204,yes
+AKUN-007-CLOUDFLARE-VLESS-WS-243MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,243,,1009,HTTP 204,yes
+AKUN-008-CLOUDFLARE-VLESS-WS-258MS,vless,ws,104.18.28.234,hhlfy.twiladaphne.ndjp.net,258,,5134,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-009-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-234MS,vless,ws,chat.openai.com,hhlfy.twiladaphne.ndjp.net,234,,2773,HTTP 204,yes
+AKUN-010-EDIS-BE-NET-VLESS-WS-255MS,vless,ws,194.71.227.213,kjgdksgghre466.pages.dev,255,,2520,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-011-CLOUDFLARE-VLESS-WS-274MS,vless,ws,104.18.37.228,josni.hoyes.cloudns.ch,274,,6139,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
+AKUN-012-CLOUDFLARE-VLESS-WS-195MS,vless,ws,172.67.208.181,bIyapain.bIYApaiNbAcHe.WoRkers.DeV,195,,5145,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-013-CLOUDFLARE-VLESS-WS-262MS,vless,ws,104.16.71.7,FlorAL-Fire-1f55.VeeGshHEeHh.WOrKeRs.dev,262,,609,HTTP 204,yes
+AKUN-014-CLOUDFLARE-VLESS-WS-258MS,vless,ws,172.67.153.110,FRee.SeRver11pEEkcONFIg.WorkeRS.DEv,258,,1076,HTTP 204,yes
+AKUN-015-CLOUDFLARE-VLESS-WS-312MS,vless,ws,172.67.143.24,wislore2.kdns.fr,312,,5135,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-016-CLOUDFLARE-VLESS-WS-245MS,vless,ws,104.16.79.73,josni.hoyes.cloudns.ch,245,,1170,HTTP 204,yes
+AKUN-017-CLOUDFLARE-VLESS-WS-264MS,vless,ws,162.159.44.195,hhlfy.twiladaphne.ndjp.net,264,,5142,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-018-CLOUDFLARE-VLESS-WS-211MS,vless,ws,104.16.117.43,josni.hoyes.cloudns.ch,211,,1017,HTTP 204,yes
+AKUN-019-CLOUDFLARE-VLESS-WS-240MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,240,,1447,HTTP 204,yes
+AKUN-020-VEESP-SIA-VLESS-WS-274MS,vless,ws,62.182.193.24,kjgdksgghre466.pages.dev,274,,843,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-021-CLOUDFLARE-VLESS-WS-236MS,vless,ws,104.18.37.228,josni.hoyes.cloudns.ch,236,,5136,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-022-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-255MS,vless,ws,vpn.renshengxuanze.ccwu.cc,vpn.renshengxuanze.ccwu.cc,255,,702,HTTP 204,yes
+AKUN-023-CLOUDFLARE-VLESS-WS-306MS,vless,ws,104.18.37.228,josni.hoyes.cloudns.ch,306,,1506,HTTP 204,yes
+AKUN-024-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-284MS,vless,ws,dx.mmhh.eu.cc,hhlfy.twiladaphne.ndjp.net,284,,575,HTTP 204,yes
+AKUN-025-CLOUDFLARE-VLESS-WS-285MS,vless,ws,104.16.79.73,josni.hoyes.cloudns.ch,285,,632,HTTP 204,yes
+AKUN-026-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-220MS,vless,ws,www.speedtest.net,BPb-E234adb8.xjGcjHVjkV.WorKERs.DEV,220,,620,HTTP 204,yes
+AKUN-027-UNKNOWN-VLESS-WS-201MS,vless,ws,208.103.161.32,josni.hoyes.cloudns.ch,201,,1162,HTTP 204,yes
+AKUN-028-CLOUDFLARE-VLESS-WS-194MS,vless,ws,188.114.96.3,maSterserVeR1-VSH.KaLlEH.WORkERs.DEV,194,,1236,HTTP 204,yes
+AKUN-029-CLOUDFLARE-VLESS-WS-244MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,244,,749,HTTP 204,yes
+AKUN-030-CLOUDFLARE-VLESS-WS-230MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,230,,477,HTTP 204,yes
+AKUN-031-CLOUDFLARE-VLESS-WS-259MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,259,,776,HTTP 204,yes
+AKUN-032-CLOUDFLARE-VLESS-WS-235MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,235,,686,HTTP 204,yes
+AKUN-033-CLOUDFLARE-VLESS-WS-264MS,vless,ws,104.16.79.73,josni.hoyes.cloudns.ch,264,,689,HTTP 204,yes
+AKUN-034-UNKNOWN-VLESS-WS-252MS,vless,ws,208.103.161.32,josni.hoyes.cloudns.ch,252,,704,HTTP 204,yes
+AKUN-035-CLOUDFLARE-VLESS-WS-271MS,vless,ws,188.114.97.6,josni.hoyes.cloudns.ch,271,,1251,HTTP 204,yes
+AKUN-036-CLOUDFLARE-VLESS-WS-256MS,vless,ws,104.16.79.73,josni.hoyes.cloudns.ch,256,,5137,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-037-CLOUDFLARE-VLESS-WS-247MS,vless,ws,104.18.37.228,josni.hoyes.cloudns.ch,247,,5137,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-038-CLOUDFLARE-VLESS-WS-254MS,vless,ws,104.18.37.228,hhlfy.twiladaphne.ndjp.net,254,,559,HTTP 204,yes
+AKUN-039-CLOUDFLARE-VLESS-WS-286MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,286,,586,HTTP 204,yes
+AKUN-040-CLOUDFLARE-VLESS-WS-239MS,vless,ws,172.66.44.97,josni.hoyes.cloudns.ch,239,,1036,HTTP 204,yes

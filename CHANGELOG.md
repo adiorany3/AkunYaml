@@ -1,3 +1,11 @@
+## Adblock v3 - YouTube / Streaming Optimization
+- Routing YouTube sekarang selalu menuju grup `YOUTUBE`, tidak lagi ter-shadow oleh `GLOBAL`.
+- Grup `YOUTUBE` memakai fallback otomatis, health-check 120 detik, lazy, timeout 3000 ms.
+- Tambah exact reject `ads.youtube.com` sebelum playback guard.
+- Default `ADBLOCK_DEDUP_MODE=lean`: MRS ads/tracker tetap aktif, provider overlap router dilepas.
+- Browser filter YouTube diperkuat tanpa memblokir `googlevideo.com` atau `static.doubleclick.net`.
+- Android kembali YAML-only dengan static AI Voice/IP guards.
+- Lihat `CHANGELOG_ADBLOCK_v3.md` untuk detail dan hasil audit.
 
 ## v3.5 Threat-Safe
 - Profil baru `threat-safe`: anti-scam/fake + threat intelligence domain.

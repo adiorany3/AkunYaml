@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
-import sys
 
 import yaml
 
@@ -14,12 +13,19 @@ FILES = (
     "openclash_fresh_pool.yaml",
 )
 
-REQUIRED_PROVIDERS = {"ads_domain", "tracker-domain"}
+REQUIRED_BASE_PROVIDERS = {"ads_domain", "tracker-domain"}
+LEAN_OVERLAP_PROVIDERS = {
+    "hagezi-pro-mini",
+    "popup-ads",
+    "turtlecute-coverage",
+    "streaming-ad-safe",
+}
 REQUIRED_ENHANCED_RULES = {
     "DOMAIN,googleads.g.doubleclick.net,REJECT",
     "DOMAIN,ad.doubleclick.net,REJECT",
     "DOMAIN,pagead2.googlesyndication.com,REJECT",
     "DOMAIN,imasdk.googleapis.com,REJECT",
+    "DOMAIN,ads.youtube.com,REJECT",
     "DOMAIN-SUFFIX,googlesyndication.com,REJECT",
 }
 COMPAT_DOMAINS = {
@@ -38,16 +44,52 @@ PLAYBACK_DOMAINS = {
 }
 
 
-def audit_file(path: Path, enhanced: bool) -> list[str]:
+def _find_rule(rules: list[str], prefix: str) -> tuple[int, str] | None:
+    for idx, rule in enumerate(rules):
+        if rule.startswith(prefix):
+            return idx, rule
+    return None
+
+
+def audit_file(path: Path, enhanced: bool, lean: bool) -> list[str]:
     errors: list[str] = []
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     if not isinstance(data, dict):
         return ["root YAML bukan mapping"]
 
     providers = data.get("rule-providers") or {}
-    missing = REQUIRED_PROVIDERS - set(providers if isinstance(providers, dict) else {})
+    provider_names = set(providers if isinstance(providers, dict) else {})
+    missing = REQUIRED_BASE_PROVIDERS - provider_names
     if missing:
         errors.append("provider hilang: " + ", ".join(sorted(missing)))
+
+    is_android = path.name == "openclash_android.yaml"
+    if not is_android and "youtube_domain" not in provider_names:
+        errors.append("provider youtube_domain MRS tidak ada pada profil router")
+
+    if lean and not is_android:
+        overlap = sorted(provider_names & LEAN_OVERLAP_PROVIDERS)
+        if overlap:
+            errors.append("provider overlap masih aktif dalam lean mode: " + ", ".join(overlap))
+
+    groups = {
+        str(g.get("name")): g
+        for g in (data.get("proxy-groups") or [])
+        if isinstance(g, dict) and g.get("name")
+    }
+    youtube = groups.get("YOUTUBE")
+    if not isinstance(youtube, dict):
+        errors.append("proxy-group YOUTUBE tidak ada")
+    else:
+        if str(youtube.get("type") or "").lower() != "fallback":
+            errors.append("YOUTUBE bukan fallback otomatis")
+        if youtube.get("lazy") is not True:
+            errors.append("YOUTUBE health-check tidak lazy")
+        interval = int(youtube.get("interval") or 0)
+        if interval < 60 or interval > 300:
+            errors.append(f"interval YOUTUBE tidak wajar: {interval}")
+        if not youtube.get("proxies"):
+            errors.append("YOUTUBE tidak punya kandidat proxy")
 
     rules = [str(x) for x in (data.get("rules") or [])]
     rule_set = set(rules)
@@ -61,45 +103,67 @@ def audit_file(path: Path, enhanced: bool) -> list[str]:
         if missing_rules:
             errors.append("enhanced rule hilang: " + "; ".join(sorted(missing_rules)))
 
-    # Never reject primary playback or compatibility hosts explicitly.
-    for rule in rules:
+    # Dedicated playback and compatibility routes must precede broad blockers.
+    ads_mrs = _find_rule(rules, "RULE-SET,ads_domain,REJECT")
+    ads_idx = ads_mrs[0] if ads_mrs else 10**9
+
+    for domain in COMPAT_DOMAINS:
+        match = _find_rule(rules, f"DOMAIN,{domain},")
+        if not match:
+            errors.append(f"compatibility guard hilang: {domain}")
+            continue
+        idx, rule = match
         parts = [p.strip() for p in rule.split(",")]
-        if len(parts) < 3:
+        if len(parts) < 3 or parts[2] != "YOUTUBE":
+            errors.append(f"compatibility guard bukan YOUTUBE: {rule}")
+        if idx >= ads_idx:
+            errors.append(f"compatibility guard setelah ads_domain: {domain}")
+
+    for domain in PLAYBACK_DOMAINS:
+        match = _find_rule(rules, f"DOMAIN-SUFFIX,{domain},")
+        if not match:
+            errors.append(f"playback guard hilang: {domain}")
             continue
-        if parts[0].upper() not in {"DOMAIN", "DOMAIN-SUFFIX"}:
-            continue
-        domain = parts[1].lower()
-        if domain in PLAYBACK_DOMAINS and parts[2].upper().startswith("REJECT"):
-            errors.append(f"playback domain terblokir: {rule}")
-        if domain in COMPAT_DOMAINS and parts[2].upper().startswith("REJECT"):
-            errors.append(f"compatibility domain terblokir: {rule}")
+        idx, rule = match
+        parts = [p.strip() for p in rule.split(",")]
+        if len(parts) < 3 or parts[2] != "YOUTUBE":
+            errors.append(f"playback tidak menuju YOUTUBE: {rule}")
+        if idx >= ads_idx:
+            errors.append(f"playback guard setelah ads_domain: {domain}")
+
+    # Router profiles should move the compact YouTube MRS into the same guard.
+    if not is_android:
+        match = _find_rule(rules, "RULE-SET,youtube_domain,")
+        if not match:
+            errors.append("RULE-SET youtube_domain hilang")
+        else:
+            idx, rule = match
+            if rule != "RULE-SET,youtube_domain,YOUTUBE":
+                errors.append(f"youtube_domain bukan YOUTUBE: {rule}")
+            if idx >= ads_idx:
+                errors.append("youtube_domain berada setelah ads_domain")
+
+    # Exact ad endpoints under youtube.com must be rejected before the suffix
+    # playback guard, otherwise DOMAIN-SUFFIX,youtube.com would shadow them.
+    ad_yt = _find_rule(rules, "DOMAIN,ads.youtube.com,REJECT")
+    yt_guard = _find_rule(rules, "DOMAIN-SUFFIX,youtube.com,YOUTUBE")
+    if ad_yt and yt_guard and ad_yt[0] >= yt_guard[0]:
+        errors.append("ads.youtube.com ter-shadow oleh youtube.com playback guard")
+
+    for rule in rules:
         if rule == "DOMAIN-SUFFIX,doubleclick.net,REJECT":
             errors.append("doubleclick.net diblokir terlalu luas; static.doubleclick.net dibutuhkan sebagian playback")
-
-    # googlevideo and static.doubleclick guards must be before broad MRS ad block.
-    try:
-        guard_idx = next(i for i, r in enumerate(rules) if r.startswith("DOMAIN-SUFFIX,googlevideo.com,"))
-        ads_idx = rules.index("RULE-SET,ads_domain,REJECT")
-        if guard_idx >= ads_idx:
-            errors.append("googlevideo guard berada setelah ads_domain")
-    except (StopIteration, ValueError):
-        errors.append("googlevideo playback guard atau ads_domain tidak ditemukan")
-
-    try:
-        compat_idx = next(i for i, r in enumerate(rules) if r.startswith("DOMAIN,static.doubleclick.net,"))
-        ads_idx = rules.index("RULE-SET,ads_domain,REJECT")
-        if compat_idx >= ads_idx:
-            errors.append("static.doubleclick.net compatibility guard berada setelah ads_domain")
-    except (StopIteration, ValueError):
-        errors.append("static.doubleclick.net compatibility guard atau ads_domain tidak ditemukan")
+        if rule.startswith("DOMAIN-SUFFIX,googlevideo.com,") and rule.endswith("REJECT"):
+            errors.append("googlevideo.com terblokir")
 
     return errors
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Audit YouTube adblock rules AkunYaml")
+    parser = argparse.ArgumentParser(description="Audit YouTube/adblock v3 AkunYaml")
     parser.add_argument("files", nargs="*", default=list(FILES))
     parser.add_argument("--mode", choices=("safe", "enhanced"), default="enhanced")
+    parser.add_argument("--dedup", choices=("lean", "full"), default="lean")
     args = parser.parse_args()
 
     failed = False
@@ -108,26 +172,31 @@ def main() -> int:
         if not path.exists():
             print(f"[SKIP] {path}: tidak ada")
             continue
-        errors = audit_file(path, args.mode == "enhanced")
+        errors = audit_file(path, args.mode == "enhanced", args.dedup == "lean")
         if errors:
             failed = True
-            print(f"[ERROR] YouTube adblock audit: {path.name}")
+            print(f"[ERROR] YouTube/adblock v3 audit: {path.name}")
             for err in errors:
                 print(f"  - {err}")
         else:
-            print(f"[OK] YouTube adblock audit: {path.name}")
+            print(f"[OK] YouTube/adblock v3 audit: {path.name}")
 
     filter_path = Path("youtube_browser_filters.txt")
     if filter_path.exists():
         text = filter_path.read_text(encoding="utf-8", errors="ignore")
-        if "googlevideo.com" in text and "||googlevideo.com" in text:
+        bad = []
+        if "||googlevideo.com" in text:
+            bad.append("googlevideo.com")
+        if "||static.doubleclick.net" in text:
+            bad.append("static.doubleclick.net")
+        if bad:
             failed = True
-            print("[ERROR] youtube_browser_filters.txt memblokir googlevideo.com")
-        elif "||static.doubleclick.net" in text:
+            print("[ERROR] browser filter memblokir host playback/compatibility: " + ", ".join(bad))
+        elif "||ads.youtube.com^$domain=youtube.com" not in text:
             failed = True
-            print("[ERROR] browser filter memblokir static.doubleclick.net dan dapat merusak playback")
+            print("[ERROR] browser filter ads.youtube.com belum ada")
         else:
-            print("[OK] Browser filter menjaga googlevideo.com dan static.doubleclick.net")
+            print("[OK] Browser filter menjaga playback dan menambah ads.youtube.com")
     else:
         print("[WARN] youtube_browser_filters.txt tidak ditemukan")
 

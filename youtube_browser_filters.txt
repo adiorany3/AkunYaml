@@ -18,6 +18,9 @@ youtube.com##.ytp-ad-player-overlay
 youtube.com##.ytp-ad-text-overlay
 youtube.com##.ytp-ad-image-overlay
 youtube.com##.ytp-ad-progress-list
+youtube.com##ytd-rich-item-renderer:has(ytd-ad-slot-renderer)
+youtube.com##ytd-search ytd-ad-slot-renderer
+youtube.com##ytd-watch-next-secondary-results-renderer ytd-ad-slot-renderer
 
 ! Additional endpoints separated from the main media CDN.
 ! static.doubleclick.net is intentionally NOT blocked because some YouTube
@@ -29,6 +32,7 @@ youtube.com##.ytp-ad-progress-list
 ||pagead2.googlesyndication.com^$domain=youtube.com
 ||tpc.googlesyndication.com^$domain=youtube.com
 ||www.googleadservices.com^$domain=youtube.com
+||ads.youtube.com^$domain=youtube.com
 ||youtube.com/api/stats/ads^$xhr,domain=youtube.com
 ||youtube.com/pagead/*$xhr,domain=youtube.com
 ||youtube.com/ptracking^$xhr,domain=youtube.com

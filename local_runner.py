@@ -47,7 +47,7 @@ from openclash_target import (
     validate_yaml_file,
 )
 
-APP_VERSION = "3.5-threatsafe"
+APP_VERSION = "3.5-threatsafe-adblock-v3"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -121,7 +121,13 @@ DEFAULT_ENV = {
     "ADBLOCK_PROVIDER_INTERVAL": "43200",
     # DNS-level ad blocking remains off by default to reduce false positives.
     "ADBLOCK_DNS_MODE": "off",
+    # v3 lean mode prefers compact MRS providers + high-confidence local rules
+    # over overlapping popup/benchmark/streaming provider stacks.
+    "ADBLOCK_DEDUP_MODE": "lean",
     "YOUTUBE_ADBLOCK_MODE": "enhanced",
+    "YOUTUBE_TEST_URL": "https://www.gstatic.com/generate_204",
+    "YOUTUBE_HEALTH_INTERVAL": "120",
+    "YOUTUBE_HEALTH_TIMEOUT_MS": "3000",
     "YOUTUBE_BROWSER_FILTER_FILE": "youtube_browser_filters.txt",
     "SUBSCRIPTION_LINKS_FILE": "subscription_links.txt",
     "MANUAL_NODES_FILE": "manual_nodes.txt",
@@ -553,6 +559,7 @@ YOUTUBE_NETWORK_AD_RULES = (
     "DOMAIN,tpc.googlesyndication.com,REJECT",
     "DOMAIN,www.googleadservices.com,REJECT",
     "DOMAIN,imasdk.googleapis.com,REJECT",
+    "DOMAIN,ads.youtube.com,REJECT",
     "DOMAIN-SUFFIX,2mdn.net,REJECT",
     "DOMAIN-SUFFIX,googlesyndication.com,REJECT",
     "DOMAIN-SUFFIX,googleadservices.com,REJECT",
@@ -579,6 +586,9 @@ youtube.com##.ytp-ad-player-overlay
 youtube.com##.ytp-ad-text-overlay
 youtube.com##.ytp-ad-image-overlay
 youtube.com##.ytp-ad-progress-list
+youtube.com##ytd-rich-item-renderer:has(ytd-ad-slot-renderer)
+youtube.com##ytd-search ytd-ad-slot-renderer
+youtube.com##ytd-watch-next-secondary-results-renderer ytd-ad-slot-renderer
 """
 
 YOUTUBE_BROWSER_FILTERS_ENHANCED = """\
@@ -592,6 +602,7 @@ YOUTUBE_BROWSER_FILTERS_ENHANCED = """\
 ||pagead2.googlesyndication.com^$domain=youtube.com
 ||tpc.googlesyndication.com^$domain=youtube.com
 ||www.googleadservices.com^$domain=youtube.com
+||ads.youtube.com^$domain=youtube.com
 ||youtube.com/api/stats/ads^$xhr,domain=youtube.com
 ||youtube.com/pagead/*$xhr,domain=youtube.com
 ||youtube.com/ptracking^$xhr,domain=youtube.com
@@ -1672,6 +1683,8 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     is_android = path.name == Path(android_output_name).name
     lite_output_name = os.environ.get("OUTPUT_LITE_YAML", "openclash_lite.yaml").strip() or "openclash_lite.yaml"
     is_lite = path.name == Path(lite_output_name).name
+    dedup_mode = os.environ.get("ADBLOCK_DEDUP_MODE", "lean").strip().lower()
+    lean_router = (not is_android) and dedup_mode in {"lean", "optimized", "v3"}
     if is_android:
         provider_catalog = dict(ANDROID_SECURITY_PROVIDERS)
         if profile in {"strict", "child-safe", "app-safe", "threat-safe"}:
@@ -1687,14 +1700,26 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
             if not is_lite:
                 provider_catalog.update(ROUTER_THREAT_IP_PROVIDER)
 
-    turtlecute_domains = load_turtlecute_domains(workdir) if profile in {"child-safe", "app-safe", "threat-safe"} else []
-    if profile in {"child-safe", "app-safe", "threat-safe"} and turtlecute_domains and not is_android:
+        # Adblock v3 lean mode keeps MetaCubeX MRS ads/tracker as the broad
+        # network layer. HaGeZi popup/pro-mini and benchmark coverage overlap
+        # heavily with that layer and add provider downloads/rule evaluation.
+        # They remain available by setting ADBLOCK_DEDUP_MODE=full.
+        if lean_router:
+            provider_catalog.pop("hagezi-pro-mini", None)
+            provider_catalog.pop("popup-ads", None)
+
+    turtlecute_domains = (
+        load_turtlecute_domains(workdir)
+        if profile in {"child-safe", "app-safe", "threat-safe"} and not lean_router
+        else []
+    )
+    if profile in {"child-safe", "app-safe", "threat-safe"} and turtlecute_domains and not is_android and not lean_router:
         provider_catalog["turtlecute-coverage"] = {
             "type": "inline",
             "behavior": "domain",
             "payload": turtlecute_domains,
         }
-    if profile in {"child-safe", "app-safe", "threat-safe"} and not is_android:
+    if profile in {"child-safe", "app-safe", "threat-safe"} and not is_android and not lean_router:
         provider_catalog["streaming-ad-safe"] = {
             "type": "inline",
             "behavior": "domain",
@@ -1754,7 +1779,14 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
             fmt = str(provider.get("format") or "").lower()
             path_value = str(provider.get("path") or "").lower()
             url_value = str(provider.get("url") or "").lower()
-            if fmt == "mrs" or path_value.endswith(".mrs") or url_value.endswith(".mrs"):
+            if (
+                fmt == "mrs"
+                or path_value.endswith(".mrs")
+                or url_value.endswith(".mrs")
+                or name == "chatgpt_voice"
+            ):
+                # Android compatibility profile is YAML-only. Voice routing is
+                # still covered by the static OpenAI IP guards generated in v2.
                 providers.pop(name, None)
                 changed = True
 
@@ -1837,9 +1869,18 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     has_v2_rules = any(_rule_policy(rule) in service_groups for rule in existing_ai_rules)
 
     if has_v2_rules:
-        # Drop old direct-to-`AI` rules while preserving service rules and the
-        # dynamic MRS/Voice providers generated by the current profile.
-        ai_guard_rules = [rule for rule in existing_ai_rules if _rule_policy(rule) != "AI"]
+        # Drop old direct-to-`AI` rules while preserving service rules. Dynamic
+        # provider rules are retained only when the provider survived the
+        # platform compatibility pass (Android intentionally removes them).
+        available_ai_providers = set((config.get("rule-providers") or {}).keys())
+        ai_guard_rules = []
+        for rule in existing_ai_rules:
+            if _rule_policy(rule) == "AI":
+                continue
+            parts = [part.strip() for part in str(rule).split(",")]
+            if len(parts) >= 3 and parts[0].upper() == "RULE-SET" and parts[1] not in available_ai_providers:
+                continue
+            ai_guard_rules.append(rule)
     elif has_v2_groups:
         try:
             from sumberyaml_core import _ai_proxy_rules as _core_ai_proxy_rules
@@ -1869,6 +1910,9 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         if rule in YOUTUBE_NETWORK_AD_RULES:
             continue
         parts = [part.strip() for part in rule.split(",")]
+        if len(parts) >= 3 and parts[0].upper() == "RULE-SET" and parts[1] == "youtube_domain":
+            youtube_guard_rules.append(rule)
+            continue
         if len(parts) >= 3 and parts[0].upper() in {"DOMAIN", "DOMAIN-SUFFIX"}:
             domain = parts[1].lower()
             if parts[0].upper() == "DOMAIN" and domain in compat_domains:
@@ -1905,15 +1949,20 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
             ])
         else:
             security_rules.append("RULE-SET,threat-tif-mini,REJECT")
-            if profile in {"strict", "child-safe", "app-safe", "threat-safe"}:
+            if profile in {"strict", "child-safe", "app-safe", "threat-safe"} and not lean_router:
                 security_rules.extend([
                     "RULE-SET,hagezi-pro-mini,REJECT",
                     "RULE-SET,popup-ads,REJECT",
                 ])
-            if profile in {"child-safe", "app-safe", "threat-safe"} and turtlecute_domains:
+            if profile in {"child-safe", "app-safe", "threat-safe"} and turtlecute_domains and not lean_router:
                 security_rules.append("RULE-SET,turtlecute-coverage,REJECT")
             if profile in {"child-safe", "app-safe", "threat-safe"}:
-                security_rules.append("RULE-SET,streaming-ad-safe,REJECT")
+                if lean_router:
+                    # Three exact streaming-ad endpoints cost less as direct
+                    # rules than maintaining another provider.
+                    security_rules.extend(f"DOMAIN,{domain},REJECT" for domain in STREAMING_SAFE_AD_DOMAINS)
+                else:
+                    security_rules.append("RULE-SET,streaming-ad-safe,REJECT")
                 security_rules.extend(f"DOMAIN-SUFFIX,{domain},REJECT" for domain in INTRUSIVE_AD_SUFFIXES)
             if profile in {"app-safe", "threat-safe"}:
                 security_rules.append("RULE-SET,app-ad-safe,REJECT")
@@ -2040,6 +2089,8 @@ def apply_youtube_guard(path: Path, mode: str) -> bool:
                 continue
         if rule in managed_ad_rules:
             continue
+        if len(parts) >= 3 and parts[0].upper() == "RULE-SET" and parts[1] == "youtube_domain":
+            continue
         # Remove the old over-broad YouTube-era doubleclick suffix reject.
         if rule == "DOMAIN-SUFFIX,doubleclick.net,REJECT":
             continue
@@ -2048,9 +2099,76 @@ def apply_youtube_guard(path: Path, mode: str) -> bool:
     if mode == "off":
         new_rules = cleaned
     else:
-        route = _default_route(config)
+        # Use a dedicated streaming route. Full profiles already have YOUTUBE,
+        # while Lite/Android outputs may omit it to stay compact. Add a small
+        # select group there so playback no longer gets shadowed by GLOBAL.
+        structure_changed = False
+        valid_policies = _valid_policies(config)
+        if "YOUTUBE" not in valid_policies:
+            groups = config.get("proxy-groups")
+            if isinstance(groups, list):
+                group_names = {
+                    str(group.get("name") or "")
+                    for group in groups
+                    if isinstance(group, dict) and group.get("name")
+                }
+                candidates = [
+                    name for name in ("STREAMING-FAST", "WARM-UP-CF", "WARM-UP", "AUTO-FAST", "FALLBACK", "GLOBAL")
+                    if name in group_names
+                ]
+                if candidates:
+                    groups.append({"name": "YOUTUBE", "type": "fallback", "proxies": candidates})
+                    valid_policies.add("YOUTUBE")
+                    structure_changed = True
+
+        # Normalize the dedicated group for automatic failover and lower probe
+        # overhead. 120 s is fast enough for streaming recovery without the
+        # 60 s probe churn used by the older profile.
+        groups = config.get("proxy-groups")
+        if isinstance(groups, list) and "YOUTUBE" in valid_policies:
+            for group in groups:
+                if not isinstance(group, dict) or group.get("name") != "YOUTUBE":
+                    continue
+                desired = {
+                    "type": "fallback",
+                    "url": os.environ.get("YOUTUBE_TEST_URL", "https://www.gstatic.com/generate_204").strip() or "https://www.gstatic.com/generate_204",
+                    "interval": max(60, min(int(os.environ.get("YOUTUBE_HEALTH_INTERVAL", "120") or 120), 1800)),
+                    "lazy": True,
+                    "timeout": max(1500, min(int(os.environ.get("YOUTUBE_HEALTH_TIMEOUT_MS", "3000") or 3000), 10000)),
+                    "expected-status": "200/204/301/302",
+                    "max-failed-times": 2,
+                }
+                for key, value in desired.items():
+                    if group.get(key) != value:
+                        group[key] = value
+                        structure_changed = True
+                break
+
+        route = "YOUTUBE" if "YOUTUBE" in valid_policies else _default_route(config)
         compat_guard = [f"DOMAIN,{domain},{route}" for domain in YOUTUBE_COMPAT_DOMAINS]
-        guard = [f"DOMAIN-SUFFIX,{domain},{route}" for domain in YOUTUBE_PLAYBACK_DOMAINS]
+        guard = []
+        providers = config.setdefault("rule-providers", {})
+        if isinstance(providers, dict):
+            # Lite already supports MRS through its AI providers, so add the
+            # compact YouTube MRS there too. Android's compatibility profile
+            # intentionally has no MRS provider and remains on explicit guards.
+            supports_mrs = any(
+                isinstance(provider, dict) and str(provider.get("format") or "").lower() == "mrs"
+                for provider in providers.values()
+            )
+            if route == "YOUTUBE" and "youtube_domain" not in providers and supports_mrs:
+                providers["youtube_domain"] = {
+                    "type": "http",
+                    "behavior": "domain",
+                    "format": "mrs",
+                    "path": "./rule_providers/youtube.mrs",
+                    "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs",
+                    "interval": 43200,
+                }
+                structure_changed = True
+            if "youtube_domain" in providers:
+                guard.append(f"RULE-SET,youtube_domain,{route}")
+        guard.extend(f"DOMAIN-SUFFIX,{domain},{route}" for domain in YOUTUBE_PLAYBACK_DOMAINS)
         ad_rules = list(YOUTUBE_NETWORK_AD_RULES) if mode == "enhanced" else []
 
         # Keep LAN/user DIRECT exceptions and all AI routing guards ahead of
@@ -2074,8 +2192,10 @@ def apply_youtube_guard(path: Path, mode: str) -> bool:
         # then primary playback guards before broad ad/tracker lists.
         new_rules = cleaned[:insert_at] + compat_guard + ad_rules + guard + cleaned[insert_at:]
 
-    if new_rules != current:
+    rules_changed = new_rules != current
+    if rules_changed:
         config["rules"] = new_rules
+    if rules_changed or (mode != "off" and locals().get("structure_changed", False)):
         path.write_text(
             yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=160),
             encoding="utf-8",
@@ -2110,7 +2230,7 @@ def optimize_outputs(
     youtube_filter_file: str,
 ) -> None:
     """
-    v2.4 reference-locked strategy.
+    v3 reference-locked, deduplicated adblock strategy.
 
     Only openclash_auto.yaml is locked to the proven reference profile.
     Other output variants are sanitized but receive no experimental
