@@ -54,6 +54,12 @@ def _enforce_no_selector_no_direct_config(config: dict[str, Any]) -> dict[str, A
         "WARM-UP-CF",
         "AUTO-FAST",
         "STREAMING-FAST",
+        "AI-OPENAI",
+        "AI-CLAUDE",
+        "AI-GEMINI",
+        "AI-OTHER",
+        "AI-STABLE",
+        "AI-BACKUP",
         "AI",
         "FALLBACK",
         "LOAD-BALANCE",
@@ -103,46 +109,158 @@ def _enforce_no_selector_no_direct_config(config: dict[str, Any]) -> dict[str, A
     return config
 
 
-# AI services are routed before ad/threat providers so legitimate API and web
-# endpoints are not accidentally rejected by broad third-party blocklists.
-AI_PROXY_EXACT_DOMAINS = (
-    "gemini.google.com",
-    "aistudio.google.com",
-    "ai.google.dev",
-    "generativelanguage.googleapis.com",
-    "aiplatform.googleapis.com",
-    "copilot.microsoft.com",
-    "copilot.cloud.microsoft",
-    "sydney.bing.com",
-    "api.githubcopilot.com",
-    "copilot-proxy.githubusercontent.com",
+# AI services are routed before ad/threat providers so legitimate API, auth,
+# WebSocket, upload, and voice endpoints are not accidentally rejected by broad
+# third-party blocklists. Service-specific groups are used so a node that works
+# for one AI provider is not automatically considered healthy for every provider.
+AI_OPENAI_EXACT_DOMAINS = (
+    "cdn.openaimerge.com",
+    "cdn.workos.com",
+    "challenges.cloudflare.com",
+    "forwarder.workos.com",
+    "humb.apple.com",
+    "images.workoscdn.com",
+    "js.intercomcdn.com",
+    "js.stripe.com",
+    "o207216.ingest.sentry.io",
+    "o33249.ingest.sentry.io",
+    "rum.browser-intake-datadoghq.com",
+    "setup.workos.com",
+    "workos.imgix.net",
 )
-
-AI_PROXY_DOMAIN_SUFFIXES = (
+AI_OPENAI_DOMAIN_SUFFIXES = (
+    "auth.openai.com",
     "chatgpt.com",
-    "openai.com",
+    "chatgpt.site",
+    "ct.sendgrid.net",
+    "intercom.io",
+    "intercomcdn.com",
     "oaistatic.com",
     "oaiusercontent.com",
+    "openai.com",
+    "oaistatsig.com",
     "sora.com",
-    "claude.ai",
-    "anthropic.com",
-    "perplexity.ai",
-    "grok.com",
-    "x.ai",
-    "poe.com",
-    "deepseek.com",
-    "mistral.ai",
-    "meta.ai",
-    "qwen.ai",
-    "kimi.com",
-    "cohere.com",
-    "githubcopilot.com",
 )
 
-def _ai_proxy_rules(target: str = "AI") -> list[str]:
-    rules = [f"DOMAIN,{domain},{target}" for domain in AI_PROXY_EXACT_DOMAINS]
-    rules.extend(f"DOMAIN-SUFFIX,{domain},{target}" for domain in AI_PROXY_DOMAIN_SUFFIXES)
+AI_CLAUDE_EXACT_DOMAINS = (
+    "cdn.usefathom.com",
+)
+AI_CLAUDE_DOMAIN_SUFFIXES = (
+    "anthropic.com",
+    "claude.ai",
+    "claude.com",
+    "claudeusercontent.com",
+)
+
+AI_GEMINI_EXACT_DOMAINS = (
+    "ai.google.dev",
+    "aistudio.google.com",
+    "alkalimakersuite-pa.clients6.google.com",
+    "aiplatform.googleapis.com",
+    "cloudcode-pa.googleapis.com",
+    "gemini.google.com",
+    "generativelanguage.googleapis.com",
+    "makersuite.google.com",
+    "proactivebackend-pa.googleapis.com",
+    "robinfrontend-pa.googleapis.com",
+)
+AI_GEMINI_DOMAIN_SUFFIXES = (
+    "bard.google.com",
+    "deepmind.com",
+    "deepmind.google",
+    "generativeai.google",
+)
+
+AI_OTHER_EXACT_DOMAINS = (
+    "api.githubcopilot.com",
+    "copilot-proxy.githubusercontent.com",
+    "copilot.cloud.microsoft",
+    "copilot.microsoft.com",
+    "sydney.bing.com",
+)
+AI_OTHER_DOMAIN_SUFFIXES = (
+    "cohere.com",
+    "deepseek.com",
+    "githubcopilot.com",
+    "grok.com",
+    "kimi.com",
+    "meta.ai",
+    "mistral.ai",
+    "perplexity.ai",
+    "poe.com",
+    "qwen.ai",
+    "x.ai",
+)
+
+# Snapshot from OpenAI's ChatGPT Voice ranges as mirrored by Sukka's generated
+# Mihomo ruleset. A remote provider is also configured, so new ranges can be
+# picked up without regenerating the whole profile.
+CHATGPT_VOICE_CIDRS = (
+    "4.151.200.38/32", "4.155.146.196/32", "4.197.172.116/32",
+    "4.217.235.100/32", "4.245.198.13/32", "13.71.25.29/32",
+    "20.74.221.21/32", "20.162.96.163/32", "20.168.48.117/32",
+    "20.184.36.134/32", "20.203.144.245/32", "40.118.236.137/32",
+    "51.4.112.173/32", "52.143.181.161/32", "68.155.152.41/32",
+    "72.146.20.246/32", "74.248.148.7/32", "102.37.57.54/32",
+    "135.220.40.201/32", "172.203.39.49/32", "172.207.173.200/32",
+    "172.214.226.198/32", "191.233.251.27/32",
+)
+
+def _service_domain_rules(exact: tuple[str, ...], suffixes: tuple[str, ...], target: str) -> list[str]:
+    rules = [f"DOMAIN,{domain},{target}" for domain in exact]
+    rules.extend(f"DOMAIN-SUFFIX,{domain},{target}" for domain in suffixes)
     return rules
+
+def _ai_proxy_rules() -> list[str]:
+    # Order matters. Service-specific rules must run before the general AI
+    # category provider so OpenAI/Claude/Gemini can use their own health probes.
+    rules: list[str] = []
+    rules.extend(_service_domain_rules(AI_OPENAI_EXACT_DOMAINS, AI_OPENAI_DOMAIN_SUFFIXES, "AI-OPENAI"))
+    rules.extend(_service_domain_rules(AI_CLAUDE_EXACT_DOMAINS, AI_CLAUDE_DOMAIN_SUFFIXES, "AI-CLAUDE"))
+    rules.extend(_service_domain_rules(AI_GEMINI_EXACT_DOMAINS, AI_GEMINI_DOMAIN_SUFFIXES, "AI-GEMINI"))
+    rules.extend(_service_domain_rules(AI_OTHER_EXACT_DOMAINS, AI_OTHER_DOMAIN_SUFFIXES, "AI-OTHER"))
+    rules.extend(f"IP-CIDR,{cidr},AI-OPENAI,no-resolve" for cidr in CHATGPT_VOICE_CIDRS)
+    return rules
+
+
+def _select_ai_pools(names: list[str]) -> tuple[list[str], list[str], list[str]]:
+    """Return stable, backup, and manual pools for AI sessions.
+
+    Stable favors automatic nodes <= AI_STABLE_MAX_DELAY_MS (default 250 ms).
+    Backup accepts slower automatic nodes up to AI_BACKUP_MAX_DELAY_MS (700 ms).
+    Manual nodes are kept as last-resort only, preventing a low-quality manual
+    endpoint from displacing the verified automatic pool.
+    """
+    ranked = _rank_names_by_delay(names)
+    auto = [n for n in ranked if not str(n).upper().startswith("MANUAL-")]
+    manual = [n for n in ranked if str(n).upper().startswith("MANUAL-")]
+    stable_limit = _env_int_range("AI_STABLE_NODE_LIMIT", 8, 3, 12)
+    backup_limit = _env_int_range("AI_BACKUP_NODE_LIMIT", 8, 2, 16)
+    stable_max = _env_int_range("AI_STABLE_MAX_DELAY_MS", 250, 100, 1000)
+    backup_max = _env_int_range("AI_BACKUP_MAX_DELAY_MS", 700, stable_max, 3000)
+
+    stable_candidates = [n for n in auto if _delay_from_proxy_name(n) <= stable_max]
+    stable = (stable_candidates or auto)[:stable_limit]
+    stable_set = set(stable)
+    backup_candidates = [n for n in auto if n not in stable_set and _delay_from_proxy_name(n) <= backup_max]
+    if not backup_candidates:
+        backup_candidates = [n for n in auto if n not in stable_set]
+    backup = backup_candidates[:backup_limit]
+    return stable, backup, manual
+
+
+def _ai_health_group(name: str, proxies: list[str], url: str, interval: int, timeout: int) -> dict[str, Any]:
+    return {
+        "name": name,
+        "type": "fallback",
+        "proxies": proxies or ["DIRECT"],
+        "url": url,
+        "interval": interval,
+        "lazy": True,
+        "timeout": timeout,
+        "expected-status": "200/204/301/302",
+        "max-failed-times": 2,
+    }
 
 
 def _env_int_range(name: str, default: int, minimum: int, maximum: int) -> int:
@@ -1868,6 +1986,11 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
     fast_names = _select_fast_pool_names(names)
     streaming_names = _select_streaming_names(names, warmup_names, cf_warmup_names)
     fallback_names = _fallback_order_names(names, warmup_names, cf_warmup_names)
+    ai_stable_names, ai_backup_names, ai_manual_names = _select_ai_pools(names)
+    ai_service_names = _dedupe_names(ai_stable_names + ai_backup_names + ai_manual_names) or direct_or_names
+    ai_stable_or_direct = ai_stable_names or ai_service_names
+    ai_backup_or_stable = ai_backup_names or ai_stable_or_direct
+    ai_manual_or_backup = ai_manual_names or ai_backup_or_stable
     warmup_or_direct = warmup_names or direct_or_names
     cf_or_warmup = cf_warmup_names or warmup_or_direct
     fast_or_direct = fast_names or direct_or_names
@@ -1887,8 +2010,11 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
     ping_check_url = os.getenv("PING_CHECK_URL", test_url).strip() or test_url
     ping_check_interval = _env_int_range("PING_CHECK_INTERVAL", 180, 45, 600)
     ping_check_timeout = _env_int_range("PING_CHECK_TIMEOUT_MS", max(5000, base_timeout), 2000, 15000)
-    ai_test_url = os.getenv("AI_TEST_URL", "https://chatgpt.com/favicon.ico").strip() or "https://chatgpt.com/favicon.ico"
-    ai_interval = _env_int_range("AI_HEALTH_INTERVAL", 120, 30, 600)
+    ai_openai_test_url = os.getenv("AI_OPENAI_TEST_URL", os.getenv("AI_TEST_URL", "https://chatgpt.com/favicon.ico")).strip() or "https://chatgpt.com/favicon.ico"
+    ai_claude_test_url = os.getenv("AI_CLAUDE_TEST_URL", "https://claude.ai/favicon.ico").strip() or "https://claude.ai/favicon.ico"
+    ai_gemini_test_url = os.getenv("AI_GEMINI_TEST_URL", "https://gemini.google.com/favicon.ico").strip() or "https://gemini.google.com/favicon.ico"
+    ai_other_test_url = os.getenv("AI_OTHER_TEST_URL", "https://www.gstatic.com/generate_204").strip() or "https://www.gstatic.com/generate_204"
+    ai_interval = _env_int_range("AI_HEALTH_INTERVAL", 300, 60, 1800)
     ai_timeout = _env_int_range("AI_HEALTH_TIMEOUT_MS", max(5000, base_timeout), 2000, 15000)
 
     def selector(defaults: list[str] | None = None) -> list[str]:
@@ -1927,6 +2053,25 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             **text_domain_provider,
             "path": "./rule_providers/threat-tif-mini.txt",
             "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.mini-onlydomains.txt",
+        },
+
+        # Hybrid AI rules: service-specific static guards remain authoritative,
+        # while remote providers catch newly-added endpoints between generator runs.
+        "openai_domain": {
+            **domain_provider,
+            "path": "./rule_providers/openai.mrs",
+            "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/openai.mrs",
+        },
+        "ai_category": {
+            **domain_provider,
+            "path": "./rule_providers/category-ai-not-cn.mrs",
+            "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs",
+        },
+        "chatgpt_voice": {
+            **classical_provider,
+            "interval": 43200,
+            "path": "./rule_providers/chatgpt_voice.txt",
+            "url": "https://ruleset.skk.moe/Clash/ip/ai.txt",
         },
 
         # Block iklan, tracking, privacy-leak, dan hijacking.
@@ -2042,18 +2187,23 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "type": "select",
             "proxies": ["GLOBAL", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"],
         },
+        _ai_health_group("AI-OPENAI", ai_service_names, ai_openai_test_url, ai_interval, ai_timeout),
+        _ai_health_group("AI-CLAUDE", ai_service_names, ai_claude_test_url, ai_interval, ai_timeout),
+        _ai_health_group("AI-GEMINI", ai_service_names, ai_gemini_test_url, ai_interval, ai_timeout),
+        _ai_health_group("AI-OTHER", ai_service_names, ai_other_test_url, ai_interval, ai_timeout),
+        _ai_health_group("AI-STABLE", ai_stable_or_direct, ai_other_test_url, ai_interval, ai_timeout),
+        _ai_health_group("AI-BACKUP", ai_backup_or_stable, ai_other_test_url, ai_interval, ai_timeout),
+        _ai_health_group("AI-MANUAL", ai_manual_or_backup, ai_other_test_url, max(ai_interval, 600), ai_timeout),
         {
             "name": "AI",
             "type": "fallback",
-            # Direct physical-node fallback keeps the egress IP stable during long
-            # AI sessions and only changes node after a real health failure.
-            "proxies": fallback_or_direct,
-            "url": ai_test_url,
+            "proxies": ["AI-OPENAI", "AI-CLAUDE", "AI-GEMINI", "AI-OTHER"],
+            "url": ai_other_test_url,
             "interval": ai_interval,
-            "lazy": False,
+            "lazy": True,
             "timeout": ai_timeout,
             "expected-status": "200/204/301/302",
-            "max-failed-times": 3,
+            "max-failed-times": 2,
         },
         {
             "name": "SOCIAL-MEDIA",
@@ -2182,7 +2332,10 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         "GEOIP,LAN,DIRECT,no-resolve",
 
         # AI guard must be evaluated before broad ad/tracker/threat providers.
-        *_ai_proxy_rules("AI"),
+        *_ai_proxy_rules(),
+        "RULE-SET,openai_domain,AI-OPENAI",
+        "RULE-SET,ai_category,AI-OTHER",
+        "RULE-SET,chatgpt_voice,AI-OPENAI,no-resolve",
 
         # YouTube compatibility guard. Exact hosts are kept reachable before
         # broad ad/tracker lists to avoid playback failures.
@@ -2282,6 +2435,22 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         # Rule Lite lebih ringan untuk router/OpenClash kecil: provider lebih sedikit, import lebih cepat,
         # tetapi kategori utama tetap ada.
         rule_providers = {
+            "openai_domain": {
+                **domain_provider,
+                "path": "./rule_providers/openai.mrs",
+                "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/openai.mrs",
+            },
+            "ai_category": {
+                **domain_provider,
+                "path": "./rule_providers/category-ai-not-cn.mrs",
+                "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs",
+            },
+            "chatgpt_voice": {
+                **classical_provider,
+                "interval": 43200,
+                "path": "./rule_providers/chatgpt_voice.txt",
+                "url": "https://ruleset.skk.moe/Clash/ip/ai.txt",
+            },
             "ads_domain": {
                 **domain_provider,
                 "path": "./rule_providers/ads_domain.mrs",
@@ -2303,7 +2472,10 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "IP-CIDR,192.168.0.0/16,DIRECT",
             "IP-CIDR,169.254.0.0/16,DIRECT",
             "GEOIP,LAN,DIRECT,no-resolve",
-            *_ai_proxy_rules("AI"),
+            *_ai_proxy_rules(),
+            "RULE-SET,openai_domain,AI-OPENAI",
+            "RULE-SET,ai_category,AI-OTHER",
+            "RULE-SET,chatgpt_voice,AI-OPENAI,no-resolve",
             "RULE-SET,ads_domain,REJECT",
             "DOMAIN-SUFFIX,doubleclick.net,REJECT",
             "DOMAIN-SUFFIX,googlesyndication.com,REJECT",
@@ -2368,7 +2540,16 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "default-nameserver": ["1.1.1.1", "8.8.8.8"],
             "nameserver": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
             "proxy-server-nameserver": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
-            "fallback": ["tls://1.1.1.1", "tls://8.8.8.8"],
+            "nameserver-policy": {
+                "+.openai.com": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+                "+.chatgpt.com": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+                "+.chatgpt.site": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+                "+.anthropic.com": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+                "+.claude.ai": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+                "+.claude.com": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+                "+.gemini.google.com": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+            },
+            "fallback": ["tls://9.9.9.9", "tls://94.140.14.14"],
             "fallback-lazy-query": True,
             "fallback-filter": {"geoip": True, "geoip-code": "ID", "ipcidr": ["240.0.0.0/4"]},
         },
@@ -2403,6 +2584,11 @@ def build_openclash_android_yaml(
     fast_names = _select_fast_pool_names(names)
     streaming_names = _select_streaming_names(names, warmup_names, cf_warmup_names)
     fallback_names = _fallback_order_names(names, warmup_names, cf_warmup_names)
+    ai_stable_names, ai_backup_names, ai_manual_names = _select_ai_pools(names)
+    ai_service_names = _dedupe_names(ai_stable_names + ai_backup_names + ai_manual_names) or direct_or_names
+    ai_stable_or_direct = ai_stable_names or ai_service_names
+    ai_backup_or_stable = ai_backup_names or ai_stable_or_direct
+    ai_manual_or_backup = ai_manual_names or ai_backup_or_stable
     warmup_or_direct = warmup_names or direct_or_names
     cf_or_warmup = cf_warmup_names or warmup_or_direct
     fast_or_direct = fast_names or direct_or_names
@@ -2421,8 +2607,11 @@ def build_openclash_android_yaml(
     ping_check_url = os.getenv("PING_CHECK_URL", test_url).strip() or test_url
     ping_check_interval = _env_int_range("PING_CHECK_INTERVAL", 180, 45, 600)
     ping_check_timeout = _env_int_range("PING_CHECK_TIMEOUT_MS", max(5000, base_timeout), 2000, 15000)
-    ai_test_url = os.getenv("AI_TEST_URL", "https://chatgpt.com/favicon.ico").strip() or "https://chatgpt.com/favicon.ico"
-    ai_interval = _env_int_range("AI_HEALTH_INTERVAL", 120, 30, 600)
+    ai_openai_test_url = os.getenv("AI_OPENAI_TEST_URL", os.getenv("AI_TEST_URL", "https://chatgpt.com/favicon.ico")).strip() or "https://chatgpt.com/favicon.ico"
+    ai_claude_test_url = os.getenv("AI_CLAUDE_TEST_URL", "https://claude.ai/favicon.ico").strip() or "https://claude.ai/favicon.ico"
+    ai_gemini_test_url = os.getenv("AI_GEMINI_TEST_URL", "https://gemini.google.com/favicon.ico").strip() or "https://gemini.google.com/favicon.ico"
+    ai_other_test_url = os.getenv("AI_OTHER_TEST_URL", "https://www.gstatic.com/generate_204").strip() or "https://www.gstatic.com/generate_204"
+    ai_interval = _env_int_range("AI_HEALTH_INTERVAL", 300, 60, 1800)
     ai_timeout = _env_int_range("AI_HEALTH_TIMEOUT_MS", max(5000, base_timeout), 2000, 15000)
 
     proxy_groups: list[dict[str, Any]] = [
@@ -2431,16 +2620,23 @@ def build_openclash_android_yaml(
             "type": "select",
             "proxies": ["WARM-UP-CF", "STREAMING-FAST", "WARM-UP", "AUTO-FAST", "FALLBACK"] + names,
         },
+        _ai_health_group("AI-OPENAI", ai_service_names, ai_openai_test_url, ai_interval, ai_timeout),
+        _ai_health_group("AI-CLAUDE", ai_service_names, ai_claude_test_url, ai_interval, ai_timeout),
+        _ai_health_group("AI-GEMINI", ai_service_names, ai_gemini_test_url, ai_interval, ai_timeout),
+        _ai_health_group("AI-OTHER", ai_service_names, ai_other_test_url, ai_interval, ai_timeout),
+        _ai_health_group("AI-STABLE", ai_stable_or_direct, ai_other_test_url, ai_interval, ai_timeout),
+        _ai_health_group("AI-BACKUP", ai_backup_or_stable, ai_other_test_url, ai_interval, ai_timeout),
+        _ai_health_group("AI-MANUAL", ai_manual_or_backup, ai_other_test_url, max(ai_interval, 600), ai_timeout),
         {
             "name": "AI",
             "type": "fallback",
-            "proxies": fallback_or_direct,
-            "url": ai_test_url,
+            "proxies": ["AI-OPENAI", "AI-CLAUDE", "AI-GEMINI", "AI-OTHER"],
+            "url": ai_other_test_url,
             "interval": ai_interval,
-            "lazy": False,
+            "lazy": True,
             "timeout": ai_timeout,
             "expected-status": "200/204/301/302",
-            "max-failed-times": 3,
+            "max-failed-times": 2,
         },
         {
             "name": "PING-CHECK",
@@ -2547,6 +2743,16 @@ def build_openclash_android_yaml(
             "fake-ip-filter": _dns_fake_ip_filter(),
             "default-nameserver": ["1.1.1.1", "8.8.8.8"],
             "nameserver": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+            "proxy-server-nameserver": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+            "nameserver-policy": {
+                "+.openai.com": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+                "+.chatgpt.com": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+                "+.chatgpt.site": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+                "+.anthropic.com": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+                "+.claude.ai": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+                "+.claude.com": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+                "+.gemini.google.com": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+            },
         },
         "proxies": [node.clash for node in nodes],
         "proxy-groups": proxy_groups,

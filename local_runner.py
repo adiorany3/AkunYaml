@@ -89,8 +89,16 @@ DEFAULT_ENV = {
     "NEKOBOX_TEST_URL": "https://www.gstatic.com/generate_204",
     "TEST_URL": "https://www.gstatic.com/generate_204",
     "AI_TEST_URL": "https://chatgpt.com/favicon.ico",
-    "AI_HEALTH_INTERVAL": "120",
-    "AI_HEALTH_TIMEOUT_MS": "6000",
+    "AI_OPENAI_TEST_URL": "https://chatgpt.com/favicon.ico",
+    "AI_CLAUDE_TEST_URL": "https://claude.ai/favicon.ico",
+    "AI_GEMINI_TEST_URL": "https://gemini.google.com/favicon.ico",
+    "AI_OTHER_TEST_URL": "https://www.gstatic.com/generate_204",
+    "AI_HEALTH_INTERVAL": "300",
+    "AI_HEALTH_TIMEOUT_MS": "5000",
+    "AI_STABLE_NODE_LIMIT": "8",
+    "AI_BACKUP_NODE_LIMIT": "8",
+    "AI_STABLE_MAX_DELAY_MS": "250",
+    "AI_BACKUP_MAX_DELAY_MS": "700",
     "URL_TEST_TIMEOUT_MS": "6000",
     "NEKOBOX_TEST_TIMEOUT_MS": "8000",
     "FORCE_WS_ONLY": "true",
@@ -1580,12 +1588,23 @@ def apply_responsiveness(path: Path) -> bool:
                     g["lazy"] = name != "GLOBAL"
                     g["timeout"] = 2500
                     g["max-failed-times"] = 2
-            elif name == "AI":
-                g["url"] = os.environ.get("AI_TEST_URL", "https://chatgpt.com/favicon.ico").strip() or "https://chatgpt.com/favicon.ico"
-                g["interval"] = max(30, min(int(os.environ.get("AI_HEALTH_INTERVAL", "120") or 120), 600))
-                g["lazy"] = False
-                g["timeout"] = max(2000, min(int(os.environ.get("AI_HEALTH_TIMEOUT_MS", "6000") or 6000), 15000))
-                g["max-failed-times"] = 3
+            elif name in {"AI", "AI-OPENAI", "AI-CLAUDE", "AI-GEMINI", "AI-OTHER", "AI-STABLE", "AI-BACKUP", "AI-MANUAL"}:
+                ai_urls = {
+                    "AI-OPENAI": os.environ.get("AI_OPENAI_TEST_URL", os.environ.get("AI_TEST_URL", "https://chatgpt.com/favicon.ico")),
+                    "AI-CLAUDE": os.environ.get("AI_CLAUDE_TEST_URL", "https://claude.ai/favicon.ico"),
+                    "AI-GEMINI": os.environ.get("AI_GEMINI_TEST_URL", "https://gemini.google.com/favicon.ico"),
+                    "AI-OTHER": os.environ.get("AI_OTHER_TEST_URL", "https://www.gstatic.com/generate_204"),
+                    "AI-STABLE": os.environ.get("AI_OTHER_TEST_URL", "https://www.gstatic.com/generate_204"),
+                    "AI-BACKUP": os.environ.get("AI_OTHER_TEST_URL", "https://www.gstatic.com/generate_204"),
+                    "AI-MANUAL": os.environ.get("AI_OTHER_TEST_URL", "https://www.gstatic.com/generate_204"),
+                    "AI": os.environ.get("AI_OTHER_TEST_URL", "https://www.gstatic.com/generate_204"),
+                }
+                g["url"] = str(ai_urls.get(name) or "https://www.gstatic.com/generate_204").strip()
+                base_ai_interval = max(60, min(int(os.environ.get("AI_HEALTH_INTERVAL", "300") or 300), 1800))
+                g["interval"] = max(base_ai_interval, 600) if name == "AI-MANUAL" else base_ai_interval
+                g["lazy"] = True
+                g["timeout"] = max(2000, min(int(os.environ.get("AI_HEALTH_TIMEOUT_MS", "5000") or 5000), 15000))
+                g["max-failed-times"] = 2
             elif name == "WARM-UP":
                 if isinstance(g.get("proxies"), list):
                     g["proxies"] = g["proxies"][:5]
@@ -1787,16 +1806,56 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         # standard private/LAN bypasses when converting it to rule mode.
         lan_rules = list(LAN_DIRECT_RULES)
 
-    # Preserve AI routes ahead of broad ad/tracker/threat providers. This avoids
-    # false positives and guarantees supported AI services use the dedicated proxy group.
-    managed_ai_sequence = ai_proxy_rules("AI")
-    managed_ai_rules = set(managed_ai_sequence)
-    has_ai_group = any(
-        isinstance(group, dict) and str(group.get("name") or "") == "AI"
+    # Preserve AI routes ahead of broad ad/tracker/threat providers. Prefer the
+    # service-specific v2 routes already produced by sumberyaml_core/reference
+    # profile, and remove legacy rules that sent every AI service to one alias.
+    ai_policy_names = {"AI", "AI-OPENAI", "AI-CLAUDE", "AI-GEMINI", "AI-OTHER", "AI-STABLE", "AI-BACKUP", "AI-MANUAL"}
+    ai_provider_names = {"openai_domain", "ai_category", "chatgpt_voice"}
+
+    def _rule_policy(rule: str) -> str:
+        parts = [part.strip() for part in str(rule).split(",")]
+        if len(parts) < 3:
+            return ""
+        return parts[-2] if parts[-1].lower() == "no-resolve" and len(parts) >= 4 else parts[-1]
+
+    def _is_managed_ai_rule(rule: str) -> bool:
+        parts = [part.strip() for part in str(rule).split(",")]
+        if len(parts) >= 3 and parts[0].upper() == "RULE-SET" and parts[1] in ai_provider_names:
+            return True
+        return _rule_policy(rule) in ai_policy_names
+
+    existing_ai_rules = [rule for rule in cleaned if _is_managed_ai_rule(rule)]
+    cleaned = [rule for rule in cleaned if not _is_managed_ai_rule(rule)]
+
+    group_names = {
+        str(group.get("name") or "")
         for group in (config.get("proxy-groups") or [])
-    )
-    ai_guard_rules = list(managed_ai_sequence) if has_ai_group else [rule for rule in cleaned if rule in managed_ai_rules]
-    cleaned = [rule for rule in cleaned if rule not in managed_ai_rules]
+        if isinstance(group, dict)
+    }
+    service_groups = {"AI-OPENAI", "AI-CLAUDE", "AI-GEMINI", "AI-OTHER"}
+    has_v2_groups = service_groups.issubset(group_names)
+    has_v2_rules = any(_rule_policy(rule) in service_groups for rule in existing_ai_rules)
+
+    if has_v2_rules:
+        # Drop old direct-to-`AI` rules while preserving service rules and the
+        # dynamic MRS/Voice providers generated by the current profile.
+        ai_guard_rules = [rule for rule in existing_ai_rules if _rule_policy(rule) != "AI"]
+    elif has_v2_groups:
+        try:
+            from sumberyaml_core import _ai_proxy_rules as _core_ai_proxy_rules
+            ai_guard_rules = list(_core_ai_proxy_rules())
+        except Exception:
+            # Compatibility fallback for a partially upgraded installation.
+            ai_guard_rules = ai_proxy_rules("AI")
+        provider_names = set((config.get("rule-providers") or {}).keys())
+        if "openai_domain" in provider_names:
+            ai_guard_rules.append("RULE-SET,openai_domain,AI-OPENAI")
+        if "ai_category" in provider_names:
+            ai_guard_rules.append("RULE-SET,ai_category,AI-OTHER")
+        if "chatgpt_voice" in provider_names:
+            ai_guard_rules.append("RULE-SET,chatgpt_voice,AI-OPENAI,no-resolve")
+    else:
+        ai_guard_rules = existing_ai_rules
 
     # Preserve YouTube guard order so compatibility exceptions and playback hosts
     # stay ahead of broad ad/tracker providers.
@@ -1870,6 +1929,47 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     new_rules = security_rules + cleaned
     if is_android:
         new_rules.append("MATCH,GLOBAL")
+
+    # AI routing must remain ahead of broad threat/ad/tracker providers.
+    # apply_security() historically prepended security rules, which could undo
+    # the AI guard after every account refresh. Keep LAN/private first, then AI,
+    # then the security/category rules.
+    ai_policy_names = {"AI", "AI-OPENAI", "AI-CLAUDE", "AI-GEMINI", "AI-OTHER", "AI-STABLE", "AI-BACKUP", "AI-MANUAL"}
+    ai_provider_prefixes = (
+        "RULE-SET,openai_domain,",
+        "RULE-SET,ai_category,",
+        "RULE-SET,chatgpt_voice,",
+    )
+
+    def _is_lan_direct_rule(rule: str) -> bool:
+        text = str(rule)
+        return (
+            text.startswith("DOMAIN-SUFFIX,local,DIRECT")
+            or text.startswith("DOMAIN-SUFFIX,lan,DIRECT")
+            or text.startswith("DOMAIN-SUFFIX,localhost,DIRECT")
+            or text.startswith("IP-CIDR,127.0.0.0/8,DIRECT")
+            or text.startswith("IP-CIDR,10.0.0.0/8,DIRECT")
+            or text.startswith("IP-CIDR,172.16.0.0/12,DIRECT")
+            or text.startswith("IP-CIDR,192.168.0.0/16,DIRECT")
+            or text.startswith("IP-CIDR,169.254.0.0/16,DIRECT")
+            or text.startswith("GEOIP,LAN,DIRECT")
+        )
+
+    def _is_ai_rule(rule: str) -> bool:
+        text = str(rule)
+        if text.startswith(ai_provider_prefixes):
+            return True
+        parts = [part.strip() for part in text.split(",")]
+        if len(parts) < 3:
+            return False
+        policy_index = -2 if parts[-1] == "no-resolve" and len(parts) >= 4 else -1
+        return parts[policy_index] in ai_policy_names
+
+    lan_rules = [r for r in new_rules if _is_lan_direct_rule(r)]
+    ai_rules = [r for r in new_rules if _is_ai_rule(r)]
+    remaining_rules = [r for r in new_rules if not _is_lan_direct_rule(r) and not _is_ai_rule(r)]
+    new_rules = lan_rules + ai_rules + remaining_rules
+
     # Deduplicate while preserving order.
     new_rules = list(dict.fromkeys(new_rules))
     if new_rules != current_rules:
@@ -1953,12 +2053,19 @@ def apply_youtube_guard(path: Path, mode: str) -> bool:
         guard = [f"DOMAIN-SUFFIX,{domain},{route}" for domain in YOUTUBE_PLAYBACK_DOMAINS]
         ad_rules = list(YOUTUBE_NETWORK_AD_RULES) if mode == "enhanced" else []
 
-        # Keep leading DIRECT exceptions (LAN and user allowlist) first.
+        # Keep LAN/user DIRECT exceptions and all AI routing guards ahead of
+        # YouTube/ad rules. Otherwise this post-processing step could move a
+        # REJECT rule in front of AI after every refresh.
         insert_at = 0
+        ai_policies = {"AI", "AI-OPENAI", "AI-CLAUDE", "AI-GEMINI", "AI-OTHER", "AI-STABLE", "AI-BACKUP", "AI-MANUAL"}
+        ai_providers = {"openai_domain", "ai_category", "chatgpt_voice"}
         for index, rule in enumerate(cleaned):
             parts = [part.strip() for part in rule.split(",")]
-            policy = parts[-1].upper() if parts else ""
-            if policy == "DIRECT" or (len(parts) >= 4 and parts[-2].upper() == "DIRECT"):
+            policy = ""
+            if len(parts) >= 3:
+                policy = parts[-2] if parts[-1].lower() == "no-resolve" and len(parts) >= 4 else parts[-1]
+            is_ai_provider = len(parts) >= 3 and parts[0].upper() == "RULE-SET" and parts[1] in ai_providers
+            if policy.upper() == "DIRECT" or policy in ai_policies or is_ai_provider:
                 insert_at = index + 1
                 continue
             break

@@ -34,6 +34,14 @@
   "REFERENCE_PROFILE_FILE": "reference_profile_v047156.yaml",
   "REFRESH_TURTLECUTE": "true",
   "AI_TEST_URL": "https://chatgpt.com/favicon.ico",
-  "AI_HEALTH_INTERVAL": "120",
-  "AI_HEALTH_TIMEOUT_MS": "6000"
+  "AI_HEALTH_INTERVAL": "300",
+  "AI_HEALTH_TIMEOUT_MS": "5000",
+  "AI_OPENAI_TEST_URL": "https://chatgpt.com/favicon.ico",
+  "AI_CLAUDE_TEST_URL": "https://claude.ai/favicon.ico",
+  "AI_GEMINI_TEST_URL": "https://gemini.google.com/favicon.ico",
+  "AI_OTHER_TEST_URL": "https://www.gstatic.com/generate_204",
+  "AI_STABLE_NODE_LIMIT": "8",
+  "AI_BACKUP_NODE_LIMIT": "8",
+  "AI_STABLE_MAX_DELAY_MS": "250",
+  "AI_BACKUP_MAX_DELAY_MS": "700"
 }

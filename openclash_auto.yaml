@@ -70,10 +70,12 @@ dns:
   default-nameserver:
   - 1.1.1.1
   - 8.8.8.8
-  nameserver: &id001
+  nameserver:
   - https://family.dns.bebasid.com/dns-query
   - tls://family.dns.bebasid.com:853
-  fallback: *id001
+  fallback:
+  - https://family.dns.bebasid.com/dns-query
+  - tls://family.dns.bebasid.com:853
   fallback-filter:
     geoip: true
     geoip-code: ID
@@ -84,8 +86,30 @@ dns:
   proxy-server-nameserver:
   - https://1.1.1.1/dns-query
   - https://dns.google/dns-query
+  nameserver-policy:
+    +.openai.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.chatgpt.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.chatgpt.site:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.anthropic.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.claude.ai:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.claude.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.gemini.google.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
 proxies:
-- name: AKUN-001-CLOUDFLARE-VLESS-WS-105MS
+- name: AKUN-001-CLOUDFLARE-VLESS-WS-103MS
   type: vless
   server: 104.17.3.81
   port: 443
@@ -97,46 +121,97 @@ proxies:
   client-fingerprint: chrome
   skip-cert-verify: true
   ws-opts:
-    path: /MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN
+    path: /?TELEGRAM-NexVexo_NexVexo_NexVexo_NexVexo_NexVexo?ed=512
     headers:
       Host: josni.hoyes.cloudns.ch
   alpn:
   - http/1.1
-- name: AKUN-002-CLOUDFLARE-VLESS-WS-99MS
+- name: AKUN-002-CLOUDFLARE-VLESS-WS-105MS
   type: vless
   server: 104.17.3.81
   port: 443
-  uuid: 83afd88f-200f-4d89-bfc7-66eff160c1d8
+  uuid: e5cc16a6-ea42-46b2-82ae-ad2157e1641b
   udp: true
   tls: true
-  servername: josni.hoyes.cloudns.ch
+  servername: hhlfy.twiladaphne.ndjp.net
   network: ws
   client-fingerprint: chrome
   skip-cert-verify: true
   ws-opts:
-    path: /sg-melbi=512
+    path: /
     headers:
-      Host: josni.hoyes.cloudns.ch
+      Host: hhlfy.twiladaphne.ndjp.net
   alpn:
   - http/1.1
-- name: AKUN-003-CLOUDFLARE-VLESS-WS-102MS
+- name: AKUN-003-CLOUDFLARE-VLESS-WS-110MS
   type: vless
   server: 104.17.3.81
   port: 443
-  uuid: 83afd88f-200f-4d89-bfc7-66eff160c1d8
+  uuid: 9a3de3e0-2a6e-4bb2-81bd-1a4e51dfa110
   udp: true
   tls: true
-  servername: josni.hoyes.cloudns.ch
+  servername: vpn.renshengxuanze.ccwu.cc
   network: ws
   client-fingerprint: chrome
   skip-cert-verify: true
   ws-opts:
-    path: /sg?ed=512TELEGRAM-MTMVPN---TELEGRAM-MTMVPN---TELEGRAM-MTMVPN---TELEGRAM-MTMVPN---TELEGRAM-MTMVPN
+    path: /
     headers:
-      Host: josni.hoyes.cloudns.ch
+      Host: vpn.renshengxuanze.ccwu.cc
   alpn:
   - http/1.1
-- name: AKUN-004-CLOUDFLARE-VLESS-WS-105MS
+- name: AKUN-004-CLOUDFLARE-VLESS-WS-108MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: d195909a-eff4-489d-a261-955b904894cb
+  udp: true
+  tls: true
+  servername: fREE.sERVer6PeeKCOnFIG.wOrkErs.dEv.
+  network: ws
+  client-fingerprint: ios
+  skip-cert-verify: true
+  alpn:
+  - http/1.1
+  ws-opts:
+    path: /eyJqdW5rIjoieUhYMWhoZEVEIiwicHJvdG9jb2wiOiJ2bCIsIm1vZGUiOiJwcmVmaXgiLCJwYW5lbElQcyI6WyJbMmEwMjo4OTg6MTQ2OjY0OjpdIl19?ed=2560
+    headers:
+      Host: free.server6peekconfig.workers.dev.
+- name: AKUN-005-CLOUDFLARE-VLESS-WS-109MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: e5cc16a6-ea42-46b2-82ae-ad2157e1641b
+  udp: true
+  tls: true
+  servername: hhlfy.twiladaphne.ndjp.net
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /fp=chrome
+    headers:
+      Host: hhlfy.twiladaphne.ndjp.net
+  alpn:
+  - http/1.1
+- name: AKUN-006-CLOUDFLARE-VLESS-WS-100MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: cccf62bc-7acf-4029-ada1-4b3952110b7d
+  udp: true
+  tls: true
+  servername: LoG-SvC-27d1BE.CI-runNer-E5b8dd.workers.Dev
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  alpn:
+  - http/1.1
+  ws-opts:
+    path: /eyJqdW5rIjoickg0WGJ1UzA2dzBtIiwicHJvdG9jb2wiOiJ2bCIsIm1vZGUiOiJwcm94eWlwIiwicGFuZWxJUHMiOlsiYnBiLnlvdXNlZi5pc2VnYXJvLmNvbSJdfQ
+    headers:
+      Host: loG-SVc-27d1be.Ci-rUnNEr-E5B8Dd.WoRKErS.DeV
+- name: AKUN-007-CLOUDFLARE-VLESS-WS-114MS
   type: vless
   server: 104.17.3.81
   port: 443
@@ -153,7 +228,7 @@ proxies:
       Host: hhlfy.twiladaphne.ndjp.net
   alpn:
   - http/1.1
-- name: AKUN-005-NOTION-WEB-VLESS-WS-111MS
+- name: AKUN-008-CLOUDFLARE-VLESS-WS-108MS
   type: vless
   server: 104.17.3.81
   port: 443
@@ -165,12 +240,12 @@ proxies:
   client-fingerprint: chrome
   skip-cert-verify: true
   ws-opts:
-    path: /sg-melbi_/
+    path: /sg-melbi
     headers:
       Host: josni.hoyes.cloudns.ch
   alpn:
   - http/1.1
-- name: AKUN-006-NOTION-WEB-VLESS-WS-96MS
+- name: AKUN-009-CLOUDFLARE-VLESS-WS-94MS
   type: vless
   server: 104.17.3.81
   port: 443
@@ -182,12 +257,12 @@ proxies:
   client-fingerprint: chrome
   skip-cert-verify: true
   ws-opts:
-    path: /sg-melbi_/@sil3nt_network
+    path: /?TELEGRAM-MARAMBASHI_MARAMBASHI_MARAMBASHI_MARAMBASHI_MARAMBASHI?ed=512
     headers:
       Host: josni.hoyes.cloudns.ch
   alpn:
   - http/1.1
-- name: AKUN-007-CLOUDFLARE-VLESS-WS-104MS
+- name: AKUN-010-CLOUDFLARE-VLESS-WS-110MS
   type: vless
   server: 104.17.3.81
   port: 443
@@ -199,58 +274,7 @@ proxies:
   client-fingerprint: chrome
   skip-cert-verify: true
   ws-opts:
-    path: /sg-melbi/?TELEGRAM-MARAMBASHI_MARAMBASHI_MARAMBASHI_MARAMBASHI_MARAMBASHI?ed=512
-    headers:
-      Host: josni.hoyes.cloudns.ch
-  alpn:
-  - http/1.1
-- name: AKUN-008-CLOUDFLARE-VLESS-WS-109MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 83afd88f-200f-4d89-bfc7-66eff160c1d8
-  udp: true
-  tls: true
-  servername: josni.hoyes.cloudns.ch
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /sg-melbi/=512
-    headers:
-      Host: josni.hoyes.cloudns.ch
-  alpn:
-  - http/1.1
-- name: AKUN-009-CLOUDFLARE-VLESS-WS-104MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 83afd88f-200f-4d89-bfc7-66eff160c1d8
-  udp: true
-  tls: true
-  servername: josni.hoyes.cloudns.ch
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /ed=2560
-    headers:
-      Host: josni.hoyes.cloudns.ch
-  alpn:
-  - http/1.1
-- name: AKUN-010-NOTION-WEB-VLESS-WS-96MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 83afd88f-200f-4d89-bfc7-66eff160c1d8
-  udp: true
-  tls: true
-  servername: josni.hoyes.cloudns.ch
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /sg-melbi%23TELEGRAM-MARAMBASHI_MARAMBASHI_MARAMBASHI_MARAMBASHI_MARAMBASHI?ed=2560
+    path: /sg-melbi%23TELEGRAM-TOOTFFARANGI?ed=512
     headers:
       Host: josni.hoyes.cloudns.ch
   alpn:
@@ -344,25 +368,134 @@ proxy-groups:
   timeout: 2500
   expected-status: 200/204/301/302
   max-failed-times: 2
+- name: AI-OPENAI
+  type: fallback
+  proxies:
+  - AKUN-009-CLOUDFLARE-VLESS-WS-94MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-100MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-103MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-105MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-008-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-109MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-110MS
+  - AKUN-010-CLOUDFLARE-VLESS-WS-110MS
+  - AKUN-007-CLOUDFLARE-VLESS-WS-114MS
+  url: https://chatgpt.com/favicon.ico
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+- name: AI-CLAUDE
+  type: fallback
+  proxies:
+  - AKUN-009-CLOUDFLARE-VLESS-WS-94MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-100MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-103MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-105MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-008-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-109MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-110MS
+  - AKUN-010-CLOUDFLARE-VLESS-WS-110MS
+  - AKUN-007-CLOUDFLARE-VLESS-WS-114MS
+  url: https://claude.ai/favicon.ico
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+- name: AI-GEMINI
+  type: fallback
+  proxies:
+  - AKUN-009-CLOUDFLARE-VLESS-WS-94MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-100MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-103MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-105MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-008-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-109MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-110MS
+  - AKUN-010-CLOUDFLARE-VLESS-WS-110MS
+  - AKUN-007-CLOUDFLARE-VLESS-WS-114MS
+  url: https://gemini.google.com/favicon.ico
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+- name: AI-OTHER
+  type: fallback
+  proxies:
+  - AKUN-009-CLOUDFLARE-VLESS-WS-94MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-100MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-103MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-105MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-008-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-109MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-110MS
+  - AKUN-010-CLOUDFLARE-VLESS-WS-110MS
+  - AKUN-007-CLOUDFLARE-VLESS-WS-114MS
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+- name: AI-STABLE
+  type: fallback
+  proxies:
+  - AKUN-009-CLOUDFLARE-VLESS-WS-94MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-100MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-103MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-105MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-008-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-109MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-110MS
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+- name: AI-BACKUP
+  type: fallback
+  proxies:
+  - AKUN-010-CLOUDFLARE-VLESS-WS-110MS
+  - AKUN-007-CLOUDFLARE-VLESS-WS-114MS
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+- name: AI-MANUAL
+  type: fallback
+  proxies:
+  - AKUN-010-CLOUDFLARE-VLESS-WS-110MS
+  - AKUN-007-CLOUDFLARE-VLESS-WS-114MS
+  url: https://www.gstatic.com/generate_204
+  interval: 600
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
 - name: AI
   type: fallback
   proxies:
-  - AKUN-006-NOTION-WEB-VLESS-WS-96MS
-  - AKUN-010-NOTION-WEB-VLESS-WS-96MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-99MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-102MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-004-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-109MS
-  - AKUN-005-NOTION-WEB-VLESS-WS-111MS
-  url: https://chatgpt.com/favicon.ico
-  interval: 120
-  lazy: false
-  timeout: 6000
+  - AI-OPENAI
+  - AI-CLAUDE
+  - AI-GEMINI
+  - AI-OTHER
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  lazy: true
+  timeout: 5000
   expected-status: 200/204/301/302
-  max-failed-times: 3
+  max-failed-times: 2
 - name: SOCIAL-MEDIA
   type: fallback
   proxies:
@@ -416,16 +549,16 @@ proxy-groups:
 - name: PING-CHECK
   type: url-test
   proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-99MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-102MS
-  - AKUN-004-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-005-NOTION-WEB-VLESS-WS-111MS
-  - AKUN-006-NOTION-WEB-VLESS-WS-96MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-109MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-010-NOTION-WEB-VLESS-WS-96MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-103MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-105MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-110MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-109MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-100MS
+  - AKUN-007-CLOUDFLARE-VLESS-WS-114MS
+  - AKUN-008-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-009-CLOUDFLARE-VLESS-WS-94MS
+  - AKUN-010-CLOUDFLARE-VLESS-WS-110MS
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   - MANUAL-TROJAN WS Melbikomas UAB
@@ -440,11 +573,11 @@ proxy-groups:
 - name: WARM-UP
   type: url-test
   proxies:
-  - AKUN-006-NOTION-WEB-VLESS-WS-96MS
-  - AKUN-010-NOTION-WEB-VLESS-WS-96MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-99MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-102MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-104MS
+  - AKUN-009-CLOUDFLARE-VLESS-WS-94MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-100MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-103MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-105MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-108MS
   url: https://www.gstatic.com/generate_204
   interval: 20
   tolerance: 40
@@ -455,10 +588,10 @@ proxy-groups:
 - name: WARM-UP-CF
   type: url-test
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-99MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-102MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-104MS
+  - AKUN-009-CLOUDFLARE-VLESS-WS-94MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-100MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-103MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-105MS
   url: https://cp.cloudflare.com
   interval: 30
   tolerance: 40
@@ -469,12 +602,12 @@ proxy-groups:
 - name: STREAMING-FAST
   type: url-test
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-99MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-102MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-006-NOTION-WEB-VLESS-WS-96MS
+  - AKUN-009-CLOUDFLARE-VLESS-WS-94MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-100MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-103MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-105MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-008-CLOUDFLARE-VLESS-WS-108MS
   url: https://cp.cloudflare.com
   interval: 45
   tolerance: 50
@@ -497,14 +630,14 @@ proxy-groups:
 - name: AUTO-FAST
   type: url-test
   proxies:
-  - AKUN-006-NOTION-WEB-VLESS-WS-96MS
-  - AKUN-010-NOTION-WEB-VLESS-WS-96MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-99MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-102MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-004-CLOUDFLARE-VLESS-WS-105MS
+  - AKUN-009-CLOUDFLARE-VLESS-WS-94MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-100MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-103MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-105MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-008-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-109MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-110MS
   url: https://www.gstatic.com/generate_204
   interval: 45
   tolerance: 50
@@ -515,16 +648,16 @@ proxy-groups:
 - name: FALLBACK
   type: fallback
   proxies:
-  - AKUN-006-NOTION-WEB-VLESS-WS-96MS
-  - AKUN-010-NOTION-WEB-VLESS-WS-96MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-99MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-102MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-004-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-109MS
-  - AKUN-005-NOTION-WEB-VLESS-WS-111MS
+  - AKUN-009-CLOUDFLARE-VLESS-WS-94MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-100MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-103MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-105MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-008-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-109MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-110MS
+  - AKUN-010-CLOUDFLARE-VLESS-WS-110MS
+  - AKUN-007-CLOUDFLARE-VLESS-WS-114MS
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   - MANUAL-TROJAN WS Melbikomas UAB
@@ -539,11 +672,11 @@ proxy-groups:
   type: load-balance
   strategy: sticky-sessions
   proxies:
-  - AKUN-006-NOTION-WEB-VLESS-WS-96MS
-  - AKUN-010-NOTION-WEB-VLESS-WS-96MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-99MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-102MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-104MS
+  - AKUN-009-CLOUDFLARE-VLESS-WS-94MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-100MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-103MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-105MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-108MS
   url: https://www.gstatic.com/generate_204
   interval: 180
   lazy: true
@@ -585,6 +718,27 @@ rule-providers:
     path: ./rule_providers/threat-tif-mini.txt
     url: https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.mini-onlydomains.txt
     interval: 43200
+  openai_domain:
+    type: http
+    interval: 86400
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/openai.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/openai.mrs
+  ai_category:
+    type: http
+    interval: 86400
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/category-ai-not-cn.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs
+  chatgpt_voice:
+    type: http
+    interval: 43200
+    behavior: classical
+    format: text
+    path: ./rule_providers/chatgpt_voice.txt
+    url: https://ruleset.skk.moe/Clash/ip/ai.txt
   tracker-domain:
     type: http
     behavior: domain
@@ -849,6 +1003,91 @@ rules:
 - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
 - IP-CIDR,169.254.0.0/16,DIRECT,no-resolve
 - GEOIP,LAN,DIRECT,no-resolve
+- DOMAIN,cdn.openaimerge.com,AI-OPENAI
+- DOMAIN,cdn.workos.com,AI-OPENAI
+- DOMAIN,challenges.cloudflare.com,AI-OPENAI
+- DOMAIN,forwarder.workos.com,AI-OPENAI
+- DOMAIN,humb.apple.com,AI-OPENAI
+- DOMAIN,images.workoscdn.com,AI-OPENAI
+- DOMAIN,js.intercomcdn.com,AI-OPENAI
+- DOMAIN,js.stripe.com,AI-OPENAI
+- DOMAIN,o207216.ingest.sentry.io,AI-OPENAI
+- DOMAIN,o33249.ingest.sentry.io,AI-OPENAI
+- DOMAIN,rum.browser-intake-datadoghq.com,AI-OPENAI
+- DOMAIN,setup.workos.com,AI-OPENAI
+- DOMAIN,workos.imgix.net,AI-OPENAI
+- DOMAIN-SUFFIX,auth.openai.com,AI-OPENAI
+- DOMAIN-SUFFIX,chatgpt.com,AI-OPENAI
+- DOMAIN-SUFFIX,chatgpt.site,AI-OPENAI
+- DOMAIN-SUFFIX,ct.sendgrid.net,AI-OPENAI
+- DOMAIN-SUFFIX,intercom.io,AI-OPENAI
+- DOMAIN-SUFFIX,intercomcdn.com,AI-OPENAI
+- DOMAIN-SUFFIX,oaistatic.com,AI-OPENAI
+- DOMAIN-SUFFIX,oaiusercontent.com,AI-OPENAI
+- DOMAIN-SUFFIX,openai.com,AI-OPENAI
+- DOMAIN-SUFFIX,oaistatsig.com,AI-OPENAI
+- DOMAIN-SUFFIX,sora.com,AI-OPENAI
+- DOMAIN,cdn.usefathom.com,AI-CLAUDE
+- DOMAIN-SUFFIX,anthropic.com,AI-CLAUDE
+- DOMAIN-SUFFIX,claude.ai,AI-CLAUDE
+- DOMAIN-SUFFIX,claude.com,AI-CLAUDE
+- DOMAIN-SUFFIX,claudeusercontent.com,AI-CLAUDE
+- DOMAIN,ai.google.dev,AI-GEMINI
+- DOMAIN,aistudio.google.com,AI-GEMINI
+- DOMAIN,alkalimakersuite-pa.clients6.google.com,AI-GEMINI
+- DOMAIN,aiplatform.googleapis.com,AI-GEMINI
+- DOMAIN,cloudcode-pa.googleapis.com,AI-GEMINI
+- DOMAIN,gemini.google.com,AI-GEMINI
+- DOMAIN,generativelanguage.googleapis.com,AI-GEMINI
+- DOMAIN,makersuite.google.com,AI-GEMINI
+- DOMAIN,proactivebackend-pa.googleapis.com,AI-GEMINI
+- DOMAIN,robinfrontend-pa.googleapis.com,AI-GEMINI
+- DOMAIN-SUFFIX,bard.google.com,AI-GEMINI
+- DOMAIN-SUFFIX,deepmind.com,AI-GEMINI
+- DOMAIN-SUFFIX,deepmind.google,AI-GEMINI
+- DOMAIN-SUFFIX,generativeai.google,AI-GEMINI
+- DOMAIN,api.githubcopilot.com,AI-OTHER
+- DOMAIN,copilot-proxy.githubusercontent.com,AI-OTHER
+- DOMAIN,copilot.cloud.microsoft,AI-OTHER
+- DOMAIN,copilot.microsoft.com,AI-OTHER
+- DOMAIN,sydney.bing.com,AI-OTHER
+- DOMAIN-SUFFIX,cohere.com,AI-OTHER
+- DOMAIN-SUFFIX,deepseek.com,AI-OTHER
+- DOMAIN-SUFFIX,githubcopilot.com,AI-OTHER
+- DOMAIN-SUFFIX,grok.com,AI-OTHER
+- DOMAIN-SUFFIX,kimi.com,AI-OTHER
+- DOMAIN-SUFFIX,meta.ai,AI-OTHER
+- DOMAIN-SUFFIX,mistral.ai,AI-OTHER
+- DOMAIN-SUFFIX,perplexity.ai,AI-OTHER
+- DOMAIN-SUFFIX,poe.com,AI-OTHER
+- DOMAIN-SUFFIX,qwen.ai,AI-OTHER
+- DOMAIN-SUFFIX,x.ai,AI-OTHER
+- IP-CIDR,4.151.200.38/32,AI-OPENAI,no-resolve
+- IP-CIDR,4.155.146.196/32,AI-OPENAI,no-resolve
+- IP-CIDR,4.197.172.116/32,AI-OPENAI,no-resolve
+- IP-CIDR,4.217.235.100/32,AI-OPENAI,no-resolve
+- IP-CIDR,4.245.198.13/32,AI-OPENAI,no-resolve
+- IP-CIDR,13.71.25.29/32,AI-OPENAI,no-resolve
+- IP-CIDR,20.74.221.21/32,AI-OPENAI,no-resolve
+- IP-CIDR,20.162.96.163/32,AI-OPENAI,no-resolve
+- IP-CIDR,20.168.48.117/32,AI-OPENAI,no-resolve
+- IP-CIDR,20.184.36.134/32,AI-OPENAI,no-resolve
+- IP-CIDR,20.203.144.245/32,AI-OPENAI,no-resolve
+- IP-CIDR,40.118.236.137/32,AI-OPENAI,no-resolve
+- IP-CIDR,51.4.112.173/32,AI-OPENAI,no-resolve
+- IP-CIDR,52.143.181.161/32,AI-OPENAI,no-resolve
+- IP-CIDR,68.155.152.41/32,AI-OPENAI,no-resolve
+- IP-CIDR,72.146.20.246/32,AI-OPENAI,no-resolve
+- IP-CIDR,74.248.148.7/32,AI-OPENAI,no-resolve
+- IP-CIDR,102.37.57.54/32,AI-OPENAI,no-resolve
+- IP-CIDR,135.220.40.201/32,AI-OPENAI,no-resolve
+- IP-CIDR,172.203.39.49/32,AI-OPENAI,no-resolve
+- IP-CIDR,172.207.173.200/32,AI-OPENAI,no-resolve
+- IP-CIDR,172.214.226.198/32,AI-OPENAI,no-resolve
+- IP-CIDR,191.233.251.27/32,AI-OPENAI,no-resolve
+- RULE-SET,openai_domain,AI-OPENAI
+- RULE-SET,ai_category,AI-OTHER
+- RULE-SET,chatgpt_voice,AI-OPENAI,no-resolve
 - DOMAIN,static.doubleclick.net,GLOBAL
 - DOMAIN,jnn-pa.googleapis.com,GLOBAL
 - DOMAIN,googleads.g.doubleclick.net,REJECT
@@ -870,34 +1109,6 @@ rules:
 - DOMAIN-SUFFIX,youtubei.googleapis.com,GLOBAL
 - DOMAIN-SUFFIX,youtube.googleapis.com,GLOBAL
 - DOMAIN-SUFFIX,ggpht.com,GLOBAL
-- DOMAIN,gemini.google.com,AI
-- DOMAIN,aistudio.google.com,AI
-- DOMAIN,ai.google.dev,AI
-- DOMAIN,generativelanguage.googleapis.com,AI
-- DOMAIN,aiplatform.googleapis.com,AI
-- DOMAIN,copilot.microsoft.com,AI
-- DOMAIN,copilot.cloud.microsoft,AI
-- DOMAIN,sydney.bing.com,AI
-- DOMAIN,api.githubcopilot.com,AI
-- DOMAIN,copilot-proxy.githubusercontent.com,AI
-- DOMAIN-SUFFIX,chatgpt.com,AI
-- DOMAIN-SUFFIX,openai.com,AI
-- DOMAIN-SUFFIX,oaistatic.com,AI
-- DOMAIN-SUFFIX,oaiusercontent.com,AI
-- DOMAIN-SUFFIX,sora.com,AI
-- DOMAIN-SUFFIX,claude.ai,AI
-- DOMAIN-SUFFIX,anthropic.com,AI
-- DOMAIN-SUFFIX,perplexity.ai,AI
-- DOMAIN-SUFFIX,grok.com,AI
-- DOMAIN-SUFFIX,x.ai,AI
-- DOMAIN-SUFFIX,poe.com,AI
-- DOMAIN-SUFFIX,deepseek.com,AI
-- DOMAIN-SUFFIX,mistral.ai,AI
-- DOMAIN-SUFFIX,meta.ai,AI
-- DOMAIN-SUFFIX,qwen.ai,AI
-- DOMAIN-SUFFIX,kimi.com,AI
-- DOMAIN-SUFFIX,cohere.com,AI
-- DOMAIN-SUFFIX,githubcopilot.com,AI
 - RULE-SET,threat-tif-mini,REJECT
 - RULE-SET,hagezi-pro-mini,REJECT
 - RULE-SET,popup-ads,REJECT

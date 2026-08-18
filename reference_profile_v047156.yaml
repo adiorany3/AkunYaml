@@ -53,8 +53,8 @@ dns:
   - https://1.1.1.1/dns-query
   - https://dns.google/dns-query
   fallback:
-  - tls://1.1.1.1
-  - tls://8.8.8.8
+  - https://family.dns.bebasid.com/dns-query
+  - tls://family.dns.bebasid.com:853
   fallback-filter:
     geoip: true
     geoip-code: ID
@@ -65,6 +65,28 @@ dns:
   proxy-server-nameserver:
   - https://1.1.1.1/dns-query
   - https://dns.google/dns-query
+  nameserver-policy:
+    +.openai.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.chatgpt.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.chatgpt.site:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.anthropic.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.claude.ai:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.claude.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.gemini.google.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
 rule-providers:
   ads_domain:
     type: http
@@ -94,6 +116,27 @@ rule-providers:
     path: ./rule_providers/tracker.mrs
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tracker.mrs
     interval: 43200
+  openai_domain:
+    type: http
+    interval: 86400
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/openai.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/openai.mrs
+  ai_category:
+    type: http
+    interval: 86400
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/category-ai-not-cn.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs
+  chatgpt_voice:
+    type: http
+    interval: 43200
+    behavior: classical
+    format: text
+    path: ./rule_providers/chatgpt_voice.txt
+    url: https://ruleset.skk.moe/Clash/ip/ai.txt
 rules:
 - DOMAIN-SUFFIX,local,DIRECT
 - DOMAIN-SUFFIX,lan,DIRECT
@@ -104,6 +147,91 @@ rules:
 - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
 - IP-CIDR,169.254.0.0/16,DIRECT,no-resolve
 - GEOIP,LAN,DIRECT,no-resolve
+- DOMAIN,cdn.openaimerge.com,AI-OPENAI
+- DOMAIN,cdn.workos.com,AI-OPENAI
+- DOMAIN,challenges.cloudflare.com,AI-OPENAI
+- DOMAIN,forwarder.workos.com,AI-OPENAI
+- DOMAIN,humb.apple.com,AI-OPENAI
+- DOMAIN,images.workoscdn.com,AI-OPENAI
+- DOMAIN,js.intercomcdn.com,AI-OPENAI
+- DOMAIN,js.stripe.com,AI-OPENAI
+- DOMAIN,o207216.ingest.sentry.io,AI-OPENAI
+- DOMAIN,o33249.ingest.sentry.io,AI-OPENAI
+- DOMAIN,rum.browser-intake-datadoghq.com,AI-OPENAI
+- DOMAIN,setup.workos.com,AI-OPENAI
+- DOMAIN,workos.imgix.net,AI-OPENAI
+- DOMAIN-SUFFIX,auth.openai.com,AI-OPENAI
+- DOMAIN-SUFFIX,chatgpt.com,AI-OPENAI
+- DOMAIN-SUFFIX,chatgpt.site,AI-OPENAI
+- DOMAIN-SUFFIX,ct.sendgrid.net,AI-OPENAI
+- DOMAIN-SUFFIX,intercom.io,AI-OPENAI
+- DOMAIN-SUFFIX,intercomcdn.com,AI-OPENAI
+- DOMAIN-SUFFIX,oaistatic.com,AI-OPENAI
+- DOMAIN-SUFFIX,oaiusercontent.com,AI-OPENAI
+- DOMAIN-SUFFIX,openai.com,AI-OPENAI
+- DOMAIN-SUFFIX,oaistatsig.com,AI-OPENAI
+- DOMAIN-SUFFIX,sora.com,AI-OPENAI
+- DOMAIN,cdn.usefathom.com,AI-CLAUDE
+- DOMAIN-SUFFIX,anthropic.com,AI-CLAUDE
+- DOMAIN-SUFFIX,claude.ai,AI-CLAUDE
+- DOMAIN-SUFFIX,claude.com,AI-CLAUDE
+- DOMAIN-SUFFIX,claudeusercontent.com,AI-CLAUDE
+- DOMAIN,ai.google.dev,AI-GEMINI
+- DOMAIN,aistudio.google.com,AI-GEMINI
+- DOMAIN,alkalimakersuite-pa.clients6.google.com,AI-GEMINI
+- DOMAIN,aiplatform.googleapis.com,AI-GEMINI
+- DOMAIN,cloudcode-pa.googleapis.com,AI-GEMINI
+- DOMAIN,gemini.google.com,AI-GEMINI
+- DOMAIN,generativelanguage.googleapis.com,AI-GEMINI
+- DOMAIN,makersuite.google.com,AI-GEMINI
+- DOMAIN,proactivebackend-pa.googleapis.com,AI-GEMINI
+- DOMAIN,robinfrontend-pa.googleapis.com,AI-GEMINI
+- DOMAIN-SUFFIX,bard.google.com,AI-GEMINI
+- DOMAIN-SUFFIX,deepmind.com,AI-GEMINI
+- DOMAIN-SUFFIX,deepmind.google,AI-GEMINI
+- DOMAIN-SUFFIX,generativeai.google,AI-GEMINI
+- DOMAIN,api.githubcopilot.com,AI-OTHER
+- DOMAIN,copilot-proxy.githubusercontent.com,AI-OTHER
+- DOMAIN,copilot.cloud.microsoft,AI-OTHER
+- DOMAIN,copilot.microsoft.com,AI-OTHER
+- DOMAIN,sydney.bing.com,AI-OTHER
+- DOMAIN-SUFFIX,cohere.com,AI-OTHER
+- DOMAIN-SUFFIX,deepseek.com,AI-OTHER
+- DOMAIN-SUFFIX,githubcopilot.com,AI-OTHER
+- DOMAIN-SUFFIX,grok.com,AI-OTHER
+- DOMAIN-SUFFIX,kimi.com,AI-OTHER
+- DOMAIN-SUFFIX,meta.ai,AI-OTHER
+- DOMAIN-SUFFIX,mistral.ai,AI-OTHER
+- DOMAIN-SUFFIX,perplexity.ai,AI-OTHER
+- DOMAIN-SUFFIX,poe.com,AI-OTHER
+- DOMAIN-SUFFIX,qwen.ai,AI-OTHER
+- DOMAIN-SUFFIX,x.ai,AI-OTHER
+- IP-CIDR,4.151.200.38/32,AI-OPENAI,no-resolve
+- IP-CIDR,4.155.146.196/32,AI-OPENAI,no-resolve
+- IP-CIDR,4.197.172.116/32,AI-OPENAI,no-resolve
+- IP-CIDR,4.217.235.100/32,AI-OPENAI,no-resolve
+- IP-CIDR,4.245.198.13/32,AI-OPENAI,no-resolve
+- IP-CIDR,13.71.25.29/32,AI-OPENAI,no-resolve
+- IP-CIDR,20.74.221.21/32,AI-OPENAI,no-resolve
+- IP-CIDR,20.162.96.163/32,AI-OPENAI,no-resolve
+- IP-CIDR,20.168.48.117/32,AI-OPENAI,no-resolve
+- IP-CIDR,20.184.36.134/32,AI-OPENAI,no-resolve
+- IP-CIDR,20.203.144.245/32,AI-OPENAI,no-resolve
+- IP-CIDR,40.118.236.137/32,AI-OPENAI,no-resolve
+- IP-CIDR,51.4.112.173/32,AI-OPENAI,no-resolve
+- IP-CIDR,52.143.181.161/32,AI-OPENAI,no-resolve
+- IP-CIDR,68.155.152.41/32,AI-OPENAI,no-resolve
+- IP-CIDR,72.146.20.246/32,AI-OPENAI,no-resolve
+- IP-CIDR,74.248.148.7/32,AI-OPENAI,no-resolve
+- IP-CIDR,102.37.57.54/32,AI-OPENAI,no-resolve
+- IP-CIDR,135.220.40.201/32,AI-OPENAI,no-resolve
+- IP-CIDR,172.203.39.49/32,AI-OPENAI,no-resolve
+- IP-CIDR,172.207.173.200/32,AI-OPENAI,no-resolve
+- IP-CIDR,172.214.226.198/32,AI-OPENAI,no-resolve
+- IP-CIDR,191.233.251.27/32,AI-OPENAI,no-resolve
+- RULE-SET,openai_domain,AI-OPENAI
+- RULE-SET,ai_category,AI-OTHER
+- RULE-SET,chatgpt_voice,AI-OPENAI,no-resolve
 - DOMAIN,static.doubleclick.net,DIRECT
 - DOMAIN,jnn-pa.googleapis.com,DIRECT
 - DOMAIN,googleads.g.doubleclick.net,REJECT
