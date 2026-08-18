@@ -35,6 +35,13 @@ from android_marketplace_policy import (
     sniffer_skip_domains as android_marketplace_live_sniffer_skip_domains,
     dns_policy_domains as android_marketplace_live_dns_policy_domains,
 )
+from android_banking_policy import (
+    enabled as android_banking_enabled,
+    guard_rules as android_banking_guard_rules,
+    fake_ip_filters as android_banking_fake_ip_filters,
+    sniffer_skip_domains as android_banking_sniffer_skip_domains,
+    dns_policy_domains as android_banking_dns_policy_domains,
+)
 
 
 class _NoAliasDumper(yaml.SafeDumper):
@@ -3418,6 +3425,22 @@ def build_openclash_android_yaml(
         "proxies": [node.clash for node in nodes],
         "proxy-groups": proxy_groups,
     }
+    if android_banking_enabled():
+        # Banking Safe Mode keeps bank traffic off Fake-IP/sniffing and uses
+        # ordinary public DNS. Routing is DIRECT and inserted below after the
+        # high-confidence threat layer but before ad/tracker filtering.
+        dns_cfg = config.get("dns") if isinstance(config.get("dns"), dict) else {}
+        fake_filter = list(dns_cfg.get("fake-ip-filter") or [])
+        dns_cfg["fake-ip-filter"] = list(dict.fromkeys(fake_filter + android_banking_fake_ip_filters()))
+        normal_dns = ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"]
+        ns_policy = dns_cfg.setdefault("nameserver-policy", {})
+        if isinstance(ns_policy, dict):
+            for domain in android_banking_dns_policy_domains():
+                ns_policy[f"+.{domain}"] = list(normal_dns)
+        sniff_cfg = config.get("sniffer") if isinstance(config.get("sniffer"), dict) else {}
+        skip_domain = list(sniff_cfg.get("skip-domain") or [])
+        sniff_cfg["skip-domain"] = list(dict.fromkeys(skip_domain + android_banking_sniffer_skip_domains()))
+
     if android_marketplace_live_enabled():
         # Marketplace live uses first-party session/CDN endpoints that can be
         # disrupted by Fake-IP, TLS sniffing, family-category DNS, or broad
@@ -3476,10 +3499,13 @@ def build_openclash_android_yaml(
         critical_rules = [r for r in provider_rules if r.startswith(critical_threat_prefixes)]
         remaining_provider_rules = [r for r in provider_rules if not r.startswith(critical_threat_prefixes)]
         android_rules.extend(critical_rules)
+        android_rules.extend(android_banking_guard_rules())
         android_rules.extend(android_marketplace_live_guard_rules(android_marketplace_live_policy()))
         android_rules.extend(remaining_provider_rules)
-    elif android_marketplace_live_enabled():
-        android_rules.extend(android_marketplace_live_guard_rules(android_marketplace_live_policy()))
+    else:
+        android_rules.extend(android_banking_guard_rules())
+        if android_marketplace_live_enabled():
+            android_rules.extend(android_marketplace_live_guard_rules(android_marketplace_live_policy()))
     android_rules.append("MATCH,GLOBAL")
     config["rules"] = android_rules
     config = _enforce_no_selector_no_direct_config(config)

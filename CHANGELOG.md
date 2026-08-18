@@ -90,3 +90,7 @@
 - Menyatukan fixer existing YAML ke `apply_existing.py`.
 - Menyatukan audit/fix router ke `openclash_router_fix.sh`.
 - Validasi router selalu memakai `SAFE_PATHS=/usr/share/openclash:/etc/ssl`.
+
+## v4.4 Android Banking Safe
+
+SeaBank Android compatibility: DIRECT + real DNS + Fake-IP bypass + sniffer skip, while high-confidence malware/phishing/cryptominer checks remain ahead of the banking guard.

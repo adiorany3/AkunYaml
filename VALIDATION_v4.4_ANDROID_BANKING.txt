@@ -1,0 +1,51 @@
+AkunYaml v4.4 Android Banking Safe Validation
+================================================
+
+[OK] Python compile: android_banking_policy.py, android_marketplace_policy.py, sumberyaml_core.py, local_runner.py
+[OK] Direct Android builder: critical threat -> banking DIRECT -> marketplace -> privacy/ad ordering
+[OK] Android Banking Safe Mode audit
+[OK] SeaBank fake-ip bypass
+[OK] SeaBank sniffer skip
+[OK] SeaBank public DoH nameserver policy
+[OK] SeaBank explicit DIRECT rule
+[OK] No explicit SeaBank REJECT rule
+[OK] Android marketplace-live compatibility audit
+[OK] Android H1 primary + host-level cold fallback audit
+[OK] Android YAML-only rule-provider audit
+[OK] Threat-safe audit
+[OK] YouTube/adblock audit
+[OK] App ads audit
+[OK] Streaming ads audit
+[OK] Popup/game ads audit
+[OK] Security hardening audit
+[OK] Performance budget audit
+[OK] Cache self-test
+[OK] Static OpenClash target validation
+
+Android active direct probes/min: ~4.0
+
+SeaBank network handling:
+  threat-malware / threat-phishing / threat-cryptominers
+  -> DOMAIN-SUFFIX,seabank.co.id,DIRECT
+  -> marketplace compatibility
+  -> privacy/ad/tracker filters
+
+DNS:
+  +.seabank.co.id is in fake-ip-filter
+  +.seabank.co.id uses public Cloudflare/Google DoH policy
+
+Sniffer:
+  +.seabank.co.id is in skip-domain
+
+Isolation:
+  openclash_auto.yaml       byte-identical to v4.3
+  openclash_lite.yaml       byte-identical to v4.3
+  openclash_fresh_pool.yaml byte-identical to v4.3
+
+Exact-core parser was not executed in this Linux environment because the bundled
+Mihomo binary is Mach-O ARM64 macOS. Static target validation passed.
+
+Important limitation:
+Banking Safe Mode does not hide an active Android VPN interface. If the bank app
+rejects login solely because a VPN is active, per-app VPN exclusion or disabling
+the VPN for banking is still required.
