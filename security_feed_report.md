@@ -5,6 +5,7 @@ A refresh is promoted only after format/count sanity checks. Suspicious updates 
 | Provider | Status | Entries | SHA-256 |
 |---|---:|---:|---|
 | `ads_indonesia` | updated | 152 | `9f6ae5cc7bd96ced` |
+| `gambling-mini` | updated | 107620 | `c31e630acb18c5f7` |
 | `hagezi-pro-plus-mini` | updated | 68940 | `eba7571d1ebdabd3` |
 | `popup-ads` | updated | 54029 | `49c665e111d17b0c` |
 | `threat-cryptominers` | updated | 297 | `0b2089ce6ce3a2bf` |

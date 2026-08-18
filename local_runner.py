@@ -47,7 +47,7 @@ from openclash_target import (
     validate_yaml_file,
 )
 
-APP_VERSION = "4.6-youtube-playback-safe"
+APP_VERSION = "4.7-youtube-gambling-sponsor-guard"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -187,6 +187,10 @@ DEFAULT_ENV = {
     # Lite stays conservative by default for low-RAM routers. Set enhanced only
     # when the router has enough memory for the additional text provider.
     "OPENWRT_LITE_ADBLOCK_LEVEL": "compact",
+    # OpenWrt-only category protection for gambling destinations frequently
+    # reached from sponsored ads. Android is intentionally unchanged.
+    "OPENWRT_GAMBLING_BLOCK": "true",
+    "OPENWRT_LITE_GAMBLING_BLOCK": "true",
     # DNS-level ad blocking remains off by default to reduce false positives.
     "ADBLOCK_DNS_MODE": "off",
     # v3 lean mode prefers compact MRS providers + high-confidence local rules
@@ -1716,6 +1720,9 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     if lite_adblock_level not in {"standard", "compact", "enhanced"}:
         lite_adblock_level = "compact"
     selected_router_adblock_level = lite_adblock_level if is_lite else router_adblock_level
+    gambling_block = os.environ.get("OPENWRT_GAMBLING_BLOCK", "true").strip().lower() not in {"0", "false", "no", "off"}
+    lite_gambling_block = os.environ.get("OPENWRT_LITE_GAMBLING_BLOCK", "true").strip().lower() not in {"0", "false", "no", "off"}
+    selected_gambling_block = False if is_android else (lite_gambling_block if is_lite else gambling_block)
     android_snapshot = workdir / "rule_providers" / "ads_indonesia_android.yaml"
     provider_catalog = shared_provider_catalog(
         platform="android" if is_android else "router",
@@ -1726,6 +1733,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         interval=interval,
         android_snapshot_exists=android_snapshot.exists(),
         router_adblock_level=selected_router_adblock_level,
+        gambling_block=selected_gambling_block,
     )
 
     # Lean router mode deliberately skips overlapping strict provider layers.
@@ -1768,7 +1776,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     # Remove providers from old/other platform profiles so Android never keeps
     # an MRS/text provider by accident, while router profiles keep their lean MRS set.
     obsolete = {
-        "security-tif-mini", "popup-ads", "hagezi-pro-mini", "hagezi-pro-plus-mini", "awavenue-ads",
+        "security-tif-mini", "popup-ads", "hagezi-pro-mini", "hagezi-pro-plus-mini", "gambling-mini", "awavenue-ads",
         "privacy-extra", "threat-tif-mini", "threat-malware", "threat-phishing", "threat-cryptominers",
         "turtlecute-coverage", "streaming-ad-safe", "app-ad-safe",
         "threat-fake-scam", "threat-tif-ip", "ads_indonesia",
@@ -1822,6 +1830,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         "RULE-SET,popup-ads,",
         "RULE-SET,hagezi-pro-mini,",
         "RULE-SET,hagezi-pro-plus-mini,",
+        "RULE-SET,gambling-mini,",
         "RULE-SET,privacy-extra,",
         "RULE-SET,tracker-domain,",
         "RULE-SET,threat-tif-mini,",
@@ -2004,6 +2013,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
             threat_ip="threat-tif-ip" in provider_catalog,
             android_snapshot_exists="ads_indonesia" in provider_catalog,
             router_adblock_level=selected_router_adblock_level,
+            gambling_block=selected_gambling_block,
         )
         if lean_router:
             blocked_lean_prefixes = ["RULE-SET,hagezi-pro-mini,"]

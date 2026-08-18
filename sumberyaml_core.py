@@ -2642,6 +2642,8 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
     threat_ip_enabled = os.getenv("THREAT_IP_BLOCKING", "true").strip().lower() not in {"0", "false", "no", "off"}
     router_adblock_level = os.getenv("OPENWRT_ADBLOCK_LEVEL", "enhanced").strip().lower()
     lite_adblock_level = os.getenv("OPENWRT_LITE_ADBLOCK_LEVEL", "compact").strip().lower()
+    gambling_block_enabled = os.getenv("OPENWRT_GAMBLING_BLOCK", "true").strip().lower() not in {"0", "false", "no", "off"}
+    lite_gambling_block_enabled = os.getenv("OPENWRT_LITE_GAMBLING_BLOCK", "true").strip().lower() not in {"0", "false", "no", "off"}
     if router_adblock_level not in {"standard", "compact", "enhanced"}:
         router_adblock_level = "enhanced"
     if lite_adblock_level not in {"standard", "compact", "enhanced"}:
@@ -2657,6 +2659,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         threat_ip=threat_ip_enabled,
         interval=security_interval,
         router_adblock_level=selected_router_adblock_level,
+        gambling_block=lite_gambling_block_enabled if is_lite_mode else gambling_block_enabled,
     )
 
     rule_providers: dict[str, Any] = {
@@ -2989,6 +2992,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             indonesia_ads=indonesia_ads_enabled,
             threat_ip=threat_ip_enabled,
             router_adblock_level=router_adblock_level,
+            gambling_block=gambling_block_enabled,
         ),
         "RULE-SET,ads_classical,REJECT",
         "RULE-SET,privacy_classical,REJECT",
@@ -3064,6 +3068,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
                 threat_ip=False,
                 interval=security_interval,
                 router_adblock_level=lite_adblock_level,
+                gambling_block=lite_gambling_block_enabled,
             ),
             "openai_domain": {
                 **domain_provider,
@@ -3138,6 +3143,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
                 indonesia_ads=indonesia_ads_enabled,
                 threat_ip=False,
                 router_adblock_level=lite_adblock_level,
+                gambling_block=lite_gambling_block_enabled,
             ),
             "DOMAIN-SUFFIX,facebook.com,SOCIAL-MEDIA",
             "DOMAIN-SUFFIX,fbcdn.net,SOCIAL-MEDIA",

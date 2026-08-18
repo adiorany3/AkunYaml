@@ -26,6 +26,7 @@ import yaml
 from security_policy import (
     ROUTER_BASE_PROVIDERS,
     ROUTER_ENHANCED_AD_PROVIDERS,
+    ROUTER_GAMBLING_PROVIDERS,
     ROUTER_THREAT_SAFE_PROVIDERS,
     ROUTER_THREAT_IP_PROVIDERS,
 )
@@ -146,6 +147,7 @@ def _feed_specs() -> list[FeedSpec]:
     catalogs = [
         ROUTER_BASE_PROVIDERS,
         ROUTER_ENHANCED_AD_PROVIDERS,
+        ROUTER_GAMBLING_PROVIDERS,
         ROUTER_THREAT_SAFE_PROVIDERS,
         ROUTER_THREAT_IP_PROVIDERS,
     ]
@@ -167,6 +169,8 @@ def _feed_specs() -> list[FeedSpec]:
                 minimum = 10000
             elif name == "popup-ads":
                 minimum = 100
+            elif name == "gambling-mini":
+                minimum = 50000
             specs.append(FeedSpec(name=name, url=url, kind="ipcidr" if behavior == "ipcidr" else "domain", min_entries=minimum))
     return specs
 

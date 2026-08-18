@@ -97,6 +97,18 @@ ROUTER_ENHANCED_AD_PROVIDERS: dict[str, dict[str, Any]] = {
     ),
 }
 
+# OpenWrt-only gambling destination protection. This is kept separate from
+# generic ad/tracker providers because gambling domains are not guaranteed to
+# appear in normal adblock lists. The mini list is intentionally used to limit
+# memory pressure on routers while keeping broad category coverage.
+ROUTER_GAMBLING_PROVIDERS: dict[str, dict[str, Any]] = {
+    "gambling-mini": _http_domain(
+        "./rule_providers/gambling-mini.txt",
+        "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/gambling.mini-onlydomains.txt",
+        interval=86400,
+    ),
+}
+
 ROUTER_THREAT_SAFE_PROVIDERS: dict[str, dict[str, Any]] = {
     "threat-malware": _http_domain(
         "./rule_providers/threat-malware.txt",
@@ -184,6 +196,7 @@ def provider_catalog(
     interval: int = DEFAULT_PROVIDER_INTERVAL,
     android_snapshot_exists: bool = True,
     router_adblock_level: str = "standard",
+    gambling_block: bool = True,
 ) -> dict[str, dict[str, Any]]:
     """Return the complete provider catalog required by the selected profile."""
     profile = (profile or "balanced").strip().lower()
@@ -205,6 +218,8 @@ def provider_catalog(
     out = _with_interval(ROUTER_BASE_PROVIDERS, interval)
     if not indonesia_ads:
         out.pop("ads_indonesia", None)
+    if gambling_block:
+        out.update(_with_interval(ROUTER_GAMBLING_PROVIDERS, max(int(interval), 86400)))
     if profile in {"strict", "child-safe", "app-safe", "threat-safe"} and not lite:
         out.update(_with_interval(ROUTER_STRICT_PROVIDERS, interval))
     if router_adblock_level == "compact":
@@ -232,6 +247,7 @@ def provider_reject_rules(
     threat_ip: bool = True,
     android_snapshot_exists: bool = True,
     router_adblock_level: str = "standard",
+    gambling_block: bool = True,
 ) -> list[str]:
     """Return provider-backed REJECT rules in deterministic precision order."""
     profile = (profile or "balanced").strip().lower()
@@ -270,6 +286,9 @@ def provider_reject_rules(
     else:
         rules.append("RULE-SET,threat-tif-mini,REJECT")
 
+    if gambling_block:
+        rules.append("RULE-SET,gambling-mini,REJECT")
+
     if router_adblock_level == "compact":
         rules.append("RULE-SET,popup-ads,REJECT")
     elif router_adblock_level == "enhanced":
@@ -299,6 +318,7 @@ def managed_provider_names() -> set[str]:
         ROUTER_BASE_PROVIDERS,
         ROUTER_STRICT_PROVIDERS,
         ROUTER_ENHANCED_AD_PROVIDERS,
+        ROUTER_GAMBLING_PROVIDERS,
         ROUTER_THREAT_SAFE_PROVIDERS,
         ROUTER_THREAT_IP_PROVIDERS,
         ANDROID_BASE_PROVIDERS,

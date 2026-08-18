@@ -53,7 +53,7 @@
     "104.16.79.73": {
       "ip": "104.16.79.73",
       "provider": "CLOUDFLARE",
-      "saved_at": 1787060035
+      "saved_at": 1787065919
     },
     "104.16.80.73": {
       "ip": "104.16.80.73",
@@ -74,6 +74,11 @@
       "ip": "104.17.148.22",
       "provider": "UNKNOWN",
       "saved_at": 1787060041
+    },
+    "104.17.182.11": {
+      "ip": "104.17.182.11",
+      "provider": "CLOUDFLARE",
+      "saved_at": 1787065919
     },
     "104.17.28.89": {
       "ip": "104.17.28.89",
@@ -112,8 +117,8 @@
     },
     "104.18.37.228": {
       "ip": "104.18.37.228",
-      "provider": "CLOUDFLARE",
-      "saved_at": 1787065056
+      "provider": "UNKNOWN",
+      "saved_at": 1787065922
     },
     "104.18.40.152": {
       "ip": "104.18.40.152",
@@ -263,7 +268,7 @@
     "172.67.143.24": {
       "ip": "172.67.143.24",
       "provider": "CLOUDFLARE",
-      "saved_at": 1787051127
+      "saved_at": 1787065919
     },
     "172.67.161.109": {
       "ip": "172.67.161.109",
@@ -445,6 +450,11 @@
       "provider": "SPECIAL-IPV4-BENCHMARK-T",
       "saved_at": 1787051133
     },
+    "finite-node.rtxconfigz.com": {
+      "ip": "198.18.16.196",
+      "provider": "SPECIAL-IPV4-BENCHMARK-T",
+      "saved_at": 1787065920
+    },
     "free.server14peekconfig.workers.dev": {
       "ip": "198.18.16.131",
       "provider": "SPECIAL-IPV4-BENCHMARK-T",
@@ -479,6 +489,11 @@
       "ip": "188.114.97.3",
       "provider": "CLOUDFLARE",
       "saved_at": 1787055174
+    },
+    "parstoday.ir": {
+      "ip": "198.18.16.195",
+      "provider": "SPECIAL-IPV4-BENCHMARK-T",
+      "saved_at": 1787065921
     },
     "restless-base-fe24.alirezahabibi20009.workers.dev": {
       "ip": "198.18.16.62",
@@ -579,7 +594,7 @@
     },
     "104.16.79.73": {
       "provider": "CLOUDFLARE",
-      "saved_at": 1787060035
+      "saved_at": 1787065919
     },
     "104.16.80.73": {
       "provider": "CLOUDFLARE",
@@ -596,6 +611,10 @@
     "104.17.148.22": {
       "provider": "",
       "saved_at": 1787060041
+    },
+    "104.17.182.11": {
+      "provider": "CLOUDFLARE",
+      "saved_at": 1787065919
     },
     "104.17.28.89": {
       "provider": "CLOUDFLARE",
@@ -626,8 +645,8 @@
       "saved_at": 1787052333
     },
     "104.18.37.228": {
-      "provider": "CLOUDFLARE",
-      "saved_at": 1787065056
+      "provider": "",
+      "saved_at": 1787065922
     },
     "104.18.40.152": {
       "provider": "",
@@ -751,7 +770,7 @@
     },
     "172.67.143.24": {
       "provider": "CLOUDFLARE",
-      "saved_at": 1787051127
+      "saved_at": 1787065919
     },
     "172.67.161.109": {
       "provider": "",
@@ -852,6 +871,14 @@
     "198.18.16.191": {
       "provider": "",
       "saved_at": 1787065054
+    },
+    "198.18.16.195": {
+      "provider": "SPECIAL-IPV4-BENCHMARK-T",
+      "saved_at": 1787065921
+    },
+    "198.18.16.196": {
+      "provider": "SPECIAL-IPV4-BENCHMARK-T",
+      "saved_at": 1787065920
     },
     "198.18.16.31": {
       "provider": "SPECIAL-IPV4-BENCHMARK-T",
@@ -974,6 +1001,6 @@
       "saved_at": 1787063854
     }
   },
-  "saved_at": 1787065058,
+  "saved_at": 1787065922,
   "version": 1
 }

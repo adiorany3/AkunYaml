@@ -112,3 +112,8 @@
 ## v4.4 Android Banking Safe
 
 SeaBank Android compatibility: DIRECT + real DNS + Fake-IP bypass + sniffer skip, while high-confidence malware/phishing/cryptominer checks remain ahead of the banking guard.
+
+## v4.7 YouTube Gambling Sponsor Guard
+- Added dedicated OpenWrt gambling destination block provider.
+- Preserved YouTube playback-safe routing and Android compatibility.
+- Added category-specific regression audit and feed-guard validation.

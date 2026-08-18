@@ -1,0 +1,48 @@
+AkunYaml v4.7 YouTube Gambling Sponsor Guard Validation
+Date: 2026-08-18
+
+[OK] openclash_auto.yaml: gambling sponsor destination guard active
+[OK] openclash_lite.yaml: gambling sponsor destination guard active
+[OK] openclash_fresh_pool.yaml: gambling sponsor destination guard active
+[OK] Android remains byte-identical and outside router gambling layer
+[OK] YouTube gambling sponsor guard v4.7 audit
+
+[OK] YouTube playback-safe router audit: openclash_auto.yaml
+[OK] YouTube playback-safe router audit: openclash_lite.yaml
+[OK] YouTube playback-safe router audit: openclash_fresh_pool.yaml
+[OK] Android remains outside router-only YouTube extra layer
+[OK] YouTube playback-safe v4.6 audit
+
+[OK] openclash_auto.yaml: threat-safe domain+IP
+[OK] openclash_lite.yaml: threat-safe domain-only
+[OK] openclash_fresh_pool.yaml: threat-safe domain+IP
+[OK] openclash_android.yaml: threat-safe domain-only
+
+[OK] openclash_auto.yaml: 66 exact + 10 suffix app-ad targets
+[OK] openclash_lite.yaml: 66 exact + 10 suffix app-ad targets
+[OK] openclash_fresh_pool.yaml: 66 exact + 10 suffix app-ad targets
+[OK] openclash_android.yaml: 66 exact + 10 suffix app-ad targets
+
+[OK] openclash_auto.yaml: conservative streaming layer active (lean-exact)
+[OK] openclash_android.yaml: conservative streaming layer active (lean-exact)
+[OK] openclash_lite.yaml: conservative streaming layer active (lean-exact)
+[OK] openclash_fresh_pool.yaml: conservative streaming layer active (lean-exact)
+
+[OK] openclash_auto.yaml: 31/31 intrusive-ad suffixes, no broad media CDN block
+[OK] openclash_lite.yaml: 31/31 intrusive-ad suffixes, no broad media CDN block
+[OK] openclash_fresh_pool.yaml: 31/31 intrusive-ad suffixes, no broad media CDN block
+[OK] openclash_android.yaml: 31/31 intrusive-ad suffixes, no broad media CDN block
+
+[PERF] openclash_auto.yaml: proxies=14 active_direct_probes/min=9.33 bytes=38969
+[PERF] openclash_lite.yaml: proxies=14 active_direct_probes/min=9.33 bytes=26306
+[PERF] openclash_android.yaml: proxies=14 active_direct_probes/min=4.0 bytes=33114
+[PERF] openclash_fresh_pool.yaml: proxies=34 active_direct_probes/min=9.33 bytes=40300
+[OK] performance budget v4.0
+
+Target: OpenClash v0.47.156 + Mihomo alpha-ge183c58
+[OK] openclash_auto.yaml (static)
+[OK] openclash_lite.yaml (static)
+[OK] openclash_fresh_pool.yaml (static)
+[OK] openclash_android.yaml (static)
+
+Exact-core parser: not run because bundled Mihomo binary is Mach-O ARM64 macOS and current validation environment is Linux.
