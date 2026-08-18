@@ -47,7 +47,7 @@ from openclash_target import (
     validate_yaml_file,
 )
 
-APP_VERSION = "3.9-multi-host"
+APP_VERSION = "4.0-performance"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -105,7 +105,10 @@ DEFAULT_ENV = {
     "REQUIRE_WS_UPGRADE": "true",
     "PREFER_WS": "true",
     "CANDIDATE_MULTIPLIER": "50",
-    "CANDIDATE_MIN": "1200",
+    "CANDIDATE_MIN": "250",
+    "ADAPTIVE_CANDIDATES": "true",
+    "CANDIDATE_INITIAL": "250",
+    "CANDIDATE_MAX": "2000",
     "RESERVE_POOL_NODES": "120",
     "ATTEMPTS": "3",
     "REQUIRE_SUCCESSES": "2",
@@ -131,6 +134,33 @@ DEFAULT_ENV = {
     "BUG_HEALTH_CHECK": "true",
     "BUG_HEALTH_ATTEMPTS": "1",
     "BUG_MAX_VARIANTS_PER_NODE": "3",
+    "BUG_TOTAL_VARIANTS_CAP": "24",
+    "BUG_MIN_BASE_NODES": "8",
+    "SUBSCRIPTION_CACHE": "true",
+    "SUBSCRIPTION_CACHE_TTL_SEC": "1800",
+    "SUBSCRIPTION_CACHE_STALE_IF_ERROR": "true",
+    "SUBSCRIPTION_CACHE_DIR": ".runtime_cache/subscriptions",
+    "PROVIDER_CACHE": "true",
+    "PROVIDER_CACHE_TTL_SEC": "1209600",
+    "PROVIDER_CACHE_FILE": ".runtime_cache/provider_cache.json",
+    "WARMUP_NODE_LIMIT": "4",
+    "WARMUP_INTERVAL": "60",
+    "WARMUP_LAZY": "false",
+    "CF_WARMUP_NODE_LIMIT": "4",
+    "CF_WARMUP_INTERVAL": "120",
+    "CF_WARMUP_LAZY": "true",
+    "FAST_NODE_LIMIT": "8",
+    "WAKEUP_INTERVAL": "90",
+    "AUTO_FAST_LAZY": "false",
+    "STREAMING_NODE_LIMIT": "6",
+    "STREAMING_HEALTH_LAZY": "true",
+    "PING_CHECK_INTERVAL": "300",
+    "PING_CHECK_LAZY": "true",
+    "FALLBACK_INTERVAL": "180",
+    "FALLBACK_LAZY": "true",
+    "BALANCE_INTERVAL": "300",
+    "LOAD_BALANCE_LAZY": "true",
+    "AI_SERVICE_NODE_LIMIT": "8",
     "THREAT_SAFE_FAMILY_DNS": "true",
     # DNS-level ad blocking remains off by default to reduce false positives.
     "ADBLOCK_DNS_MODE": "off",
@@ -1436,6 +1466,19 @@ def apply_responsiveness(path: Path) -> bool:
 
     if not path.exists():
         return False
+
+    def perf_int(name: str, default: int, minimum: int, maximum: int) -> int:
+        try:
+            value = int(str(os.environ.get(name, default)).strip())
+        except (TypeError, ValueError):
+            value = default
+        return max(minimum, min(maximum, value))
+
+    def perf_bool(name: str, default: bool) -> bool:
+        raw = str(os.environ.get(name, "")).strip().lower()
+        if not raw:
+            return default
+        return raw in {"1", "true", "yes", "y", "on", "aktif"}
     config = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     if not isinstance(config, dict):
         return False
@@ -1522,45 +1565,45 @@ def apply_responsiveness(path: Path) -> bool:
                 g["max-failed-times"] = 2
             elif name == "WARM-UP":
                 if isinstance(g.get("proxies"), list):
-                    g["proxies"] = g["proxies"][:5]
-                g["interval"] = 20
-                g["lazy"] = False
+                    g["proxies"] = g["proxies"][:perf_int("WARMUP_NODE_LIMIT", 4, 2, 12)]
+                g["interval"] = perf_int("WARMUP_INTERVAL", 60, 10, 300)
+                g["lazy"] = perf_bool("WARMUP_LAZY", False)
                 g["timeout"] = min(int(g.get("timeout") or 2500), 2500)
                 g["tolerance"] = max(int(g.get("tolerance") or 0), 40)
             elif name == "WARM-UP-CF":
                 if isinstance(g.get("proxies"), list):
-                    g["proxies"] = g["proxies"][:4]
-                g["interval"] = 30
-                g["lazy"] = False
+                    g["proxies"] = g["proxies"][:perf_int("CF_WARMUP_NODE_LIMIT", 4, 2, 12)]
+                g["interval"] = perf_int("CF_WARMUP_INTERVAL", 120, 10, 600)
+                g["lazy"] = perf_bool("CF_WARMUP_LAZY", True)
                 g["timeout"] = min(int(g.get("timeout") or 2500), 2500)
                 g["tolerance"] = max(int(g.get("tolerance") or 0), 40)
             elif name == "AUTO-FAST":
                 if isinstance(g.get("proxies"), list):
-                    g["proxies"] = g["proxies"][:8]
-                g["interval"] = 45
-                g["lazy"] = False
+                    g["proxies"] = g["proxies"][:perf_int("FAST_NODE_LIMIT", 8, 4, 30)]
+                g["interval"] = perf_int("WAKEUP_INTERVAL", 90, 20, 300)
+                g["lazy"] = perf_bool("AUTO_FAST_LAZY", False)
                 g["timeout"] = min(int(g.get("timeout") or 3000), 3000)
                 g["tolerance"] = max(int(g.get("tolerance") or 0), 50)
             elif name == "STREAMING-FAST":
                 if isinstance(g.get("proxies"), list):
-                    g["proxies"] = g["proxies"][:6]
-                g["interval"] = 45
-                g["lazy"] = True
+                    g["proxies"] = g["proxies"][:perf_int("STREAMING_NODE_LIMIT", 6, 3, 16)]
+                g["interval"] = perf_int("WAKEUP_INTERVAL", 90, 20, 300)
+                g["lazy"] = perf_bool("STREAMING_HEALTH_LAZY", True)
                 g["timeout"] = min(int(g.get("timeout") or 3000), 3000)
                 g["tolerance"] = max(int(g.get("tolerance") or 0), 50)
             elif name == "PING-CHECK":
-                g["interval"] = 180
-                g["lazy"] = False
+                g["interval"] = perf_int("PING_CHECK_INTERVAL", 300, 45, 1200)
+                g["lazy"] = perf_bool("PING_CHECK_LAZY", True)
                 g["timeout"] = min(int(g.get("timeout") or 4000), 4000)
             elif name == "FALLBACK":
-                g["interval"] = 90
-                g["lazy"] = True
+                g["interval"] = perf_int("FALLBACK_INTERVAL", 180, 30, 900)
+                g["lazy"] = perf_bool("FALLBACK_LAZY", True)
                 g["timeout"] = min(int(g.get("timeout") or 4500), 4500)
             elif name == "LOAD-BALANCE":
                 if isinstance(g.get("proxies"), list):
                     g["proxies"] = g["proxies"][:5]
-                g["interval"] = 180
-                g["lazy"] = True
+                g["interval"] = perf_int("BALANCE_INTERVAL", 300, 60, 1200)
+                g["lazy"] = perf_bool("LOAD_BALANCE_LAZY", True)
             elif name == "MANUAL" and gtype in {"fallback", "url-test"}:
                 g["interval"] = 90
                 g["lazy"] = True
@@ -2310,6 +2353,16 @@ def main() -> int:
         "FEED_MAX_DROP_RATIO", "FEED_MAX_GROWTH_RATIO", "ADBLOCK_DEDUP_MODE",
         "THREAT_SAFE_FAMILY_DNS",
         "BUG_SERVERS", "BUG_MODE", "BUG_HEALTH_CHECK", "BUG_HEALTH_ATTEMPTS", "BUG_MAX_VARIANTS_PER_NODE",
+        "BUG_TOTAL_VARIANTS_CAP", "BUG_MIN_BASE_NODES",
+        "SUBSCRIPTION_CACHE", "SUBSCRIPTION_CACHE_TTL_SEC", "SUBSCRIPTION_CACHE_STALE_IF_ERROR",
+        "SUBSCRIPTION_CACHE_DIR", "PROVIDER_CACHE", "PROVIDER_CACHE_TTL_SEC", "PROVIDER_CACHE_FILE",
+        "ADAPTIVE_CANDIDATES", "CANDIDATE_INITIAL", "CANDIDATE_MAX",
+        "WARMUP_NODE_LIMIT", "WARMUP_INTERVAL", "WARMUP_LAZY",
+        "CF_WARMUP_NODE_LIMIT", "CF_WARMUP_INTERVAL", "CF_WARMUP_LAZY",
+        "FAST_NODE_LIMIT", "WAKEUP_INTERVAL", "AUTO_FAST_LAZY",
+        "STREAMING_NODE_LIMIT", "STREAMING_HEALTH_LAZY", "PING_CHECK_INTERVAL", "PING_CHECK_LAZY",
+        "FALLBACK_INTERVAL", "FALLBACK_LAZY", "BALANCE_INTERVAL", "LOAD_BALANCE_LAZY",
+        "AI_SERVICE_NODE_LIMIT",
     )
     for key in security_env_keys:
         if key in env:

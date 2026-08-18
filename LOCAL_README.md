@@ -274,3 +274,7 @@ Konfigurasi ada di `local_config.json`:
 ```
 
 `BUG_SERVERS` menerima sampai 8 hostname/IP tanpa protokol dan tanpa port. Tambahkan hanya host/server yang Anda miliki atau berhak gunakan. `fallback` membuat varian endpoint untuk runtime health-check Mihomo, `distribute` membagi akun ke beberapa host tanpa duplikasi, sedangkan `primary` memakai host pertama saja.
+
+## Performance v4.0
+
+v4.0 adds an efficient health-check profile, persistent subscription cache, persistent provider/RDAP cache, adaptive candidate windows, and a global multi-host variant budget. See `PERFORMANCE_V4.md` for settings and `performance_budget_audit.py` for regression checks.

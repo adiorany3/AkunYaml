@@ -1,3 +1,13 @@
+# v4.0 Performance
+
+- Health-check aktif dikonsolidasikan ke hot pool kecil.
+- Subscription cache persisten ditambahkan dengan TTL, ETag, Last-Modified, dan stale-if-error.
+- Provider/RDAP cache persisten ditambahkan dengan TTL.
+- Candidate pool menjadi adaptif, mulai dari 250 dan berkembang saat diperlukan.
+- Multi-host fallback mendapat global variant budget tanpa menghapus base node.
+- Audit baru: `performance_budget_audit.py` dan `performance_cache_selftest.py`.
+- Lihat `PERFORMANCE_V4.md` dan `PERFORMANCE_COMPARISON_v3.9_vs_v4.0.md`.
+
 # v3.8 Security Hardening
 
 - Security provider dipusatkan di `security_policy.py`.

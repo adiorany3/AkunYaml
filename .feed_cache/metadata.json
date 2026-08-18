@@ -3,14 +3,14 @@
     "count": 152,
     "kind": "domain",
     "sha256": "9f6ae5cc7bd96ced085b2bceec2e62daa4f70b916e146e806588e01bef67f51a",
-    "updated_unix": 1787049762,
+    "updated_unix": 1787050992,
     "url": "https://raw.githubusercontent.com/ABPindo/indonesianadblockrules/master/subscriptions/domain.txt"
   },
   "threat-cryptominers": {
     "count": 297,
     "kind": "domain",
     "sha256": "0b2089ce6ce3a2bf172f1c15561c713dc057c9941493cdca4e9039a79bba95c4",
-    "updated_unix": 1787049762,
+    "updated_unix": 1787050992,
     "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/cryptominers.txt"
   },
   "threat-fake-scam": {
@@ -24,28 +24,28 @@
     "count": 473,
     "kind": "domain",
     "sha256": "b4b5ff9f99850d249110bbbf4427fb29231f28703aeff3da16b3feed33dbd5cd",
-    "updated_unix": 1787049762,
+    "updated_unix": 1787050992,
     "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/malware.txt"
   },
   "threat-phishing": {
     "count": 36247,
     "kind": "domain",
     "sha256": "e409568ebfc40fc4bddf57cbba01ab09eab846e3effa39f0613217011f73eab4",
-    "updated_unix": 1787049762,
+    "updated_unix": 1787050992,
     "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/phishing.txt"
   },
   "threat-tif-ip": {
     "count": 55764,
     "kind": "ipcidr",
     "sha256": "1a042864d08636b85b930cfacc6837173ded407a0d77afeef171b6b52a0a7d87",
-    "updated_unix": 1787048133,
+    "updated_unix": 1787050992,
     "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/ips/tif.txt"
   },
   "threat-tif-mini": {
     "count": 171051,
     "kind": "domain",
     "sha256": "dff4f3b2799b8e55fd4dd810344e3382e5bc2c4382f2bfda675dcccb129193f1",
-    "updated_unix": 1787049762,
+    "updated_unix": 1787050992,
     "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.mini-onlydomains.txt"
   }
 }

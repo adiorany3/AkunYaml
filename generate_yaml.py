@@ -1642,7 +1642,7 @@ def main() -> int:
         require_successes=require_successes,
         require_original=_env_bool("REQUIRE_ORIGINAL", False),
         candidate_multiplier=_env_int("CANDIDATE_MULTIPLIER", 35),
-        candidate_min=_env_int("CANDIDATE_MIN", 350),
+        candidate_min=_env_int("CANDIDATE_MIN", 250),
         max_jitter_ms=_env_int("MAX_JITTER_MS", 0),
         prefer_ws=_env_bool("PREFER_WS", True),
         require_ws_upgrade=_env_bool("REQUIRE_WS_UPGRADE", True),

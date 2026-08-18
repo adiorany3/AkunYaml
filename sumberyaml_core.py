@@ -13,7 +13,10 @@ import socket
 import ssl
 import statistics
 import time
+import hashlib
+import threading
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
@@ -690,8 +693,11 @@ def _safe_target_env_int(name: str, default: int, minimum: int, maximum: int) ->
 
 BUG_HEALTH_ATTEMPTS = _safe_target_env_int("BUG_HEALTH_ATTEMPTS", 1, 1, 3)
 BUG_MAX_VARIANTS_PER_NODE = _safe_target_env_int("BUG_MAX_VARIANTS_PER_NODE", 3, 1, 8)
+# Total cap applies to duplicated variants only. Base accounts are never dropped.
+BUG_TOTAL_VARIANTS_CAP = _safe_target_env_int("BUG_TOTAL_VARIANTS_CAP", 24, 1, 512)
+BUG_MIN_BASE_NODES = _safe_target_env_int("BUG_MIN_BASE_NODES", 8, 1, 128)
 ONLY_PORT = 443
-USER_AGENT = "Mozilla/5.0 SumberYAML-OpenClash-BugCompat/3.0"
+USER_AGENT = "Mozilla/5.0 SumberYAML-OpenClash-BugCompat/4.0"
 URI_RE = re.compile(r"(?:vless|vmess|trojan|ss)://[^\s<'\"`]+", re.IGNORECASE)
 FAST_TEST_URL = "http://cp.cloudflare.com/generate_204"
 ALT_TEST_URL = "https://www.gstatic.com/generate_204"
@@ -901,6 +907,7 @@ def unique_names(nodes: list[ProxyNode], provider_names: bool = True) -> None:
                         providers[index] = future.result()
                     except Exception:
                         providers[index] = ""
+        _save_persistent_provider_cache()
 
     seen: set[str] = set()
     for i, node in enumerate(nodes, start=1):
@@ -1209,9 +1216,123 @@ def fetch_url(url: str, timeout: int) -> tuple[str, str, str]:
         return url, "", f"dead: {exc}"
 
 
+_SUBSCRIPTION_CACHE_LOCK = threading.RLock()
+
+
+def _env_bool_value(name: str, default: bool = True) -> bool:
+    raw = os.getenv(name, "").strip().lower()
+    if not raw:
+        return default
+    return raw in {"1", "true", "yes", "y", "on", "aktif"}
+
+
+def _subscription_cache_paths(url: str) -> tuple[Path, Path]:
+    cache_dir = Path(os.getenv("SUBSCRIPTION_CACHE_DIR", ".runtime_cache/subscriptions")).expanduser()
+    key = hashlib.sha256(url.encode("utf-8", errors="ignore")).hexdigest()
+    return cache_dir / f"{key}.txt", cache_dir / f"{key}.json"
+
+
+def _read_subscription_cache(url: str) -> tuple[str, dict[str, Any]]:
+    body_path, meta_path = _subscription_cache_paths(url)
+    try:
+        text = body_path.read_text(encoding="utf-8", errors="ignore") if body_path.is_file() else ""
+    except Exception:
+        text = ""
+    try:
+        meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.is_file() else {}
+        if not isinstance(meta, dict):
+            meta = {}
+    except Exception:
+        meta = {}
+    if meta.get("url") not in {None, url}:
+        return "", {}
+    return text, meta
+
+
+def _write_subscription_cache(url: str, text: str, response: requests.Response | None = None) -> None:
+    if not text.strip():
+        return
+    body_path, meta_path = _subscription_cache_paths(url)
+    try:
+        body_path.parent.mkdir(parents=True, exist_ok=True)
+        existing_meta: dict[str, Any] = {}
+        try:
+            if meta_path.is_file():
+                loaded = json.loads(meta_path.read_text(encoding="utf-8"))
+                if isinstance(loaded, dict):
+                    existing_meta = loaded
+        except Exception:
+            existing_meta = {}
+        meta: dict[str, Any] = {
+            "url": url,
+            "saved_at": int(time.time()),
+            "bytes": len(text.encode("utf-8", errors="ignore")),
+            "sha256": hashlib.sha256(text.encode("utf-8", errors="ignore")).hexdigest(),
+        }
+        etag = response.headers.get("ETag") if response is not None else None
+        last_modified = response.headers.get("Last-Modified") if response is not None else None
+        etag = etag or existing_meta.get("etag")
+        last_modified = last_modified or existing_meta.get("last_modified")
+        if etag:
+            meta["etag"] = etag
+        if last_modified:
+            meta["last_modified"] = last_modified
+        tmp_body = body_path.with_suffix(body_path.suffix + ".tmp")
+        tmp_meta = meta_path.with_suffix(meta_path.suffix + ".tmp")
+        tmp_body.write_text(text, encoding="utf-8")
+        tmp_meta.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
+        os.replace(tmp_body, body_path)
+        os.replace(tmp_meta, meta_path)
+    except Exception:
+        # Cache failure must never make subscription fetching fail.
+        return
+
+
 def fetch_url_cached(url: str, timeout: int) -> tuple[str, str, str]:
-    """Fetch subscription URL. The Streamlit app version may cache this; CLI mode keeps it direct."""
-    return fetch_url(url, timeout)
+    """Fetch a subscription with persistent TTL + HTTP revalidation.
+
+    Fresh cache avoids network I/O. Stale cache is revalidated with ETag or
+    Last-Modified when available. If upstream is temporarily unavailable, the
+    last cached body is returned when stale-if-error is enabled.
+    """
+    enabled = _env_bool_value("SUBSCRIPTION_CACHE", True)
+    if not enabled:
+        return fetch_url(url, timeout)
+
+    ttl = _safe_target_env_int("SUBSCRIPTION_CACHE_TTL_SEC", 1800, 0, 86400 * 7)
+    stale_if_error = _env_bool_value("SUBSCRIPTION_CACHE_STALE_IF_ERROR", True)
+    with _SUBSCRIPTION_CACHE_LOCK:
+        cached_text, meta = _read_subscription_cache(url)
+    saved_at = int(meta.get("saved_at") or 0)
+    age = max(0, int(time.time()) - saved_at) if saved_at else 10**9
+    if cached_text.strip() and ttl > 0 and age <= ttl:
+        return url, cached_text, f"alive: cache-hit fresh age={age}s"
+
+    headers = {"User-Agent": USER_AGENT}
+    if meta.get("etag"):
+        headers["If-None-Match"] = str(meta["etag"])
+    if meta.get("last_modified"):
+        headers["If-Modified-Since"] = str(meta["last_modified"])
+    try:
+        response = requests.get(url, timeout=timeout, headers=headers)
+        if response.status_code == 304 and cached_text.strip():
+            # Refresh saved_at while preserving validators.
+            with _SUBSCRIPTION_CACHE_LOCK:
+                _write_subscription_cache(url, cached_text, response)
+            return url, cached_text, "alive: cache-revalidated HTTP 304"
+        response.raise_for_status()
+        text = response.text or ""
+        if not text.strip():
+            if cached_text.strip() and stale_if_error:
+                return url, cached_text, f"alive: stale-cache fallback; HTTP {response.status_code} empty"
+            return url, "", f"dead: HTTP {response.status_code}, kosong"
+        with _SUBSCRIPTION_CACHE_LOCK:
+            _write_subscription_cache(url, text, response)
+        return url, text, f"alive: HTTP {response.status_code}; cache-updated"
+    except Exception as exc:
+        if cached_text.strip() and stale_if_error:
+            return url, cached_text, f"alive: stale-cache fallback; {type(exc).__name__}: {str(exc)[:100]}"
+        return url, "", f"dead: {exc}"
 
 
 def one_tcp_delay(host: str, port: int, timeout: float) -> int | None:
@@ -1376,6 +1497,86 @@ def domain_root(host: str) -> str:
 
 _PROVIDER_CACHE: dict[str, tuple[str, str]] = {}
 _RDAP_CACHE: dict[str, str] = {}
+_PROVIDER_CACHE_LOCK = threading.RLock()
+_PROVIDER_CACHE_LOADED = False
+_PROVIDER_CACHE_DIRTY = False
+_PROVIDER_CACHE_SAVED_AT: dict[str, int] = {}
+_RDAP_CACHE_SAVED_AT: dict[str, int] = {}
+
+
+def _provider_cache_file() -> Path:
+    return Path(os.getenv("PROVIDER_CACHE_FILE", ".runtime_cache/provider_cache.json")).expanduser()
+
+
+def _provider_cache_ttl() -> int:
+    return _safe_target_env_int("PROVIDER_CACHE_TTL_SEC", 1209600, 3600, 86400 * 90)
+
+
+def _load_persistent_provider_cache() -> None:
+    global _PROVIDER_CACHE_LOADED
+    if _PROVIDER_CACHE_LOADED:
+        return
+    with _PROVIDER_CACHE_LOCK:
+        if _PROVIDER_CACHE_LOADED:
+            return
+        _PROVIDER_CACHE_LOADED = True
+        if not _env_bool_value("PROVIDER_CACHE", True):
+            return
+        path = _provider_cache_file()
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
+        except Exception:
+            return
+        now = int(time.time())
+        ttl = _provider_cache_ttl()
+        providers = payload.get("providers") if isinstance(payload, dict) else {}
+        rdap = payload.get("rdap") if isinstance(payload, dict) else {}
+        if isinstance(providers, dict):
+            for host, item in providers.items():
+                if not isinstance(item, dict):
+                    continue
+                saved = int(item.get("saved_at") or 0)
+                if saved and now - saved <= ttl:
+                    provider = str(item.get("provider") or "")
+                    ip = str(item.get("ip") or "")
+                    _PROVIDER_CACHE[str(host)] = (provider, ip)
+                    _PROVIDER_CACHE_SAVED_AT[str(host)] = saved
+        if isinstance(rdap, dict):
+            for ip, item in rdap.items():
+                if not isinstance(item, dict):
+                    continue
+                saved = int(item.get("saved_at") or 0)
+                if saved and now - saved <= ttl:
+                    _RDAP_CACHE[str(ip)] = str(item.get("provider") or "")
+                    _RDAP_CACHE_SAVED_AT[str(ip)] = saved
+
+
+def _save_persistent_provider_cache() -> None:
+    global _PROVIDER_CACHE_DIRTY
+    if not _env_bool_value("PROVIDER_CACHE", True) or not _PROVIDER_CACHE_DIRTY:
+        return
+    with _PROVIDER_CACHE_LOCK:
+        path = _provider_cache_file()
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            payload = {
+                "version": 1,
+                "saved_at": int(time.time()),
+                "providers": {
+                    host: {"provider": value[0], "ip": value[1], "saved_at": _PROVIDER_CACHE_SAVED_AT.get(host, int(time.time()))}
+                    for host, value in _PROVIDER_CACHE.items()
+                },
+                "rdap": {
+                    ip: {"provider": provider, "saved_at": _RDAP_CACHE_SAVED_AT.get(ip, int(time.time()))}
+                    for ip, provider in _RDAP_CACHE.items()
+                },
+            }
+            tmp = path.with_suffix(path.suffix + ".tmp")
+            tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
+            os.replace(tmp, path)
+            _PROVIDER_CACHE_DIRTY = False
+        except Exception:
+            return
 
 PROVIDER_PATTERNS: list[tuple[str, tuple[str, ...]]] = [
     ("VULTR", ("VULTR", "CHOOPA", "CONSTANT COMPANY")),
@@ -1470,6 +1671,7 @@ def _rdap_provider(ip: str) -> str:
     ip = str(ip or "").strip()
     if not ip:
         return ""
+    _load_persistent_provider_cache()
     if ip in _RDAP_CACHE:
         return _RDAP_CACHE[ip]
     provider = ""
@@ -1490,7 +1692,11 @@ def _rdap_provider(ip: str) -> str:
                     provider = candidate[:24]
     except Exception:
         provider = ""
-    _RDAP_CACHE[ip] = provider
+    global _PROVIDER_CACHE_DIRTY
+    with _PROVIDER_CACHE_LOCK:
+        _RDAP_CACHE[ip] = provider
+        _RDAP_CACHE_SAVED_AT[ip] = int(time.time())
+        _PROVIDER_CACHE_DIRTY = True
     return provider
 
 
@@ -1522,6 +1728,7 @@ def provider_label_from_original_server(node: ProxyNode) -> str:
     if not host:
         node.original_provider = "UNKNOWN"
         return "UNKNOWN"
+    _load_persistent_provider_cache()
     if host in _PROVIDER_CACHE:
         provider, ip = _PROVIDER_CACHE[host]
         node.original_provider = provider
@@ -1532,7 +1739,11 @@ def provider_label_from_original_server(node: ProxyNode) -> str:
     if not provider:
         provider = _map_provider(host) or _domain_provider_fallback(host)
     provider = safe_proxy_name(provider.upper(), "UNKNOWN")
-    _PROVIDER_CACHE[host] = (provider, ip)
+    global _PROVIDER_CACHE_DIRTY
+    with _PROVIDER_CACHE_LOCK:
+        _PROVIDER_CACHE[host] = (provider, ip)
+        _PROVIDER_CACHE_SAVED_AT[host] = int(time.time())
+        _PROVIDER_CACHE_DIRTY = True
     node.original_provider = provider
     node.original_ip = ip
     return provider
@@ -1609,25 +1820,21 @@ def update_raw_uri_name_and_server(raw: str, new_name: str, target_server: str =
 
 
 def build_akun_txt(nodes: list[ProxyNode]) -> str:
-    """Build shareable links using configured authorized target hosts."""
+    """Build shareable links using the same global multi-host budget as YAML."""
     lines: list[str] = []
-    for node in nodes:
-        if str(node.type or "").lower() not in {"vless", "vmess", "trojan", "ss"}:
-            continue
-        preferred = str(node.output_server or node.clash.get("server") or TARGET_SERVER).strip() or TARGET_SERVER
+    plan = _multi_host_variant_plan([
+        node for node in nodes
+        if str(node.type or "").lower() in {"vless", "vmess", "trojan", "ss"}
+    ])
+    for node, server, variant_index in plan:
+        base_name = str(node.clash.get("name") or node.name)
         if BUG_MODE == "fallback" and len(TARGET_SERVERS) > 1:
-            servers = _ordered_target_servers(preferred)[:BUG_MAX_VARIANTS_PER_NODE]
-        elif BUG_MODE == "distribute" and len(TARGET_SERVERS) > 1:
-            servers = [preferred if preferred in TARGET_SERVERS else _distributed_target_order(node)[0]]
+            suffix = f"-HOST{variant_index}"
+            max_base = max(1, 64 - len(suffix))
+            link_name = safe_proxy_name(base_name[:max_base] + suffix, f"HOST-{variant_index}")
         else:
-            servers = [preferred]
-        for index, server in enumerate(servers, start=1):
-            display_name = str(node.clash.get("name") or node.name)
-            if len(servers) > 1:
-                display_name = f"{display_name}-HOST{index}"
-            uri = update_raw_uri_name_and_server(node.raw, display_name, server)
-            if uri:
-                lines.append(uri)
+            link_name = base_name
+        lines.append(update_raw_uri_name_and_server(node.raw, link_name, server))
     return "\n".join(lines) + ("\n" if lines else "")
 
 def node_identity_key(node: ProxyNode) -> tuple[str, str, str, str, str]:
@@ -2144,50 +2351,76 @@ def check_node_bug_compat(node: ProxyNode, timeout: float, attempts: int, requir
     return node
 
 
-def expand_multi_host_variants(nodes: list[ProxyNode]) -> list[ProxyNode]:
-    """Create runtime failover variants for every configured authorized host.
+def _multi_host_variant_plan(nodes: list[ProxyNode]) -> list[tuple[ProxyNode, str, int]]:
+    """Return (node, target_server, variant_index) with a global duplication budget.
 
-    primary: keep one endpoint per account.
-    distribute: spread accounts across configured hosts without duplication.
-    fallback: duplicate each account across configured hosts, capped by
-    BUG_MAX_VARIANTS_PER_NODE. Existing url-test/fallback groups then perform
-    runtime health checks and automatically avoid failed variants.
+    Every base account is retained once. Extra fallback variants are allocated
+    round-robin until BUG_TOTAL_VARIANTS_CAP or BUG_MAX_VARIANTS_PER_NODE is hit.
+    This prevents 10x3 or 30x3 expansions from silently inflating router state.
     """
     if not nodes:
         return []
     if len(TARGET_SERVERS) <= 1 or BUG_MODE == "primary":
-        for node in nodes:
-            server = str(node.output_server or node.clash.get("server") or TARGET_SERVER).strip() or TARGET_SERVER
-            node.output_server = server
-            node.clash["server"] = server
-        return nodes
-
+        return [
+            (node, str(node.output_server or node.clash.get("server") or TARGET_SERVER).strip() or TARGET_SERVER, 1)
+            for node in nodes
+        ]
     if BUG_MODE == "distribute":
-        out: list[ProxyNode] = []
+        plan: list[tuple[ProxyNode, str, int]] = []
         for node in nodes:
-            clone = copy.deepcopy(node)
             preferred = str(node.output_server or "").strip()
             server = preferred if preferred in TARGET_SERVERS else _distributed_target_order(node)[0]
-            clone.output_server = server
-            clone.clash["server"] = server
-            out.append(clone)
-        return out
+            plan.append((node, server, 1))
+        return plan
 
-    out: list[ProxyNode] = []
+    # Fallback mode. Base accounts always survive even if configured cap is lower.
+    per_node_servers: list[list[str]] = []
     for node in nodes:
         preferred = str(node.output_server or node.clash.get("server") or TARGET_SERVER).strip() or TARGET_SERVER
-        servers = _ordered_target_servers(preferred)[:BUG_MAX_VARIANTS_PER_NODE]
-        base_name = str(node.clash.get("name") or node.name)
-        for index, server in enumerate(servers, start=1):
-            clone = copy.deepcopy(node)
-            clone.output_server = server
-            clone.clash["server"] = server
-            suffix = f"-HOST{index}"
+        per_node_servers.append(_ordered_target_servers(preferred)[:BUG_MAX_VARIANTS_PER_NODE])
+
+    plan = []
+    for node, servers in zip(nodes, per_node_servers):
+        plan.append((node, servers[0] if servers else TARGET_SERVER, 1))
+
+    configured_cap = max(BUG_MIN_BASE_NODES, BUG_TOTAL_VARIANTS_CAP)
+    effective_cap = max(len(plan), configured_cap)
+    if len(plan) >= effective_cap:
+        return plan
+
+    variant_index = 2
+    while len(plan) < effective_cap and variant_index <= BUG_MAX_VARIANTS_PER_NODE:
+        added = False
+        for node, servers in zip(nodes, per_node_servers):
+            if len(plan) >= effective_cap:
+                break
+            if len(servers) >= variant_index:
+                plan.append((node, servers[variant_index - 1], variant_index))
+                added = True
+        if not added:
+            break
+        variant_index += 1
+    return plan
+
+
+def expand_multi_host_variants(nodes: list[ProxyNode]) -> list[ProxyNode]:
+    """Create runtime variants using the global multi-host budget."""
+    plan = _multi_host_variant_plan(nodes)
+    out: list[ProxyNode] = []
+    for node, server, variant_index in plan:
+        # Reuse the original object when there is only one endpoint, otherwise
+        # clone so changing a target does not mutate sibling variants.
+        clone = node if len(plan) == len(nodes) and variant_index == 1 else copy.deepcopy(node)
+        clone.output_server = server
+        clone.clash["server"] = server
+        if BUG_MODE == "fallback" and len(TARGET_SERVERS) > 1:
+            base_name = str(node.clash.get("name") or node.name)
+            suffix = f"-HOST{variant_index}"
             max_base = max(1, 64 - len(suffix))
-            variant_name = safe_proxy_name(base_name[:max_base] + suffix, f"HOST-{index}")
+            variant_name = safe_proxy_name(base_name[:max_base] + suffix, f"HOST-{variant_index}")
             clone.name = variant_name
             clone.clash["name"] = variant_name
-            out.append(clone)
+        out.append(clone)
     return out
 
 def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, test_url: str, health_timeout: int = DEFAULT_HEALTH_TIMEOUT_MS, rule_mode: str = "Lengkap") -> str:
@@ -2201,6 +2434,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
     fallback_names = _fallback_order_names(names, warmup_names, cf_warmup_names)
     ai_stable_names, ai_backup_names, ai_manual_names = _select_ai_pools(names)
     ai_service_names = _dedupe_names(ai_stable_names + ai_backup_names + ai_manual_names) or direct_or_names
+    ai_service_names = ai_service_names[:_env_int_range("AI_SERVICE_NODE_LIMIT", 8, 4, 20)]
     ai_stable_or_direct = ai_stable_names or ai_service_names
     ai_backup_or_stable = ai_backup_names or ai_stable_or_direct
     ai_manual_or_backup = ai_manual_names or ai_backup_or_stable
@@ -2210,10 +2444,10 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
     streaming_or_direct = streaming_names or warmup_or_direct
     fallback_or_direct = fallback_names or direct_or_names
     active_interval = _active_health_interval(interval)
-    warmup_interval = _env_int_range("WARMUP_INTERVAL", 20, 10, 120)
-    cf_interval = _env_int_range("CF_WARMUP_INTERVAL", 30, 10, 120)
-    fallback_interval = max(active_interval, _env_int_range("FALLBACK_INTERVAL", 90, 30, 600))
-    balance_interval = max(fallback_interval, _env_int_range("BALANCE_INTERVAL", 180, 60, 600))
+    warmup_interval = _env_int_range("WARMUP_INTERVAL", 60, 10, 300)
+    cf_interval = _env_int_range("CF_WARMUP_INTERVAL", 120, 10, 600)
+    fallback_interval = max(active_interval, _env_int_range("FALLBACK_INTERVAL", 180, 30, 900))
+    balance_interval = max(fallback_interval, _env_int_range("BALANCE_INTERVAL", 300, 60, 1200))
     base_timeout = int(health_timeout)
     warmup_timeout = _env_int_range("WARMUP_TIMEOUT_MS", min(3000, base_timeout), 1000, 10000)
     cf_timeout = _env_int_range("CF_WARMUP_TIMEOUT_MS", min(3000, base_timeout), 1000, 10000)
@@ -2221,7 +2455,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
     cf_test_url = os.getenv("CF_TEST_URL", "https://cp.cloudflare.com").strip() or "https://cp.cloudflare.com"
     streaming_test_url = os.getenv("STREAMING_TEST_URL", cf_test_url).strip() or cf_test_url
     ping_check_url = os.getenv("PING_CHECK_URL", test_url).strip() or test_url
-    ping_check_interval = _env_int_range("PING_CHECK_INTERVAL", 180, 45, 600)
+    ping_check_interval = _env_int_range("PING_CHECK_INTERVAL", 300, 45, 1200)
     ping_check_timeout = _env_int_range("PING_CHECK_TIMEOUT_MS", max(5000, base_timeout), 2000, 15000)
     ai_openai_test_url = os.getenv("AI_OPENAI_TEST_URL", os.getenv("AI_TEST_URL", "https://chatgpt.com/favicon.ico")).strip() or "https://chatgpt.com/favicon.ico"
     ai_claude_test_url = os.getenv("AI_CLAUDE_TEST_URL", "https://claude.ai/favicon.ico").strip() or "https://claude.ai/favicon.ico"
@@ -2459,7 +2693,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "url": ping_check_url,
             "interval": ping_check_interval,
             "tolerance": max(tolerance, 100),
-            "lazy": False,
+            "lazy": _env_bool_value("PING_CHECK_LAZY", True),
             "timeout": ping_check_timeout,
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
@@ -2471,7 +2705,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "url": test_url,
             "interval": warmup_interval,
             "tolerance": min(tolerance, 30),
-            "lazy": False,
+            "lazy": _env_bool_value("WARMUP_LAZY", False),
             "timeout": warmup_timeout,
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
@@ -2483,7 +2717,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "url": cf_test_url,
             "interval": cf_interval,
             "tolerance": min(tolerance, 30),
-            "lazy": False,
+            "lazy": _env_bool_value("CF_WARMUP_LAZY", True),
             "timeout": cf_timeout,
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
@@ -2495,7 +2729,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "url": streaming_test_url,
             "interval": active_interval,
             "tolerance": max(tolerance, 50),
-            "lazy": False,
+            "lazy": _env_bool_value("STREAMING_HEALTH_LAZY", True),
             "timeout": fast_timeout,
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
@@ -2512,7 +2746,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "url": test_url,
             "interval": active_interval,
             "tolerance": tolerance,
-            "lazy": False,
+            "lazy": _env_bool_value("AUTO_FAST_LAZY", False),
             "timeout": fast_timeout,
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
@@ -2523,7 +2757,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "proxies": fallback_or_direct,
             "url": test_url,
             "interval": fallback_interval,
-            "lazy": False,
+            "lazy": _env_bool_value("FALLBACK_LAZY", True),
             "timeout": health_timeout,
             "expected-status": "200/204/301/302",
             "max-failed-times": 3,
@@ -2535,7 +2769,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "proxies": warmup_or_direct,
             "url": test_url,
             "interval": balance_interval,
-            "lazy": False,
+            "lazy": _env_bool_value("LOAD_BALANCE_LAZY", True),
             "timeout": health_timeout,
             "expected-status": "200/204/301/302",
             "max-failed-times": 3,
@@ -2839,6 +3073,7 @@ def build_openclash_android_yaml(
     fallback_names = _fallback_order_names(names, warmup_names, cf_warmup_names)
     ai_stable_names, ai_backup_names, ai_manual_names = _select_ai_pools(names)
     ai_service_names = _dedupe_names(ai_stable_names + ai_backup_names + ai_manual_names) or direct_or_names
+    ai_service_names = ai_service_names[:_env_int_range("AI_SERVICE_NODE_LIMIT", 8, 4, 20)]
     ai_stable_or_direct = ai_stable_names or ai_service_names
     ai_backup_or_stable = ai_backup_names or ai_stable_or_direct
     ai_manual_or_backup = ai_manual_names or ai_backup_or_stable
@@ -2848,9 +3083,9 @@ def build_openclash_android_yaml(
     streaming_or_direct = streaming_names or warmup_or_direct
     fallback_or_direct = fallback_names or direct_or_names
     active_interval = _active_health_interval(interval)
-    warmup_interval = _env_int_range("WARMUP_INTERVAL", 20, 10, 120)
-    cf_interval = _env_int_range("CF_WARMUP_INTERVAL", 30, 10, 120)
-    fallback_interval = max(active_interval, _env_int_range("FALLBACK_INTERVAL", 90, 30, 600))
+    warmup_interval = _env_int_range("WARMUP_INTERVAL", 60, 10, 300)
+    cf_interval = _env_int_range("CF_WARMUP_INTERVAL", 120, 10, 600)
+    fallback_interval = max(active_interval, _env_int_range("FALLBACK_INTERVAL", 180, 30, 900))
     base_timeout = int(health_timeout)
     warmup_timeout = _env_int_range("WARMUP_TIMEOUT_MS", min(3000, base_timeout), 1000, 10000)
     cf_timeout = _env_int_range("CF_WARMUP_TIMEOUT_MS", min(3000, base_timeout), 1000, 10000)
@@ -2858,7 +3093,7 @@ def build_openclash_android_yaml(
     cf_test_url = os.getenv("CF_TEST_URL", "https://cp.cloudflare.com").strip() or "https://cp.cloudflare.com"
     streaming_test_url = os.getenv("STREAMING_TEST_URL", cf_test_url).strip() or cf_test_url
     ping_check_url = os.getenv("PING_CHECK_URL", test_url).strip() or test_url
-    ping_check_interval = _env_int_range("PING_CHECK_INTERVAL", 180, 45, 600)
+    ping_check_interval = _env_int_range("PING_CHECK_INTERVAL", 300, 45, 1200)
     ping_check_timeout = _env_int_range("PING_CHECK_TIMEOUT_MS", max(5000, base_timeout), 2000, 15000)
     ai_openai_test_url = os.getenv("AI_OPENAI_TEST_URL", os.getenv("AI_TEST_URL", "https://chatgpt.com/favicon.ico")).strip() or "https://chatgpt.com/favicon.ico"
     ai_claude_test_url = os.getenv("AI_CLAUDE_TEST_URL", "https://claude.ai/favicon.ico").strip() or "https://claude.ai/favicon.ico"
@@ -2886,7 +3121,7 @@ def build_openclash_android_yaml(
         {
             "name": "GLOBAL",
             "type": "select",
-            "proxies": ["WARM-UP-CF", "STREAMING-FAST", "WARM-UP", "AUTO-FAST", "FALLBACK"] + names,
+            "proxies": ["WARM-UP-CF", "STREAMING-FAST", "WARM-UP", "AUTO-FAST", "FALLBACK"],
         },
         _ai_health_group("AI-OPENAI", ai_service_names, ai_openai_test_url, ai_interval, ai_timeout),
         _ai_health_group("AI-CLAUDE", ai_service_names, ai_claude_test_url, ai_interval, ai_timeout),
@@ -2915,7 +3150,7 @@ def build_openclash_android_yaml(
             "url": ping_check_url,
             "interval": ping_check_interval,
             "tolerance": max(tolerance, 100),
-            "lazy": False,
+            "lazy": _env_bool_value("PING_CHECK_LAZY", True),
             "timeout": ping_check_timeout,
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
@@ -2927,7 +3162,7 @@ def build_openclash_android_yaml(
             "url": test_url,
             "interval": warmup_interval,
             "tolerance": min(tolerance, 30),
-            "lazy": False,
+            "lazy": _env_bool_value("WARMUP_LAZY", False),
             "timeout": warmup_timeout,
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
@@ -2939,7 +3174,7 @@ def build_openclash_android_yaml(
             "url": cf_test_url,
             "interval": cf_interval,
             "tolerance": min(tolerance, 30),
-            "lazy": False,
+            "lazy": _env_bool_value("CF_WARMUP_LAZY", True),
             "timeout": cf_timeout,
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
@@ -2951,7 +3186,7 @@ def build_openclash_android_yaml(
             "url": streaming_test_url,
             "interval": active_interval,
             "tolerance": max(tolerance, 50),
-            "lazy": False,
+            "lazy": _env_bool_value("STREAMING_HEALTH_LAZY", True),
             "timeout": fast_timeout,
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
@@ -2963,7 +3198,7 @@ def build_openclash_android_yaml(
             "url": test_url,
             "interval": active_interval,
             "tolerance": tolerance,
-            "lazy": False,
+            "lazy": _env_bool_value("AUTO_FAST_LAZY", False),
             "timeout": fast_timeout,
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
@@ -2974,7 +3209,7 @@ def build_openclash_android_yaml(
             "proxies": fallback_or_direct,
             "url": test_url,
             "interval": fallback_interval,
-            "lazy": False,
+            "lazy": _env_bool_value("FALLBACK_LAZY", True),
             "timeout": health_timeout,
             "expected-status": "200/204/301/302",
             "max-failed-times": 3,
@@ -3265,8 +3500,9 @@ def process_sources(
                 node.reason = "skipped: mode WS only"
                 node.score = 999999
 
-    # Small candidate pool, because we stop when enough good nodes are found.
-    candidate_limit = max(target * candidate_multiplier, candidate_min, final_target * 20)
+    # Adaptive candidate budget. Start small and expand only when the current
+    # window cannot provide enough good nodes. This avoids routinely preparing
+    # thousands of candidates for a small final output.
     parsed.sort(
         key=lambda n: (
             0 if n.status == "pending" else 1,
@@ -3274,9 +3510,21 @@ def process_sources(
             protocol_priority_rank(n),
         )
     )
-    parsed = parsed[:candidate_limit]
+    adaptive_enabled = _env_bool_value("ADAPTIVE_CANDIDATES", True)
+    adaptive_initial = _safe_target_env_int("CANDIDATE_INITIAL", max(200, final_target * 4), 50, 10000)
+    adaptive_max = _safe_target_env_int("CANDIDATE_MAX", max(2000, adaptive_initial), adaptive_initial, 50000)
+    legacy_limit = max(target * candidate_multiplier, candidate_min, final_target * 20)
+    candidate_limit = min(len(parsed), adaptive_max if adaptive_enabled else legacy_limit)
+    if not adaptive_enabled:
+        candidate_limit = min(len(parsed), legacy_limit)
 
-    testable = [node for node in parsed if node.status == "pending"]
+    considered = parsed[:candidate_limit]
+    for node in parsed[candidate_limit:]:
+        if node.status == "pending":
+            node.status = "skipped"
+            node.reason = "not tested: outside adaptive candidate cap" if adaptive_enabled else "not tested: outside candidate limit"
+            node.score = 999999
+    testable = [node for node in considered if node.status == "pending"]
     good_candidates: list[ProxyNode] = []
     batch_size = int(test_batch_size) if int(test_batch_size or 0) > 0 else max(20, min(worker_count * 2, 120))
     batch_size = max(1, batch_size)
@@ -3285,8 +3533,14 @@ def process_sources(
         # Reuse one executor across all test batches. Creating a new thread pool per
         # batch adds avoidable setup/teardown overhead on large subscription lists.
         with concurrent.futures.ThreadPoolExecutor(max_workers=min(worker_count, len(testable))) as executor:
-            for start_index in range(0, len(testable), batch_size):
-                batch = testable[start_index : start_index + batch_size]
+            unlocked = min(len(testable), adaptive_initial if adaptive_enabled else len(testable))
+            start_index = 0
+            while start_index < len(testable):
+                if start_index >= unlocked:
+                    if not adaptive_enabled or unlocked >= len(testable):
+                        break
+                    unlocked = min(len(testable), max(unlocked + batch_size, unlocked * 2))
+                batch = testable[start_index : min(start_index + batch_size, unlocked)]
                 if not batch:
                     break
                 future_map = {
@@ -3319,19 +3573,21 @@ def process_sources(
                         bool(prefer_ws),
                     )
 
+                next_index = start_index + len(batch)
                 if bool(early_stop_good_nodes) and len(good_candidates) >= final_target:
                     # Mark the rest as intentionally untested so the report explains why
                     # generation finished quickly instead of testing all candidates.
-                    remaining = testable[start_index + batch_size :]
+                    remaining = testable[next_index:]
                     for node in remaining:
                         if node.status == "pending":
                             node.status = "skipped"
                             node.reason = "not tested: early stop after enough good nodes"
                             node.score = 999999
                     break
+                start_index = next_index
 
     candidates = [
-        node for node in parsed
+        node for node in considered
         if _node_passes_output_filters(node, require_successes, int(max_jitter_ms))
     ]
 

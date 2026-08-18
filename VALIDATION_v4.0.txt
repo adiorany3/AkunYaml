@@ -1,0 +1,102 @@
+AkunYaml v4.0 Performance Validation
+Date: 2026-08-18
+
+===== threat_safe_audit.py =====
+[OK] openclash_auto.yaml: threat-safe domain+IP
+[OK] openclash_lite.yaml: threat-safe domain-only
+[OK] openclash_fresh_pool.yaml: threat-safe domain+IP
+[OK] openclash_android.yaml: threat-safe domain-only
+
+===== youtube_adblock_audit.py =====
+[OK] YouTube/adblock v3 audit: openclash_auto.yaml
+[OK] YouTube/adblock v3 audit: openclash_android.yaml
+[OK] YouTube/adblock v3 audit: openclash_lite.yaml
+[OK] YouTube/adblock v3 audit: openclash_fresh_pool.yaml
+[OK] Browser filter menjaga playback dan menambah ads.youtube.com
+
+===== android_ruleprovider_audit.py =====
+[OK] Android rule-provider audit: openclash_android.yaml
+  - mode: rule
+  - provider: YAML only
+  - MRS refs: 0
+  - fallback: MATCH,GLOBAL
+
+===== app_ad_audit.py =====
+[OK] openclash_auto.yaml: 66 exact + 10 suffix app-ad targets
+[OK] openclash_lite.yaml: 66 exact + 10 suffix app-ad targets
+[OK] openclash_fresh_pool.yaml: 66 exact + 10 suffix app-ad targets
+[OK] openclash_android.yaml: 66 exact + 10 suffix app-ad targets
+
+===== streaming_ad_audit.py =====
+[OK] openclash_auto.yaml: conservative streaming layer active (lean-exact)
+[OK] openclash_android.yaml: conservative streaming layer active (lean-exact)
+[OK] openclash_lite.yaml: conservative streaming layer active (lean-exact)
+[OK] openclash_fresh_pool.yaml: conservative streaming layer active (lean-exact)
+
+===== popup_game_ad_audit.py =====
+[OK] openclash_auto.yaml: 31/31 intrusive-ad suffixes, no broad media CDN block
+[OK] openclash_lite.yaml: 31/31 intrusive-ad suffixes, no broad media CDN block
+[OK] openclash_fresh_pool.yaml: 31/31 intrusive-ad suffixes, no broad media CDN block
+[OK] openclash_android.yaml: 31/31 intrusive-ad suffixes, no broad media CDN block
+
+===== security_hardening_audit.py =====
+[OK] core uses shared security provider catalog
+[OK] local runner uses shared security provider catalog
+[OK] runner no longer owns duplicate threat-safe provider definitions
+[OK] router threat-safe provider present: threat-malware
+[OK] router threat-safe provider present: threat-phishing
+[OK] router threat-safe provider present: threat-cryptominers
+[OK] router threat-safe provider present: threat-fake-scam
+[OK] router threat-safe provider present: threat-tif-mini
+[OK] router threat-safe provider present: threat-tif-ip
+[OK] router threat-safe provider present: ads_indonesia
+[OK] Lite skips IP threat provider
+[OK] Android Indonesia provider uses local YAML snapshot
+[OK] Android security providers remain YAML/file compatible
+[OK] threat providers stay ahead of regional/global ads
+[OK] output exists: openclash_auto.yaml
+[OK] no broad doubleclick suffix reject: openclash_auto.yaml
+[OK] YouTube compatibility guard retained: openclash_auto.yaml
+[OK] output exists: openclash_lite.yaml
+[OK] no broad doubleclick suffix reject: openclash_lite.yaml
+[OK] YouTube compatibility guard retained: openclash_lite.yaml
+[OK] output exists: openclash_fresh_pool.yaml
+[OK] no broad doubleclick suffix reject: openclash_fresh_pool.yaml
+[OK] YouTube compatibility guard retained: openclash_fresh_pool.yaml
+[OK] output exists: openclash_android.yaml
+[OK] no broad doubleclick suffix reject: openclash_android.yaml
+[OK] YouTube compatibility guard retained: openclash_android.yaml
+[OK] feed guard promotes a valid refresh
+[OK] feed guard rejects suspicious/too-small refresh
+[OK] rejected refresh does not overwrite Last-Known-Good
+[OK] Security hardening audit complete
+
+===== multi_host_audit.py =====
+[OK] multi-host parser/fallback/distribute/primary + global variant budget
+
+===== performance_budget_audit.py =====
+[PERF] openclash_auto.yaml: proxies=14 active_direct_probes/min=9.33 bytes=37899
+[PERF] openclash_lite.yaml: proxies=14 active_direct_probes/min=9.33 bytes=25533
+[PERF] openclash_android.yaml: proxies=14 active_direct_probes/min=9.33 bytes=29036
+[PERF] openclash_fresh_pool.yaml: proxies=34 active_direct_probes/min=9.33 bytes=39230
+[OK] performance budget v4.0
+
+===== performance_cache_selftest.py =====
+[OK] subscription cache + provider cache + multi-host budget selftest
+
+===== Python compile =====
+[OK] Python compile
+
+===== OpenClash target static validation =====
+Target: OpenClash v0.47.156 + Mihomo alpha-ge183c58
+[OK] openclash_auto.yaml (static)
+[OK] openclash_android.yaml (static)
+[OK] openclash_lite.yaml (static)
+[OK] openclash_fresh_pool.yaml (static)
+
+===== Exact core binary =====
+.local_bin/mihomo: Mach-O 64-bit arm64 executable, flags:<|DYLDLINK|PIE>
+Exact-core execution skipped in Linux container: bundled core is Mach-O ARM64 macOS.
+
+===== Adaptive candidate simulation =====
+[OK] adaptive candidate expansion: selected=10, checked=300, total_input=600
