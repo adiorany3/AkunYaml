@@ -1,3 +1,14 @@
+# v4.2 Android Cold Fallback
+
+- H1 menjadi satu-satunya host pada normal routing Android.
+- H2/H3 dipindahkan ke host-level cold backup dan tidak masuk ke hot pool.
+- Fallback per akun `*-FB` dihapus.
+- `GLOBAL` dibuat shallow + lazy; `AUTO-FAST` Android juga lazy.
+- Android selalu `mode: rule`.
+- Family/category DNS threat-safe diterapkan langsung oleh core builder.
+- Active direct probes Android default turun dari sekitar 9,33 menjadi 4 probe/menit.
+- Lihat `ANDROID_COLD_FALLBACK_v4.2.md`.
+
 # v4.1 Android Primary-Fallback
 
 - Android multi-host sekarang selalu memakai `BUG_SERVERS[0]` sebagai host utama.

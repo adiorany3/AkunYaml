@@ -697,18 +697,33 @@ BUG_MAX_VARIANTS_PER_NODE = _safe_target_env_int("BUG_MAX_VARIANTS_PER_NODE", 3,
 BUG_TOTAL_VARIANTS_CAP = _safe_target_env_int("BUG_TOTAL_VARIANTS_CAP", 24, 1, 512)
 BUG_MIN_BASE_NODES = _safe_target_env_int("BUG_MIN_BASE_NODES", 8, 1, 128)
 
-# Android uses a stricter multi-host strategy. The first configured host is always
-# the primary endpoint. Additional hosts are exposed only behind per-account
-# fallback groups, so normal Android routing never races all host variants.
-ANDROID_MULTI_HOST_MODE = (os.getenv("ANDROID_MULTI_HOST_MODE", "primary-fallback").strip().lower() or "primary-fallback")
-if ANDROID_MULTI_HOST_MODE not in {"primary-fallback", "primary", "inherit"}:
-    ANDROID_MULTI_HOST_MODE = "primary-fallback"
+# Android uses a strict host-priority strategy. Host #1 is the only endpoint used
+# by normal routing/health pools. Host #2+ live behind a host-level cold backup
+# layer and are never inserted into WARM-UP/AUTO-FAST/AI groups. The legacy
+# "primary-fallback" value is accepted as an alias for the safer v4.2 behavior.
+ANDROID_MULTI_HOST_MODE = (os.getenv("ANDROID_MULTI_HOST_MODE", "primary-cold-fallback").strip().lower() or "primary-cold-fallback")
+if ANDROID_MULTI_HOST_MODE == "primary-fallback":
+    ANDROID_MULTI_HOST_MODE = "primary-cold-fallback"
+if ANDROID_MULTI_HOST_MODE not in {"primary-cold-fallback", "primary", "inherit"}:
+    ANDROID_MULTI_HOST_MODE = "primary-cold-fallback"
 ANDROID_FALLBACK_HOST_LIMIT = _safe_target_env_int("ANDROID_FALLBACK_HOST_LIMIT", 3, 1, 8)
 ANDROID_FALLBACK_TOTAL_CAP = _safe_target_env_int("ANDROID_FALLBACK_TOTAL_CAP", 24, 1, 512)
-ANDROID_FALLBACK_INTERVAL = _safe_target_env_int("ANDROID_FALLBACK_INTERVAL", 180, 30, 1800)
+ANDROID_FALLBACK_INTERVAL = _safe_target_env_int("ANDROID_FALLBACK_INTERVAL", 300, 60, 1800)
 ANDROID_FALLBACK_LAZY = os.getenv("ANDROID_FALLBACK_LAZY", "true").strip().lower() not in {"0", "false", "no", "off"}
+ANDROID_GLOBAL_FALLBACK_INTERVAL = _safe_target_env_int("ANDROID_GLOBAL_FALLBACK_INTERVAL", 180, 60, 900)
+ANDROID_GLOBAL_FALLBACK_LAZY = os.getenv("ANDROID_GLOBAL_FALLBACK_LAZY", "true").strip().lower() not in {"0", "false", "no", "off"}
+ANDROID_AUTO_FAST_LAZY = os.getenv("ANDROID_AUTO_FAST_LAZY", "true").strip().lower() not in {"0", "false", "no", "off"}
+
+# Category-safe DNS is applied directly by the core builder for child-safe and
+# threat-safe profiles. Keeping this in the builder prevents security behavior
+# from depending on local_runner post-processing. Proxy hostnames continue to
+# use proxy-server-nameserver, so category filtering does not break endpoint DNS.
+CATEGORY_SAFE_DNS = (
+    "https://family.dns.bebasid.com/dns-query",
+    "tls://family.dns.bebasid.com:853",
+)
 ONLY_PORT = 443
-USER_AGENT = "Mozilla/5.0 SumberYAML-OpenClash-BugCompat/4.1"
+USER_AGENT = "Mozilla/5.0 SumberYAML-OpenClash-BugCompat/4.2"
 URI_RE = re.compile(r"(?:vless|vmess|trojan|ss)://[^\s<'\"`]+", re.IGNORECASE)
 FAST_TEST_URL = "http://cp.cloudflare.com/generate_204"
 ALT_TEST_URL = "https://www.gstatic.com/generate_204"
@@ -2439,63 +2454,61 @@ def _android_primary_fallback_nodes(
     test_url: str,
     health_timeout: int,
 ) -> tuple[list[ProxyNode], list[str], list[dict[str, Any]]]:
-    """Build Android endpoints with the first target host as strict primary.
+    """Build Android endpoints with H1-only normal routing and cold H2/H3 backup.
 
-    Unlike the generic multi-host expansion, Android receives one logical
-    fallback group per base account. Host #1 is always first. Host #2+ are used
-    only when that primary endpoint is unavailable. This avoids putting all host
-    variants into url-test groups at the same level, which can make Android
-    clients oscillate or take longer to establish a connection.
+    v4.1 created one fallback group per account. That nested topology caused an
+    outer health-check to traverse inner fallback groups and touch secondary
+    hosts even while H1 was healthy. v4.2 keeps every H1 account as a plain
+    proxy. Secondary hosts are grouped by host and placed behind one cold
+    backup layer. Normal WARM-UP/AUTO-FAST/AI pools receive H1 names only.
     """
     if not nodes:
         return [], [], []
 
-    # Explicit inheritance keeps the old v4.0 behavior available for users who
-    # need it. Primary mode forces only host #1 with no duplicated endpoints.
     if ANDROID_MULTI_HOST_MODE == "inherit":
         expanded = expand_multi_host_variants(nodes)
         return expanded, [node.clash["name"] for node in expanded], []
 
     primary = TARGET_SERVERS[0]
+    expanded: list[ProxyNode] = []
+    primary_names: list[str] = []
+
+    # Keep primary node names unchanged. Existing ranking/provider hints depend
+    # on those labels, and avoiding an H1 suffix keeps the Android UI compact.
+    for idx, node in enumerate(nodes, start=1):
+        clone = copy.deepcopy(node)
+        clone.output_server = primary
+        clone.clash["server"] = primary
+        base_name = safe_proxy_name(str(node.clash.get("name") or node.name), f"NODE-{idx:03d}")
+        clone.name = base_name
+        clone.clash["name"] = base_name
+        expanded.append(clone)
+        primary_names.append(base_name)
+
     if ANDROID_MULTI_HOST_MODE == "primary" or len(TARGET_SERVERS) <= 1:
-        out: list[ProxyNode] = []
-        for node in nodes:
-            clone = copy.deepcopy(node)
-            clone.output_server = primary
-            clone.clash["server"] = primary
-            out.append(clone)
-        return out, [node.clash["name"] for node in out], []
+        return expanded, primary_names, []
 
     host_limit = min(len(TARGET_SERVERS), ANDROID_FALLBACK_HOST_LIMIT)
     hosts = list(TARGET_SERVERS[:host_limit])
     base_count = len(nodes)
     effective_cap = max(base_count, min(ANDROID_FALLBACK_TOTAL_CAP, base_count * host_limit))
+    remaining_budget = max(0, effective_cap - base_count)
+    backup_timeout = max(2000, int(health_timeout))
+    host_groups: list[dict[str, Any]] = []
+    host_group_names: list[str] = []
 
-    # Allocate host #1 to every account first, then distribute fallback hosts
-    # round-robin. The first host can therefore never be displaced by the cap.
-    allocations: list[list[str]] = [[primary] for _ in nodes]
-    used = base_count
-    for host in hosts[1:]:
-        for idx in range(base_count):
-            if used >= effective_cap:
-                break
-            allocations[idx].append(host)
-            used += 1
-        if used >= effective_cap:
+    # Allocate backup variants host-by-host so H2 gets a complete pool before
+    # H3. This preserves strict host priority when the total variant cap is hit.
+    for host_index, server in enumerate(hosts[1:], start=2):
+        if remaining_budget <= 0:
             break
-
-    expanded: list[ProxyNode] = []
-    logical_names: list[str] = []
-    fallback_groups: list[dict[str, Any]] = []
-    fallback_timeout = max(2000, int(health_timeout))
-
-    for idx, (node, servers) in enumerate(zip(nodes, allocations), start=1):
-        base_name = str(node.clash.get("name") or node.name or f"NODE-{idx:03d}")
         variant_names: list[str] = []
-        for host_index, server in enumerate(servers, start=1):
+        take = min(base_count, remaining_budget)
+        for idx, node in enumerate(nodes[:take], start=1):
             clone = copy.deepcopy(node)
             clone.output_server = server
             clone.clash["server"] = server
+            base_name = safe_proxy_name(str(node.clash.get("name") or node.name), f"NODE-{idx:03d}")
             suffix = f"-H{host_index}"
             max_base = max(1, 64 - len(suffix))
             variant_name = safe_proxy_name(base_name[:max_base] + suffix, f"NODE-{idx:03d}-H{host_index}")
@@ -2503,30 +2516,38 @@ def _android_primary_fallback_nodes(
             clone.clash["name"] = variant_name
             expanded.append(clone)
             variant_names.append(variant_name)
-
-        if len(variant_names) == 1:
-            logical_names.append(variant_names[0])
+        remaining_budget -= len(variant_names)
+        if not variant_names:
             continue
-
-        # Preserve the base name at the beginning so MANUAL-/provider hints and
-        # embedded delay labels remain useful to the existing ranking helpers.
-        suffix = "-FB"
-        max_base = max(1, 64 - len(suffix))
-        group_name = safe_proxy_name(base_name[:max_base] + suffix, f"NODE-{idx:03d}-FB")
-        logical_names.append(group_name)
-        fallback_groups.append({
+        group_name = f"ANDROID-BACKUP-H{host_index}"
+        host_group_names.append(group_name)
+        host_groups.append({
             "name": group_name,
-            "type": "fallback",
+            "type": "url-test",
             "proxies": variant_names,
             "url": test_url,
             "interval": ANDROID_FALLBACK_INTERVAL,
-            "lazy": ANDROID_FALLBACK_LAZY,
-            "timeout": fallback_timeout,
+            "tolerance": 80,
+            "lazy": True,
+            "timeout": backup_timeout,
             "expected-status": "200/204/301/302",
             "max-failed-times": 1,
         })
 
-    return expanded, logical_names, fallback_groups
+    if host_group_names:
+        host_groups.append({
+            "name": "ANDROID-COLD-BACKUP",
+            "type": "fallback",
+            "proxies": host_group_names,
+            "url": test_url,
+            "interval": ANDROID_FALLBACK_INTERVAL,
+            "lazy": ANDROID_FALLBACK_LAZY,
+            "timeout": backup_timeout,
+            "expected-status": "200/204/301/302",
+            "max-failed-times": 1,
+        })
+
+    return expanded, primary_names, host_groups
 
 
 def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, test_url: str, health_timeout: int = DEFAULT_HEALTH_TIMEOUT_MS, rule_mode: str = "Lengkap") -> str:
@@ -3224,11 +3245,25 @@ def build_openclash_android_yaml(
         android_snapshot_exists=android_snapshot_exists,
     )
 
+    android_has_cold_backup = any(
+        isinstance(group, dict) and group.get("name") == "ANDROID-COLD-BACKUP"
+        for group in android_host_fallback_groups
+    )
+    android_global_proxies = ["WARM-UP", "AUTO-FAST"]
+    if android_has_cold_backup:
+        android_global_proxies.append("ANDROID-COLD-BACKUP")
+
     proxy_groups: list[dict[str, Any]] = [
         {
             "name": "GLOBAL",
-            "type": "select",
-            "proxies": ["WARM-UP-CF", "STREAMING-FAST", "WARM-UP", "AUTO-FAST", "FALLBACK"],
+            "type": "fallback",
+            "proxies": android_global_proxies,
+            "url": test_url,
+            "interval": ANDROID_GLOBAL_FALLBACK_INTERVAL,
+            "lazy": ANDROID_GLOBAL_FALLBACK_LAZY,
+            "timeout": min(max(2000, fast_timeout), 3500),
+            "expected-status": "200/204/301/302",
+            "max-failed-times": 1,
         },
         _ai_health_group("AI-OPENAI", ai_service_names, ai_openai_test_url, ai_interval, ai_timeout),
         _ai_health_group("AI-CLAUDE", ai_service_names, ai_claude_test_url, ai_interval, ai_timeout),
@@ -3305,7 +3340,9 @@ def build_openclash_android_yaml(
             "url": test_url,
             "interval": active_interval,
             "tolerance": tolerance,
-            "lazy": _env_bool_value("AUTO_FAST_LAZY", False),
+            # Android keeps only the small WARM-UP pool hot. AUTO-FAST wakes on
+            # demand so startup does not immediately probe another large pool.
+            "lazy": ANDROID_AUTO_FAST_LAZY,
             "timeout": fast_timeout,
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
@@ -3330,7 +3367,10 @@ def build_openclash_android_yaml(
         "mixed-port": 7890,
         "allow-lan": False,
         "bind-address": "*",
-        "mode": "global",
+        # Keep Android in rule mode even when adblock is disabled. This prevents
+        # all traffic from being forced through GLOBAL and preserves LAN/direct
+        # compatibility rules consistently.
+        "mode": "rule",
         "log-level": "warning",
         "ipv6": False,
         "unified-delay": True,
@@ -3370,30 +3410,41 @@ def build_openclash_android_yaml(
         "proxies": [node.clash for node in nodes],
         "proxy-groups": proxy_groups,
     }
+    family_dns_enabled = security_profile == "child-safe" or (
+        security_profile == "threat-safe"
+        and _env_bool_value("THREAT_SAFE_FAMILY_DNS", True)
+    )
+    if family_dns_enabled and isinstance(config.get("dns"), dict):
+        # Only user/application DNS follows the category-safe resolver. Endpoint
+        # DNS stays on proxy-server-nameserver to avoid classifying proxy hosts.
+        config["dns"]["nameserver"] = list(CATEGORY_SAFE_DNS)
+        if "fallback" in config["dns"]:
+            config["dns"]["fallback"] = list(CATEGORY_SAFE_DNS)
+
     if security_profile != "off":
-        config["mode"] = "rule"
         config["rule-providers"] = android_security_providers
-        android_rules = [
-            "DOMAIN-SUFFIX,local,DIRECT",
-            "DOMAIN-SUFFIX,lan,DIRECT",
-            "DOMAIN-SUFFIX,localhost,DIRECT",
-            "IP-CIDR,127.0.0.0/8,DIRECT,no-resolve",
-            "IP-CIDR,10.0.0.0/8,DIRECT,no-resolve",
-            "IP-CIDR,172.16.0.0/12,DIRECT,no-resolve",
-            "IP-CIDR,192.168.0.0/16,DIRECT,no-resolve",
-            "IP-CIDR,169.254.0.0/16,DIRECT,no-resolve",
-            "GEOIP,LAN,DIRECT,no-resolve",
-            *_ai_proxy_rules(),
-            *shared_security_provider_reject_rules(
-                platform="android",
-                profile=security_profile,
-                indonesia_ads=indonesia_ads_enabled,
-                threat_ip=False,
-                android_snapshot_exists=android_snapshot_exists,
-            ),
-            "MATCH,GLOBAL",
-        ]
-        config["rules"] = android_rules
+    android_rules = [
+        "DOMAIN-SUFFIX,local,DIRECT",
+        "DOMAIN-SUFFIX,lan,DIRECT",
+        "DOMAIN-SUFFIX,localhost,DIRECT",
+        "IP-CIDR,127.0.0.0/8,DIRECT,no-resolve",
+        "IP-CIDR,10.0.0.0/8,DIRECT,no-resolve",
+        "IP-CIDR,172.16.0.0/12,DIRECT,no-resolve",
+        "IP-CIDR,192.168.0.0/16,DIRECT,no-resolve",
+        "IP-CIDR,169.254.0.0/16,DIRECT,no-resolve",
+        "GEOIP,LAN,DIRECT,no-resolve",
+        *_ai_proxy_rules(),
+    ]
+    if security_profile != "off":
+        android_rules.extend(shared_security_provider_reject_rules(
+            platform="android",
+            profile=security_profile,
+            indonesia_ads=indonesia_ads_enabled,
+            threat_ip=False,
+            android_snapshot_exists=android_snapshot_exists,
+        ))
+    android_rules.append("MATCH,GLOBAL")
+    config["rules"] = android_rules
     config = _enforce_no_selector_no_direct_config(config)
     return dump_yaml_no_alias(config)
 

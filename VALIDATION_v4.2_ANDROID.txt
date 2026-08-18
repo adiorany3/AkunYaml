@@ -1,0 +1,49 @@
+AkunYaml v4.2 Android Cold Fallback - Validation Summary
+Date: 2026-08-18
+
+Scope
+- Android-only connectivity fix based on v4.1 audit.
+- Router outputs Auto/Lite/Fresh Pool remain byte-identical to v4.1.
+
+Android topology
+- mode: rule
+- H1 is the only normal-routing host.
+- H2/H3 are host-level cold backup only when multiple BUG_SERVERS are configured.
+- No per-account *-FB nested fallback groups.
+- GLOBAL: shallow fallback over WARM-UP -> AUTO-FAST -> ANDROID-COLD-BACKUP (when backup exists).
+- GLOBAL lazy: true, default interval 180s.
+- AUTO-FAST lazy: true on Android.
+- WARM-UP is the only hot primary pool.
+- Cold backup default interval: 300s.
+
+Current packaged Android output
+- Base/physical proxies: 14 / 14 (default config contains one BUG_SERVER).
+- Active direct probes/min: 4.0
+- Previous v4.1/v4.0 Android active direct probes/min: ~9.33
+- mode: rule
+- final rule: MATCH,GLOBAL
+- security provider format: YAML-only / no MRS
+
+Regression results
+[OK] Python compile
+[OK] Android H1 primary + host-level cold backup audit
+[OK] Multi-host global budget audit
+[OK] Performance budget audit
+[OK] Subscription/provider cache self-test
+[OK] Android rule-provider audit
+[OK] Threat-safe audit
+[OK] YouTube/adblock audit
+[OK] App ads audit
+[OK] Streaming ads audit
+[OK] Popup/game ads audit
+[OK] Security hardening audit
+[OK] Static target validation: OpenClash v0.47.156 + Mihomo alpha-ge183c58
+
+Additional fix discovered during regeneration
+- threat-safe family/category DNS is now applied directly by sumberyaml_core.py for Android.
+- This no longer depends on local_runner post-processing.
+
+Exact-core parser
+- Not executed in this Linux environment.
+- Bundled .local_bin/mihomo is Mach-O arm64 (macOS), so Linux returns Exec format error.
+- Static target validation passed for all YAML outputs.

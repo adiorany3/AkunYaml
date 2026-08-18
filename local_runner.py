@@ -47,7 +47,7 @@ from openclash_target import (
     validate_yaml_file,
 )
 
-APP_VERSION = "4.1-android-primary-fallback"
+APP_VERSION = "4.2-android-cold-fallback"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -136,11 +136,14 @@ DEFAULT_ENV = {
     "BUG_MAX_VARIANTS_PER_NODE": "3",
     "BUG_TOTAL_VARIANTS_CAP": "24",
     "BUG_MIN_BASE_NODES": "8",
-    "ANDROID_MULTI_HOST_MODE": "primary-fallback",
+    "ANDROID_MULTI_HOST_MODE": "primary-cold-fallback",
     "ANDROID_FALLBACK_HOST_LIMIT": "3",
     "ANDROID_FALLBACK_TOTAL_CAP": "24",
-    "ANDROID_FALLBACK_INTERVAL": "180",
+    "ANDROID_FALLBACK_INTERVAL": "300",
     "ANDROID_FALLBACK_LAZY": "true",
+    "ANDROID_GLOBAL_FALLBACK_INTERVAL": "180",
+    "ANDROID_GLOBAL_FALLBACK_LAZY": "true",
+    "ANDROID_AUTO_FAST_LAZY": "true",
     "SUBSCRIPTION_CACHE": "true",
     "SUBSCRIPTION_CACHE_TTL_SEC": "1800",
     "SUBSCRIPTION_CACHE_STALE_IF_ERROR": "true",
@@ -1488,6 +1491,9 @@ def apply_responsiveness(path: Path) -> bool:
     if not isinstance(config, dict):
         return False
 
+    android_output_name = os.environ.get("OUTPUT_ANDROID_YAML", "openclash_android.yaml").strip() or "openclash_android.yaml"
+    is_android = path.name == Path(android_output_name).name
+
     before = yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=160)
 
     config["unified-delay"] = True
@@ -1529,7 +1535,7 @@ def apply_responsiveness(path: Path) -> bool:
     if isinstance(groups, list):
         group_names = {str(g.get("name")) for g in groups if isinstance(g, dict) and g.get("name")}
         compact = {
-            "GLOBAL": ["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"],
+            "GLOBAL": (["WARM-UP", "AUTO-FAST", "ANDROID-COLD-BACKUP"] if is_android else ["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]),
             "PROXY": ["GLOBAL", "WARM-UP", "AUTO-FAST", "FALLBACK"],
             "SOCIAL-MEDIA": ["WARM-UP", "AUTO-FAST", "FALLBACK"],
             "YOUTUBE": ["WARM-UP-CF", "STREAMING-FAST", "AUTO-FAST", "FALLBACK"],
@@ -1547,10 +1553,16 @@ def apply_responsiveness(path: Path) -> bool:
                 if refs:
                     g["proxies"] = refs
                 if gtype == "fallback":
-                    g["interval"] = 30 if name == "GLOBAL" else 60
-                    g["lazy"] = name != "GLOBAL"
-                    g["timeout"] = 2500
-                    g["max-failed-times"] = 2
+                    if is_android and name == "GLOBAL":
+                        g["interval"] = perf_int("ANDROID_GLOBAL_FALLBACK_INTERVAL", 180, 60, 900)
+                        g["lazy"] = perf_bool("ANDROID_GLOBAL_FALLBACK_LAZY", True)
+                        g["timeout"] = min(int(g.get("timeout") or 2500), 3000)
+                        g["max-failed-times"] = 1
+                    else:
+                        g["interval"] = 30 if name == "GLOBAL" else 60
+                        g["lazy"] = name != "GLOBAL"
+                        g["timeout"] = 2500
+                        g["max-failed-times"] = 2
             elif name in {"AI", "AI-OPENAI", "AI-CLAUDE", "AI-GEMINI", "AI-OTHER", "AI-STABLE", "AI-BACKUP", "AI-MANUAL"}:
                 ai_urls = {
                     "AI-OPENAI": os.environ.get("AI_OPENAI_TEST_URL", os.environ.get("AI_TEST_URL", "https://chatgpt.com/favicon.ico")),
@@ -1586,7 +1598,7 @@ def apply_responsiveness(path: Path) -> bool:
                 if isinstance(g.get("proxies"), list):
                     g["proxies"] = g["proxies"][:perf_int("FAST_NODE_LIMIT", 8, 4, 30)]
                 g["interval"] = perf_int("WAKEUP_INTERVAL", 90, 20, 300)
-                g["lazy"] = perf_bool("AUTO_FAST_LAZY", False)
+                g["lazy"] = perf_bool("ANDROID_AUTO_FAST_LAZY", True) if is_android else perf_bool("AUTO_FAST_LAZY", False)
                 g["timeout"] = min(int(g.get("timeout") or 3000), 3000)
                 g["tolerance"] = max(int(g.get("tolerance") or 0), 50)
             elif name == "STREAMING-FAST":
@@ -1596,6 +1608,11 @@ def apply_responsiveness(path: Path) -> bool:
                 g["lazy"] = perf_bool("STREAMING_HEALTH_LAZY", True)
                 g["timeout"] = min(int(g.get("timeout") or 3000), 3000)
                 g["tolerance"] = max(int(g.get("tolerance") or 0), 50)
+            elif is_android and (name.startswith("ANDROID-BACKUP-H") or name == "ANDROID-COLD-BACKUP"):
+                g["interval"] = perf_int("ANDROID_FALLBACK_INTERVAL", 300, 60, 1800)
+                g["lazy"] = perf_bool("ANDROID_FALLBACK_LAZY", True)
+                g["timeout"] = min(int(g.get("timeout") or 3500), 5000)
+                g["max-failed-times"] = 1
             elif name == "PING-CHECK":
                 g["interval"] = perf_int("PING_CHECK_INTERVAL", 300, 45, 1200)
                 g["lazy"] = perf_bool("PING_CHECK_LAZY", True)
@@ -2361,6 +2378,7 @@ def main() -> int:
         "BUG_TOTAL_VARIANTS_CAP", "BUG_MIN_BASE_NODES",
         "ANDROID_MULTI_HOST_MODE", "ANDROID_FALLBACK_HOST_LIMIT", "ANDROID_FALLBACK_TOTAL_CAP",
         "ANDROID_FALLBACK_INTERVAL", "ANDROID_FALLBACK_LAZY",
+        "ANDROID_GLOBAL_FALLBACK_INTERVAL", "ANDROID_GLOBAL_FALLBACK_LAZY", "ANDROID_AUTO_FAST_LAZY",
         "SUBSCRIPTION_CACHE", "SUBSCRIPTION_CACHE_TTL_SEC", "SUBSCRIPTION_CACHE_STALE_IF_ERROR",
         "SUBSCRIPTION_CACHE_DIR", "PROVIDER_CACHE", "PROVIDER_CACHE_TTL_SEC", "PROVIDER_CACHE_FILE",
         "ADAPTIVE_CANDIDATES", "CANDIDATE_INITIAL", "CANDIDATE_MAX",
