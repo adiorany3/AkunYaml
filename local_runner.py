@@ -47,7 +47,7 @@ from openclash_target import (
     validate_yaml_file,
 )
 
-APP_VERSION = "3.5-threatsafe-adblock-v3"
+APP_VERSION = "3.6-precision-threatsafe-adblock-v3"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -119,6 +119,7 @@ DEFAULT_ENV = {
     "REFERENCE_PROFILE_URL": REFERENCE_PROFILE_URL,
     "ADBLOCK_PROFILE": "balanced",
     "ADBLOCK_PROVIDER_INTERVAL": "43200",
+    "THREAT_SAFE_FAMILY_DNS": "true",
     # DNS-level ad blocking remains off by default to reduce false positives.
     "ADBLOCK_DNS_MODE": "off",
     # v3 lean mode prefers compact MRS providers + high-confidence local rules
@@ -253,6 +254,32 @@ ANDROID_STRICT_SECURITY_PROVIDERS = {
 # Threat-safe adds focused scam/fake protection. The IP extension is only used
 # on non-Lite router outputs to keep the Lite and Android profiles lean.
 ROUTER_THREAT_SAFE_SECURITY_PROVIDERS = {
+    # High-confidence category feeds are evaluated before the broader TIF layer.
+    # Keeping malware/phishing separate makes auditing and allowlisting precise.
+    "threat-malware": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "text",
+        "path": "./rule_providers/threat-malware.txt",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/malware.txt",
+        "interval": 43200,
+    },
+    "threat-phishing": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "text",
+        "path": "./rule_providers/threat-phishing.txt",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/phishing.txt",
+        "interval": 43200,
+    },
+    "threat-cryptominers": {
+        "type": "http",
+        "behavior": "domain",
+        "format": "text",
+        "path": "./rule_providers/threat-cryptominers.txt",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/cryptominers.txt",
+        "interval": 43200,
+    },
     "threat-fake-scam": {
         "type": "http",
         "behavior": "domain",
@@ -1948,7 +1975,18 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
                 "RULE-SET,tracker-domain,REJECT",
             ])
         else:
-            security_rules.append("RULE-SET,threat-tif-mini,REJECT")
+            if profile == "threat-safe":
+                # Precision tier: explicit active-threat categories first, then
+                # fake/scam and the broader TIF mini safety net.
+                security_rules.extend([
+                    "RULE-SET,threat-malware,REJECT",
+                    "RULE-SET,threat-phishing,REJECT",
+                    "RULE-SET,threat-cryptominers,REJECT",
+                    "RULE-SET,threat-fake-scam,REJECT",
+                    "RULE-SET,threat-tif-mini,REJECT",
+                ])
+            else:
+                security_rules.append("RULE-SET,threat-tif-mini,REJECT")
             if profile in {"strict", "child-safe", "app-safe", "threat-safe"} and not lean_router:
                 security_rules.extend([
                     "RULE-SET,hagezi-pro-mini,REJECT",
@@ -1967,7 +2005,6 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
             if profile in {"app-safe", "threat-safe"}:
                 security_rules.append("RULE-SET,app-ad-safe,REJECT")
             if profile == "threat-safe":
-                security_rules.append("RULE-SET,threat-fake-scam,REJECT")
                 if not is_lite:
                     security_rules.append("RULE-SET,threat-tif-ip,REJECT,no-resolve")
             security_rules.extend([
@@ -2044,13 +2081,17 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
                     policy["geosite:category-ads-all"] = "rcode://success"
                     changed = True
 
-        if profile in {"child-safe", "app-safe", "threat-safe"}:
+        family_dns_enabled = profile == "child-safe" or (
+            profile == "threat-safe"
+            and str(os.environ.get("THREAT_SAFE_FAMILY_DNS", "true")).strip().lower() in {"1", "true", "yes", "y", "on", "aktif"}
+        )
+        if family_dns_enabled:
             family_dns = list(CHILD_SAFE_DNS)
             if dns.get("nameserver") != family_dns:
                 dns["nameserver"] = family_dns
                 changed = True
-            # Router outputs may contain a fallback resolver. Keep fallback under
-            # the same family policy so blocked categories cannot bypass it.
+            # Keep fallback under the same category policy so blocked categories
+            # cannot bypass the primary resolver.
             if "fallback" in dns and dns.get("fallback") != family_dns:
                 dns["fallback"] = family_dns
                 changed = True

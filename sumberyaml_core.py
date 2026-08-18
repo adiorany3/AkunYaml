@@ -808,16 +808,38 @@ def unique_names(nodes: list[ProxyNode], provider_names: bool = True) -> None:
     """Replace all proxy names with safe unique aliases.
 
     If provider_names is enabled, the alias uses provider/ASN information from
-    the original server, not from the forced bug IP 104.17.3.81. This makes the
-    output easier to read, for example AKUN-001-VULTR-VLESS-WS-18MS.
+    the original server, not from the forced bug IP 104.17.3.81. Provider lookup
+    is bounded and concurrent because RDAP/DNS latency can otherwise dominate
+    generation when the compatibility pool contains dozens of nodes.
     """
+    providers = [""] * len(nodes)
+    if provider_names and nodes:
+        provider_workers = _env_int_range("PROVIDER_LOOKUP_WORKERS", 8, 1, 16)
+        if provider_workers == 1 or len(nodes) == 1:
+            for index, node in enumerate(nodes):
+                providers[index] = provider_label_from_original_server(node)
+        else:
+            with concurrent.futures.ThreadPoolExecutor(
+                max_workers=min(provider_workers, len(nodes))
+            ) as executor:
+                future_map = {
+                    executor.submit(provider_label_from_original_server, node): index
+                    for index, node in enumerate(nodes)
+                }
+                for future in concurrent.futures.as_completed(future_map):
+                    index = future_map[future]
+                    try:
+                        providers[index] = future.result()
+                    except Exception:
+                        providers[index] = ""
+
     seen: set[str] = set()
     for i, node in enumerate(nodes, start=1):
         node.original_name = node.original_name or normalize_name(node.name, f"ORIGINAL-{i:03d}")
         delay = f"{int(node.best_delay_ms)}MS" if node.best_delay_ms is not None else "NA"
         proto = safe_proxy_name(node.type.upper(), "NODE")
         net = safe_proxy_name(node_network(node).upper(), "NET")
-        provider = provider_label_from_original_server(node) if provider_names else ""
+        provider = providers[i - 1] if provider_names else ""
         if provider:
             base = safe_proxy_name(f"AKUN-{i:03d}-{provider}-{proto}-{net}-{delay}", f"AKUN-{i:03d}")
         else:
@@ -831,7 +853,6 @@ def unique_names(nodes: list[ProxyNode], provider_names: bool = True) -> None:
         seen.add(name)
         node.name = name
         node.clash["name"] = name
-
 
 def first_query(params: dict[str, list[str]], *names: str, default: str = "") -> str:
     for name in names:
@@ -1134,17 +1155,20 @@ def one_tcp_delay(host: str, port: int, timeout: float) -> int | None:
 
 
 def stability_check(host: str, port: int, timeout: float, attempts: int) -> tuple[bool, dict[str, Any]]:
+    attempts = max(1, int(attempts))
     delays: list[int] = []
     last_error = ""
-    for _ in range(max(1, attempts)):
+    for attempt_index in range(attempts):
         start = time.perf_counter()
         try:
             with socket.create_connection((host, port), timeout=timeout):
                 delays.append(int((time.perf_counter() - start) * 1000))
         except Exception as exc:
             last_error = str(exc)
-        # small gap so a node with one lucky accept is less likely to pass every attempt instantly
-        time.sleep(0.03)
+        # Keep a small gap only between attempts. Sleeping after the final attempt
+        # adds latency without improving the stability signal.
+        if attempt_index + 1 < attempts:
+            time.sleep(0.03)
 
     if not delays:
         return False, {
@@ -1808,6 +1832,7 @@ def tls_bug_delay(node: ProxyNode, timeout: float, attempts: int) -> tuple[bool,
     It does not replace OpenClash url-test, but it prevents many accounts whose SNI/Host
     cannot work through the selected bug IP from entering the generated YAML.
     """
+    attempts = max(1, int(attempts))
     sni = node_sni_host(node)
     node.bug_sni = sni
     delays: list[int] = []
@@ -1815,7 +1840,7 @@ def tls_bug_delay(node: ProxyNode, timeout: float, attempts: int) -> tuple[bool,
     context = ssl.create_default_context()
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
-    for _ in range(max(1, attempts)):
+    for attempt_index in range(attempts):
         start = time.perf_counter()
         try:
             raw = socket.create_connection((TARGET_SERVER, ONLY_PORT), timeout=timeout)
@@ -1825,7 +1850,8 @@ def tls_bug_delay(node: ProxyNode, timeout: float, attempts: int) -> tuple[bool,
                     delays.append(int((time.perf_counter() - start) * 1000))
         except Exception as exc:
             last_error = str(exc)
-        time.sleep(0.03)
+        if attempt_index + 1 < attempts:
+            time.sleep(0.03)
 
     if not delays:
         return False, {
@@ -1858,6 +1884,7 @@ def ws_upgrade_delay(node: ProxyNode, timeout: float, attempts: int) -> tuple[bo
     A node can complete TLS with Cloudflare but still fail OpenClash health check
     if the WS path/Host is wrong. This check only accepts HTTP 101 Switching Protocols.
     """
+    attempts = max(1, int(attempts))
     sni = node_sni_host(node)
     host = ws_host_header(node)
     path = ws_path(node)
@@ -1868,7 +1895,7 @@ def ws_upgrade_delay(node: ProxyNode, timeout: float, attempts: int) -> tuple[bo
     context = ssl.create_default_context()
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
-    for _ in range(max(1, attempts)):
+    for attempt_index in range(attempts):
         start = time.perf_counter()
         try:
             raw = socket.create_connection((TARGET_SERVER, ONLY_PORT), timeout=timeout)
@@ -1900,7 +1927,8 @@ def ws_upgrade_delay(node: ProxyNode, timeout: float, attempts: int) -> tuple[bo
                         last_error = first_line or f"HTTP {status}"
         except Exception as exc:
             last_error = str(exc)
-        time.sleep(0.03)
+        if attempt_index + 1 < attempts:
+            time.sleep(0.03)
 
     node.ws_success_count = len(delays)
     node.ws_upgrade_ms = min(delays) if delays else None
@@ -1933,6 +1961,7 @@ def ws_upgrade_delay(node: ProxyNode, timeout: float, attempts: int) -> tuple[bo
 
 
 def check_node_bug_compat(node: ProxyNode, timeout: float, attempts: int, require_original: bool, require_ws_upgrade: bool = True) -> ProxyNode:
+    attempts = max(1, int(attempts))
     harden_ws_node(node)
     if require_ws_upgrade and node_network(node) == "ws":
         bug_ok, bug_info = ws_upgrade_delay(node, timeout, attempts)
@@ -2908,32 +2937,54 @@ def process_sources(
     fast_target_ms = min(int(fast_target_ms), FAST_TARGET_DELAY_MS)
     fill_delay_ms = min(max(int(fill_delay_ms), fast_target_ms), HARD_MAX_DELAY_MS)
     final_target = max(1, int(max_nodes))
+    worker_count = max(1, int(max_workers))
+    attempts = max(1, int(attempts))
+    require_successes = min(max(1, int(require_successes)), attempts)
+    candidate_multiplier = max(1, int(candidate_multiplier))
+    candidate_min = max(1, int(candidate_min))
+    reserve_pool_nodes = max(1, int(reserve_pool_nodes))
     # Do not force a minimum of 20 anymore. The requested fast profile outputs 10.
     target = max(final_target, int(min_output_nodes), 1)
 
-    links = [line.strip().strip(",'\"") for line in links_text.splitlines() if line.strip()]
+    # Preserve source priority while removing duplicate subscriptions. Fetching remains
+    # concurrent, but results are consumed in input order so candidate selection is
+    # reproducible even when network completion order changes between runs.
+    links = list(dict.fromkeys(
+        line.strip().strip(",\'\"")
+        for line in links_text.splitlines()
+        if line.strip().strip(",\'\"")
+    ))
     fetch_logs: list[tuple[str, str]] = []
     raw_uris: list[tuple[str, str]] = []
 
     if links:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=min(int(max_workers), len(links))) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=min(worker_count, len(links))) as executor:
             futures = [executor.submit(fetch_url_cached, url, int(fetch_timeout)) for url in links]
-            for future in concurrent.futures.as_completed(futures):
+            for future in futures:
                 url, text, status = future.result()
                 fetch_logs.append((url, status))
                 if text:
-                    for uri in extract_uris(text):
-                        raw_uris.append((uri, url))
+                    raw_uris.extend((uri, url) for uri in extract_uris(text))
 
     # This remains for backward compatibility, but the GitHub Action passes manual_text=""
     # so manual nodes stay outside strict filtering and outside the 10 auto-node quota.
     for uri in extract_uris(manual_text or ""):
         raw_uris.append((uri, "manual"))
 
+    # Avoid re-parsing the exact same share URI from mirrored subscription sources.
+    # The first source wins, which keeps source attribution and priority deterministic.
+    deduped_raw_uris: list[tuple[str, str]] = []
+    seen_raw_uris: set[str] = set()
+    for uri, source in raw_uris:
+        if uri in seen_raw_uris:
+            continue
+        seen_raw_uris.add(uri)
+        deduped_raw_uris.append((uri, source))
+
     parsed: list[ProxyNode] = []
     seen_keys: set[str] = set()
     skipped: list[str] = []
-    for uri, source in raw_uris:
+    for uri, source in deduped_raw_uris:
         node = parse_uri(uri, source)
         if not node:
             skipped.append(uri[:140])
@@ -2959,7 +3010,7 @@ def process_sources(
                 node.score = 999999
 
     # Small candidate pool, because we stop when enough good nodes are found.
-    candidate_limit = max(target * int(candidate_multiplier), int(candidate_min), final_target * 20)
+    candidate_limit = max(target * candidate_multiplier, candidate_min, final_target * 20)
     parsed.sort(
         key=lambda n: (
             0 if n.status == "pending" else 1,
@@ -2971,51 +3022,61 @@ def process_sources(
 
     testable = [node for node in parsed if node.status == "pending"]
     good_candidates: list[ProxyNode] = []
-    batch_size = int(test_batch_size) if int(test_batch_size or 0) > 0 else max(20, min(int(max_workers) * 2, 120))
+    batch_size = int(test_batch_size) if int(test_batch_size or 0) > 0 else max(20, min(worker_count * 2, 120))
     batch_size = max(1, batch_size)
 
-    for start_index in range(0, len(testable), batch_size):
-        batch = testable[start_index : start_index + batch_size]
-        if not batch:
-            break
-        with concurrent.futures.ThreadPoolExecutor(max_workers=min(int(max_workers), len(batch))) as executor:
-            future_map = {
-                executor.submit(check_node_bug_compat, node, float(tcp_timeout), int(attempts), bool(require_original), bool(require_ws_upgrade)): node
-                for node in batch
-            }
-            for future in concurrent.futures.as_completed(future_map):
-                node = future_map[future]
-                try:
-                    future.result()
-                except Exception as exc:
-                    node.status = "dead"
-                    node.reason = "check error: " + str(exc)[:120]
+    if testable:
+        # Reuse one executor across all test batches. Creating a new thread pool per
+        # batch adds avoidable setup/teardown overhead on large subscription lists.
+        with concurrent.futures.ThreadPoolExecutor(max_workers=min(worker_count, len(testable))) as executor:
+            for start_index in range(0, len(testable), batch_size):
+                batch = testable[start_index : start_index + batch_size]
+                if not batch:
+                    break
+                future_map = {
+                    executor.submit(
+                        check_node_bug_compat,
+                        node,
+                        float(tcp_timeout),
+                        attempts,
+                        bool(require_original),
+                        bool(require_ws_upgrade),
+                    ): node
+                    for node in batch
+                }
+                for future in concurrent.futures.as_completed(future_map):
+                    node = future_map[future]
+                    try:
+                        future.result()
+                    except Exception as exc:
+                        node.status = "dead"
+                        node.reason = "check error: " + str(exc)[:120]
 
-        batch_good = [
-            node for node in batch
-            if _node_passes_output_filters(node, int(require_successes), int(max_jitter_ms))
-        ]
-        if batch_good:
-            good_candidates = select_diverse_nodes(
-                good_candidates + batch_good,
-                max(final_target, int(reserve_pool_nodes), 1),
-                bool(prefer_ws),
-            )
+                batch_good = [
+                    node for node in batch
+                    if _node_passes_output_filters(node, require_successes, int(max_jitter_ms))
+                ]
+                if batch_good:
+                    good_candidates = select_diverse_nodes(
+                        good_candidates + batch_good,
+                        max(final_target, reserve_pool_nodes, 1),
+                        bool(prefer_ws),
+                    )
 
-        if bool(early_stop_good_nodes) and len(good_candidates) >= final_target:
-            # Mark the rest as intentionally untested so the report explains why
-            # generation finished quickly instead of testing all candidates.
-            remaining = testable[start_index + batch_size :]
-            for node in remaining:
-                if node.status == "pending":
-                    node.status = "skipped"
-                    node.reason = "not tested: early stop after enough good nodes"
-                    node.score = 999999
-            break
+                if bool(early_stop_good_nodes) and len(good_candidates) >= final_target:
+                    # Mark the rest as intentionally untested so the report explains why
+                    # generation finished quickly instead of testing all candidates.
+                    remaining = testable[start_index + batch_size :]
+                    for node in remaining:
+                        if node.status == "pending":
+                            node.status = "skipped"
+                            node.reason = "not tested: early stop after enough good nodes"
+                            node.score = 999999
+                    break
 
     candidates = [
         node for node in parsed
-        if _node_passes_output_filters(node, int(require_successes), int(max_jitter_ms))
+        if _node_passes_output_filters(node, require_successes, int(max_jitter_ms))
     ]
 
     selected = _finalize_selected_nodes(

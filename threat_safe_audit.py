@@ -33,9 +33,31 @@ for name in FILES:
                 if fmt == "mrs" or str(p.get("url") or "").lower().endswith(".mrs"):
                     errors.append(f"Android MRS provider: {pname}")
     else:
-        for provider in ("threat-tif-mini", "threat-fake-scam"):
+        for provider in (
+            "threat-malware",
+            "threat-phishing",
+            "threat-cryptominers",
+            "threat-fake-scam",
+            "threat-tif-mini",
+        ):
             if provider not in providers or f"RULE-SET,{provider},REJECT" not in rules:
                 errors.append(f"missing router provider/rule: {provider}")
+
+        # Precision ordering: explicit active-threat categories must be checked
+        # before the broader TIF safety net and before ad/tracker providers.
+        order = [
+            "RULE-SET,threat-malware,REJECT",
+            "RULE-SET,threat-phishing,REJECT",
+            "RULE-SET,threat-cryptominers,REJECT",
+            "RULE-SET,threat-fake-scam,REJECT",
+            "RULE-SET,threat-tif-mini,REJECT",
+        ]
+        positions = [rules.index(x) for x in order if x in rules]
+        if len(positions) == len(order) and positions != sorted(positions):
+            errors.append("precision threat rule order invalid")
+        for ad_rule in ("RULE-SET,ads_domain,REJECT", "RULE-SET,tracker-domain,REJECT"):
+            if ad_rule in rules and positions and rules.index(ad_rule) < positions[-1]:
+                errors.append(f"{ad_rule} must run after threat precision layer")
         if name == "openclash_lite.yaml":
             if "threat-tif-ip" in providers or any(str(r).startswith("RULE-SET,threat-tif-ip,") for r in rules):
                 errors.append("Lite should not include TIF IP provider")
@@ -45,6 +67,25 @@ for name in FILES:
                 errors.append("TIF IP provider invalid/missing")
             if "RULE-SET,threat-tif-ip,REJECT,no-resolve" not in rules:
                 errors.append("TIF IP rule missing")
+
+    # Avoid heuristic keyword rejects in a precision profile. Category-aware
+    # providers/DNS are safer than broad string matching.
+    keyword_rejects = [r for r in rules if r.startswith("DOMAIN-KEYWORD,") and r.endswith(",REJECT")]
+    if keyword_rejects:
+        errors.append(f"overbroad keyword reject rules: {len(keyword_rejects)}")
+
+    # Threat-safe intentionally enforces the category-safe resolver. This keeps
+    # restricted-site filtering out of the YAML domain payload and avoids a huge
+    # runtime rule-provider.
+    dns = cfg.get("dns") or {}
+    expected_family = [
+        "https://family.dns.bebasid.com/dns-query",
+        "tls://family.dns.bebasid.com:853",
+    ]
+    if dns.get("nameserver") != expected_family:
+        errors.append("threat-safe family DNS is not enforced")
+    if "fallback" in dns and dns.get("fallback") != expected_family:
+        errors.append("threat-safe fallback DNS can bypass category filtering")
 
     bad = sorted(BROAD_RISK.intersection(rules))
     if bad:

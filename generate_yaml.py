@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 import time
 from contextlib import suppress
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -143,9 +144,10 @@ def _mihomo_openclash_compatibility_filter(
 ) -> tuple[list[Any], list[dict[str, Any]]]:
     """Keep only nodes accepted by the current Mihomo proxy parser.
 
-    Each node is tested in an isolated minimal configuration. A malformed or
-    obsolete account therefore cannot prevent the rest of the batch from
-    starting in OpenClash/Mihomo.
+    The fast path validates all candidates in one Mihomo process. If that batch
+    fails, smaller chunks are tested in parallel and only failing chunks fall
+    back to per-node isolation. This keeps the original strictness while avoiding
+    one process startup for every healthy node.
     """
     rows: list[dict[str, Any]] = []
     if not nodes:
@@ -178,8 +180,9 @@ def _mihomo_openclash_compatibility_filter(
 
     timeout_s = max(2.0, _env_float("OPENCLASH_COMPAT_TIMEOUT_SEC", 6.0))
     workers = max(1, min(16, _env_int("OPENCLASH_COMPAT_WORKERS", 6)))
+    isolation_batch_size = max(2, min(32, _env_int("OPENCLASH_COMPAT_ISOLATION_BATCH_SIZE", 8)))
 
-    def check_one(index: int, node: Any) -> tuple[int, Any, dict[str, Any]]:
+    def prepare(index: int, node: Any) -> tuple[int, Any, dict[str, Any], dict[str, Any]]:
         clash = dict(getattr(node, "clash", {}) or {})
         name = str(clash.get("name") or _node_name(node) or f"NODE-{index + 1}")
         proto = str(clash.get("type") or getattr(node, "type", "")).lower()
@@ -192,21 +195,25 @@ def _mihomo_openclash_compatibility_filter(
             "compatible": "no",
             "reason": "",
         }
-        if not clash:
-            row["reason"] = "empty proxy config"
-            return index, node, row
+        if clash:
+            clash["name"] = name
+        return index, node, row, clash
 
-        clash["name"] = name
+    def run_batch(batch: list[tuple[int, Any, dict[str, Any], dict[str, Any]]]) -> tuple[bool, str]:
+        if not batch:
+            return True, "empty batch"
+        proxies = [item[3] for item in batch]
+        names = [str(item[2]["name"]) for item in batch]
         tmp_obj = tempfile.TemporaryDirectory(prefix="openclash-compat-")
         tmpdir = Path(tmp_obj.name)
         config_path = tmpdir / "config.yaml"
         config = {
-            "proxies": [clash],
+            "proxies": proxies,
             "proxy-groups": [
                 {
                     "name": "OPENCLASH-COMPAT",
                     "type": "select",
-                    "proxies": [name],
+                    "proxies": names,
                 }
             ],
             "rules": ["MATCH,OPENCLASH-COMPAT"],
@@ -226,29 +233,79 @@ def _mihomo_openclash_compatibility_filter(
             )
             output = (proc.stdout or "").strip().replace("\n", " | ")
             if proc.returncode == 0:
-                row["compatible"] = "yes"
-                row["reason"] = "mihomo config test ok"
-            else:
-                row["reason"] = output[-500:] or f"mihomo exit {proc.returncode}"
+                return True, "mihomo config test ok"
+            return False, output[-500:] or f"mihomo exit {proc.returncode}"
         except subprocess.TimeoutExpired:
-            row["reason"] = f"mihomo config test timeout > {timeout_s:.1f}s"
+            return False, f"mihomo config test timeout > {timeout_s:.1f}s"
         except Exception as exc:
-            row["reason"] = f"{type(exc).__name__}: {str(exc)[:300]}"
+            return False, f"{type(exc).__name__}: {str(exc)[:300]}"
         finally:
             tmp_obj.cleanup()
-        return index, node, row
 
-    from concurrent.futures import ThreadPoolExecutor, as_completed
+    prepared = [prepare(i, node) for i, node in enumerate(nodes)]
+    result_rows: dict[int, dict[str, Any]] = {}
+    valid_items: list[tuple[int, Any, dict[str, Any], dict[str, Any]]] = []
+    for item in prepared:
+        index, _node, row, clash = item
+        if clash:
+            valid_items.append(item)
+        else:
+            row["reason"] = "empty proxy config"
+            result_rows[index] = row
 
-    results: list[tuple[int, Any, dict[str, Any]]] = []
-    with ThreadPoolExecutor(max_workers=workers) as executor:
-        futures = [executor.submit(check_one, i, node) for i, node in enumerate(nodes)]
-        for future in as_completed(futures):
-            results.append(future.result())
+    def mark_pass(batch: list[tuple[int, Any, dict[str, Any], dict[str, Any]]], reason: str) -> None:
+        for index, _node, row, _clash in batch:
+            row["compatible"] = "yes"
+            row["reason"] = reason
+            result_rows[index] = row
 
-    results.sort(key=lambda item: item[0])
+    def mark_fail(item: tuple[int, Any, dict[str, Any], dict[str, Any]], reason: str) -> None:
+        index, _node, row, _clash = item
+        row["compatible"] = "no"
+        row["reason"] = reason
+        result_rows[index] = row
+
+    if valid_items:
+        full_ok, full_reason = run_batch(valid_items)
+        if full_ok:
+            mark_pass(valid_items, "mihomo batch config test ok")
+        elif len(valid_items) == 1:
+            mark_fail(valid_items[0], full_reason)
+        else:
+            chunks = [
+                valid_items[i : i + isolation_batch_size]
+                for i in range(0, len(valid_items), isolation_batch_size)
+            ]
+            failed_for_individual: list[tuple[int, Any, dict[str, Any], dict[str, Any]]] = []
+            with ThreadPoolExecutor(max_workers=min(workers, len(chunks))) as executor:
+                future_map = {executor.submit(run_batch, chunk): chunk for chunk in chunks}
+                for future in as_completed(future_map):
+                    chunk = future_map[future]
+                    ok, reason = future.result()
+                    if ok:
+                        mark_pass(chunk, "mihomo isolation batch test ok")
+                    elif len(chunk) == 1:
+                        mark_fail(chunk[0], reason)
+                    else:
+                        failed_for_individual.extend(chunk)
+
+            if failed_for_individual:
+                with ThreadPoolExecutor(max_workers=min(workers, len(failed_for_individual))) as executor:
+                    future_map = {
+                        executor.submit(run_batch, [item]): item
+                        for item in failed_for_individual
+                    }
+                    for future in as_completed(future_map):
+                        item = future_map[future]
+                        ok, reason = future.result()
+                        if ok:
+                            mark_pass([item], "mihomo individual config test ok")
+                        else:
+                            mark_fail(item, reason)
+
     passed: list[Any] = []
-    for _index, node, row in results:
+    for index, node in enumerate(nodes):
+        row = result_rows[index]
         rows.append(row)
         ok = row["compatible"] == "yes"
         setattr(node, "openclash_compatible", ok)
@@ -263,7 +320,6 @@ def _mihomo_openclash_compatibility_filter(
 
     print(f"[INFO] OpenClash compatibility [{label}]: {len(passed)}/{len(nodes)} passed")
     return passed, rows
-
 
 def _build_openclash_compat_report_csv(rows: list[dict[str, Any]]) -> str:
     import csv
@@ -1530,13 +1586,13 @@ def main() -> int:
     output_stamp = os.getenv("OUTPUT_STAMP", "last_update.txt")
     manual_file = os.getenv("MANUAL_NODES_FILE", "manual_nodes.txt")
 
-    max_nodes = _env_int("MAX_NODES", 10)
-    min_output_nodes = _env_int("MIN_OUTPUT_NODES", 10)
-    fetch_timeout = _env_int("FETCH_TIMEOUT", 12)
-    tcp_timeout = _env_float("TCP_TIMEOUT", 2.0)
-    max_workers = _env_int("MAX_WORKERS", 64)
-    attempts = _env_int("ATTEMPTS", 2)
-    require_successes = min(_env_int("REQUIRE_SUCCESSES", 1), attempts)
+    max_nodes = max(1, _env_int("MAX_NODES", 10))
+    min_output_nodes = max(1, _env_int("MIN_OUTPUT_NODES", 10))
+    fetch_timeout = max(1, _env_int("FETCH_TIMEOUT", 12))
+    tcp_timeout = max(0.1, _env_float("TCP_TIMEOUT", 2.0))
+    max_workers = max(1, _env_int("MAX_WORKERS", 64))
+    attempts = max(1, _env_int("ATTEMPTS", 2))
+    require_successes = min(max(1, _env_int("REQUIRE_SUCCESSES", 1)), attempts)
 
     links_text = build_links_text()
     manual_text = _read_text_file(manual_file)

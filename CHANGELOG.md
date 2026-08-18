@@ -7,6 +7,14 @@
 - Android kembali YAML-only dengan static AI Voice/IP guards.
 - Lihat `CHANGELOG_ADBLOCK_v3.md` untuk detail dan hasil audit.
 
+## v3.6 Threat-Safe Precision
+
+- Dedicated router providers for malware, phishing, and cryptominers.
+- Threat rules now run before general ad/tracker rules.
+- Family-category DNS is explicit and limited to child-safe/threat-safe profiles.
+- Stronger false-positive audit: allowlist-first, no heuristic DOMAIN-KEYWORD reject, no fallback DNS bypass.
+- TIF mini remains a broad safety net; TIF IP remains disabled on Lite.
+
 ## v3.5 Threat-Safe
 - Profil baru `threat-safe`: anti-scam/fake + threat intelligence domain.
 - TIF IP extension aktif pada Auto/Fresh, dilewati pada Lite dan Android untuk performa/kompatibilitas.
