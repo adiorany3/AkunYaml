@@ -1,0 +1,57 @@
+AkunYaml v4.8 Precision Optimization Validation
+
+Target
+- OpenClash v0.47.156
+- Mihomo alpha-ge183c58
+
+Structural optimization
+[OK] openclash_auto.yaml rules: 453 -> 180
+[OK] openclash_lite.yaml rules: 166 -> 164
+[OK] openclash_fresh_pool.yaml rules: 181 -> 179
+[OK] openclash_android.yaml rules: 375 -> 375
+[OK] MANUAL routing moved to local classical provider
+[OK] MANUAL provider preserves suffix/exact/keyword semantics
+[OK] router semantic overlap audit: 0 findings
+[OK] Android byte-identical to v4.7
+
+Single-pass pipeline
+[OK] one YAML load per output transaction
+[OK] at most one YAML write per output transaction
+[OK] v4.8 pipeline with new features disabled is structurally equivalent to v4.7
+
+MRS safety
+[OK] only domain/ipcidr text providers are eligible
+[OK] classical providers are excluded
+[OK] compiler self-test passes
+[OK] conversion is fail-open to existing text provider
+[OK] Android is excluded from local MRS substitution
+
+Regression audits
+[OK] threat/security audit
+[OK] YouTube playback-safe audit
+[OK] Android rule-provider audit
+[OK] Android banking compatibility audit
+[OK] Android marketplace-live compatibility audit
+[OK] app-ad audit
+[OK] streaming-ad audit
+[OK] intrusive popup/game-ad audit
+[OK] security hardening audit
+[OK] multi-host audit
+[OK] performance budget audit
+[OK] OpenWrt enhanced-adblock audit
+[OK] v4.8 optimization audit
+[OK] single-pass self-test
+[OK] MRS compiler self-test
+[OK] Python compile
+[OK] static target validation for all four YAML outputs
+
+Performance budget
+- Auto: ~9.33 active direct probes/min
+- Lite: ~9.33 active direct probes/min
+- Fresh Pool: ~9.33 active direct probes/min
+- Android: ~4.00 active direct probes/min
+
+Exact-core execution
+[NOT RUNNABLE IN THIS ENVIRONMENT]
+The bundled Mihomo binary is Mach-O ARM64 for macOS while this validation environment is Linux.
+The exact parser attempt therefore returns Exec format error. Static target validation passes.

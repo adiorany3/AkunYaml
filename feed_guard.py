@@ -30,6 +30,7 @@ from security_policy import (
     ROUTER_THREAT_SAFE_PROVIDERS,
     ROUTER_THREAT_IP_PROVIDERS,
 )
+from mrs_compile import compile_lkg_to_mrs
 
 DOMAIN_RE = re.compile(
     r"^(?:\*\.)?(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$",
@@ -259,6 +260,22 @@ def refresh_security_feeds(workdir: Path, *, refresh: bool = True, log=print) ->
     _atomic_write(metadata_path, (json.dumps(metadata, indent=2, sort_keys=True) + "\n").encode("utf-8"))
     _write_android_indonesia_snapshot(workdir, report, log=log)
     _write_report(workdir, report)
+
+    # Compile only validated LKG domain/ipcidr text feeds. The compiler is
+    # fail-open: if the exact/runnable core is unavailable, providers remain
+    # text and no generated YAML is switched to MRS.
+    merged_catalog: dict[str, dict[str, Any]] = {}
+    for catalog in (
+        ROUTER_BASE_PROVIDERS,
+        ROUTER_ENHANCED_AD_PROVIDERS,
+        ROUTER_GAMBLING_PROVIDERS,
+        ROUTER_THREAT_SAFE_PROVIDERS,
+        ROUTER_THREAT_IP_PROVIDERS,
+    ):
+        merged_catalog.update(catalog)
+    mrs_result = compile_lkg_to_mrs(workdir, report, merged_catalog, log=log)
+    mrs_report = workdir / ".feed_cache" / "mrs_compile_report.json"
+    _atomic_write(mrs_report, (json.dumps(mrs_result, indent=2, sort_keys=True) + "\n").encode("utf-8"))
     return report
 
 

@@ -24,6 +24,21 @@ PROTECTED_SUFFIX = [
 ]
 PROTECTED_EXACT = ['static.doubleclick.net', 'jnn-pa.googleapis.com']
 
+
+def reject_cover_index(rules, domain):
+    domain = domain.lower().rstrip('.')
+    best = None
+    for idx, rule in enumerate(rules):
+        parts = [p.strip() for p in rule.split(',')]
+        if len(parts) != 3 or parts[2].upper() != 'REJECT':
+            continue
+        kind, value = parts[0].upper(), parts[1].lower().rstrip('.')
+        covered = kind == 'DOMAIN' and value == domain
+        covered = covered or (kind == 'DOMAIN-SUFFIX' and (domain == value or domain.endswith('.' + value)))
+        if covered and (best is None or idx < best):
+            best = idx
+    return best
+
 def fail(msg):
     print('[ERROR]', msg)
     return 1
@@ -33,10 +48,13 @@ def main():
     for path in ROUTER_FILES:
         data = yaml.safe_load(path.read_text(encoding='utf-8')) or {}
         rules = [str(x) for x in data.get('rules', []) or []]
+        extra_indexes = []
         for domain in EXTRA:
-            rule = f'DOMAIN,{domain},REJECT'
-            if rule not in rules:
-                errors += fail(f'{path.name}: missing {rule}')
+            idx = reject_cover_index(rules, domain)
+            if idx is None:
+                errors += fail(f'{path.name}: missing REJECT coverage for {domain}')
+            else:
+                extra_indexes.append(idx)
         for domain in PROTECTED_EXACT:
             if any(r == f'DOMAIN,{domain},REJECT' or r == f'DOMAIN-SUFFIX,{domain},REJECT' for r in rules):
                 errors += fail(f'{path.name}: protected compatibility host rejected: {domain}')
@@ -45,7 +63,7 @@ def main():
         for domain in PROTECTED_SUFFIX:
             if any(r.startswith(f'DOMAIN-SUFFIX,{domain},') and r.endswith(',REJECT') for r in rules):
                 errors += fail(f'{path.name}: playback suffix rejected: {domain}')
-        first_extra = min(rules.index(f'DOMAIN,{d},REJECT') for d in EXTRA)
+        first_extra = min(extra_indexes) if extra_indexes else len(rules)
         gv = rules.index('DOMAIN-SUFFIX,googlevideo.com,YOUTUBE')
         if first_extra >= gv:
             errors += fail(f'{path.name}: extra ad rules are not ahead of playback guard')

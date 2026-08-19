@@ -295,3 +295,14 @@ Setting utama di `local_config.json`:
 
 Gunakan hanya host/server yang Anda miliki atau berhak gunakan. Lihat `ANDROID_MULTI_HOST_FALLBACK_v4.1.md`.
 
+
+## v4.8 optimization controls
+
+```json
+"MANUAL_ROUTING_COMPRESS": "true",
+"MANUAL_ROUTING_COMPRESS_THRESHOLD": "40",
+"SEMANTIC_RULE_OPTIMIZE": "router",
+"MRS_COMPILE": "auto"
+```
+
+The defaults prioritize behavioral compatibility. MRS is only activated after successful conversion by a runnable Mihomo core. `SEMANTIC_RULE_OPTIMIZE=router` leaves Android untouched.

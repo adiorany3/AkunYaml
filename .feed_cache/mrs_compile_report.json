@@ -1,0 +1,62 @@
+{
+  "ads_indonesia": {
+    "behavior": "domain",
+    "path": "rule_providers/compiled/ads_indonesia.mrs",
+    "size": 1399,
+    "status": "compiled"
+  },
+  "gambling-mini": {
+    "behavior": "domain",
+    "path": "rule_providers/compiled/gambling-mini.mrs",
+    "size": 643433,
+    "status": "compiled"
+  },
+  "hagezi-pro-plus-mini": {
+    "behavior": "domain",
+    "path": "rule_providers/compiled/hagezi-pro-plus-mini.mrs",
+    "size": 486232,
+    "status": "compiled"
+  },
+  "popup-ads": {
+    "behavior": "domain",
+    "path": "rule_providers/compiled/popup-ads.mrs",
+    "size": 377524,
+    "status": "compiled"
+  },
+  "threat-cryptominers": {
+    "behavior": "domain",
+    "path": "rule_providers/compiled/threat-cryptominers.mrs",
+    "size": 2865,
+    "status": "compiled"
+  },
+  "threat-fake-scam": {
+    "behavior": "domain",
+    "path": "rule_providers/compiled/threat-fake-scam.mrs",
+    "size": 121057,
+    "status": "compiled"
+  },
+  "threat-malware": {
+    "behavior": "domain",
+    "path": "rule_providers/compiled/threat-malware.mrs",
+    "size": 5893,
+    "status": "compiled"
+  },
+  "threat-phishing": {
+    "behavior": "domain",
+    "path": "rule_providers/compiled/threat-phishing.mrs",
+    "size": 423485,
+    "status": "compiled"
+  },
+  "threat-tif-ip": {
+    "behavior": "ipcidr",
+    "path": "rule_providers/compiled/threat-tif-ip.mrs",
+    "size": 142858,
+    "status": "compiled"
+  },
+  "threat-tif-mini": {
+    "behavior": "domain",
+    "path": "rule_providers/compiled/threat-tif-mini.mrs",
+    "size": 1160822,
+    "status": "compiled"
+  }
+}

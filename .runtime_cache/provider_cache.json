@@ -67,8 +67,8 @@
     },
     "104.16.79.73": {
       "ip": "104.16.79.73",
-      "provider": "CLOUDFLARE",
-      "saved_at": 1787065919
+      "provider": "UNKNOWN",
+      "saved_at": 1787116775
     },
     "104.16.80.73": {
       "ip": "104.16.80.73",
@@ -138,7 +138,7 @@
     "104.18.37.228": {
       "ip": "104.18.37.228",
       "provider": "CLOUDFLARE",
-      "saved_at": 1787105817
+      "saved_at": 1787116775
     },
     "104.18.40.152": {
       "ip": "104.18.40.152",
@@ -165,6 +165,11 @@
       "provider": "CLOUDFLARE",
       "saved_at": 1787052334
     },
+    "104.21.22.180": {
+      "ip": "104.21.22.180",
+      "provider": "CLOUDFLARE",
+      "saved_at": 1787116775
+    },
     "104.21.234.13": {
       "ip": "104.21.234.13",
       "provider": "UNKNOWN",
@@ -179,6 +184,11 @@
       "ip": "104.21.67.171",
       "provider": "CLOUDFLARE",
       "saved_at": 1787052331
+    },
+    "104.21.68.12": {
+      "ip": "104.21.68.12",
+      "provider": "CLOUDFLARE",
+      "saved_at": 1787116775
     },
     "104.21.74.214": {
       "ip": "104.21.74.214",
@@ -297,8 +307,8 @@
     },
     "172.66.44.97": {
       "ip": "172.66.44.97",
-      "provider": "CLOUDFLARE",
-      "saved_at": 1787065055
+      "provider": "UNKNOWN",
+      "saved_at": 1787116775
     },
     "172.67.118.45": {
       "ip": "172.67.118.45",
@@ -526,9 +536,9 @@
       "saved_at": 1787051125
     },
     "chat.openai.com": {
-      "ip": "104.18.37.228",
+      "ip": "172.64.150.28",
       "provider": "OPENAI",
-      "saved_at": 1787105815
+      "saved_at": 1787116774
     },
     "chatgpt.com": {
       "ip": "172.64.155.209",
@@ -589,6 +599,11 @@
       "ip": "198.18.16.61",
       "provider": "SPECIAL-IPV4-BENCHMARK-T",
       "saved_at": 1787052332
+    },
+    "gb1.wba-pn.ru": {
+      "ip": "45.150.66.31",
+      "provider": "GCS-SER-NET",
+      "saved_at": 1787116776
     },
     "hollowcon6.onrender.com": {
       "ip": "198.18.3.111",
@@ -691,9 +706,9 @@
       "saved_at": 1787052335
     },
     "yd.mmhh.eu.cc": {
-      "ip": "162.159.44.195",
-      "provider": "CLOUDFLARE",
-      "saved_at": 1787105816
+      "ip": "162.159.12.41",
+      "provider": "EU",
+      "saved_at": 1787116774
     },
     "ytryurdj64bbb.localip.ir": {
       "ip": "198.18.1.84",
@@ -752,8 +767,8 @@
       "saved_at": 1787060044
     },
     "104.16.79.73": {
-      "provider": "CLOUDFLARE",
-      "saved_at": 1787065919
+      "provider": "",
+      "saved_at": 1787116775
     },
     "104.16.80.73": {
       "provider": "CLOUDFLARE",
@@ -809,7 +824,7 @@
     },
     "104.18.37.228": {
       "provider": "CLOUDFLARE",
-      "saved_at": 1787105817
+      "saved_at": 1787116775
     },
     "104.18.40.152": {
       "provider": "",
@@ -839,6 +854,10 @@
       "provider": "CLOUDFLARE",
       "saved_at": 1787052334
     },
+    "104.21.22.180": {
+      "provider": "CLOUDFLARE",
+      "saved_at": 1787116775
+    },
     "104.21.234.13": {
       "provider": "",
       "saved_at": 1787105817
@@ -850,6 +869,10 @@
     "104.21.67.171": {
       "provider": "CLOUDFLARE",
       "saved_at": 1787052331
+    },
+    "104.21.68.12": {
+      "provider": "CLOUDFLARE",
+      "saved_at": 1787116775
     },
     "104.21.74.214": {
       "provider": "CLOUDFLARE",
@@ -976,8 +999,8 @@
       "saved_at": 1787105817
     },
     "172.66.44.97": {
-      "provider": "CLOUDFLARE",
-      "saved_at": 1787065055
+      "provider": "",
+      "saved_at": 1787116775
     },
     "172.67.118.45": {
       "provider": "CLOUDFLARE",
@@ -1211,6 +1234,10 @@
       "provider": "",
       "saved_at": 1787065055
     },
+    "45.150.66.31": {
+      "provider": "GCS-SER-NET",
+      "saved_at": 1787116776
+    },
     "45.8.211.57": {
       "provider": "",
       "saved_at": 1787060040
@@ -1276,6 +1303,6 @@
       "saved_at": 1787063854
     }
   },
-  "saved_at": 1787105817,
+  "saved_at": 1787116776,
   "version": 1
 }

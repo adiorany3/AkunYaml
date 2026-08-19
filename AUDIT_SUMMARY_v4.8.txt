@@ -1,0 +1,128 @@
+=== threat_safe_audit.py ===
+[OK] openclash_auto.yaml: threat-safe domain+IP
+[OK] openclash_lite.yaml: threat-safe domain-only
+[OK] openclash_fresh_pool.yaml: threat-safe domain+IP
+[OK] openclash_android.yaml: threat-safe domain-only
+RC=0
+=== youtube_adblock_audit.py ===
+[OK] YouTube/adblock v3 audit: openclash_auto.yaml
+[OK] YouTube/adblock v3 audit: openclash_android.yaml
+[OK] YouTube/adblock v3 audit: openclash_lite.yaml
+[OK] YouTube/adblock v3 audit: openclash_fresh_pool.yaml
+[OK] Browser filter menjaga playback dan menambah ads.youtube.com
+RC=0
+=== youtube_playback_safe_audit.py ===
+[OK] YouTube playback-safe router audit: openclash_auto.yaml
+[OK] YouTube playback-safe router audit: openclash_lite.yaml
+[OK] YouTube playback-safe router audit: openclash_fresh_pool.yaml
+[OK] Android remains outside router-only YouTube extra layer
+[OK] YouTube playback-safe v4.6 audit
+RC=0
+=== youtube_gambling_sponsor_audit.py ===
+[OK] openclash_auto.yaml: gambling sponsor destination guard active
+[OK] openclash_lite.yaml: gambling sponsor destination guard active
+[OK] openclash_fresh_pool.yaml: gambling sponsor destination guard active
+[OK] Android remains byte-identical and outside router gambling layer
+[OK] YouTube gambling sponsor guard v4.7 audit
+RC=0
+=== android_ruleprovider_audit.py ===
+[OK] Android rule-provider audit: openclash_android.yaml
+  - mode: rule
+  - provider: YAML only
+  - MRS refs: 0
+  - fallback: MATCH,GLOBAL
+RC=0
+=== android_banking_safe_audit.py ===
+[OK] Android Banking Safe Mode
+  rule index       : 116
+  route            : DIRECT
+  fake-ip          : bypass
+  sniffer          : skipped
+  DNS              : public DoH policy
+RC=0
+=== android_marketplace_live_audit.py ===
+[OK] Android marketplace-live compatibility audit
+ guards=12 rules=375
+RC=0
+=== app_ad_audit.py ===
+[OK] openclash_auto.yaml: 66 exact + 10 suffix app-ad targets
+[OK] openclash_lite.yaml: 66 exact + 10 suffix app-ad targets
+[OK] openclash_fresh_pool.yaml: 66 exact + 10 suffix app-ad targets
+[OK] openclash_android.yaml: 66 exact + 10 suffix app-ad targets
+RC=0
+=== streaming_ad_audit.py ===
+[OK] openclash_auto.yaml: conservative streaming layer active (lean-exact)
+[OK] openclash_android.yaml: conservative streaming layer active (lean-exact)
+[OK] openclash_lite.yaml: conservative streaming layer active (lean-exact)
+[OK] openclash_fresh_pool.yaml: conservative streaming layer active (lean-exact)
+RC=0
+=== popup_game_ad_audit.py ===
+[OK] openclash_auto.yaml: 31/31 intrusive-ad suffixes, no broad media CDN block
+[OK] openclash_lite.yaml: 31/31 intrusive-ad suffixes, no broad media CDN block
+[OK] openclash_fresh_pool.yaml: 31/31 intrusive-ad suffixes, no broad media CDN block
+[OK] openclash_android.yaml: 31/31 intrusive-ad suffixes, no broad media CDN block
+RC=0
+=== security_hardening_audit.py ===
+[OK] core uses shared security provider catalog
+[OK] local runner uses shared security provider catalog
+[OK] runner no longer owns duplicate threat-safe provider definitions
+[OK] router threat-safe provider present: threat-malware
+[OK] router threat-safe provider present: threat-phishing
+[OK] router threat-safe provider present: threat-cryptominers
+[OK] router threat-safe provider present: threat-fake-scam
+[OK] router threat-safe provider present: threat-tif-mini
+[OK] router threat-safe provider present: threat-tif-ip
+[OK] router threat-safe provider present: ads_indonesia
+[OK] Lite skips IP threat provider
+[OK] Android Indonesia provider uses local YAML snapshot
+[OK] Android security providers remain YAML/file compatible
+[OK] threat providers stay ahead of regional/global ads
+[OK] output exists: openclash_auto.yaml
+[OK] no broad doubleclick suffix reject: openclash_auto.yaml
+[OK] YouTube compatibility guard retained: openclash_auto.yaml
+[OK] output exists: openclash_lite.yaml
+[OK] no broad doubleclick suffix reject: openclash_lite.yaml
+[OK] YouTube compatibility guard retained: openclash_lite.yaml
+[OK] output exists: openclash_fresh_pool.yaml
+[OK] no broad doubleclick suffix reject: openclash_fresh_pool.yaml
+[OK] YouTube compatibility guard retained: openclash_fresh_pool.yaml
+[OK] output exists: openclash_android.yaml
+[OK] no broad doubleclick suffix reject: openclash_android.yaml
+[OK] YouTube compatibility guard retained: openclash_android.yaml
+[OK] feed guard promotes a valid refresh
+[OK] feed guard rejects suspicious/too-small refresh
+[OK] rejected refresh does not overwrite Last-Known-Good
+[OK] Security hardening audit complete
+RC=0
+=== multi_host_audit.py ===
+[OK] multi-host parser/fallback/distribute/primary + global variant budget
+RC=0
+=== performance_budget_audit.py ===
+[PERF] openclash_auto.yaml: proxies=14 active_direct_probes/min=9.33 bytes=29235
+[PERF] openclash_lite.yaml: proxies=14 active_direct_probes/min=9.33 bytes=26219
+[PERF] openclash_android.yaml: proxies=14 active_direct_probes/min=4.0 bytes=33114
+[PERF] openclash_fresh_pool.yaml: proxies=34 active_direct_probes/min=9.33 bytes=40213
+[OK] performance budget v4.0
+RC=0
+=== openwrt_adblock_audit.py ===
+[OK] OpenWrt adblock v4.5: enhanced Auto/Fresh, compact Lite, Android unchanged
+RC=0
+=== optimization_v48_audit.py ===
+Optimization v4.8 audit: OK
+RC=0
+=== single_pass_yaml_audit.py ===
+[LOCAL] Responsiveness tuning diterapkan: openclash_lite.yaml
+[LOCAL] Ad/tracker provider diterapkan (threat-safe, Android-YAML jika perlu): openclash_lite.yaml
+[LOCAL] YouTube guard diterapkan (enhanced): openclash_lite.yaml
+[LOCAL] Semantic rule dedup: openclash_lite.yaml (-2 shadowed DOMAIN)
+[LOCAL] Single-pass YAML openclash_lite.yaml: loads=1, writes=1
+OK {'loads': 1, 'writes': 1}
+RC=0
+=== mrs_compile_selftest.py ===
+OK {'type': 'file', 'behavior': 'domain', 'format': 'mrs', 'path': './rule_providers/compiled/test-domain.mrs'}
+RC=0
+Target: OpenClash v0.47.156 + Mihomo alpha-ge183c58
+[OK] openclash_auto.yaml (static)
+[OK] openclash_android.yaml (static)
+[OK] openclash_lite.yaml (static)
+[OK] openclash_fresh_pool.yaml (static)

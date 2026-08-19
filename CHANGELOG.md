@@ -1,5 +1,13 @@
 # v4.6 YouTube Playback-Safe Adblock
 
+## v4.8 Precision Optimization
+
+- Compress large inline MANUAL routing block into a local classical rule-provider.
+- Use a single-pass YAML transaction for post-processing.
+- Remove only safe same-policy semantic DOMAIN overlaps on router outputs.
+- Add fail-open MRS compilation after Feed Guard validation.
+- Keep Android byte-identical to v4.7.
+
 - OpenWrt Auto/Lite/Fresh menambah enam exact-host Google Ads/DoubleClick yang dapat dipisahkan dari CDN video.
 - `googlevideo.com`, `ytimg.com`, `youtubei.googleapis.com`, dan `static.doubleclick.net` tetap diproteksi dari REJECT.
 - Android tidak menerima layer router baru.

@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+from contextlib import contextmanager
 import gzip
 import ipaddress
 import json
@@ -34,7 +35,12 @@ import time
 import urllib.request
 import zipfile
 from pathlib import Path
-from typing import Iterable
+from typing import Any, Iterable
+
+
+from manual_routing_provider import compress_manual_routing
+from mrs_compile import apply_compiled_mrs, load_compiled_report
+from semantic_rule_audit import remove_safe_shadowed_domains
 
 from openclash_target import (
     DEFAULT_ROUTER_CORE,
@@ -47,7 +53,7 @@ from openclash_target import (
     validate_yaml_file,
 )
 
-APP_VERSION = "4.7-youtube-gambling-sponsor-guard"
+APP_VERSION = "4.8-precision-optimization"
 GITHUB_API = "https://api.github.com"
 GITHUB_API_VERSION = "2026-03-10"
 
@@ -61,7 +67,7 @@ REFERENCE_PROFILE_URL = (
 )
 REFERENCE_PROFILE_CACHE = ".reference/openclash_auto.reference.yaml"
 
-CORE_FILES = ("generate_yaml.py", "sumberyaml_core.py", "security_policy.py", "android_marketplace_policy.py", "android_banking_policy.py", "feed_guard.py", "requirements.txt", "openclash_target.py")
+CORE_FILES = ("generate_yaml.py", "sumberyaml_core.py", "security_policy.py", "android_marketplace_policy.py", "android_banking_policy.py", "feed_guard.py", "manual_routing_provider.py", "mrs_compile.py", "semantic_rule_audit.py", "requirements.txt", "openclash_target.py")
 OUTPUT_YAMLS = (
     "openclash_auto.yaml",
     "openclash_android.yaml",
@@ -128,6 +134,10 @@ DEFAULT_ENV = {
     "REFRESH_SECURITY_FEEDS": "true",
     "FEED_MAX_DROP_RATIO": "0.65",
     "FEED_MAX_GROWTH_RATIO": "4.0",
+    "MANUAL_ROUTING_COMPRESS": "true",
+    "MANUAL_ROUTING_COMPRESS_THRESHOLD": "40",
+    "MRS_COMPILE": "auto",
+    "SEMANTIC_RULE_OPTIMIZE": "router",
     # Multi-host failover. Only configure hosts/IPs you own or are authorized to use.
     "BUG_SERVERS": "[\"104.17.3.81\"]",
     "BUG_MODE": "fallback",
@@ -609,6 +619,81 @@ def log(message: str) -> None:
     print(f"[LOCAL] {message}", flush=True)
 
 
+_YAML_TX_CACHE: dict[Path, dict[str, Any]] = {}
+_YAML_TX_DIRTY: set[Path] = set()
+_YAML_TX_STATS: dict[Path, dict[str, int]] = {}
+
+
+def _yaml_key(path: Path) -> Path:
+    try:
+        return path.expanduser().resolve()
+    except Exception:
+        return path
+
+
+def _yaml_load_config(path: Path) -> dict[str, Any]:
+    """Load YAML once inside a transaction, otherwise behave like safe_load."""
+    import yaml
+
+    key = _yaml_key(path)
+    if key in _YAML_TX_CACHE:
+        return _YAML_TX_CACHE[key]
+    obj = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    if not isinstance(obj, dict):
+        raise RuntimeError(f"{path.name}: root YAML bukan mapping")
+    stats = _YAML_TX_STATS.setdefault(key, {"loads": 0, "writes": 0})
+    stats["loads"] += 1
+    return obj
+
+
+def _yaml_store_config(path: Path, config: dict[str, Any]) -> None:
+    """Queue one final YAML serialization when a transaction is active."""
+    import yaml
+
+    key = _yaml_key(path)
+    if key in _YAML_TX_CACHE:
+        _YAML_TX_CACHE[key] = config
+        _YAML_TX_DIRTY.add(key)
+        return
+    path.write_text(
+        yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=160),
+        encoding="utf-8",
+    )
+    stats = _YAML_TX_STATS.setdefault(key, {"loads": 0, "writes": 0})
+    stats["writes"] += 1
+
+
+@contextmanager
+def yaml_edit_transaction(path: Path):
+    """One file parse + one final serialization for the whole optimization pass."""
+    import yaml
+
+    key = _yaml_key(path)
+    if key in _YAML_TX_CACHE:
+        yield _YAML_TX_CACHE[key]
+        return
+    obj = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    if not isinstance(obj, dict):
+        raise RuntimeError(f"{path.name}: root YAML bukan mapping")
+    _YAML_TX_CACHE[key] = obj
+    _YAML_TX_STATS[key] = {"loads": 1, "writes": 0}
+    try:
+        yield obj
+        if key in _YAML_TX_DIRTY:
+            path.write_text(
+                yaml.safe_dump(_YAML_TX_CACHE[key], allow_unicode=True, sort_keys=False, width=160),
+                encoding="utf-8",
+            )
+            _YAML_TX_STATS[key]["writes"] += 1
+    finally:
+        _YAML_TX_CACHE.pop(key, None)
+        _YAML_TX_DIRTY.discard(key)
+
+
+def yaml_transaction_stats(path: Path) -> dict[str, int]:
+    return dict(_YAML_TX_STATS.get(_yaml_key(path), {"loads": 0, "writes": 0}))
+
+
 def _headers(json_api: bool = False) -> dict[str, str]:
     headers = {"User-Agent": f"ConvertYAML-Local-Runner/{APP_VERSION}"}
     if json_api:
@@ -1059,8 +1144,11 @@ def _strict_hostname_or_ip(value: str) -> tuple[bool, str]:
     except ValueError:
         pass
 
-    # Public proxy domains should be ASCII DNS names.
-    name = raw.rstrip(".").lower()
+    # Public proxy domains should be ASCII DNS names. Validate case-insensitively
+    # but preserve the original spelling so validation itself does not rewrite
+    # proxy transport metadata.
+    original_name = raw.rstrip(".")
+    name = original_name.lower()
     if len(name) > 253 or "." not in name:
         return False, "invalid hostname length/shape"
     labels = name.split(".")
@@ -1071,7 +1159,7 @@ def _strict_hostname_or_ip(value: str) -> tuple[bool, str]:
             return False, "label starts/ends with hyphen"
         if not re.fullmatch(r"[a-z0-9-]+", label):
             return False, "invalid hostname character"
-    return True, name
+    return True, original_name
 
 
 def strict_proxy_domain_filter(config: dict, source_name: str = "") -> int:
@@ -1174,11 +1262,9 @@ def sanitize_yaml(path: Path) -> bool:
     if not path.exists():
         return False
     try:
-        config = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        config = _yaml_load_config(path)
     except Exception as exc:
         raise RuntimeError(f"{path.name}: YAML tidak dapat diparse: {exc}") from exc
-    if not isinstance(config, dict):
-        raise RuntimeError(f"{path.name}: root YAML bukan mapping")
 
     changed = False
     removed_strict = strict_proxy_domain_filter(config, path.name)
@@ -1354,10 +1440,7 @@ def sanitize_yaml(path: Path) -> bool:
         config["rules"] = fixed_rules
 
     if changed:
-        path.write_text(
-            yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=160),
-            encoding="utf-8",
-        )
+        _yaml_store_config(path, config)
     return changed
 
 
@@ -1387,9 +1470,7 @@ def apply_reference_profile(
     if not path.exists():
         return False
 
-    generated = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    if not isinstance(generated, dict):
-        raise RuntimeError(f"{path.name}: root YAML bukan mapping")
+    generated = _yaml_load_config(path)
 
     mode = os.environ.get("REFERENCE_PROFILE_MODE", "local-pinned").strip().lower()
     local_name = os.environ.get("REFERENCE_PROFILE_FILE", "reference_profile_v047156.yaml").strip() or "reference_profile_v047156.yaml"
@@ -1458,15 +1539,7 @@ def apply_reference_profile(
             cleaned.append(rule)
         merged["rules"] = cleaned
 
-    path.write_text(
-        yaml.safe_dump(
-            merged,
-            allow_unicode=True,
-            sort_keys=False,
-            width=160,
-        ),
-        encoding="utf-8",
-    )
+    _yaml_store_config(path, merged)
     return True
 
 def apply_network_hardening(path: Path) -> bool:
@@ -1475,9 +1548,7 @@ def apply_network_hardening(path: Path) -> bool:
 
     if not path.exists():
         return False
-    config = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    if not isinstance(config, dict):
-        return False
+    config = _yaml_load_config(path)
 
     changed = False
 
@@ -1519,10 +1590,7 @@ def apply_network_hardening(path: Path) -> bool:
                 changed = True
 
     if changed:
-        path.write_text(
-            yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=160),
-            encoding="utf-8",
-        )
+        _yaml_store_config(path, config)
     return changed
 
 def apply_responsiveness(path: Path) -> bool:
@@ -1544,14 +1612,12 @@ def apply_responsiveness(path: Path) -> bool:
         if not raw:
             return default
         return raw in {"1", "true", "yes", "y", "on", "aktif"}
-    config = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    if not isinstance(config, dict):
-        return False
+    config = _yaml_load_config(path)
 
     android_output_name = os.environ.get("OUTPUT_ANDROID_YAML", "openclash_android.yaml").strip() or "openclash_android.yaml"
     is_android = path.name == Path(android_output_name).name
 
-    before = yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=160)
+    before = copy.deepcopy(config)
 
     config["unified-delay"] = True
     config["tcp-concurrent"] = True
@@ -1688,9 +1754,8 @@ def apply_responsiveness(path: Path) -> bool:
                 g["lazy"] = True
                 g["timeout"] = min(int(g.get("timeout") or 3500), 3500)
 
-    after = yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=160)
-    if after != before:
-        path.write_text(after, encoding="utf-8")
+    if config != before:
+        _yaml_store_config(path, config)
         return True
     return False
 
@@ -1700,9 +1765,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
 
     if not path.exists():
         return False
-    config = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    if not isinstance(config, dict):
-        return False
+    config = _yaml_load_config(path)
 
     changed = False
     android_output_name = os.environ.get("OUTPUT_ANDROID_YAML", "openclash_android.yaml").strip() or "openclash_android.yaml"
@@ -2170,10 +2233,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
                 changed = True
 
     if changed:
-        path.write_text(
-            yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=160),
-            encoding="utf-8",
-        )
+        _yaml_store_config(path, config)
     return changed
 
 def apply_youtube_guard(path: Path, mode: str) -> bool:
@@ -2182,9 +2242,7 @@ def apply_youtube_guard(path: Path, mode: str) -> bool:
 
     if not path.exists():
         return False
-    config = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    if not isinstance(config, dict):
-        return False
+    config = _yaml_load_config(path)
 
     current = [str(item) for item in config.get("rules", []) or []]
     playback_domains = set(YOUTUBE_PLAYBACK_DOMAINS)
@@ -2316,10 +2374,7 @@ def apply_youtube_guard(path: Path, mode: str) -> bool:
     if rules_changed:
         config["rules"] = new_rules
     if rules_changed or (mode != "off" and locals().get("structure_changed", False)):
-        path.write_text(
-            yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=160),
-            encoding="utf-8",
-        )
+        _yaml_store_config(path, config)
         return True
     return False
 
@@ -2349,42 +2404,75 @@ def optimize_outputs(
     youtube_mode: str,
     youtube_filter_file: str,
 ) -> None:
-    """
-    v3 reference-locked, deduplicated adblock strategy.
+    """Single-pass post-processing for every generated YAML output.
 
-    Only openclash_auto.yaml is locked to the proven reference profile.
-    Other output variants are sanitized but receive no experimental
-    security/routing injection.
+    Each output is parsed once and serialized at most once. All existing
+    hardening/adblock/YouTube transforms operate on the in-memory transaction.
     """
     reference_url = os.environ.get(
         "REFERENCE_PROFILE_URL",
         REFERENCE_PROFILE_URL,
     ).strip() or REFERENCE_PROFILE_URL
 
+    compiled_mrs = load_compiled_report(workdir)
+    compress_manual = str(os.environ.get("MANUAL_ROUTING_COMPRESS", "true")).strip().lower() not in {"0", "false", "no", "off"}
+    try:
+        manual_threshold = max(10, min(1000, int(str(os.environ.get("MANUAL_ROUTING_COMPRESS_THRESHOLD", "40")).strip())))
+    except ValueError:
+        manual_threshold = 40
+
     for filename in files:
         path = workdir / filename
         if not path.exists():
             continue
 
-        sanitize_yaml(path)
+        with yaml_edit_transaction(path):
+            sanitize_yaml(path)
 
-        if filename == "openclash_auto.yaml":
-            reference_mode = os.environ.get("REFERENCE_PROFILE_MODE", "local-pinned").strip().lower()
-            if reference_mode not in {"off", "none", "generated"}:
-                apply_reference_profile(path, workdir, reference_url)
-                sanitize_yaml(path)
-                log(f"Reference profile diterapkan ({reference_mode}): {filename}")
+            if filename == "openclash_auto.yaml":
+                reference_mode = os.environ.get("REFERENCE_PROFILE_MODE", "local-pinned").strip().lower()
+                if reference_mode not in {"off", "none", "generated"}:
+                    apply_reference_profile(path, workdir, reference_url)
+                    sanitize_yaml(path)
+                    log(f"Reference profile diterapkan ({reference_mode}): {filename}")
 
-        # Apply the same safe network protection to every output variant.
-        if apply_network_hardening(path):
-            log(f"Network hardening diterapkan: {filename}")
-        if apply_responsiveness(path):
-            log(f"Responsiveness tuning diterapkan: {filename}")
-        if apply_security(path, profile, workdir, interval, dns_mode):
-            log(f"Ad/tracker provider diterapkan ({profile}, Android-YAML jika perlu): {filename}")
-        if apply_youtube_guard(path, youtube_mode):
-            log(f"YouTube guard diterapkan ({youtube_mode}): {filename}")
-        sanitize_yaml(path)
+            if apply_network_hardening(path):
+                log(f"Network hardening diterapkan: {filename}")
+            if apply_responsiveness(path):
+                log(f"Responsiveness tuning diterapkan: {filename}")
+            if apply_security(path, profile, workdir, interval, dns_mode):
+                log(f"Ad/tracker provider diterapkan ({profile}, Android-YAML jika perlu): {filename}")
+            if apply_youtube_guard(path, youtube_mode):
+                log(f"YouTube guard diterapkan ({youtube_mode}): {filename}")
+
+            config = _yaml_load_config(path)
+            is_android = filename == (os.environ.get("OUTPUT_ANDROID_YAML", "openclash_android.yaml").strip() or "openclash_android.yaml")
+            if compiled_mrs and not is_android:
+                switched = apply_compiled_mrs(config, workdir, compiled_mrs)
+                if switched:
+                    _yaml_store_config(path, config)
+                    log(f"MRS LKG lokal diterapkan: {filename} ({switched} provider)")
+
+            semantic_mode = str(os.environ.get("SEMANTIC_RULE_OPTIMIZE", "router")).strip().lower()
+            if semantic_mode not in {"off", "false", "0", "no"} and (semantic_mode == "all" or not is_android):
+                removed_semantic = remove_safe_shadowed_domains(config)
+                if removed_semantic:
+                    _yaml_store_config(path, config)
+                    log(f"Semantic rule dedup: {filename} (-{removed_semantic} shadowed DOMAIN)")
+
+            if compress_manual and filename == "openclash_auto.yaml":
+                result = compress_manual_routing(config, workdir, threshold=manual_threshold)
+                if result.get("changed"):
+                    _yaml_store_config(path, config)
+                    log(
+                        f"MANUAL routing dikompresi: {result.get('count')} inline rules -> "
+                        f"RULE-SET,{result.get('provider')},MANUAL"
+                    )
+
+            sanitize_yaml(path)
+
+        stats = yaml_transaction_stats(path)
+        log(f"Single-pass YAML {filename}: loads={stats.get('loads', 0)}, writes={stats.get('writes', 0)}")
 
     # Browser filters handle cosmetic/path-level YouTube ads that a router
     # cannot reliably distinguish from normal video traffic by domain alone.
@@ -2525,6 +2613,7 @@ def main() -> int:
         "ADBLOCK_PROFILE", "ADBLOCK_PROVIDER_INTERVAL", "INDONESIA_ADBLOCK",
         "THREAT_IP_BLOCKING", "SECURITY_FEED_GUARD", "REFRESH_SECURITY_FEEDS",
         "FEED_MAX_DROP_RATIO", "FEED_MAX_GROWTH_RATIO", "ADBLOCK_DEDUP_MODE",
+        "MANUAL_ROUTING_COMPRESS", "MANUAL_ROUTING_COMPRESS_THRESHOLD", "MRS_COMPILE", "SEMANTIC_RULE_OPTIMIZE",
         "OPENWRT_ADBLOCK_LEVEL", "OPENWRT_LITE_ADBLOCK_LEVEL",
         "THREAT_SAFE_FAMILY_DNS",
         "BUG_SERVERS", "BUG_MODE", "BUG_HEALTH_CHECK", "BUG_HEALTH_ATTEMPTS", "BUG_MAX_VARIANTS_PER_NODE",
