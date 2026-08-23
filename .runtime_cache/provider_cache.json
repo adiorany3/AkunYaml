@@ -67,8 +67,8 @@
     },
     "104.16.79.73": {
       "ip": "104.16.79.73",
-      "provider": "UNKNOWN",
-      "saved_at": 1787116775
+      "provider": "CLOUDFLARE",
+      "saved_at": 1787460788
     },
     "104.16.80.73": {
       "ip": "104.16.80.73",
@@ -143,7 +143,7 @@
     "104.18.37.228": {
       "ip": "104.18.37.228",
       "provider": "CLOUDFLARE",
-      "saved_at": 1787116775
+      "saved_at": 1787460788
     },
     "104.18.40.152": {
       "ip": "104.18.40.152",
@@ -347,8 +347,8 @@
     },
     "172.66.44.97": {
       "ip": "172.66.44.97",
-      "provider": "UNKNOWN",
-      "saved_at": 1787460233
+      "provider": "CLOUDFLARE",
+      "saved_at": 1787460788
     },
     "172.67.118.45": {
       "ip": "172.67.118.45",
@@ -425,6 +425,11 @@
       "provider": "UNKNOWN",
       "saved_at": 1787460233
     },
+    "185.193.30.94": {
+      "ip": "185.193.30.94",
+      "provider": "FMN5-RENTED-NET2",
+      "saved_at": 1787460788
+    },
     "185.22.173.67": {
       "ip": "185.22.173.67",
       "provider": "VEESP",
@@ -477,8 +482,8 @@
     },
     "208.103.161.32": {
       "ip": "208.103.161.32",
-      "provider": "NOTION-WEB",
-      "saved_at": 1787065055
+      "provider": "UNKNOWN",
+      "saved_at": 1787460480
     },
     "208.103.161.5": {
       "ip": "208.103.161.5",
@@ -613,7 +618,7 @@
     "chat.openai.com": {
       "ip": "172.64.150.28",
       "provider": "OPENAI",
-      "saved_at": 1787116774
+      "saved_at": 1787460787
     },
     "chatgpt.com": {
       "ip": "172.64.155.209",
@@ -665,6 +670,11 @@
       "provider": "SPECIAL-IPV4-BENCHMARK-T",
       "saved_at": 1787065920
     },
+    "flat-night-edd0.hosein9saleazhuongooyeh87.workers.dev": {
+      "ip": "172.67.219.21",
+      "provider": "CLOUDFLARE",
+      "saved_at": 1787460482
+    },
     "free.server11peekconfig.workers.dev": {
       "ip": "172.67.153.110",
       "provider": "DEV",
@@ -713,7 +723,7 @@
     "mybb.com": {
       "ip": "104.24.30.89",
       "provider": "MYBB",
-      "saved_at": 1787460233
+      "saved_at": 1787460479
     },
     "nameless-moon-7c4d.shafmrhjlos23.workers.dev": {
       "ip": "198.18.1.75",
@@ -744,6 +754,11 @@
       "ip": "198.18.16.31",
       "provider": "SPECIAL-IPV4-BENCHMARK-T",
       "saved_at": 1787051132
+    },
+    "russia.com": {
+      "ip": "104.26.4.57",
+      "provider": "RUSSIA",
+      "saved_at": 1787460788
     },
     "server3.pegibol940.workers.dev": {
       "ip": "104.21.0.87",
@@ -784,6 +799,11 @@
       "ip": "198.18.0.31",
       "provider": "SPEEDTEST",
       "saved_at": 1787065055
+    },
+    "www.zsu.gov.ua": {
+      "ip": "172.65.90.52",
+      "provider": "GOV",
+      "saved_at": 1787460480
     },
     "xmmct.130209.xyz": {
       "ip": "198.18.15.196",
@@ -852,8 +872,8 @@
       "saved_at": 1787060044
     },
     "104.16.79.73": {
-      "provider": "",
-      "saved_at": 1787116775
+      "provider": "CLOUDFLARE",
+      "saved_at": 1787460788
     },
     "104.16.80.73": {
       "provider": "CLOUDFLARE",
@@ -913,7 +933,7 @@
     },
     "104.18.37.228": {
       "provider": "CLOUDFLARE",
-      "saved_at": 1787116775
+      "saved_at": 1787460788
     },
     "104.18.40.152": {
       "provider": "",
@@ -1014,6 +1034,10 @@
     "104.25.3.165": {
       "provider": "CLOUDFLARE",
       "saved_at": 1787052332
+    },
+    "104.26.4.57": {
+      "provider": "",
+      "saved_at": 1787460788
     },
     "104.26.4.60": {
       "provider": "CLOUDFLARE",
@@ -1127,6 +1151,10 @@
       "provider": "CLOUDFLARE",
       "saved_at": 1787051132
     },
+    "172.65.90.52": {
+      "provider": "",
+      "saved_at": 1787460480
+    },
     "172.66.1.143": {
       "provider": "",
       "saved_at": 1787188420
@@ -1136,8 +1164,8 @@
       "saved_at": 1787105817
     },
     "172.66.44.97": {
-      "provider": "",
-      "saved_at": 1787460233
+      "provider": "CLOUDFLARE",
+      "saved_at": 1787460788
     },
     "172.67.118.45": {
       "provider": "CLOUDFLARE",
@@ -1207,6 +1235,10 @@
       "provider": "",
       "saved_at": 1787105817
     },
+    "172.67.219.21": {
+      "provider": "CLOUDFLARE",
+      "saved_at": 1787460482
+    },
     "172.67.67.178": {
       "provider": "CLOUDFLARE",
       "saved_at": 1787105817
@@ -1222,6 +1254,10 @@
     "185.178.208.176": {
       "provider": "",
       "saved_at": 1787460233
+    },
+    "185.193.30.94": {
+      "provider": "FMN5-RENTED-NET2",
+      "saved_at": 1787460788
     },
     "185.22.173.67": {
       "provider": "VEESP",
@@ -1372,8 +1408,8 @@
       "saved_at": 1787052334
     },
     "208.103.161.32": {
-      "provider": "NOTION-WEB",
-      "saved_at": 1787065055
+      "provider": "",
+      "saved_at": 1787460480
     },
     "208.103.161.5": {
       "provider": "NOTION-WEB",
@@ -1460,6 +1496,6 @@
       "saved_at": 1787063854
     }
   },
-  "saved_at": 1787460234,
+  "saved_at": 1787460788,
   "version": 1
 }

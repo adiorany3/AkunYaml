@@ -1,0 +1,16 @@
+# YouTube Sponsored App Gambling Redirect Guard v4.9
+# Blocks suspicious ad destinations that commonly redirect from YouTube ads to gambling apps
+# Does not block Google Play Store globally.
+
+DOMAIN-KEYWORD,slot
+DOMAIN-KEYWORD,casino
+DOMAIN-KEYWORD,judi
+DOMAIN-KEYWORD,togel
+DOMAIN-KEYWORD,bet
+DOMAIN-KEYWORD,poker
+DOMAIN-KEYWORD,gacor
+DOMAIN-KEYWORD,deposit
+DOMAIN-KEYWORD,withdraw
+DOMAIN-KEYWORD,bonus
+DOMAIN-SUFFIX,bet
+DOMAIN-SUFFIX,casino
