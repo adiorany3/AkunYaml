@@ -876,6 +876,13 @@ proxy-groups:
   expected-status: 200/204/301/302
   max-failed-times: 2
 rule-providers:
+  bot-check-compatibility:
+    type: http
+    behavior: domain
+    format: text
+    path: ./rule_providers/bot-check-compatibility.txt
+    url: https://example.invalid/bot-check-compatibility.txt
+    interval: 86400
   ads_domain:
     type: http
     interval: 86400
@@ -891,6 +898,11 @@ rule-providers:
     path: ./rule_providers/youtube.mrs
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs
 rules:
+- DOMAIN-SUFFIX,cloudflare.com,DIRECT
+- DOMAIN,challenges.cloudflare.com,DIRECT
+- DOMAIN-SUFFIX,hcaptcha.com,DIRECT
+- DOMAIN-SUFFIX,recaptcha.net,DIRECT
+- DOMAIN-SUFFIX,gstatic.com,DIRECT
 - DOMAIN-SUFFIX,local,DIRECT
 - DOMAIN-SUFFIX,lan,DIRECT
 - DOMAIN-SUFFIX,localhost,DIRECT

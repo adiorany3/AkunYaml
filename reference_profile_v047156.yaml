@@ -88,6 +88,13 @@ dns:
     - https://1.1.1.1/dns-query
     - https://dns.google/dns-query
 rule-providers:
+  bot-check-compatibility:
+    type: http
+    behavior: domain
+    format: text
+    path: ./rule_providers/bot-check-compatibility.txt
+    url: https://example.invalid/bot-check-compatibility.txt
+    interval: 86400
   ads_domain:
     type: http
     behavior: domain
@@ -138,6 +145,11 @@ rule-providers:
     path: ./rule_providers/chatgpt_voice.txt
     url: https://ruleset.skk.moe/Clash/ip/ai.txt
 rules:
+- DOMAIN-SUFFIX,cloudflare.com,DIRECT
+- DOMAIN,challenges.cloudflare.com,DIRECT
+- DOMAIN-SUFFIX,hcaptcha.com,DIRECT
+- DOMAIN-SUFFIX,recaptcha.net,DIRECT
+- DOMAIN-SUFFIX,gstatic.com,DIRECT
 - DOMAIN-SUFFIX,local,DIRECT
 - DOMAIN-SUFFIX,lan,DIRECT
 - DOMAIN-SUFFIX,localhost,DIRECT
