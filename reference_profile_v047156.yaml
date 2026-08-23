@@ -144,37 +144,7 @@ rule-providers:
     format: text
     path: ./rule_providers/chatgpt_voice.txt
     url: https://ruleset.skk.moe/Clash/ip/ai.txt
-  adguard-dns-optimized:
-    type: http
-    behavior: domain
-    format: text
-    path: ./rule_providers/adguard-dns-optimized.txt
-    url: https://raw.githubusercontent.com/AdguardTeam/HostlistsRegistry/master/filters/adguard_dns_filter.txt
-    interval: 86400
-  hagezi-light-ultimate:
-    type: http
-    behavior: domain
-    format: text
-    path: ./rule_providers/hagezi-light-ultimate.txt
-    url: https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.plus-onlydomains.txt
-    interval: 86400
-  easyprivacy-optimized:
-    type: http
-    behavior: domain
-    format: text
-    path: ./rule_providers/easyprivacy-optimized.txt
-    url: https://raw.githubusercontent.com/easylist/easylist/master/easyprivacy/easyprivacy_trackingservers.txt
-    interval: 86400
-
 rules:
-- RULE-SET,adguard-dns-optimized,REJECT
-- RULE-SET,hagezi-light-ultimate,REJECT
-- RULE-SET,easyprivacy-optimized,REJECT
-- DOMAIN-SUFFIX,google-analytics.com,REJECT
-- DOMAIN-SUFFIX,googletagmanager.com,REJECT
-- DOMAIN-SUFFIX,googlesyndication.com,REJECT
-- DOMAIN-SUFFIX,doubleclick.net,REJECT
-- DOMAIN-SUFFIX,hotjar.com,REJECT
 - DOMAIN-SUFFIX,cloudflare.com,DIRECT
 - DOMAIN,challenges.cloudflare.com,DIRECT
 - DOMAIN-SUFFIX,hcaptcha.com,DIRECT
