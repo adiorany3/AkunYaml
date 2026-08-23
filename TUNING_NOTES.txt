@@ -1,0 +1,9 @@
+OpenClash Tuned Version
+
+Changes:
+1. skip-cert-verify changed to false for TLS validation.
+2. Controller secret changed - replace with your own password.
+3. DNS fallback expanded with Cloudflare and Google.
+4. Keep alive optimized to 30 seconds.
+
+Please test all proxy nodes after importing. If a node fails due to invalid certificate, update the server certificate or revert only that node.
