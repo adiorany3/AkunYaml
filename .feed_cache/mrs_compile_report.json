@@ -38,13 +38,13 @@
   "threat-malware": {
     "behavior": "domain",
     "path": "rule_providers/compiled/threat-malware.mrs",
-    "size": 6107,
+    "size": 6059,
     "status": "compiled"
   },
   "threat-phishing": {
     "behavior": "domain",
     "path": "rule_providers/compiled/threat-phishing.mrs",
-    "size": 426285,
+    "size": 427470,
     "status": "compiled"
   },
   "threat-tif-ip": {
