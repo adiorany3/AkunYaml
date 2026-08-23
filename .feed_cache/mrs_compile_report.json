@@ -8,19 +8,19 @@
   "gambling-mini": {
     "behavior": "domain",
     "path": "rule_providers/compiled/gambling-mini.mrs",
-    "size": 648537,
+    "size": 636337,
     "status": "compiled"
   },
   "hagezi-pro-plus-mini": {
     "behavior": "domain",
     "path": "rule_providers/compiled/hagezi-pro-plus-mini.mrs",
-    "size": 486880,
+    "size": 480347,
     "status": "compiled"
   },
   "popup-ads": {
     "behavior": "domain",
     "path": "rule_providers/compiled/popup-ads.mrs",
-    "size": 379039,
+    "size": 378814,
     "status": "compiled"
   },
   "threat-cryptominers": {
@@ -32,7 +32,7 @@
   "threat-fake-scam": {
     "behavior": "domain",
     "path": "rule_providers/compiled/threat-fake-scam.mrs",
-    "size": 123388,
+    "size": 121966,
     "status": "compiled"
   },
   "threat-malware": {
@@ -50,13 +50,13 @@
   "threat-tif-ip": {
     "behavior": "ipcidr",
     "path": "rule_providers/compiled/threat-tif-ip.mrs",
-    "size": 138207,
+    "size": 139782,
     "status": "compiled"
   },
   "threat-tif-mini": {
     "behavior": "domain",
     "path": "rule_providers/compiled/threat-tif-mini.mrs",
-    "size": 1189495,
+    "size": 1189635,
     "status": "compiled"
   }
 }
