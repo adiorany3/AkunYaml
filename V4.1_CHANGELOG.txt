@@ -1,0 +1,13 @@
+AkunYaml Security Balanced v4.1
+
+Fixed:
+- YAML parsing error in openclash_android.yaml
+- Corrected security rule-provider indentation
+
+Improved:
+- Added whitelist provider foundation
+- Kept manual account separation
+- Kept performance-oriented rule structure
+
+Recommended next step:
+- Add active health-check parser for akun.txt
