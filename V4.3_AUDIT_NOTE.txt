@@ -1,0 +1,4 @@
+Audit note:
+Current extracted nodes mostly use Cloudflare IP 104.17.3.81.
+Cloudflare IP location cannot determine actual proxy exit country.
+Therefore Indonesia nodes cannot be safely selected without GeoIP testing.

@@ -5,12 +5,12 @@ A refresh is promoted only after format/count sanity checks. Suspicious updates 
 | Provider | Status | Entries | SHA-256 |
 |---|---:|---:|---|
 | `ads_indonesia` | updated | 154 | `01973614a1bcc66f` |
-| `gambling-mini` | updated | 104091 | `b8041dcc17f3efb9` |
-| `hagezi-pro-plus-mini` | updated | 68126 | `dbd4c0cc729e5f8b` |
-| `popup-ads` | updated | 54161 | `857002c20f1f4860` |
+| `gambling-mini` | updated | 102631 | `a1736bae900ef5bd` |
+| `hagezi-pro-plus-mini` | updated | 69424 | `cd835a24cd78a937` |
+| `popup-ads` | updated | 54168 | `4e3608e0c5101e1c` |
 | `threat-cryptominers` | updated | 297 | `0b2089ce6ce3a2bf` |
-| `threat-fake-scam` | updated | 17103 | `738487b8791ed364` |
+| `threat-fake-scam` | updated | 17113 | `1efb091a85e1da2a` |
 | `threat-malware` | updated | 473 | `93a5cc744ac61fbf` |
 | `threat-phishing` | updated | 36747 | `32f578c428e3c11b` |
-| `threat-tif-ip` | updated | 51806 | `09227343a67f60df` |
-| `threat-tif-mini` | updated | 176001 | `f19c7e2bc507b1c1` |
+| `threat-tif-ip` | updated | 55336 | `1671c58174833c26` |
+| `threat-tif-mini` | updated | 174377 | `3067ad9e490a009a` |
