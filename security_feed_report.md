@@ -12,5 +12,5 @@ A refresh is promoted only after format/count sanity checks. Suspicious updates 
 | `threat-fake-scam` | updated | 17113 | `1efb091a85e1da2a` |
 | `threat-malware` | updated | 473 | `93a5cc744ac61fbf` |
 | `threat-phishing` | updated | 36747 | `32f578c428e3c11b` |
-| `threat-tif-ip` | last-known-good | 55336 | `1671c58174833c26` |
+| `threat-tif-ip` | updated | 55336 | `1671c58174833c26` |
 | `threat-tif-mini` | updated | 174377 | `3067ad9e490a009a` |
