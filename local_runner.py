@@ -153,6 +153,10 @@ DEFAULT_ENV = {
     "ANDROID_FALLBACK_LAZY": "true",
     "ANDROID_GLOBAL_FALLBACK_INTERVAL": "180",
     "ANDROID_GLOBAL_FALLBACK_LAZY": "true",
+    "GLOBAL_HEALTH_INTERVAL": "300",
+    "GENERIC_FALLBACK_INTERVAL": "300",
+    "GENERIC_HEALTH_TIMEOUT_MS": "5000",
+    "GENERIC_MAX_FAILED_TIMES": "3",
     "ANDROID_AUTO_FAST_LAZY": "true",
     # Android-only marketplace/live compatibility. High-confidence threat rules
     # still run first; this guard only bypasses privacy/ad/tracker blocking.
@@ -1629,13 +1633,41 @@ def apply_responsiveness(path: Path) -> bool:
     dns = config.get("dns")
     if isinstance(dns, dict) and dns.get("enable") is not False:
         dns["cache-algorithm"] = "arc"
-        if dns.get("fallback"):
-            dns["fallback-lazy-query"] = True
-        if dns.get("nameserver") and not dns.get("proxy-server-nameserver"):
-            dns["proxy-server-nameserver"] = [
-                "https://1.1.1.1/dns-query",
-                "https://dns.google/dns-query",
-            ]
+        dns["prefer-h3"] = False
+        dns["use-hosts"] = True
+        dns["use-system-hosts"] = True
+        # Keep the primary family-safe resolver, but provide an independent
+        # family-safe backup so ordinary DNS resolution does not become a
+        # single point of failure. Blocking rules remain unchanged.
+        dns["fallback"] = [
+            "https://family.cloudflare-dns.com/dns-query",
+            "tls://family.cloudflare-dns.com:853",
+        ]
+        dns["fallback-lazy-query"] = True
+        dns["proxy-server-nameserver"] = [
+            "https://1.1.1.1/dns-query",
+            "https://dns.google/dns-query",
+        ]
+        fake_filter = dns.setdefault("fake-ip-filter", [])
+        if isinstance(fake_filter, list):
+            for item in (
+                "+.stun.*.*", "+.stun.*.*.*", "+.stun.*.*.*.*",
+                "+.stun.*.*.*.*.*", "*.n.n.srv.nintendo.net",
+                "xbox.*.*.microsoft.com", "*.*.xboxlive.com",
+            ):
+                if item not in fake_filter:
+                    fake_filter.append(item)
+
+    # Repair the social premium provider when the generated rules reference it.
+    rules_now = [str(item) for item in config.get("rules", []) or []]
+    if any(rule.startswith("RULE-SET,social-premium,") for rule in rules_now):
+        providers = config.setdefault("rule-providers", {})
+        if isinstance(providers, dict):
+            providers.setdefault("social-premium", {
+                "type": "file",
+                "behavior": "classical",
+                "path": "./rule_providers/social-premium.yaml",
+            })
 
     # IP rules do not need a DNS lookup to decide private/LAN destinations.
     private_prefixes = (
@@ -1679,13 +1711,13 @@ def apply_responsiveness(path: Path) -> bool:
                     if is_android and name == "GLOBAL":
                         g["interval"] = perf_int("ANDROID_GLOBAL_FALLBACK_INTERVAL", 180, 60, 900)
                         g["lazy"] = perf_bool("ANDROID_GLOBAL_FALLBACK_LAZY", True)
-                        g["timeout"] = min(int(g.get("timeout") or 2500), 3000)
-                        g["max-failed-times"] = 1
+                        g["timeout"] = max(int(g.get("timeout") or 5000), 5000)
+                        g["max-failed-times"] = perf_int("GENERIC_MAX_FAILED_TIMES", 3, 2, 6)
                     else:
-                        g["interval"] = 30 if name == "GLOBAL" else 60
-                        g["lazy"] = name != "GLOBAL"
-                        g["timeout"] = 2500
-                        g["max-failed-times"] = 2
+                        g["interval"] = perf_int("GLOBAL_HEALTH_INTERVAL", 300, 60, 1200) if name == "GLOBAL" else perf_int("GENERIC_FALLBACK_INTERVAL", 300, 60, 1200)
+                        g["lazy"] = True
+                        g["timeout"] = perf_int("GENERIC_HEALTH_TIMEOUT_MS", 5000, 2500, 15000)
+                        g["max-failed-times"] = perf_int("GENERIC_MAX_FAILED_TIMES", 3, 2, 6)
             elif name in {"AI", "AI-OPENAI", "AI-CLAUDE", "AI-GEMINI", "AI-OTHER", "AI-STABLE", "AI-BACKUP", "AI-MANUAL"}:
                 ai_urls = {
                     "AI-OPENAI": os.environ.get("AI_OPENAI_TEST_URL", os.environ.get("AI_TEST_URL", "https://chatgpt.com/favicon.ico")),
@@ -1702,57 +1734,57 @@ def apply_responsiveness(path: Path) -> bool:
                 g["interval"] = max(base_ai_interval, 600) if name == "AI-MANUAL" else base_ai_interval
                 g["lazy"] = True
                 g["timeout"] = max(2000, min(int(os.environ.get("AI_HEALTH_TIMEOUT_MS", "5000") or 5000), 15000))
-                g["max-failed-times"] = 2
+                g["max-failed-times"] = perf_int("GENERIC_MAX_FAILED_TIMES", 3, 2, 6)
             elif name == "WARM-UP":
                 if isinstance(g.get("proxies"), list):
                     g["proxies"] = g["proxies"][:perf_int("WARMUP_NODE_LIMIT", 4, 2, 12)]
                 g["interval"] = perf_int("WARMUP_INTERVAL", 60, 10, 300)
                 g["lazy"] = perf_bool("WARMUP_LAZY", False)
-                g["timeout"] = min(int(g.get("timeout") or 2500), 2500)
-                g["tolerance"] = max(int(g.get("tolerance") or 0), 40)
+                g["timeout"] = max(int(g.get("timeout") or 5000), 5000)
+                g["tolerance"] = max(int(g.get("tolerance") or 0), 150)
             elif name == "WARM-UP-CF":
                 if isinstance(g.get("proxies"), list):
                     g["proxies"] = g["proxies"][:perf_int("CF_WARMUP_NODE_LIMIT", 4, 2, 12)]
                 g["interval"] = perf_int("CF_WARMUP_INTERVAL", 120, 10, 600)
                 g["lazy"] = perf_bool("CF_WARMUP_LAZY", True)
-                g["timeout"] = min(int(g.get("timeout") or 2500), 2500)
-                g["tolerance"] = max(int(g.get("tolerance") or 0), 40)
+                g["timeout"] = max(int(g.get("timeout") or 5000), 5000)
+                g["tolerance"] = max(int(g.get("tolerance") or 0), 150)
             elif name == "AUTO-FAST":
                 if isinstance(g.get("proxies"), list):
                     g["proxies"] = g["proxies"][:perf_int("FAST_NODE_LIMIT", 8, 4, 30)]
                 g["interval"] = perf_int("WAKEUP_INTERVAL", 90, 20, 300)
                 g["lazy"] = perf_bool("ANDROID_AUTO_FAST_LAZY", True) if is_android else perf_bool("AUTO_FAST_LAZY", False)
-                g["timeout"] = min(int(g.get("timeout") or 3000), 3000)
-                g["tolerance"] = max(int(g.get("tolerance") or 0), 50)
+                g["timeout"] = max(int(g.get("timeout") or 5000), 5000)
+                g["tolerance"] = max(int(g.get("tolerance") or 0), 150)
             elif name == "STREAMING-FAST":
                 if isinstance(g.get("proxies"), list):
                     g["proxies"] = g["proxies"][:perf_int("STREAMING_NODE_LIMIT", 6, 3, 16)]
                 g["interval"] = perf_int("WAKEUP_INTERVAL", 90, 20, 300)
                 g["lazy"] = perf_bool("STREAMING_HEALTH_LAZY", True)
-                g["timeout"] = min(int(g.get("timeout") or 3000), 3000)
-                g["tolerance"] = max(int(g.get("tolerance") or 0), 50)
+                g["timeout"] = max(int(g.get("timeout") or 5000), 5000)
+                g["tolerance"] = max(int(g.get("tolerance") or 0), 150)
             elif is_android and (name.startswith("ANDROID-BACKUP-H") or name == "ANDROID-COLD-BACKUP"):
                 g["interval"] = perf_int("ANDROID_FALLBACK_INTERVAL", 300, 60, 1800)
                 g["lazy"] = perf_bool("ANDROID_FALLBACK_LAZY", True)
-                g["timeout"] = min(int(g.get("timeout") or 3500), 5000)
-                g["max-failed-times"] = 1
+                g["timeout"] = max(int(g.get("timeout") or 5000), 5000)
+                g["max-failed-times"] = perf_int("GENERIC_MAX_FAILED_TIMES", 3, 2, 6)
             elif name == "PING-CHECK":
                 g["interval"] = perf_int("PING_CHECK_INTERVAL", 300, 45, 1200)
                 g["lazy"] = perf_bool("PING_CHECK_LAZY", True)
-                g["timeout"] = min(int(g.get("timeout") or 4000), 4000)
+                g["timeout"] = max(int(g.get("timeout") or 5000), 5000)
             elif name == "FALLBACK":
                 g["interval"] = perf_int("FALLBACK_INTERVAL", 180, 30, 900)
                 g["lazy"] = perf_bool("FALLBACK_LAZY", True)
-                g["timeout"] = min(int(g.get("timeout") or 4500), 4500)
+                g["timeout"] = max(int(g.get("timeout") or 5000), 5000)
             elif name == "LOAD-BALANCE":
                 if isinstance(g.get("proxies"), list):
                     g["proxies"] = g["proxies"][:5]
                 g["interval"] = perf_int("BALANCE_INTERVAL", 300, 60, 1200)
                 g["lazy"] = perf_bool("LOAD_BALANCE_LAZY", True)
             elif name == "MANUAL" and gtype in {"fallback", "url-test"}:
-                g["interval"] = 90
+                g["interval"] = 300
                 g["lazy"] = True
-                g["timeout"] = min(int(g.get("timeout") or 3500), 3500)
+                g["timeout"] = max(int(g.get("timeout") or 5000), 5000)
 
     if config != before:
         _yaml_store_config(path, config)
