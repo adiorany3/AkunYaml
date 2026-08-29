@@ -232,8 +232,8 @@
     },
     "104.18.32.47": {
       "ip": "104.18.32.47",
-      "provider": "CLOUDFLARE",
-      "saved_at": 1787052333
+      "provider": "UNKNOWN",
+      "saved_at": 1787999351
     },
     "104.18.37.228": {
       "ip": "104.18.37.228",
@@ -808,7 +808,7 @@
     "172.64.84.228": {
       "ip": "172.64.84.228",
       "provider": "CLOUDFLARE",
-      "saved_at": 1787994775
+      "saved_at": 1787999048
     },
     "172.66.171.48": {
       "ip": "172.66.171.48",
@@ -938,7 +938,7 @@
     "172.67.174.249": {
       "ip": "172.67.174.249",
       "provider": "CLOUDFLARE",
-      "saved_at": 1787994775
+      "saved_at": 1787999048
     },
     "172.67.176.49": {
       "ip": "172.67.176.49",
@@ -977,8 +977,8 @@
     },
     "172.67.209.139": {
       "ip": "172.67.209.139",
-      "provider": "CLOUDFLARE",
-      "saved_at": 1787463044
+      "provider": "UNKNOWN",
+      "saved_at": 1787999355
     },
     "172.67.210.146": {
       "ip": "172.67.210.146",
@@ -1055,6 +1055,11 @@
       "provider": "TWO-E-TELEKOM",
       "saved_at": 1787707121
     },
+    "185.96.80.147": {
+      "ip": "185.96.80.147",
+      "provider": "NETCRAFTERS",
+      "saved_at": 1787999352
+    },
     "188.114.96.3": {
       "ip": "188.114.96.3",
       "provider": "CLOUDFLARE",
@@ -1073,7 +1078,7 @@
     "188.114.97.6": {
       "ip": "188.114.97.6",
       "provider": "CLOUDFLARE",
-      "saved_at": 1787997540
+      "saved_at": 1787999352
     },
     "188.114.98.134": {
       "ip": "188.114.98.134",
@@ -1163,7 +1168,7 @@
     "2.56.127.137": {
       "ip": "2.56.127.137",
       "provider": "THE-HOSTING",
-      "saved_at": 1787052334
+      "saved_at": 1787999352
     },
     "2.fognet.ru": {
       "ip": "130.17.16.150",
@@ -1726,9 +1731,9 @@
       "saved_at": 1787060035
     },
     "free.server6peekconfig.workers.dev": {
-      "ip": "104.21.36.74",
-      "provider": "CLOUDFLARE",
-      "saved_at": 1787993975
+      "ip": "198.18.10.240",
+      "provider": "DEV",
+      "saved_at": 1787999050
     },
     "free77-sg3.node2.top": {
       "ip": "198.18.16.61",
@@ -1776,9 +1781,9 @@
       "saved_at": 1787463047
     },
     "jaber.speedoraa.ir": {
-      "ip": "104.24.72.232",
-      "provider": "CLOUDFLARE",
-      "saved_at": 1787994594
+      "ip": "198.18.10.254",
+      "provider": "SPEEDORAA",
+      "saved_at": 1787999351
     },
     "japan.com": {
       "ip": "198.18.23.85",
@@ -1854,6 +1859,11 @@
       "ip": "198.18.26.49",
       "provider": "SPECIAL-IPV4-BENCHMARK-T",
       "saved_at": 1787625442
+    },
+    "nuclear.us.kg": {
+      "ip": "198.18.10.241",
+      "provider": "US",
+      "saved_at": 1787999050
     },
     "o.server2peekconfig.workers.dev": {
       "ip": "198.18.10.118",
@@ -2301,8 +2311,8 @@
       "saved_at": 1787994594
     },
     "104.18.32.47": {
-      "provider": "CLOUDFLARE",
-      "saved_at": 1787052333
+      "provider": "",
+      "saved_at": 1787999351
     },
     "104.18.37.228": {
       "provider": "CLOUDFLARE",
@@ -2914,7 +2924,7 @@
     },
     "172.64.84.228": {
       "provider": "CLOUDFLARE",
-      "saved_at": 1787994775
+      "saved_at": 1787999048
     },
     "172.65.90.52": {
       "provider": "",
@@ -3078,7 +3088,7 @@
     },
     "172.67.174.249": {
       "provider": "CLOUDFLARE",
-      "saved_at": 1787994775
+      "saved_at": 1787999048
     },
     "172.67.176.49": {
       "provider": "CLOUDFLARE",
@@ -3149,8 +3159,8 @@
       "saved_at": 1787105817
     },
     "172.67.209.139": {
-      "provider": "CLOUDFLARE",
-      "saved_at": 1787463044
+      "provider": "",
+      "saved_at": 1787999355
     },
     "172.67.210.146": {
       "provider": "",
@@ -3236,6 +3246,10 @@
       "provider": "TWO-E-TELEKOM",
       "saved_at": 1787707121
     },
+    "185.96.80.147": {
+      "provider": "NETCRAFTERS",
+      "saved_at": 1787999352
+    },
     "188.114.96.3": {
       "provider": "CLOUDFLARE",
       "saved_at": 1787718683
@@ -3254,7 +3268,7 @@
     },
     "188.114.97.6": {
       "provider": "CLOUDFLARE",
-      "saved_at": 1787997540
+      "saved_at": 1787999352
     },
     "188.114.98.134": {
       "provider": "",
@@ -3355,6 +3369,18 @@
     "198.18.10.118": {
       "provider": "SPECIAL-IPV4-BENCHMARK-T",
       "saved_at": 1787996569
+    },
+    "198.18.10.240": {
+      "provider": "",
+      "saved_at": 1787999050
+    },
+    "198.18.10.241": {
+      "provider": "",
+      "saved_at": 1787999050
+    },
+    "198.18.10.254": {
+      "provider": "",
+      "saved_at": 1787999351
     },
     "198.18.15.195": {
       "provider": "SPECIAL-IPV4-BENCHMARK-T",
@@ -3574,7 +3600,7 @@
     },
     "2.56.127.137": {
       "provider": "THE-HOSTING",
-      "saved_at": 1787052334
+      "saved_at": 1787999352
     },
     "206.53.48.65": {
       "provider": "",
@@ -3841,6 +3867,6 @@
       "saved_at": 1787063854
     }
   },
-  "saved_at": 1787997540,
+  "saved_at": 1787999355,
   "version": 1
 }

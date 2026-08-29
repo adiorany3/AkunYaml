@@ -1,0 +1,17 @@
+# Smart MultiPool
+# Integrate into OpenClash proxy-groups
+
+SOCIAL_POOL:
+  purpose: social applications
+
+VIDEO_POOL:
+  purpose: streaming
+
+WORK_POOL:
+  purpose: productivity
+
+GAME_POOL:
+  purpose: low latency
+
+FAMILY_POOL:
+  purpose: protected traffic
