@@ -1,0 +1,20 @@
+# Smart Pool Design
+
+AUTO_BEST:
+  type: url-test
+  purpose: select healthiest node
+
+SOCIAL_POOL:
+  purpose: social applications
+
+VIDEO_POOL:
+  purpose: streaming applications
+
+WORK_POOL:
+  purpose: productivity applications
+
+GAME_POOL:
+  purpose: low latency applications
+
+FAMILY_POOL:
+  purpose: protected traffic

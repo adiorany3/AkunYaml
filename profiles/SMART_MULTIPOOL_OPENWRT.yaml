@@ -1,0 +1,9 @@
+# Smart MultiPool OpenWrt Profile v13.5
+
+# Main router handles:
+# - node health
+# - application routing
+# - security filtering
+# - fallback
+
+mode: rule
