@@ -5,7 +5,7 @@ A refresh is promoted only after format/count sanity checks. Suspicious updates 
 | Provider | Status | Entries | SHA-256 |
 |---|---:|---:|---|
 | `ads_indonesia` | updated | 154 | `01973614a1bcc66f` |
-| `gambling-mini` | updated | 101304 | `c7088decbaeb8953` |
+| `gambling-mini` | updated | 99165 | `8edb731ba0078ffb` |
 | `hagezi-pro-plus-mini` | updated | 68533 | `74c655a90c7e3dd7` |
 | `popup-ads` | updated | 54178 | `c9afad0fcfec98f1` |
 | `threat-cryptominers` | updated | 297 | `0b2089ce6ce3a2bf` |
@@ -13,4 +13,4 @@ A refresh is promoted only after format/count sanity checks. Suspicious updates 
 | `threat-malware` | updated | 494 | `4a928b0485ceddeb` |
 | `threat-phishing` | updated | 37238 | `19f75f95954e6951` |
 | `threat-tif-ip` | updated | 61110 | `4fb0eaea7988cbe0` |
-| `threat-tif-mini` | updated | 174598 | `f5542ea771691d3c` |
+| `threat-tif-mini` | updated | 176834 | `bdf0a65afb812941` |
