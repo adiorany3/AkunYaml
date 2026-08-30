@@ -144,6 +144,53 @@ rule-providers:
     format: text
     path: ./rule_providers/chatgpt_voice.txt
     url: https://ruleset.skk.moe/Clash/ip/ai.txt
+  social_media_auto:
+    type: inline
+    behavior: classical
+    payload:
+    - DOMAIN-KEYWORD,facebook
+    - DOMAIN-KEYWORD,instagram
+    - DOMAIN-KEYWORD,tiktok
+    - DOMAIN-KEYWORD,twitter
+    - DOMAIN-KEYWORD,twimg
+    - DOMAIN-KEYWORD,telegram
+    - DOMAIN-KEYWORD,reddit
+    - DOMAIN-KEYWORD,discord
+    - DOMAIN-KEYWORD,whatsapp
+    - DOMAIN-KEYWORD,line
+    - DOMAIN-KEYWORD,snapchat
+    - DOMAIN-SUFFIX,facebook.com
+    - DOMAIN-SUFFIX,facebook.net
+    - DOMAIN-SUFFIX,fbcdn.net
+    - DOMAIN-SUFFIX,instagram.com
+    - DOMAIN-SUFFIX,cdninstagram.com
+    - DOMAIN-SUFFIX,tiktok.com
+    - DOMAIN-SUFFIX,tiktokcdn.com
+    - DOMAIN-SUFFIX,tiktokv.com
+    - DOMAIN-SUFFIX,twitter.com
+    - DOMAIN-SUFFIX,x.com
+    - DOMAIN-SUFFIX,t.co
+    - DOMAIN-SUFFIX,twimg.com
+    - DOMAIN-SUFFIX,abs.twimg.com
+    - DOMAIN-SUFFIX,pbs.twimg.com
+    - DOMAIN-SUFFIX,video.twimg.com
+    - DOMAIN-SUFFIX,api.twitter.com
+    - DOMAIN-SUFFIX,api.x.com
+    - DOMAIN-SUFFIX,t.me
+    - DOMAIN-SUFFIX,telegram.org
+    - DOMAIN-SUFFIX,telegram.me
+    - DOMAIN-SUFFIX,whatsapp.com
+    - DOMAIN-SUFFIX,whatsapp.net
+    - DOMAIN-SUFFIX,line.me
+    - DOMAIN-SUFFIX,line-apps.com
+    - DOMAIN-SUFFIX,line-scdn.net
+    - DOMAIN-SUFFIX,reddit.com
+    - DOMAIN-SUFFIX,redditmedia.com
+    - DOMAIN-SUFFIX,redd.it
+    - DOMAIN-SUFFIX,discord.com
+    - DOMAIN-SUFFIX,discordapp.com
+    - DOMAIN-SUFFIX,snapchat.com
+    - DOMAIN-SUFFIX,snapchatcdn.com
 rules:
 # AI ACCESS: explicit API/service routing
 - DOMAIN-SUFFIX,api.openai.com,AI-OPENAI
@@ -561,16 +608,7 @@ rules:
 - DOMAIN-KEYWORD,reload,MANUAL
 - DOMAIN-KEYWORD,kios,MANUAL
 - DOMAIN-KEYWORD,agen,MANUAL
-- DOMAIN-SUFFIX,facebook.com,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,fbcdn.net,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,instagram.com,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,cdninstagram.com,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,tiktok.com,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,tiktokcdn.com,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,twitter.com,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,x.com,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,t.me,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,telegram.org,SOCIAL-MEDIA
+- RULE-SET,social_media_auto,SOCIAL-MEDIA
 - MATCH,GLOBAL
 unified-delay: true
 tcp-concurrent: true
