@@ -3002,6 +3002,14 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         "RULE-SET,privacy_classical,REJECT",
         "RULE-SET,hijacking_classical,REJECT",
 
+        # Reddit harus pakai node manual agar tidak terjebak pada pool otomatis
+        # yang sering gagal pada web tertentu.
+        "DOMAIN-SUFFIX,reddit.com,MANUAL",
+        "DOMAIN-SUFFIX,redditmedia.com,MANUAL",
+        "DOMAIN-SUFFIX,redd.it,MANUAL",
+        "DOMAIN,old.reddit.com,MANUAL",
+        "DOMAIN-KEYWORD,reddit,MANUAL",
+
         # Sosial media.
         "RULE-SET,telegram_domain,SOCIAL-MEDIA",
         "RULE-SET,twitter_domain,SOCIAL-MEDIA",
