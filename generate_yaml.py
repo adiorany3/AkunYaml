@@ -1003,8 +1003,8 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
             for manual_name in reversed(manual_names):
                 _insert_once(proxies_list, manual_name, 0)
         elif name == "GLOBAL":
-            # Start GLOBAL with MANUAL first
-            _insert_once(proxies_list, "MANUAL", 0)
+            # GLOBAL starts with FALLBACK (fallback type)
+            _insert_once(proxies_list, "FALLBACK", 0)
         elif (not android) and name == "PROXY":
             # Start PROXY with MANUAL first
             _insert_once(proxies_list, "MANUAL", 0)
@@ -1307,9 +1307,15 @@ def _build_lite_yaml_from_text(yaml_text: str) -> str:
         gtype = str(new_g.get("type") or "")
         refs = [str(x) for x in (new_g.get("proxies") or []) if str(x) in refs_available]
         if name == "GLOBAL":
-            # GLOBAL selector intentionally has no DIRECT. Local/LAN traffic still goes DIRECT via rules.
-            # Start with MANUAL first
-            preferred = ["MANUAL", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]
+            # GLOBAL is now fallback type, starting with FALLBACK group
+            new_g["type"] = "fallback"
+            new_g.setdefault("url", "https://www.gstatic.com/generate_204")
+            new_g.setdefault("interval", 30)
+            new_g.setdefault("lazy", True)
+            new_g.setdefault("timeout", 3000)
+            new_g.setdefault("expected-status", "200/204/301/302")
+            new_g.setdefault("max-failed-times", 2)
+            preferred = ["FALLBACK", "AUTO-FAST", "WARM-UP", "MANUAL"]
             refs = _dedupe_values([x for x in preferred if x in refs_available] + [x for x in refs if x in refs_available and x != "DIRECT"])
         elif name == "PROXY":
             # Start with MANUAL first
