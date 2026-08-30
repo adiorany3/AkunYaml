@@ -56,6 +56,43 @@ def _read_text_file(path: str) -> str:
     return file_path.read_text(encoding="utf-8", errors="ignore")
 
 
+def _load_saved_candidate_pool(fresh_dir: str | Path) -> list[str]:
+    """Return cached fresh-pool URIs from prior runs, preserving only alive survivors.
+
+    The saved pool is treated as a seed for the next refresh cycle. Dead entries are
+    naturally pruned during the next validation pass because the URI is re-tested and
+    only the nodes that remain healthy are retained for the next write-back.
+    """
+    base_dir = Path(fresh_dir)
+    if not base_dir.exists():
+        return []
+
+    candidates: list[str] = []
+    for filename in ("fresh_candidates_seed.txt", "fresh_candidates.txt", "fresh_candidates_strict.txt"):
+        path = base_dir / filename
+        if not path.exists():
+            continue
+        for line in path.read_text(encoding="utf-8", errors="ignore").splitlines():
+            uri = line.strip().strip("\"' ")
+            if uri and "://" in uri and uri not in candidates:
+                candidates.append(uri)
+    return candidates
+
+
+def _merge_saved_candidate_seed(links_text: str, fresh_dir: str | Path) -> str:
+    base_links = [line.strip() for line in (links_text or "").splitlines() if line.strip()]
+    saved_links = _load_saved_candidate_pool(fresh_dir)
+    merged = []
+    seen: set[str] = set()
+    for uri in [*saved_links, *base_links]:
+        key = uri.strip().strip(',\'"')
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        merged.append(key)
+    return "\n".join(merged) + ("\n" if merged else "")
+
+
 def _env_int(name: str, default: int) -> int:
     value = os.getenv(name, "").strip()
     if not value:
@@ -1597,7 +1634,7 @@ def main() -> int:
     attempts = max(1, _env_int("ATTEMPTS", 2))
     require_successes = min(max(1, _env_int("REQUIRE_SUCCESSES", 1)), attempts)
 
-    links_text = build_links_text()
+    links_text = _merge_saved_candidate_seed(build_links_text(), output_fresh_dir)
     manual_text = _read_text_file(manual_file)
     multi_host_active = len(TARGET_SERVERS) > 1 and BUG_MODE in {"fallback", "distribute"}
     if multi_host_active:
@@ -1752,8 +1789,15 @@ def main() -> int:
     fresh_dir = Path(output_fresh_dir)
     fresh_dir.mkdir(parents=True, exist_ok=True)
     Path(output_node_quality_report).write_text(node_quality_text, encoding="utf-8")
-    (fresh_dir / "fresh_candidates.txt").write_text(build_akun_txt(fresh_nodes), encoding="utf-8")
-    (fresh_dir / "fresh_candidates_strict.txt").write_text(build_akun_txt(alive_nodes), encoding="utf-8")
+
+    fresh_akun_text = build_akun_txt(fresh_nodes)
+    strict_akun_text = build_akun_txt(alive_nodes)
+    (fresh_dir / "fresh_candidates.txt").write_text(fresh_akun_text, encoding="utf-8")
+    (fresh_dir / "fresh_candidates_strict.txt").write_text(strict_akun_text, encoding="utf-8")
+
+    combined_pool_lines = [line.strip() for line in (fresh_akun_text + "\n" + strict_akun_text).splitlines() if line.strip()]
+    combined_pool_text = "\n".join(dict.fromkeys(combined_pool_lines)) + ("\n" if combined_pool_lines else "")
+    (fresh_dir / "fresh_candidates_seed.txt").write_text(combined_pool_text, encoding="utf-8")
     (fresh_dir / "fresh_candidates.json").write_text(fresh_json_text, encoding="utf-8")
     (fresh_dir / "fresh_candidates_report.md").write_text(fresh_report_text, encoding="utf-8")
     Path(output_csv).write_text(csv_text, encoding="utf-8")

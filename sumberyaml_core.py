@@ -399,6 +399,43 @@ def _select_streaming_names(names: list[str], warmup_names: list[str] | None = N
     return ordered[: min(limit, len(ordered))]
 
 
+def _performance_bucket_names(names: list[str]) -> dict[str, list[str]]:
+    """Assign every tested node to a concrete performance bucket.
+
+    The bucket order is strict and exhaustive: fast stable nodes go to WARM-UP,
+    Cloudflare/worker-friendly nodes to WARM-UP-CF, streaming-ready nodes to
+    STREAMING-FAST, then the remaining fast-but-not-top pool to AUTO-FAST, and
+    all leftovers stay in FALLBACK.
+    """
+    ranked = _rank_names_by_delay([str(n) for n in names if str(n) and str(n) != "DIRECT"])
+    warmup = _select_warmup_names(ranked)
+    cf = _select_cf_warmup_names(ranked)
+    streaming = _select_streaming_names(ranked, warmup, cf)
+    fast = [
+        name for name in _select_fast_pool_names(ranked)
+        if name not in warmup and name not in cf and name not in streaming
+    ]
+    fallback = [
+        name for name in ranked
+        if name not in warmup and name not in cf and name not in streaming and name not in fast
+    ]
+    bucketed: dict[str, list[str]] = {
+        "WARM-UP": _dedupe_names(warmup),
+        "WARM-UP-CF": _dedupe_names(cf),
+        "STREAMING-FAST": _dedupe_names(streaming),
+        "AUTO-FAST": _dedupe_names(fast),
+        "FALLBACK": _dedupe_names(fallback),
+    }
+
+    # Guarantee every retrieved node is still represented in the final fallback
+    # ladder even if a threshold or alias changed after previous selection runs.
+    all_assigned = {name for bucket in bucketed.values() for name in bucket}
+    missing = [name for name in ranked if name not in all_assigned]
+    if missing:
+        bucketed["FALLBACK"] = _dedupe_names(bucketed["FALLBACK"] + missing)
+    return bucketed
+
+
 def _fallback_order_names(names: list[str], warmup_names: list[str] | None = None, cf_names: list[str] | None = None) -> list[str]:
     """Fallback should try strict automatic nodes first; manual nodes are appended later by generate_yaml.py."""
     return _dedupe_names((warmup_names or []) + (cf_names or []) + _rank_names_by_delay(names))
@@ -2584,10 +2621,11 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
     nodes = expand_multi_host_variants(nodes)
     names = [node.clash["name"] for node in nodes]
     direct_or_names = names or ["DIRECT"]
-    warmup_names = _select_warmup_names(names)
-    cf_warmup_names = _select_cf_warmup_names(names)
-    fast_names = _select_fast_pool_names(names)
-    streaming_names = _select_streaming_names(names, warmup_names, cf_warmup_names)
+    buckets = _performance_bucket_names(names)
+    warmup_names = buckets["WARM-UP"]
+    cf_warmup_names = buckets["WARM-UP-CF"]
+    fast_names = buckets["AUTO-FAST"]
+    streaming_names = buckets["STREAMING-FAST"]
     fallback_names = _fallback_order_names(names, warmup_names, cf_warmup_names)
     ai_stable_names, ai_backup_names, ai_manual_names = _select_ai_pools(names)
     ai_service_names = _dedupe_names(ai_stable_names + ai_backup_names + ai_manual_names) or direct_or_names
@@ -3258,10 +3296,11 @@ def build_openclash_android_yaml(
         nodes, test_url=test_url, health_timeout=health_timeout
     )
     direct_or_names = names or ["DIRECT"]
-    warmup_names = _select_warmup_names(names)
-    cf_warmup_names = _select_cf_warmup_names(names)
-    fast_names = _select_fast_pool_names(names)
-    streaming_names = _select_streaming_names(names, warmup_names, cf_warmup_names)
+    buckets = _performance_bucket_names(names)
+    warmup_names = buckets["WARM-UP"]
+    cf_warmup_names = buckets["WARM-UP-CF"]
+    fast_names = buckets["AUTO-FAST"]
+    streaming_names = buckets["STREAMING-FAST"]
     fallback_names = _fallback_order_names(names, warmup_names, cf_warmup_names)
     ai_stable_names, ai_backup_names, ai_manual_names = _select_ai_pools(names)
     ai_service_names = _dedupe_names(ai_stable_names + ai_backup_names + ai_manual_names) or direct_or_names
