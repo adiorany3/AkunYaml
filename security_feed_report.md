@@ -10,7 +10,7 @@ A refresh is promoted only after format/count sanity checks. Suspicious updates 
 | `popup-ads` | updated | 54178 | `c9afad0fcfec98f1` |
 | `threat-cryptominers` | updated | 297 | `0b2089ce6ce3a2bf` |
 | `threat-fake-scam` | updated | 17284 | `7291c3acf904d404` |
-| `threat-malware` | updated | 494 | `4a928b0485ceddeb` |
-| `threat-phishing` | updated | 37238 | `19f75f95954e6951` |
+| `threat-malware` | updated | 491 | `fec72f001076cf20` |
+| `threat-phishing` | updated | 37135 | `0d35102adc9e7890` |
 | `threat-tif-ip` | updated | 61110 | `4fb0eaea7988cbe0` |
 | `threat-tif-mini` | updated | 176834 | `bdf0a65afb812941` |

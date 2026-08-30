@@ -999,23 +999,15 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
         if not isinstance(proxies_list, list):
             continue
         if name == "FALLBACK":
-            # Append individual manual nodes after strict automatic nodes. They are
-            # still directly health-checked, but no longer delay the first fallback pick.
-            for manual_name in manual_names:
-                _insert_once(proxies_list, manual_name)
+            # Start FALLBACK with MANUAL first, then automatic nodes
+            for manual_name in reversed(manual_names):
+                _insert_once(proxies_list, manual_name, 0)
         elif name == "GLOBAL":
-            # Keep MANUAL visible in the main selector too.
-            if "DIRECT" in proxies_list:
-                _insert_once(proxies_list, "MANUAL", proxies_list.index("DIRECT"))
-            elif "FALLBACK" in proxies_list:
-                _insert_once(proxies_list, "MANUAL", proxies_list.index("FALLBACK") + 1)
-            else:
-                _insert_once(proxies_list, "MANUAL", 0)
+            # Start GLOBAL with MANUAL first
+            _insert_once(proxies_list, "MANUAL", 0)
         elif (not android) and name == "PROXY":
-            if "DIRECT" in proxies_list:
-                _insert_once(proxies_list, "MANUAL", proxies_list.index("DIRECT"))
-            else:
-                _insert_once(proxies_list, "MANUAL", 1)
+            # Start PROXY with MANUAL first
+            _insert_once(proxies_list, "MANUAL", 0)
 
     groups.append(manual_group)
     return config
@@ -1316,10 +1308,12 @@ def _build_lite_yaml_from_text(yaml_text: str) -> str:
         refs = [str(x) for x in (new_g.get("proxies") or []) if str(x) in refs_available]
         if name == "GLOBAL":
             # GLOBAL selector intentionally has no DIRECT. Local/LAN traffic still goes DIRECT via rules.
-            preferred = ["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK", "MANUAL"]
+            # Start with MANUAL first
+            preferred = ["MANUAL", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]
             refs = _dedupe_values([x for x in preferred if x in refs_available] + [x for x in refs if x in refs_available and x != "DIRECT"])
         elif name == "PROXY":
-            preferred = ["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK", "MANUAL"]
+            # Start with MANUAL first
+            preferred = ["MANUAL", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]
             refs = _dedupe_values([x for x in preferred if x in refs_available] + [x for x in refs if x in refs_available])
         elif name == "WARM-UP":
             refs = refs[:5]
