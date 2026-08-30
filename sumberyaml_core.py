@@ -2824,7 +2824,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
         },
-        _category_health_group("SOCIAL-MEDIA", selector(["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]),
+        _category_health_group("SOCIAL-MEDIA", selector(["FALLBACK", "WARM-UP", "AUTO-FAST", "WARM-UP-CF"]),
                                os.getenv("SOCIAL_TEST_URL", "https://www.gstatic.com/generate_204"), active_interval, fast_timeout),
         {
             "name": "YOUTUBE",
