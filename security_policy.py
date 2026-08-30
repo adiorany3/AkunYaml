@@ -109,6 +109,21 @@ ROUTER_GAMBLING_PROVIDERS: dict[str, dict[str, Any]] = {
     ),
 }
 
+ROUTER_LOCAL_SAFETY_PROVIDERS: dict[str, dict[str, Any]] = {
+    "adult-local": {
+        "type": "file",
+        "behavior": "classical",
+        "format": "yaml",
+        "path": "./rule_providers/security-adult.yaml",
+    },
+    "pinjol-local": {
+        "type": "file",
+        "behavior": "classical",
+        "format": "yaml",
+        "path": "./rule_providers/security-pinjol.yaml",
+    },
+}
+
 ROUTER_THREAT_SAFE_PROVIDERS: dict[str, dict[str, Any]] = {
     "threat-malware": _http_domain(
         "./rule_providers/threat-malware.txt",
@@ -220,6 +235,7 @@ def provider_catalog(
         out.pop("ads_indonesia", None)
     if gambling_block:
         out.update(_with_interval(ROUTER_GAMBLING_PROVIDERS, max(int(interval), 86400)))
+    out.update(deepcopy(ROUTER_LOCAL_SAFETY_PROVIDERS))
     if profile in {"strict", "child-safe", "app-safe", "threat-safe"} and not lite:
         out.update(_with_interval(ROUTER_STRICT_PROVIDERS, interval))
     if router_adblock_level == "compact":
@@ -288,6 +304,10 @@ def provider_reject_rules(
 
     if gambling_block:
         rules.append("RULE-SET,gambling-mini,REJECT")
+    rules.extend([
+        "RULE-SET,adult-local,REJECT",
+        "RULE-SET,pinjol-local,REJECT",
+    ])
 
     if router_adblock_level == "compact":
         rules.append("RULE-SET,popup-ads,REJECT")
@@ -319,6 +339,7 @@ def managed_provider_names() -> set[str]:
         ROUTER_STRICT_PROVIDERS,
         ROUTER_ENHANCED_AD_PROVIDERS,
         ROUTER_GAMBLING_PROVIDERS,
+        ROUTER_LOCAL_SAFETY_PROVIDERS,
         ROUTER_THREAT_SAFE_PROVIDERS,
         ROUTER_THREAT_IP_PROVIDERS,
         ANDROID_BASE_PROVIDERS,
