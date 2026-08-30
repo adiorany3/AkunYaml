@@ -1,34 +1,32 @@
 name,type,network,original_server,bug_sni,handshake_ms,ws_upgrade_ms,url_test_ms,url_test_status,url_test_success
-AKUN-001-CLOUDFLARE-VLESS-WS-114MS,vless,ws,188.114.97.6,fx3h2kf8xn.fx6hsv0.ccwu.cc,114,,342,HTTP 204,yes
-AKUN-002-CLOUDFLARE-VLESS-WS-113MS,vless,ws,104.16.45.90,dbz91wevusms.fvzs6eepu5ks.workers.dev,113,,469,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-003-CLOUDFLARE-VLESS-WS-114MS,vless,ws,188.114.97.6,yf2.yifangg.de5.net,114,,376,HTTP 204,yes
-AKUN-004-CLOUDFLARE-VLESS-WS-109MS,vless,ws,flat-night-edd0.hosein9saleazhuongooyeh87.workers.dev,FLAT-night-EDD0.hOsEin9saLEAZhuongOoYeH87.wOrkerS.DeV,109,,359,HTTP 204,yes
-AKUN-005-CLOUDFLARE-VLESS-WS-113MS,vless,ws,188.114.97.6,old-tooth-d793.447-02e.workers.dev,113,,390,HTTP 204,yes
-AKUN-006-CLOUDFLARE-VLESS-WS-118MS,vless,ws,172.67.148.180,suMMer-fieLD-3c5b.fSdfSDDf.WoRKErs.dEv,118,,340,HTTP 204,yes
-AKUN-007-CLOUDFLARE-VLESS-WS-114MS,vless,ws,172.67.145.14,web-app-ji3j1z.app-wuuhuw.workers.dev,114,,1739,HTTP 204,yes
-AKUN-008-CLOUDFLARE-VLESS-WS-114MS,vless,ws,104.18.0.1,all.speedtest03.ccwu.cc,114,,368,HTTP 204,yes
-AKUN-009-ALPHAVPS-VLESS-WS-121MS,vless,ws,13.140.29.45,8.o.8.e.t.g.7.w.8.n.e.1.l.e.us.art-us.kdns.fr,121,,6145,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
-AKUN-010-CLOUDFLARE-VLESS-WS-122MS,vless,ws,188.114.97.6,long-firefly-a226.216-ce0.workers.dev,122,,374,HTTP 204,yes
-AKUN-011-CLOUDFLARE-VLESS-WS-120MS,vless,ws,104.17.29.89,6q7uR2WCmgu9hYMh-xzQG140tdP86.PAGES.deV,120,,340,HTTP 204,yes
-AKUN-012-CLOUDFLARE-VLESS-WS-109MS,vless,ws,188.114.97.6,restless-math-7bde.299-75c.workers.dev,109,,1430,HTTP 204,yes
-AKUN-013-CLOUDFLARE-VLESS-WS-112MS,vless,ws,104.24.33.28,web-app-nm50pq.hamedalirajabi.workers.dev,112,,1610,HTTP 204,yes
-AKUN-014-DEV-VLESS-WS-114MS,vless,ws,ez-30c541.aliminaie277.workers.dev,ez-30c541.aliminaie277.workers.dev,114,,1480,HTTP 204,yes
-AKUN-015-CLOUDFLARE-VLESS-WS-116MS,vless,ws,188.114.97.6,FrEe.SeRVEr14peekCoNfIG.WoRKErS.dEV,116,,389,HTTP 204,yes
-AKUN-016-CLOUDFLARE-VLESS-WS-110MS,vless,ws,104.18.1.1,sErVER15.PEeKCOnF1-741.wOrkErs.Dev.,110,,330,HTTP 204,yes
-AKUN-017-CLOUDFLARE-VLESS-WS-118MS,vless,ws,188.114.97.3,mxp6jvjacystdp-s4f.kjnnv3i410u6mq-itd.workers.dev,118,,378,HTTP 204,yes
-AKUN-018-CLOUDFLARE-VLESS-WS-119MS,vless,ws,188.114.97.6,wild-math-3ef2.439.workers.dev,119,,362,HTTP 204,yes
-AKUN-019-CLOUDFLARE-VLESS-WS-125MS,vless,ws,188.114.97.6,late-boat-fbd7.152-de6.workers.dev,125,,387,HTTP 204,yes
-AKUN-020-CLOUDFLARE-VLESS-WS-127MS,vless,ws,188.114.97.6,long-wildflower-3df6.341-165.workers.dev,127,,400,HTTP 204,yes
-AKUN-021-CLOUDFLARE-VLESS-WS-110MS,vless,ws,yx.zhourf2006.dpdns.org,yx.zhourf2006.dpdns.org,110,,369,HTTP 204,yes
-AKUN-022-CLOUDFLARE-VLESS-WS-115MS,vless,ws,time.is,wild-grass-1917.tmpduardoolfsonerluke15.workers.dev,115,,337,HTTP 204,yes
-AKUN-023-CLOUDFLARE-VLESS-WS-116MS,vless,ws,o.server3peekconfig.workers.dev,o.SERVeR3PeEkConFIG.WOrKerS.dEv,116,,342,HTTP 204,yes
-AKUN-024-CLOUDFLARE-VLESS-WS-117MS,vless,ws,188.114.97.6,soft-dream-429a.319.workers.dev,117,,369,HTTP 204,yes
-AKUN-025-CLOUDFLARE-VLESS-WS-108MS,vless,ws,104.21.69.130,bIyapain.bIYApaiNbAcHe.WoRkers.DeV,108,,367,HTTP 204,yes
-AKUN-026-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-115MS,vless,ws,www.speedtest.net,TO6R63-KKChIGHQM2.VxZ0DDUq7tO7su0cDqF.WoRKeRs.DeV,115,,350,HTTP 204,yes
-AKUN-027-CLOUDFLARE-VLESS-WS-113MS,vless,ws,time.is,fREE.sERVer6PeeKCOnFIG.wOrkErs.dEv.,113,,332,HTTP 204,yes
-AKUN-028-UNKNOWN-VLESS-WS-116MS,vless,ws,104.27.52.69,icy-pine-5efc.aoigjojowfie123.workers.dev,116,,1380,HTTP 204,yes
-AKUN-029-CLOUDFLARE-VLESS-WS-125MS,vless,ws,o.server3peekconfig.workers.dev,o.SERVeR3PeEkConFIG.WOrKerS.dEv,125,,361,HTTP 204,yes
-AKUN-030-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-153MS,vless,ws,downloadcfpro.xn--ghq880n3na965a.com,sgp1.xn--ghq880n3na965a.com,153,,306,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-031-UK-GB-DCL-01-20191003-VLESS-WS-150MS,vless,ws,91.193.58.117,jamph131-1228.pages.dev,150,,1412,HTTP 204,yes
-AKUN-032-UNKNOWN-VLESS-WS-124MS,vless,ws,104.17.148.22,netlivpn5002.whwbbb.workers.dev,124,,460,HTTP 204,yes
-AKUN-033-CLOUDFLARE-VLESS-WS-313MS,vless,ws,cf.130519.xyz,mao.kipfel.kdns.fr,313,,2729,HTTP 204,yes
+AKUN-001-DEV-VLESS-WS-269MS,vless,ws,free.server7peekconfig.workers.dev,FrEE.sErVeR7PeEKcONfig.WoRKErS.deV,269,,1013,HTTP 204,yes
+AKUN-002-DEV-VLESS-WS-296MS,vless,ws,flat-night-edd0.hosein9saleazhuongooyeh87.workers.dev,FLAT-night-EDD0.hOsEin9saLEAZhuongOoYeH87.wOrkerS.DeV,296,,897,HTTP 204,yes
+AKUN-003-UNKNOWN-VLESS-WS-261MS,vless,ws,188.114.97.6,all.speedtest03.ccwu.cc,261,,1179,HTTP 204,yes
+AKUN-004-UNKNOWN-VLESS-WS-292MS,vless,ws,104.24.33.28,web-app-nm50pq.hamedalirajabi.workers.dev,292,,1798,HTTP 204,yes
+AKUN-005-DEV-VLESS-WS-304MS,vless,ws,silent-thunder-8469.shsfhhdfh.workers.dev,SiLeNt-tHUNdEr-8469.sHSFHhdfh.WOrkERS.dev,304,,801,HTTP 204,yes
+AKUN-006-UNKNOWN-VLESS-WS-311MS,vless,ws,172.67.145.14,web-app-ji3j1z.app-wuuhuw.workers.dev,311,,1936,HTTP 204,yes
+AKUN-007-UNKNOWN-VLESS-WS-263MS,vless,ws,188.114.97.6,restless-math-7bde.299-75c.workers.dev,263,,885,HTTP 204,yes
+AKUN-008-UNKNOWN-VLESS-WS-309MS,vless,ws,188.114.97.6,late-boat-fbd7.152-de6.workers.dev,309,,744,HTTP 204,yes
+AKUN-009-CLOUDFLARE-VLESS-WS-291MS,vless,ws,104.21.69.130,bIyapain.bIYApaiNbAcHe.WoRkers.DeV,291,,762,HTTP 204,yes
+AKUN-010-CLOUDFLARE-VLESS-WS-308MS,vless,ws,free.server14peekconfig.workers.dev,FrEe.SeRVEr14peekCoNfIG.WoRKErS.dEV,308,,704,HTTP 204,yes
+AKUN-011-UNKNOWN-VLESS-WS-261MS,vless,ws,104.27.52.69,icy-pine-5efc.aoigjojowfie123.workers.dev,261,,723,HTTP 204,yes
+AKUN-012-CLOUDFLARE-VLESS-WS-302MS,vless,ws,o.server3peekconfig.workers.dev,o.SERVeR3PeEkConFIG.WOrKerS.dEv,302,,661,HTTP 204,yes
+AKUN-013-CLOUDFLARE-VLESS-WS-262MS,vless,ws,104.17.29.89,6q7uR2WCmgu9hYMh-xzQG140tdP86.PAGES.deV,262,,777,HTTP 204,yes
+AKUN-014-CLOUDFLARE-VLESS-WS-248MS,vless,ws,188.114.97.6,wild-math-3ef2.439.workers.dev,248,,899,HTTP 204,yes
+AKUN-015-CLOUDFLARE-VLESS-WS-280MS,vless,ws,yx.zhourf2006.dpdns.org,yx.zhourf2006.dpdns.org,280,,795,HTTP 204,yes
+AKUN-016-CLOUDFLARE-VLESS-WS-320MS,vless,ws,188.114.97.6,soft-dream-429a.319.workers.dev,320,,898,HTTP 204,yes
+AKUN-017-AKAMAI-VLESS-WS-536MS,vless,ws,172.104.81.253,8.o.8.e.t.g.7.w.8.n.e.1.l.e.us.art-us.kdns.fr,536,,6147,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
+AKUN-018-CLOUDFLARE-VLESS-WS-562MS,vless,ws,188.114.97.3,mxp6jvjacystdp-s4f.kjnnv3i410u6mq-itd.workers.dev,562,,793,HTTP 204,yes
+AKUN-019-UNKNOWN-VLESS-WS-289MS,vless,ws,172.67.68.157,wild-grass-1917.tmpduardoolfsonerluke15.workers.dev,289,,1032,HTTP 204,yes
+AKUN-020-CLOUDFLARE-VLESS-WS-293MS,vless,ws,188.114.97.6,solitary-firefly-e2dc.495-398.workers.dev,293,,1178,HTTP 204,yes
+AKUN-021-CLOUDFLARE-VLESS-WS-545MS,vless,ws,time.is,fREE.sERVer6PeeKCOnFIG.wOrkErs.dEv.,545,,630,HTTP 204,yes
+AKUN-022-CLOUDFLARE-VLESS-WS-545MS,vless,ws,o.server3peekconfig.workers.dev,o.SERVeR3PeEkConFIG.WOrKerS.dEv,545,,750,HTTP 204,yes
+AKUN-023-UNKNOWN-VLESS-WS-266MS,vless,ws,104.21.234.13,FAncY-RAIn-136e.THisISaLee.WoRkeRS.DeV,266,,704,HTTP 204,yes
+AKUN-024-CHATGPT-VLESS-WS-557MS,vless,ws,chatgpt.com,powered-by-surena.user68f797c2f3e1b.workers.dev,557,,800,HTTP 204,yes
+AKUN-025-CLOUDFLARE-VLESS-WS-546MS,vless,ws,104.18.1.1,sErVER15.PEeKCOnF1-741.wOrkErs.Dev.,546,,926,HTTP 204,yes
+AKUN-026-DEV-VLESS-WS-367MS,vless,ws,server16.peekconfig.workers.dev,sERveR16.pEeKCoNFIg.worKerS.DeV,367,,770,HTTP 204,yes
+AKUN-027-CLOUDFLARE-VLESS-WS-444MS,vless,ws,188.114.97.6,long-wildflower-3df6.341-165.workers.dev,444,,890,HTTP 204,yes
+AKUN-028-NOTION-WEB-VLESS-WS-406MS,vless,ws,208.103.161.5,dry-butterfly-8eb9.tmpgnacio83.workers.dev,406,,732,HTTP 204,yes
+AKUN-029-CLOUDFLARE-VLESS-WS-255MS,vless,ws,188.114.97.6,quiet-frost-ac61.333-07d.workers.dev,255,,1427,HTTP 204,yes
+AKUN-030-CLOUDFLARE-VLESS-WS-547MS,vless,ws,188.114.97.3,mxp6jvjacystdp-s4f.kjnnv3i410u6mq-itd.workers.dev,547,,795,HTTP 204,yes
+AKUN-031-DEV-VLESS-WS-562MS,vless,ws,free.server6peekconfig.workers.dev,fREE.sERVer6PeeKCOnFIG.wOrkErs.dEv,562,,672,HTTP 204,yes
