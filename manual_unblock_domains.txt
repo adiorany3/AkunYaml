@@ -1,5 +1,6 @@
-# High-priority social app allowlist for OpenClash/OpenWrt
-# Keep X/Twitter app and media endpoints reachable even under strict ad/security filtering.
+# High-priority allowlist for OpenClash/OpenWrt
+# Keep social app and critical web-infra endpoints reachable without breaking
+# general browsing or captcha/cloudflare checks.
 x.com
 api.x.com
 twitter.com
@@ -9,3 +10,7 @@ twimg.com
 abs.twimg.com
 pbs.twimg.com
 video.twimg.com
+cloudflare.com
+hcaptcha.com
+recaptcha.net
+gstatic.com
