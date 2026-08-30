@@ -286,6 +286,21 @@ def _ai_health_group(name: str, proxies: list[str], url: str, interval: int, tim
         "max-failed-times": 2,
     }
 
+def _category_health_group(name: str, proxies: list[str], url: str, interval: int, timeout: int) -> dict[str, Any]:
+    """Select lowest-latency healthy node for one traffic category."""
+    return {
+        "name": name,
+        "type": "url-test",
+        "proxies": proxies or ["DIRECT"],
+        "url": url,
+        "interval": interval,
+        "tolerance": 50,
+        "lazy": True,
+        "timeout": timeout,
+        "expected-status": "200/204/301/302",
+        "max-failed-times": 2,
+    }
+
 
 def _env_int_range(name: str, default: int, minimum: int, maximum: int) -> int:
     """Read integer env safely and clamp it for stable generated YAML."""
@@ -1514,11 +1529,11 @@ def network_priority_rank(node: ProxyNode, prefer_ws: bool = True) -> int:
 
 def node_sort_key(node: ProxyNode, prefer_ws: bool = True) -> tuple[int, int, int, int, int]:
     return (
-        network_priority_rank(node, prefer_ws),
-        protocol_priority_rank(node),
         int(node.score or 999999),
         int(node.best_delay_ms or 999999),
         int(node.jitter_ms or 999999),
+        network_priority_rank(node, prefer_ws),
+        protocol_priority_rank(node),
     )
 
 
@@ -2809,11 +2824,8 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
         },
-        {
-            "name": "SOCIAL-MEDIA",
-            "type": "select",
-            "proxies": selector(["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]),
-        },
+        _category_health_group("SOCIAL-MEDIA", selector(["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]),
+                               os.getenv("SOCIAL_TEST_URL", "https://www.gstatic.com/generate_204"), active_interval, fast_timeout),
         {
             "name": "YOUTUBE",
             "type": "fallback",
@@ -2825,18 +2837,10 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
         },
-        {
-            "name": "EDUKASI",
-            "type": "select",
-            "proxies": selector(["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]),
-        },
-        {
-            "name": "STREAMING",
-            "type": "select",
-            # STREAMING-FAST dibuat url-test khusus agar panel OpenClash punya delay hijau
-            # sendiri, bukan hanya delay dari nested select group.
-            "proxies": selector(["WARM-UP-CF", "STREAMING-FAST", "WARM-UP", "AUTO-FAST", "FALLBACK"]),
-        },
+        _category_health_group("EDUKASI", selector(["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]),
+                               os.getenv("EDUKASI_TEST_URL", "https://www.gstatic.com/generate_204"), active_interval, fast_timeout),
+        _category_health_group("STREAMING", selector(["WARM-UP-CF", "STREAMING-FAST", "WARM-UP", "AUTO-FAST", "FALLBACK"]),
+                               streaming_test_url, active_interval, fast_timeout),
         {
             "name": "PING-CHECK",
             "type": "url-test",
