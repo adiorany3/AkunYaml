@@ -7,6 +7,16 @@ DOMAINS={
     "video-akpcw.spotifycdn.com",
     "805ba.v.fwmrm.net",
     "tvm-mtv-freewheel.akamaized.net",
+    "adeventtracker.spotify.com",
+    "ads.spotify.com",
+    "adstudio.spotify.com",
+    "aet.spotify.com",
+    "analytics.spotify.com",
+    "bloodhound.spotify.com",
+    "crashdump.spotify.com",
+    "pixel.spotify.com",
+    "pixel-static.spotify.com",
+    "pixels.spotify.com",
 }
 FILES=["openclash_auto.yaml","openclash_android.yaml","openclash_lite.yaml","openclash_fresh_pool.yaml"]
 

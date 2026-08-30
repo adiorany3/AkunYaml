@@ -280,10 +280,22 @@ TURTLECUTE_EXCLUDE = {"static.doubleclick.net"}
 # Conservative streaming-ad layer. Exact hosts only. Never block whole
 # spotifycdn.com/fwmrm.net/akamaized.net suffixes because those namespaces can
 # also carry playback, licensing, artwork, or app control traffic.
+# Spotify-specific ad/measurement endpoints are also treated as exact hosts to
+# avoid broad blocking of the service's normal media, auth, and player traffic.
 STREAMING_SAFE_AD_DOMAINS = (
     "video-akpcw.spotifycdn.com",
     "805ba.v.fwmrm.net",
     "tvm-mtv-freewheel.akamaized.net",
+    "adeventtracker.spotify.com",
+    "ads.spotify.com",
+    "adstudio.spotify.com",
+    "aet.spotify.com",
+    "analytics.spotify.com",
+    "bloodhound.spotify.com",
+    "crashdump.spotify.com",
+    "pixel.spotify.com",
+    "pixel-static.spotify.com",
+    "pixels.spotify.com",
 )
 
 # Small local fallback for intrusive popunders and mobile/game ad SDKs.
