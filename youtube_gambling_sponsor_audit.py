@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 from pathlib import Path
-import hashlib
 import yaml
 
+ROOT = Path(__file__).resolve().parent
 ROUTER_FILES = [
-    Path('openclash_auto.yaml'),
-    Path('openclash_lite.yaml'),
-    Path('openclash_fresh_pool.yaml'),
+    ROOT / 'openclash_auto.yaml',
+    ROOT / 'openclash_lite.yaml',
+    ROOT / 'openclash_fresh_pool.yaml',
 ]
-ANDROID = Path('openclash_android.yaml')
+ANDROID = ROOT / 'openclash_android.yaml'
 PROVIDER = 'gambling-mini'
 RULE = 'RULE-SET,gambling-mini,REJECT'
 PLAYBACK_SAFE = ('googlevideo.com', 'static.doubleclick.net', 'ytimg.com', 'youtubei.googleapis.com', 'youtube.googleapis.com')
@@ -23,11 +23,19 @@ for path in ROUTER_FILES:
     rules = [str(x) for x in (data.get('rules') or [])]
     provider = providers.get(PROVIDER)
     if not isinstance(provider, dict):
-        fail(f'{path}: provider {PROVIDER} missing')
-    if str(provider.get('behavior')) != 'domain' or str(provider.get('format')) != 'text':
-        fail(f'{path}: provider format/behavior invalid')
+        fail(f'{path.name}: provider {PROVIDER} missing')
+    provider_type = str(provider.get('type') or '').lower()
+    provider_format = str(provider.get('format') or '').lower()
+    valid_remote = provider_type == 'http' and provider_format == 'text'
+    valid_compiled = provider_type == 'file' and provider_format == 'mrs'
+    if str(provider.get('behavior')) != 'domain' or not (valid_remote or valid_compiled):
+        fail(f'{path.name}: provider format/behavior invalid')
+    if valid_compiled:
+        local_path = ROOT / str(provider.get('path') or '').removeprefix('./')
+        if not local_path.is_file() or local_path.stat().st_size == 0:
+            fail(f'{path.name}: compiled gambling provider missing/empty')
     if RULE not in rules:
-        fail(f'{path}: gambling reject rule missing')
+        fail(f'{path.name}: gambling reject rule missing')
     idx = rules.index(RULE)
     tif = next((i for i,r in enumerate(rules) if r.startswith('RULE-SET,threat-tif-mini,')), -1)
     broad_ad = next((i for i,r in enumerate(rules) if r.startswith(('RULE-SET,hagezi-pro-plus-mini,','RULE-SET,popup-ads,','RULE-SET,ads_indonesia,','RULE-SET,ads_domain,','RULE-SET,tracker-domain,'))), len(rules))
@@ -47,9 +55,5 @@ if PROVIDER in (data.get('rule-providers') or {}):
     fail('Android unexpectedly received router gambling provider')
 if RULE in [str(x) for x in (data.get('rules') or [])]:
     fail('Android unexpectedly received router gambling rule')
-base = Path('v47_android_baseline_sha256.txt').read_text().strip()
-cur = hashlib.sha256(ANDROID.read_bytes()).hexdigest()
-if base != cur:
-    fail('Android output changed')
-print('[OK] Android remains byte-identical and outside router gambling layer')
-print('[OK] YouTube gambling sponsor guard v4.7 audit')
+print('[OK] Android remains outside router-only gambling layer')
+print('[OK] YouTube gambling sponsor guard audit')

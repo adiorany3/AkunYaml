@@ -63,8 +63,16 @@ for name in FILES:
                 errors.append("Lite should not include TIF IP provider")
         else:
             p = providers.get("threat-tif-ip") or {}
-            if p.get("behavior") != "ipcidr" or str(p.get("format") or "").lower() != "text":
+            provider_type = str(p.get("type") or "").lower()
+            provider_format = str(p.get("format") or "").lower()
+            valid_remote = provider_type == "http" and provider_format == "text"
+            valid_compiled = provider_type == "file" and provider_format == "mrs"
+            if p.get("behavior") != "ipcidr" or not (valid_remote or valid_compiled):
                 errors.append("TIF IP provider invalid/missing")
+            if valid_compiled:
+                local_path = BASE / str(p.get("path") or "").removeprefix("./")
+                if not local_path.is_file() or local_path.stat().st_size == 0:
+                    errors.append("compiled TIF IP provider file missing/empty")
             if "RULE-SET,threat-tif-ip,REJECT,no-resolve" not in rules:
                 errors.append("TIF IP rule missing")
 

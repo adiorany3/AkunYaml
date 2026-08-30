@@ -98,10 +98,21 @@ ARGS=(
 echo "[RUN] Mencari, mengetes, dan memilih akun baru..."
 "${ARGS[@]}"
 
-echo "[ADBLOCK] Audit provider, iklan aplikasi, dan perlindungan playback..."
+echo "[AUDIT] Memeriksa keamanan, adblock, kategori judi, dan budget performa..."
 "$PY" adblock_provider_audit.py
 "$PY" app_ad_audit.py
+"$PY" popup_game_ad_audit.py
 "$PY" youtube_adblock_audit.py --mode enhanced --dedup lean
+"$PY" youtube_gambling_sponsor_audit.py
+"$PY" threat_safe_audit.py
+"$PY" security_hardening_audit.py
+"$PY" openwrt_adblock_audit.py
+"$PY" performance_budget_audit.py
+"$PY" semantic_rule_audit.py \
+  openclash_auto.yaml \
+  openclash_android.yaml \
+  openclash_lite.yaml \
+  openclash_fresh_pool.yaml
 
 echo "[VALIDATE] Memeriksa output final dengan exact core..."
 "$PY" validate_openclash_target.py --core "$CORE" \
