@@ -238,6 +238,7 @@ def provider_catalog(
     out.update(deepcopy(ROUTER_LOCAL_SAFETY_PROVIDERS))
     if profile in {"strict", "child-safe", "app-safe", "threat-safe"} and not lite:
         out.update(_with_interval(ROUTER_STRICT_PROVIDERS, interval))
+        out.update(_with_interval(ROUTER_THREAT_SAFE_PROVIDERS, interval))
     if router_adblock_level == "compact":
         # Compact mode is designed for Lite/low-RAM routers: only add the focused
         # popup/redirect feed, not the larger Pro++ Mini layer.
@@ -291,7 +292,7 @@ def provider_reject_rules(
         ])
         return rules
 
-    if profile == "threat-safe":
+    if profile in {"strict", "child-safe", "app-safe", "threat-safe"}:
         rules.extend([
             "RULE-SET,threat-malware,REJECT",
             "RULE-SET,threat-phishing,REJECT",
