@@ -30,6 +30,8 @@ MANAGED = {
     "privacy-extra",
     "threat-fake-scam",
     "threat-tif-ip",
+    "hagezi-pro-plus-mini",
+    "gambling-mini",
 }
 
 
@@ -82,21 +84,30 @@ def audit(path: Path, network: bool, timeout: float) -> list[str]:
         if not isinstance(provider, dict):
             errors.append(f"provider {name} bukan mapping")
             continue
-        if provider.get("type") != "http":
-            errors.append(f"provider {name} harus type http")
+        provider_type = str(provider.get("type") or "")
         behavior = str(provider.get("behavior") or "")
+        pth = str(provider.get("path") or "")
+        is_local_mrs = provider_type == "file" and str(provider.get("format") or "").lower() == "mrs"
+        is_android_snapshot = path.name == "openclash_android.yaml" and name == "ads_indonesia" and provider_type == "file"
+        if provider_type != "http" and not is_local_mrs and not is_android_snapshot:
+            errors.append(f"provider {name} type tidak valid: {provider_type}")
         if behavior not in {"domain", "classical", "ipcidr"}:
             errors.append(f"provider {name} behavior tidak valid: {behavior}")
-        try:
-            interval = int(provider.get("interval") or 0)
-        except (TypeError, ValueError):
-            interval = 0
-        if interval < 3600 or interval > 86400:
-            errors.append(f"provider {name} interval tidak wajar: {interval}")
-        url = str(provider.get("url") or "")
-        if not url.startswith("https://"):
-            errors.append(f"provider {name} URL bukan HTTPS")
-        pth = str(provider.get("path") or "")
+        if provider_type == "http":
+            try:
+                interval = int(provider.get("interval") or 0)
+            except (TypeError, ValueError):
+                interval = 0
+            if interval < 3600 or interval > 86400:
+                errors.append(f"provider {name} interval tidak wajar: {interval}")
+            url = str(provider.get("url") or "")
+            if not url.startswith("https://"):
+                errors.append(f"provider {name} URL bukan HTTPS")
+        else:
+            url = ""
+            local_path = path.parent / pth.removeprefix("./")
+            if not pth or not local_path.is_file() or local_path.stat().st_size == 0:
+                errors.append(f"provider {name} file lokal tidak valid: {pth}")
         if not pth:
             errors.append(f"provider {name} tidak punya path")
         elif pth in seen_paths and seen_paths[pth] != name:

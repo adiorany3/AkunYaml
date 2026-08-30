@@ -53,7 +53,7 @@
     "104.16.182.69": {
       "ip": "104.16.182.69",
       "provider": "CLOUDFLARE",
-      "saved_at": 1788051973
+      "saved_at": 1788055648
     },
     "104.16.32.132": {
       "ip": "104.16.32.132",
@@ -378,7 +378,7 @@
     "104.21.54.140": {
       "ip": "104.21.54.140",
       "provider": "CLOUDFLARE",
-      "saved_at": 1788054048
+      "saved_at": 1788055648
     },
     "104.21.67.171": {
       "ip": "104.21.67.171",
@@ -674,6 +674,11 @@
       "ip": "141.101.123.76",
       "provider": "CLOUDFLARE",
       "saved_at": 1787718683
+    },
+    "141.253.194.63": {
+      "ip": "141.253.194.63",
+      "provider": "ORACLE",
+      "saved_at": 1788055648
     },
     "151.236.8.190": {
       "ip": "151.236.8.190",
@@ -1158,7 +1163,7 @@
     "188.114.97.6": {
       "ip": "188.114.97.6",
       "provider": "CLOUDFLARE",
-      "saved_at": 1788054203
+      "saved_at": 1788055648
     },
     "188.114.98.134": {
       "ip": "188.114.98.134",
@@ -1244,6 +1249,11 @@
       "ip": "198.202.211.1",
       "provider": "WEBFL",
       "saved_at": 1787626347
+    },
+    "199.181.197.138": {
+      "ip": "199.181.197.138",
+      "provider": "ZENFO-1",
+      "saved_at": 1788055648
     },
     "199.68.196.119": {
       "ip": "199.68.196.119",
@@ -1768,7 +1778,7 @@
     "chatgpt.com": {
       "ip": "172.64.155.209",
       "provider": "CHATGPT",
-      "saved_at": 1788054047
+      "saved_at": 1788055646
     },
     "ct.877774.xyz": {
       "ip": "198.18.16.64",
@@ -1986,9 +1996,9 @@
       "saved_at": 1787463046
     },
     "mybb.com": {
-      "ip": "172.67.67.178",
+      "ip": "104.24.31.89",
       "provider": "CLOUDFLARE",
-      "saved_at": 1788054202
+      "saved_at": 1788055648
     },
     "nameless-moon-7c4d.shafmrhjlos23.workers.dev": {
       "ip": "198.18.1.75",
@@ -2121,9 +2131,9 @@
       "saved_at": 1787469357
     },
     "singapore.com": {
-      "ip": "104.26.12.140",
-      "provider": "CLOUDFLARE",
-      "saved_at": 1787463047
+      "ip": "172.67.75.194",
+      "provider": "SINGAPORE",
+      "saved_at": 1788055647
     },
     "small-scene-f215.amiralizarefast1.workers.dev": {
       "ip": "172.67.138.253",
@@ -2230,6 +2240,11 @@
       "provider": "VISA",
       "saved_at": 1787897676
     },
+    "www.visa.com.hk": {
+      "ip": "104.18.20.69",
+      "provider": "VISA",
+      "saved_at": 1788055647
+    },
     "www.zsu.gov.ua": {
       "ip": "172.65.90.52",
       "provider": "GOV",
@@ -2301,7 +2316,7 @@
     },
     "104.16.182.69": {
       "provider": "CLOUDFLARE",
-      "saved_at": 1788051973
+      "saved_at": 1788055648
     },
     "104.16.32.132": {
       "provider": "CLOUDFLARE",
@@ -2458,6 +2473,10 @@
     "104.18.160.24": {
       "provider": "",
       "saved_at": 1787463047
+    },
+    "104.18.20.69": {
+      "provider": "",
+      "saved_at": 1788055647
     },
     "104.18.28.234": {
       "provider": "CLOUDFLARE",
@@ -2625,7 +2644,7 @@
     },
     "104.21.54.140": {
       "provider": "CLOUDFLARE",
-      "saved_at": 1788054048
+      "saved_at": 1788055648
     },
     "104.21.67.171": {
       "provider": "CLOUDFLARE",
@@ -2770,6 +2789,10 @@
     "104.24.30.89": {
       "provider": "",
       "saved_at": 1787460233
+    },
+    "104.24.31.89": {
+      "provider": "CLOUDFLARE",
+      "saved_at": 1788055648
     },
     "104.24.68.193": {
       "provider": "",
@@ -2946,6 +2969,10 @@
     "141.101.123.76": {
       "provider": "CLOUDFLARE",
       "saved_at": 1787718683
+    },
+    "141.253.194.63": {
+      "provider": "ORACLE",
+      "saved_at": 1788055648
     },
     "151.101.194.219": {
       "provider": "",
@@ -3439,6 +3466,10 @@
       "provider": "CLOUDFLARE",
       "saved_at": 1787627199
     },
+    "172.67.75.194": {
+      "provider": "",
+      "saved_at": 1788055647
+    },
     "172.67.99.54": {
       "provider": "",
       "saved_at": 1787463047
@@ -3509,7 +3540,7 @@
     },
     "188.114.97.6": {
       "provider": "CLOUDFLARE",
-      "saved_at": 1788054203
+      "saved_at": 1788055648
     },
     "188.114.98.134": {
       "provider": "",
@@ -3855,6 +3886,10 @@
       "provider": "WEBFL",
       "saved_at": 1787626347
     },
+    "199.181.197.138": {
+      "provider": "ZENFO-1",
+      "saved_at": 1788055648
+    },
     "199.68.196.119": {
       "provider": "CH-FORNEX",
       "saved_at": 1787708901
@@ -4152,6 +4187,6 @@
       "saved_at": 1788053481
     }
   },
-  "saved_at": 1788054674,
+  "saved_at": 1788055648,
   "version": 1
 }

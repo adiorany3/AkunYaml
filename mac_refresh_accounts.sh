@@ -98,8 +98,10 @@ ARGS=(
 echo "[RUN] Mencari, mengetes, dan memilih akun baru..."
 "${ARGS[@]}"
 
-echo "[ADBLOCK] Audit rule YouTube dan perlindungan playback..."
-"$PY" youtube_adblock_audit.py --mode enhanced
+echo "[ADBLOCK] Audit provider, iklan aplikasi, dan perlindungan playback..."
+"$PY" adblock_provider_audit.py
+"$PY" app_ad_audit.py
+"$PY" youtube_adblock_audit.py --mode enhanced --dedup lean
 
 echo "[VALIDATE] Memeriksa output final dengan exact core..."
 "$PY" validate_openclash_target.py --core "$CORE" \
