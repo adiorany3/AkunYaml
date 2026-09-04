@@ -64,6 +64,10 @@ Rule berikut dievaluasi sebelum playback guard:
 - `2mdn.net`
 - `googlesyndication.com`
 - `googleadservices.com`
+- `adtrafficquality.google`
+- `googleadapis.com`
+- `mobileads.google.com`
+- `pagead.l.google.com`
 
 Policy tetap `REJECT` agar request gagal cepat. Paket tidak memakai `REJECT-DROP` untuk lapisan ini.
 

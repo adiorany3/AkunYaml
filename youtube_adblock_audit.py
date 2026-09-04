@@ -28,6 +28,10 @@ REQUIRED_ENHANCED_RULES = {
     "DOMAIN,imasdk.googleapis.com,REJECT",
     "DOMAIN,ads.youtube.com,REJECT",
     "DOMAIN-SUFFIX,googlesyndication.com,REJECT",
+    "DOMAIN,adtrafficquality.google,REJECT",
+    "DOMAIN-SUFFIX,googleadapis.com,REJECT",
+    "DOMAIN,mobileads.google.com,REJECT",
+    "DOMAIN,pagead.l.google.com,REJECT",
 }
 COMPAT_DOMAINS = {
     "static.doubleclick.net",

@@ -42,6 +42,10 @@ youtube.com##ytm-promoted-sparkles-web-renderer
 ||stats.g.doubleclick.net^$domain=youtube.com
 ||m.doubleclick.net^$domain=youtube.com
 ||mediavisor.doubleclick.net^$domain=youtube.com
+||adtrafficquality.google^$domain=youtube.com
+||googleadapis.com^$domain=youtube.com
+||mobileads.google.com^$domain=youtube.com
+||pagead.l.google.com^$domain=youtube.com
 ||ads.youtube.com^$domain=youtube.com
 ||youtube.com/api/stats/ads^$xhr,domain=youtube.com
 ||youtube.com/pagead/*$xhr,domain=youtube.com

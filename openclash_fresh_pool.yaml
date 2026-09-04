@@ -117,92 +117,7 @@ dns:
   use-hosts: true
   use-system-hosts: true
 proxies:
-- name: AKUN-001-CLOUDFLARE-VLESS-WS-30MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 513beae3-56e7-4954-a17e-930e06237b27
-  udp: true
-  tls: true
-  servername: cfOI-2FX16g3-8RY2kDXmCj.WJeSV2iLa3rxbUHPc2nsUGRAcHgaWK.WorKerS.DEV
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  alpn:
-  - http/1.1
-  ws-opts:
-    path: /vl/1NM75lSM9FVMO5loRH5RSHTFj1g?ed=2560
-    headers:
-      Host: cfoi-2fx16g3-8ry2kdxmcj.wjesv2ila3rxbuhpc2nsugrachgawk.workers.dev
-- name: AKUN-002-CLOUDFLARE-VLESS-WS-29MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 513beae3-56e7-4954-a17e-930e06237b27
-  udp: true
-  tls: true
-  servername: CfOI-2FX16g3-8rY2kdXmCJ.WJeSv2ILA3rXbUhpC2NSugRAchGaWK.WOrkeRs.DEV
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  alpn:
-  - http/1.1
-  ws-opts:
-    path: /vl/3wSAeuGJbrGHwJ45DA6ircvHC6?ed=2560
-    headers:
-      Host: cfoi-2fx16g3-8ry2kdxmcj.wjesv2ila3rxbuhpc2nsugrachgawk.workers.dev
-- name: AKUN-003-CLOUDFLARE-VLESS-WS-67MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 77777777-8a3e-6666-b6d1-a9c5f0e8b3a2
-  udp: true
-  tls: true
-  servername: faxf32gkfzoxqv.fx6hsv0.ccwu.cc
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /
-    headers:
-      Host: faxf32gkfzoxqv.fx6hsv0.ccwu.cc
-  alpn:
-  - http/1.1
-- name: AKUN-004-CLOUDFLARE-VLESS-WS-65MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: f2a73750-3087-48ff-a763-1348c15dce68
-  udp: true
-  tls: true
-  servername: rAyAn-007.mAxImA.DpDnS.OrG
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: rAyAn-007.mAxImA.DpDnS.OrG
-  alpn:
-  - http/1.1
-- name: AKUN-005-CLOUDFLARE-VLESS-WS-66MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 07821f66-cdb7-4c70-9de6-e230cffac470
-  udp: true
-  tls: true
-  servername: wgrcqwtkfyqujs43.ghydgdbdbddvv.workers.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  alpn:
-  - http/1.1
-  ws-opts:
-    path: /vl/Li1khIHH3DNItJyzraemsPBQvu
-    headers:
-      Host: wgrcqwtkfyqujs43.ghydgdbdbddvv.workers.dev
-- name: AKUN-006-CLOUDFLARE-VLESS-WS-68MS
+- name: AKUN-001-CLOUDFLARE-VLESS-WS-68MS
   type: vless
   server: 104.17.3.81
   port: 443
@@ -219,177 +134,7 @@ proxies:
     path: /eyJqdW5rIjoia2N4eldGd0p6NVY1V3hrIiwicHJvdG9jb2wiOiJ2bCIsIm1vZGUiOiJwcmVmaXgiLCJwYW5lbElQcyI6WyJbMjYwMjpmYzU5OjExOjY0OjpdIl19?ed=2560
     headers:
       Host: summer-field-3c5b.fsdfsddf.workers.dev
-- name: AKUN-007-CLOUDFLARE-VLESS-WS-68MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: eb24c3b4-7936-45e2-a253-e54fd1955a7f
-  udp: true
-  tls: true
-  servername: c0YR9J09y2l9G0Td8WA5.2whBRirhjgsLm43ZJcqei.WoRKers.DEv
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  alpn:
-  - http/1.1
-  ws-opts:
-    path: /vl/mzLc59gMyjrsaNojAJ6g04?ed=2560
-    headers:
-      Host: c0yr9j09y2l9g0td8wa5.2whbrirhjgslm43zjcqei.workers.dev
-- name: AKUN-008-CLOUDFLARE-VLESS-WS-63MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: aebe5a70-0ca3-46ce-8208-8b5bab1346ce
-  udp: true
-  tls: true
-  servername: rAyAn-007.nAsTaRaN.DpDnS.OrG
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: rayan-007.nastaran.dpdns.org
-  alpn:
-  - http/1.1
-- name: AKUN-009-CLOUDFLARE-VLESS-WS-66MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: eb24c3b4-7936-45e2-a253-e54fd1955a7f
-  udp: true
-  tls: true
-  servername: C0yR9j09Y2l9G0tD8wa5.2wHBRirhjGslM43zJCqEi.worKeRs.DEV
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  alpn:
-  - http/1.1
-  ws-opts:
-    path: /vl/6NGHNFKsvK41KeQo?ed=2560
-    headers:
-      Host: c0yr9j09y2l9g0td8wa5.2whbrirhjgslm43zjcqei.workers.dev
-- name: AKUN-010-CLOUDFLARE-VLESS-WS-70MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: bd8c736e-cae1-43d7-b573-9672e6ca4989
-  udp: true
-  tls: true
-  servername: l0n0QgKdtTu061g57fhqZBet333S4t.adE-1004.WOrkerS.Dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  alpn:
-  - http/1.1
-  ws-opts:
-    path: /vl/zXLTmz3hE3szn64f?ed=2560
-    headers:
-      Host: l0n0qgkdttu061g57fhqzbet333s4t.ade-1004.workers.dev
-- name: AKUN-013-CLOUDFLARE-VLESS-WS-70MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 513beae3-56e7-4954-a17e-930e06237b27
-  udp: true
-  tls: true
-  servername: Cfoi-2FX16G3-8Ry2KdXmCJ.WjESV2ILa3rxBUHpc2NsUGRaChgaWk.WOrkeRS.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  alpn:
-  - http/1.1
-  ws-opts:
-    path: /vl/piIRdE9WUi24Sn3bb2oSJ?ed=2560
-    headers:
-      Host: cfoi-2fx16g3-8ry2kdxmcj.wjesv2ila3rxbuhpc2nsugrachgawk.workers.dev
-- name: AKUN-014-DEV-VLESS-WS-69MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: f6b5a6a3-f3e1-63ca-bb68-bdc400000000
-  udp: true
-  tls: true
-  servername: netlivpn5505.ffffdsaaa.workers.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /
-    headers:
-      Host: netlivpn5505.ffffdsaaa.workers.dev
-  alpn:
-  - http/1.1
-- name: AKUN-015-CLOUDFLARE-VLESS-WS-67MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 1c9daf90-3950-44ac-b06f-4cf9aec63170
-  udp: true
-  tls: true
-  servername: FrEe.SeRVEr14peekCoNfIG.WoRKErS.dEV
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /eyJqdW5rIjoiQmFCblN3SmhXYTB3RzVoIiwicHJvdG9jb2wiOiJ2bCIsIm1vZGUiOiJwcmVmaXgiLCJwYW5lbElQcyI6WyJbMjYwMjpmYzU5OjExOjY0OjpdIiwiWzJhMDI6ODk4OjE0Njo2NDo6XSIsIlsyNjAyOmZjNTk6YjA6NjQ6Ol0iXX0=
-    headers:
-      Host: free.server14peekconfig.workers.dev
-  alpn:
-  - http/1.1
-- name: AKUN-016-CLOUDFLARE-VLESS-WS-68MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: a8890c1b-3622-3106-c4be-d8671be32d2b
-  udp: true
-  tls: true
-  servername: summer-meadow-af5b.woowoorrrkk.workers.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /sync
-    headers:
-      Host: summer-meadow-af5b.woowoorrrkk.workers.dev
-  alpn:
-  - http/1.1
-- name: AKUN-017-CLOUDFLARE-VLESS-WS-65MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: eb24c3b4-7936-45e2-a253-e54fd1955a7f
-  udp: true
-  tls: true
-  servername: c0yR9J09Y2l9G0td8wA5.2wHbrirHJgSlM43zJcqeI.WoRkERS.dEv
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  alpn:
-  - http/1.1
-  ws-opts:
-    path: /vl/Sltu36eJc3zvD9Npaxsj2vJ?ed=2560
-    headers:
-      Host: c0yr9j09y2l9g0td8wa5.2whbrirhjgslm43zjcqei.workers.dev
-- name: AKUN-018-CLOUDFLARE-VLESS-WS-66MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: e48e4049-58bb-4355-9a9a-433b9524d928
-  udp: true
-  tls: true
-  servername: z8Z7LoVOPd53iz6ivD2m.FixinG00PonviP.woRkers.DEV
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /vl/Fx1O4r0oHuQMNuKFQzcoV2yl31?ed
-    headers:
-      Host: z8z7lovopd53iz6ivd2m.fixing00ponvip.workers.dev
-  alpn:
-  - http/1.1
-- name: AKUN-019-CLOUDFLARE-VLESS-WS-71MS
+- name: AKUN-002-CLOUDFLARE-VLESS-WS-65MS
   type: vless
   server: 104.17.3.81
   port: 443
@@ -406,24 +151,58 @@ proxies:
     path: /vl/FuJlzLUhMmosE6ySAHYtJDUq6XlF?ed=2560
     headers:
       Host: cfoi-2fx16g3-8ry2kdxmcj.wjesv2ila3rxbuhpc2nsugrachgawk.workers.dev
-- name: AKUN-020-CLOUDFLARE-VLESS-WS-74MS
+- name: AKUN-003-CLOUDFLARE-VLESS-WS-68MS
   type: vless
   server: 104.17.3.81
   port: 443
-  uuid: 91875754-7fcc-5ba9-9573-5a43215dfd0f
+  uuid: 513beae3-56e7-4954-a17e-930e06237b27
   udp: true
   tls: true
-  servername: node-8966333989-b9acc5.dsjvhbsdcjy.workers.dev
+  servername: cfOI-2FX16g3-8RY2kDXmCj.WJeSV2iLa3rxbUHPc2nsUGRAcHgaWK.WorKerS.DEV
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  alpn:
+  - http/1.1
+  ws-opts:
+    path: /vl/1NM75lSM9FVMO5loRH5RSHTFj1g?ed=2560
+    headers:
+      Host: cfoi-2fx16g3-8ry2kdxmcj.wjesv2ila3rxbuhpc2nsugrachgawk.workers.dev
+- name: AKUN-004-CLOUDFLARE-VLESS-WS-65MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: 513beae3-56e7-4954-a17e-930e06237b27
+  udp: true
+  tls: true
+  servername: CfOI-2FX16g3-8rY2kdXmCJ.WJeSv2ILA3rXbUhpC2NSugRAchGaWK.WOrkeRs.DEV
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  alpn:
+  - http/1.1
+  ws-opts:
+    path: /vl/3wSAeuGJbrGHwJ45DA6ircvHC6?ed=2560
+    headers:
+      Host: cfoi-2fx16g3-8ry2kdxmcj.wjesv2ila3rxbuhpc2nsugrachgawk.workers.dev
+- name: AKUN-005-CLOUDFLARE-VLESS-WS-65MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: 77777777-8a3e-6666-b6d1-a9c5f0e8b3a2
+  udp: true
+  tls: true
+  servername: faxf32gkfzoxqv.fx6hsv0.ccwu.cc
   network: ws
   client-fingerprint: chrome
   skip-cert-verify: true
   ws-opts:
-    path: /sync
+    path: /
     headers:
-      Host: node-8966333989-b9acc5.dsjvhbsdcjy.workers.dev
+      Host: faxf32gkfzoxqv.fx6hsv0.ccwu.cc
   alpn:
   - http/1.1
-- name: AKUN-021-CLOUDFLARE-VLESS-WS-65MS
+- name: AKUN-006-CLOUDFLARE-VLESS-WS-65MS
   type: vless
   server: 104.17.3.81
   port: 443
@@ -440,109 +219,24 @@ proxies:
     path: /vl/5XS6voHZVYs7mzpMKkTEfkiDauqBCt0S?ed=2560
     headers:
       Host: c0yr9j09y2l9g0td8wa5.2whbrirhjgslm43zjcqei.workers.dev
-- name: AKUN-022-UNKNOWN-VLESS-WS-68MS
+- name: AKUN-007-CLOUDFLARE-VLESS-WS-66MS
   type: vless
   server: 104.17.3.81
   port: 443
-  uuid: 7da33b25-cdd6-e481-afcf-c5d532361a70
+  uuid: eb24c3b4-7936-45e2-a253-e54fd1955a7f
   udp: true
   tls: true
-  servername: ez-1bc8ab.sekiro-c18.workers.dev
+  servername: c0yR9J09Y2l9G0td8wA5.2wHbrirHJgSlM43zJcqeI.WoRkERS.dEv
   network: ws
   client-fingerprint: chrome
   skip-cert-verify: true
-  ws-opts:
-    path: /sync
-    headers:
-      Host: ez-1bc8ab.sekiro-c18.workers.dev
   alpn:
   - http/1.1
-- name: AKUN-023-DEV-VLESS-WS-68MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 7da33b25-cdd6-e481-afcf-c5d532361a70
-  udp: true
-  tls: true
-  servername: ez-1bc8ab.sekiro-c18.workers.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
   ws-opts:
-    path: /
+    path: /vl/Sltu36eJc3zvD9Npaxsj2vJ?ed=2560
     headers:
-      Host: ez-1bc8ab.sekiro-c18.workers.dev
-  alpn:
-  - http/1.1
-- name: AKUN-024-CLOUDFLARE-VLESS-WS-73MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 4bde8d55-d91c-45e9-9b36-e6448a194527
-  udp: true
-  tls: true
-  servername: dfsuporte.garena.com.ex33r.eu.cc
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /sg-amz
-    headers:
-      Host: dfsuporte.garena.com.ex33r.eu.cc
-  alpn:
-  - http/1.1
-- name: AKUN-025-CLOUDFLARE-VLESS-WS-68MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 77777777-8a3e-6666-b6d1-a9c5f0e8b3a2
-  udp: true
-  tls: true
-  servername: fx3h2kf8xn.fx6hsv0.ccwu.cc
-  network: ws
-  client-fingerprint: unsafe
-  skip-cert-verify: true
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: fx3h2kf8xn.fx6hsv0.ccwu.cc
-  alpn:
-  - http/1.1
-- name: AKUN-026-CHATGPT-VLESS-WS-70MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 5dc15e15-f285-4a9d-959b-0e4fbdd77b63
-  udp: true
-  tls: true
-  servername: powered-by-surena.user68f797c2f3e1b.workers.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /?ed
-    headers:
-      Host: powered-by-surena.user68f797c2f3e1b.workers.dev
-  alpn:
-  - http/1.1
-- name: AKUN-028-BIGCOMMERCE-VLESS-WS-67MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: b8b01773-36b1-4b49-9bd0-6249f52345b4
-  udp: true
-  tls: true
-  servername: MiSty-tooth-78cA.FoboGAH414-e7B.WoRKERs.DEv
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /eyJqdW5rIjoiTkNUaFg0ZnJNUjhhcyIsInByb3RvY29sIjoidmwiLCJtb2RlIjoicHJveHlpcCIsInBhbmVsSVBzIjpbXX0=
-    headers:
-      Host: MiSty-tooth-78cA.FoboGAH414-e7B.WoRKERs.DEv
-  alpn:
-  - http/1.1
-- name: AKUN-029-CLOUDFLARE-VLESS-WS-70MS
+      Host: c0yr9j09y2l9g0td8wa5.2whbrirhjgslm43zjcqei.workers.dev
+- name: AKUN-008-CLOUDFLARE-VLESS-WS-72MS
   type: vless
   server: 104.17.3.81
   port: 443
@@ -559,41 +253,211 @@ proxies:
     path: /eyJqdW5rIjoiZ3RXWk45UVhpRVB3R3VPIiwicHJvdG9jb2wiOiJ2bCIsIm1vZGUiOiJwcmVmaXgiLCJwYW5lbElQcyI6WyJbMjYwMjpmYzU5OjExOjY0OjpdIl19
     headers:
       Host: silent-king-5030.aiprointer.workers.dev
-- name: AKUN-030-UNKNOWN-VLESS-WS-33MS
+- name: AKUN-009-CLOUDFLARE-VLESS-WS-72MS
   type: vless
   server: 104.17.3.81
   port: 443
-  uuid: 9b18ccef-b9e0-41d1-8990-9d970569e142
+  uuid: 513beae3-56e7-4954-a17e-930e06237b27
   udp: true
   tls: true
-  servername: web-socket.tgdaosheng.ggff.net
+  servername: Cfoi-2FX16G3-8Ry2KdXmCJ.WjESV2ILa3rxBUHpc2NsUGRaChgaWk.WOrkeRS.dev
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  alpn:
+  - http/1.1
+  ws-opts:
+    path: /vl/piIRdE9WUi24Sn3bb2oSJ?ed=2560
+    headers:
+      Host: cfoi-2fx16g3-8ry2kdxmcj.wjesv2ila3rxbuhpc2nsugrachgawk.workers.dev
+- name: AKUN-010-CLOUDFLARE-VLESS-WS-64MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: bd8c736e-cae1-43d7-b573-9672e6ca4989
+  udp: true
+  tls: true
+  servername: l0n0QgKdtTu061g57fhqZBet333S4t.adE-1004.WOrkerS.Dev
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  alpn:
+  - http/1.1
+  ws-opts:
+    path: /vl/zXLTmz3hE3szn64f?ed=2560
+    headers:
+      Host: l0n0qgkdttu061g57fhqzbet333s4t.ade-1004.workers.dev
+- name: AKUN-012-CLOUDFLARE-VLESS-WS-63MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: 07821f66-cdb7-4c70-9de6-e230cffac470
+  udp: true
+  tls: true
+  servername: wgrcqwtkfyqujs43.ghydgdbdbddvv.workers.dev
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  alpn:
+  - http/1.1
+  ws-opts:
+    path: /vl/Li1khIHH3DNItJyzraemsPBQvu
+    headers:
+      Host: wgrcqwtkfyqujs43.ghydgdbdbddvv.workers.dev
+- name: AKUN-013-CLOUDFLARE-VLESS-WS-65MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: eb24c3b4-7936-45e2-a253-e54fd1955a7f
+  udp: true
+  tls: true
+  servername: C0yR9j09Y2l9G0tD8wa5.2wHBRirhjGslM43zJCqEi.worKeRs.DEV
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  alpn:
+  - http/1.1
+  ws-opts:
+    path: /vl/6NGHNFKsvK41KeQo?ed=2560
+    headers:
+      Host: c0yr9j09y2l9g0td8wa5.2whbrirhjgslm43zjcqei.workers.dev
+- name: AKUN-014-UNKNOWN-VLESS-WS-69MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: 7da33b25-cdd6-e481-afcf-c5d532361a70
+  udp: true
+  tls: true
+  servername: ez-1bc8ab.sekiro-c18.workers.dev
   network: ws
   client-fingerprint: chrome
   skip-cert-verify: true
   ws-opts:
-    path: /proxyip=bpb.yousef.isegaro.com
+    path: /sync
     headers:
-      Host: web-socket.tgdaosheng.ggff.net
+      Host: ez-1bc8ab.sekiro-c18.workers.dev
   alpn:
   - http/1.1
-- name: AKUN-031-NOTION-WEB-VLESS-WS-65MS
+- name: AKUN-015-CLOUDFLARE-VLESS-WS-70MS
   type: vless
   server: 104.17.3.81
   port: 443
-  uuid: d042a74a-c305-4eec-a89f-39a348022c92
+  uuid: f2a73750-3087-48ff-a763-1348c15dce68
   udp: true
   tls: true
-  servername: dry-butterfly-8eb9.tmpgnacio83.workers.dev
+  servername: rAyAn-007.mAxImA.DpDnS.OrG
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: rAyAn-007.mAxImA.DpDnS.OrG
+  alpn:
+  - http/1.1
+- name: AKUN-016-DEV-VLESS-WS-70MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: 7da33b25-cdd6-e481-afcf-c5d532361a70
+  udp: true
+  tls: true
+  servername: ez-1bc8ab.sekiro-c18.workers.dev
   network: ws
   client-fingerprint: chrome
   skip-cert-verify: true
   ws-opts:
     path: /
     headers:
-      Host: dry-butterfly-8eb9.tmpgnacio83.workers.dev
+      Host: ez-1bc8ab.sekiro-c18.workers.dev
   alpn:
   - http/1.1
-- name: AKUN-032-CLOUDFLARE-VLESS-WS-72MS
+- name: AKUN-017-CLOUDFLARE-VLESS-WS-67MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: aebe5a70-0ca3-46ce-8208-8b5bab1346ce
+  udp: true
+  tls: true
+  servername: rAyAn-007.nAsTaRaN.DpDnS.OrG
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /?ed=2560
+    headers:
+      Host: rayan-007.nastaran.dpdns.org
+  alpn:
+  - http/1.1
+- name: AKUN-019-CLOUDFLARE-VLESS-WS-71MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: eb24c3b4-7936-45e2-a253-e54fd1955a7f
+  udp: true
+  tls: true
+  servername: c0YR9J09y2l9G0Td8WA5.2whBRirhjgsLm43ZJcqei.WoRKers.DEv
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  alpn:
+  - http/1.1
+  ws-opts:
+    path: /vl/mzLc59gMyjrsaNojAJ6g04?ed=2560
+    headers:
+      Host: c0yr9j09y2l9g0td8wa5.2whbrirhjgslm43zjcqei.workers.dev
+- name: AKUN-020-CHATGPT-VLESS-WS-69MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: 5dc15e15-f285-4a9d-959b-0e4fbdd77b63
+  udp: true
+  tls: true
+  servername: powered-by-surena.user68f797c2f3e1b.workers.dev
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /?ed
+    headers:
+      Host: powered-by-surena.user68f797c2f3e1b.workers.dev
+  alpn:
+  - http/1.1
+- name: AKUN-021-DEV-VLESS-WS-68MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: f6b5a6a3-f3e1-63ca-bb68-bdc400000000
+  udp: true
+  tls: true
+  servername: netlivpn5505.ffffdsaaa.workers.dev
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /
+    headers:
+      Host: netlivpn5505.ffffdsaaa.workers.dev
+  alpn:
+  - http/1.1
+- name: AKUN-022-CLOUDFLARE-VLESS-WS-72MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: 4bde8d55-d91c-45e9-9b36-e6448a194527
+  udp: true
+  tls: true
+  servername: dfsuporte.garena.com.ex33r.eu.cc
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /sg-amz
+    headers:
+      Host: dfsuporte.garena.com.ex33r.eu.cc
+  alpn:
+  - http/1.1
+- name: AKUN-023-CLOUDFLARE-VLESS-WS-77MS
   type: vless
   server: 104.17.3.81
   port: 443
@@ -610,7 +474,143 @@ proxies:
       Host: quiz.int.vidio.com.ex33r.eu.cc
   alpn:
   - http/1.1
-- name: AKUN-033-CLOUDFLARE-VLESS-WS-74MS
+- name: AKUN-025-CLOUDFLARE-VLESS-WS-71MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: a8890c1b-3622-3106-c4be-d8671be32d2b
+  udp: true
+  tls: true
+  servername: summer-meadow-af5b.woowoorrrkk.workers.dev
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /sync
+    headers:
+      Host: summer-meadow-af5b.woowoorrrkk.workers.dev
+  alpn:
+  - http/1.1
+- name: AKUN-026-RS-RAPIDSEEDBOX-20190717-VLESS-WS-71MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: b69b43d1-091d-4d7c-90b2-7a8bbad9d6a9
+  udp: true
+  tls: true
+  servername: BItter-CreDIT-61b8.b76EbA0aBb.wORkerS.dEv
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  alpn:
+  - http/1.1
+  ws-opts:
+    path: /eyJqdW5rIjoiY0U2T212Y21yeEhUZHRKYSIsInByb3RvY29sIjoidmwiLCJtb2RlIjoicHJveHlpcCIsInBhbmVsSVBzIjpbXX0
+    headers:
+      Host: BItter-CreDIT-61b8.b76EbA0aBb.wORkerS.dEv
+- name: AKUN-027-CLOUDFLARE-VLESS-WS-71MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: 91875754-7fcc-5ba9-9573-5a43215dfd0f
+  udp: true
+  tls: true
+  servername: node-8966333989-b9acc5.dsjvhbsdcjy.workers.dev
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /sync
+    headers:
+      Host: node-8966333989-b9acc5.dsjvhbsdcjy.workers.dev
+  alpn:
+  - http/1.1
+- name: AKUN-028-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-69MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: ea50b1a3-3a98-4c5e-a150-48ada40d68d7
+  udp: true
+  tls: true
+  servername: cf-vless-4cf55824.aimall.fr
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /connect
+    headers:
+      Host: cf-vless-4cf55824.aimall.fr
+  alpn:
+  - http/1.1
+- name: AKUN-029-CLOUDFLARE-VLESS-WS-67MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: e48e4049-58bb-4355-9a9a-433b9524d928
+  udp: true
+  tls: true
+  servername: z8Z7LoVOPd53iz6ivD2m.FixinG00PonviP.woRkers.DEV
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /vl/Fx1O4r0oHuQMNuKFQzcoV2yl31?ed
+    headers:
+      Host: z8z7lovopd53iz6ivd2m.fixing00ponvip.workers.dev
+  alpn:
+  - http/1.1
+- name: AKUN-030-BIGCOMMERCE-VLESS-WS-72MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: b8b01773-36b1-4b49-9bd0-6249f52345b4
+  udp: true
+  tls: true
+  servername: MiSty-tooth-78cA.FoboGAH414-e7B.WoRKERs.DEv
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /eyJqdW5rIjoiTkNUaFg0ZnJNUjhhcyIsInByb3RvY29sIjoidmwiLCJtb2RlIjoicHJveHlpcCIsInBhbmVsSVBzIjpbXX0=
+    headers:
+      Host: MiSty-tooth-78cA.FoboGAH414-e7B.WoRKERs.DEv
+  alpn:
+  - http/1.1
+- name: AKUN-031-UNKNOWN-VLESS-WS-81MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: 28607fa7-db30-47d6-942a-f5744e4be9ad
+  udp: true
+  tls: true
+  servername: dfsuporte.garena.com.ex33r.eu.cc
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /id-pusat
+    headers:
+      Host: dfsuporte.garena.com.ex33r.eu.cc
+  alpn:
+  - http/1.1
+- name: AKUN-032-CLOUDFLARE-VLESS-WS-66MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: 1c9daf90-3950-44ac-b06f-4cf9aec63170
+  udp: true
+  tls: true
+  servername: FrEe.SeRVEr14peekCoNfIG.WoRKErS.dEV
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /eyJqdW5rIjoiQmFCblN3SmhXYTB3RzVoIiwicHJvdG9jb2wiOiJ2bCIsIm1vZGUiOiJwcmVmaXgiLCJwYW5lbElQcyI6WyJbMjYwMjpmYzU5OjExOjY0OjpdIiwiWzJhMDI6ODk4OjE0Njo2NDo6XSIsIlsyNjAyOmZjNTk6YjA6NjQ6Ol0iXX0=
+    headers:
+      Host: free.server14peekconfig.workers.dev
+  alpn:
+  - http/1.1
+- name: AKUN-033-CLOUDFLARE-VLESS-WS-82MS
   type: vless
   server: 104.17.3.81
   port: 443
@@ -719,14 +719,14 @@ proxy-groups:
 - name: AI-OPENAI
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-29MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-30MS
-  - AKUN-030-UNKNOWN-VLESS-WS-33MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-012-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-010-CLOUDFLARE-VLESS-WS-64MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-65MS
   - AKUN-004-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-017-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-021-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-031-NOTION-WEB-VLESS-WS-65MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-013-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-007-CLOUDFLARE-VLESS-WS-66MS
   url: https://chatgpt.com/favicon.ico
   interval: 300
   lazy: true
@@ -736,14 +736,14 @@ proxy-groups:
 - name: AI-CLAUDE
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-29MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-30MS
-  - AKUN-030-UNKNOWN-VLESS-WS-33MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-012-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-010-CLOUDFLARE-VLESS-WS-64MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-65MS
   - AKUN-004-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-017-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-021-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-031-NOTION-WEB-VLESS-WS-65MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-013-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-007-CLOUDFLARE-VLESS-WS-66MS
   url: https://claude.ai/favicon.ico
   interval: 300
   lazy: true
@@ -753,14 +753,14 @@ proxy-groups:
 - name: AI-GEMINI
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-29MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-30MS
-  - AKUN-030-UNKNOWN-VLESS-WS-33MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-012-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-010-CLOUDFLARE-VLESS-WS-64MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-65MS
   - AKUN-004-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-017-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-021-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-031-NOTION-WEB-VLESS-WS-65MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-013-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-007-CLOUDFLARE-VLESS-WS-66MS
   url: https://gemini.google.com/favicon.ico
   interval: 300
   lazy: true
@@ -770,14 +770,14 @@ proxy-groups:
 - name: AI-OTHER
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-29MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-30MS
-  - AKUN-030-UNKNOWN-VLESS-WS-33MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-012-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-010-CLOUDFLARE-VLESS-WS-64MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-65MS
   - AKUN-004-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-017-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-021-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-031-NOTION-WEB-VLESS-WS-65MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-013-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-007-CLOUDFLARE-VLESS-WS-66MS
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -787,14 +787,14 @@ proxy-groups:
 - name: AI-STABLE
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-29MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-30MS
-  - AKUN-030-UNKNOWN-VLESS-WS-33MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-012-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-010-CLOUDFLARE-VLESS-WS-64MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-65MS
   - AKUN-004-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-017-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-021-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-031-NOTION-WEB-VLESS-WS-65MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-013-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-007-CLOUDFLARE-VLESS-WS-66MS
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -804,14 +804,14 @@ proxy-groups:
 - name: AI-BACKUP
   type: fallback
   proxies:
-  - AKUN-005-CLOUDFLARE-VLESS-WS-66MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-66MS
-  - AKUN-018-CLOUDFLARE-VLESS-WS-66MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-67MS
-  - AKUN-015-CLOUDFLARE-VLESS-WS-67MS
-  - AKUN-028-BIGCOMMERCE-VLESS-WS-67MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-68MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-68MS
+  - AKUN-032-CLOUDFLARE-VLESS-WS-66MS
+  - AKUN-017-CLOUDFLARE-VLESS-WS-67MS
+  - AKUN-029-CLOUDFLARE-VLESS-WS-67MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-68MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-68MS
+  - AKUN-021-DEV-VLESS-WS-68MS
+  - AKUN-014-UNKNOWN-VLESS-WS-69MS
+  - AKUN-020-CHATGPT-VLESS-WS-69MS
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -821,14 +821,14 @@ proxy-groups:
 - name: AI-MANUAL
   type: fallback
   proxies:
-  - AKUN-005-CLOUDFLARE-VLESS-WS-66MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-66MS
-  - AKUN-018-CLOUDFLARE-VLESS-WS-66MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-67MS
-  - AKUN-015-CLOUDFLARE-VLESS-WS-67MS
-  - AKUN-028-BIGCOMMERCE-VLESS-WS-67MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-68MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-68MS
+  - AKUN-032-CLOUDFLARE-VLESS-WS-66MS
+  - AKUN-017-CLOUDFLARE-VLESS-WS-67MS
+  - AKUN-029-CLOUDFLARE-VLESS-WS-67MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-68MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-68MS
+  - AKUN-021-DEV-VLESS-WS-68MS
+  - AKUN-014-UNKNOWN-VLESS-WS-69MS
+  - AKUN-020-CHATGPT-VLESS-WS-69MS
   url: https://www.gstatic.com/generate_204
   interval: 600
   lazy: true
@@ -904,36 +904,36 @@ proxy-groups:
 - name: PING-CHECK
   type: url-test
   proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-30MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-29MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-67MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-68MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-68MS
   - AKUN-004-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-66MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-68MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-68MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-63MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-66MS
-  - AKUN-010-CLOUDFLARE-VLESS-WS-70MS
-  - AKUN-013-CLOUDFLARE-VLESS-WS-70MS
-  - AKUN-014-DEV-VLESS-WS-69MS
-  - AKUN-015-CLOUDFLARE-VLESS-WS-67MS
-  - AKUN-016-CLOUDFLARE-VLESS-WS-68MS
-  - AKUN-017-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-018-CLOUDFLARE-VLESS-WS-66MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-007-CLOUDFLARE-VLESS-WS-66MS
+  - AKUN-008-CLOUDFLARE-VLESS-WS-72MS
+  - AKUN-009-CLOUDFLARE-VLESS-WS-72MS
+  - AKUN-010-CLOUDFLARE-VLESS-WS-64MS
+  - AKUN-012-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-013-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-014-UNKNOWN-VLESS-WS-69MS
+  - AKUN-015-CLOUDFLARE-VLESS-WS-70MS
+  - AKUN-016-DEV-VLESS-WS-70MS
+  - AKUN-017-CLOUDFLARE-VLESS-WS-67MS
   - AKUN-019-CLOUDFLARE-VLESS-WS-71MS
-  - AKUN-020-CLOUDFLARE-VLESS-WS-74MS
-  - AKUN-021-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-022-UNKNOWN-VLESS-WS-68MS
-  - AKUN-023-DEV-VLESS-WS-68MS
-  - AKUN-024-CLOUDFLARE-VLESS-WS-73MS
-  - AKUN-025-CLOUDFLARE-VLESS-WS-68MS
-  - AKUN-026-CHATGPT-VLESS-WS-70MS
-  - AKUN-028-BIGCOMMERCE-VLESS-WS-67MS
-  - AKUN-029-CLOUDFLARE-VLESS-WS-70MS
-  - AKUN-030-UNKNOWN-VLESS-WS-33MS
-  - AKUN-031-NOTION-WEB-VLESS-WS-65MS
-  - AKUN-032-CLOUDFLARE-VLESS-WS-72MS
-  - AKUN-033-CLOUDFLARE-VLESS-WS-74MS
+  - AKUN-020-CHATGPT-VLESS-WS-69MS
+  - AKUN-021-DEV-VLESS-WS-68MS
+  - AKUN-022-CLOUDFLARE-VLESS-WS-72MS
+  - AKUN-023-CLOUDFLARE-VLESS-WS-77MS
+  - AKUN-025-CLOUDFLARE-VLESS-WS-71MS
+  - AKUN-026-RS-RAPIDSEEDBOX-20190717-VLESS-WS-71MS
+  - AKUN-027-CLOUDFLARE-VLESS-WS-71MS
+  - AKUN-028-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-69MS
+  - AKUN-029-CLOUDFLARE-VLESS-WS-67MS
+  - AKUN-030-BIGCOMMERCE-VLESS-WS-72MS
+  - AKUN-031-UNKNOWN-VLESS-WS-81MS
+  - AKUN-032-CLOUDFLARE-VLESS-WS-66MS
+  - AKUN-033-CLOUDFLARE-VLESS-WS-82MS
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   - MANUAL-TROJAN WS Melbikomas UAB
@@ -948,10 +948,10 @@ proxy-groups:
 - name: WARM-UP
   type: url-test
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-29MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-30MS
-  - AKUN-030-UNKNOWN-VLESS-WS-33MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-012-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-010-CLOUDFLARE-VLESS-WS-64MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-65MS
   url: https://www.gstatic.com/generate_204
   interval: 60
   tolerance: 150
@@ -962,9 +962,9 @@ proxy-groups:
 - name: WARM-UP-CF
   type: url-test
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-29MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-30MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-012-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-010-CLOUDFLARE-VLESS-WS-64MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-65MS
   - AKUN-004-CLOUDFLARE-VLESS-WS-65MS
   url: https://cp.cloudflare.com
   interval: 90
@@ -976,11 +976,11 @@ proxy-groups:
 - name: STREAMING-FAST
   type: url-test
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-29MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-30MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-012-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-010-CLOUDFLARE-VLESS-WS-64MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-65MS
   - AKUN-004-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-030-UNKNOWN-VLESS-WS-33MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-65MS
   url: https://cp.cloudflare.com
   interval: 60
   tolerance: 150
@@ -1003,7 +1003,7 @@ proxy-groups:
 - name: AUTO-FAST
   type: url-test
   proxies:
-  - AKUN-017-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-65MS
   url: https://www.gstatic.com/generate_204
   interval: 60
   tolerance: 150
@@ -1018,36 +1018,36 @@ proxy-groups:
   - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   - MANUAL-TROJAN WS Melbikomas UAB
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - AKUN-002-CLOUDFLARE-VLESS-WS-29MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-30MS
-  - AKUN-030-UNKNOWN-VLESS-WS-33MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-012-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-010-CLOUDFLARE-VLESS-WS-64MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-65MS
   - AKUN-004-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-017-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-021-CLOUDFLARE-VLESS-WS-65MS
-  - AKUN-031-NOTION-WEB-VLESS-WS-65MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-66MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-66MS
-  - AKUN-018-CLOUDFLARE-VLESS-WS-66MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-67MS
-  - AKUN-015-CLOUDFLARE-VLESS-WS-67MS
-  - AKUN-028-BIGCOMMERCE-VLESS-WS-67MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-68MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-68MS
-  - AKUN-016-CLOUDFLARE-VLESS-WS-68MS
-  - AKUN-022-UNKNOWN-VLESS-WS-68MS
-  - AKUN-023-DEV-VLESS-WS-68MS
-  - AKUN-025-CLOUDFLARE-VLESS-WS-68MS
-  - AKUN-014-DEV-VLESS-WS-69MS
-  - AKUN-010-CLOUDFLARE-VLESS-WS-70MS
-  - AKUN-013-CLOUDFLARE-VLESS-WS-70MS
-  - AKUN-026-CHATGPT-VLESS-WS-70MS
-  - AKUN-029-CLOUDFLARE-VLESS-WS-70MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-013-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-007-CLOUDFLARE-VLESS-WS-66MS
+  - AKUN-032-CLOUDFLARE-VLESS-WS-66MS
+  - AKUN-017-CLOUDFLARE-VLESS-WS-67MS
+  - AKUN-029-CLOUDFLARE-VLESS-WS-67MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-68MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-68MS
+  - AKUN-021-DEV-VLESS-WS-68MS
+  - AKUN-014-UNKNOWN-VLESS-WS-69MS
+  - AKUN-020-CHATGPT-VLESS-WS-69MS
+  - AKUN-028-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-69MS
+  - AKUN-015-CLOUDFLARE-VLESS-WS-70MS
+  - AKUN-016-DEV-VLESS-WS-70MS
   - AKUN-019-CLOUDFLARE-VLESS-WS-71MS
-  - AKUN-032-CLOUDFLARE-VLESS-WS-72MS
-  - AKUN-024-CLOUDFLARE-VLESS-WS-73MS
-  - AKUN-020-CLOUDFLARE-VLESS-WS-74MS
-  - AKUN-033-CLOUDFLARE-VLESS-WS-74MS
+  - AKUN-025-CLOUDFLARE-VLESS-WS-71MS
+  - AKUN-026-RS-RAPIDSEEDBOX-20190717-VLESS-WS-71MS
+  - AKUN-027-CLOUDFLARE-VLESS-WS-71MS
+  - AKUN-008-CLOUDFLARE-VLESS-WS-72MS
+  - AKUN-009-CLOUDFLARE-VLESS-WS-72MS
+  - AKUN-022-CLOUDFLARE-VLESS-WS-72MS
+  - AKUN-030-BIGCOMMERCE-VLESS-WS-72MS
+  - AKUN-023-CLOUDFLARE-VLESS-WS-77MS
+  - AKUN-031-UNKNOWN-VLESS-WS-81MS
+  - AKUN-033-CLOUDFLARE-VLESS-WS-82MS
   url: https://www.gstatic.com/generate_204
   interval: 120
   lazy: true
@@ -1058,10 +1058,10 @@ proxy-groups:
   type: load-balance
   strategy: sticky-sessions
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-29MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-30MS
-  - AKUN-030-UNKNOWN-VLESS-WS-33MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-012-CLOUDFLARE-VLESS-WS-63MS
+  - AKUN-010-CLOUDFLARE-VLESS-WS-64MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-65MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-65MS
   url: https://www.gstatic.com/generate_204
   interval: 180
   lazy: true
@@ -1373,6 +1373,10 @@ rules:
 - DOMAIN-SUFFIX,2mdn.net,REJECT
 - DOMAIN-SUFFIX,googlesyndication.com,REJECT
 - DOMAIN-SUFFIX,googleadservices.com,REJECT
+- DOMAIN,adtrafficquality.google,REJECT
+- DOMAIN-SUFFIX,googleadapis.com,REJECT
+- DOMAIN,mobileads.google.com,REJECT
+- DOMAIN,pagead.l.google.com,REJECT
 - DOMAIN,adservice.google.com,REJECT
 - DOMAIN,stats.g.doubleclick.net,REJECT
 - DOMAIN,m.doubleclick.net,REJECT

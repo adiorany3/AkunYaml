@@ -566,6 +566,11 @@ YOUTUBE_NETWORK_AD_RULES = (
     "DOMAIN-SUFFIX,2mdn.net,REJECT",
     "DOMAIN-SUFFIX,googlesyndication.com,REJECT",
     "DOMAIN-SUFFIX,googleadservices.com,REJECT",
+    # Current Google Ads catalog endpoints; keep media/CDN hosts untouched.
+    "DOMAIN,adtrafficquality.google,REJECT",
+    "DOMAIN-SUFFIX,googleadapis.com,REJECT",
+    "DOMAIN,mobileads.google.com,REJECT",
+    "DOMAIN,pagead.l.google.com,REJECT",
 )
 
 # Router-only exact ad/measurement endpoints. These are intentionally not
@@ -627,6 +632,10 @@ YOUTUBE_BROWSER_FILTERS_ENHANCED = """\
 ||stats.g.doubleclick.net^$domain=youtube.com
 ||m.doubleclick.net^$domain=youtube.com
 ||mediavisor.doubleclick.net^$domain=youtube.com
+||adtrafficquality.google^$domain=youtube.com
+||googleadapis.com^$domain=youtube.com
+||mobileads.google.com^$domain=youtube.com
+||pagead.l.google.com^$domain=youtube.com
 ||ads.youtube.com^$domain=youtube.com
 ||youtube.com/api/stats/ads^$xhr,domain=youtube.com
 ||youtube.com/pagead/*$xhr,domain=youtube.com

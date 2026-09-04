@@ -14,6 +14,10 @@ EXTRA = [
     'stats.g.doubleclick.net',
     'm.doubleclick.net',
     'mediavisor.doubleclick.net',
+    'adtrafficquality.google',
+    'googleadapis.com',
+    'mobileads.google.com',
+    'pagead.l.google.com',
 ]
 PROTECTED_SUFFIX = [
     'googlevideo.com',
