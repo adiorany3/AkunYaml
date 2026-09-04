@@ -258,7 +258,8 @@ def refresh_security_feeds(workdir: Path, *, refresh: bool = True, log=print) ->
             log(f"Feed guard {spec.name}: {status}, {count} entries")
 
     _atomic_write(metadata_path, (json.dumps(metadata, indent=2, sort_keys=True) + "\n").encode("utf-8"))
-    _write_android_indonesia_snapshot(workdir, report, log=log)
+    _write_android_domain_snapshot(workdir, report, "ads_indonesia", "ads_indonesia_android.yaml", log=log)
+    _write_android_domain_snapshot(workdir, report, "threat-fake-scam", "threat-fake-scam_android.yaml", log=log)
     _write_report(workdir, report)
 
     # Compile only validated LKG domain/ipcidr text feeds. The compiler is
@@ -279,8 +280,8 @@ def refresh_security_feeds(workdir: Path, *, refresh: bool = True, log=print) ->
     return report
 
 
-def _write_android_indonesia_snapshot(workdir: Path, report: dict[str, dict[str, Any]], *, log=print) -> None:
-    item = report.get("ads_indonesia") or {}
+def _write_android_domain_snapshot(workdir: Path, report: dict[str, dict[str, Any]], provider: str, filename: str, *, log=print) -> None:
+    item = report.get(provider) or {}
     source_rel = str(item.get("path") or "")
     if not source_rel:
         return
@@ -290,11 +291,11 @@ def _write_android_indonesia_snapshot(workdir: Path, report: dict[str, dict[str,
     domains = _parse_domains(source.read_text(encoding="utf-8", errors="ignore"))
     if not domains:
         return
-    out = workdir / "rule_providers" / "ads_indonesia_android.yaml"
+    out = workdir / "rule_providers" / filename
     out.parent.mkdir(parents=True, exist_ok=True)
     data = {"payload": [f".{domain}" for domain in domains]}
     _atomic_write(out, yaml.safe_dump(data, allow_unicode=True, sort_keys=False, width=140).encode("utf-8"))
-    log(f"Android Indonesia snapshot: {len(domains)} entries")
+    log(f"Android {provider} snapshot: {len(domains)} entries")
 
 
 def _write_report(workdir: Path, report: dict[str, dict[str, Any]]) -> None:

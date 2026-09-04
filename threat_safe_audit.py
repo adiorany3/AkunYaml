@@ -24,7 +24,7 @@ for name in FILES:
     errors = []
 
     if name == "openclash_android.yaml":
-        for provider in ("threat-malware", "threat-phishing", "threat-cryptominers"):
+        for provider in ("threat-malware", "threat-phishing", "threat-cryptominers", "threat-fake-scam"):
             if provider not in providers or f"RULE-SET,{provider},REJECT" not in rules:
                 errors.append(f"missing Android provider/rule: {provider}")
         for pname, p in providers.items():

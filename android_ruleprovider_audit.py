@@ -52,10 +52,20 @@ def audit(path: Path) -> list[str]:
     if not rules or rules[-1] != "MATCH,GLOBAL":
         errors.append("rule terakhir harus MATCH,GLOBAL")
 
-    required = {"ads_domain", "tracker-domain", "threat-malware", "threat-phishing", "threat-cryptominers"}
+    required = {
+        "ads_domain",
+        "tracker-domain",
+        "threat-malware",
+        "threat-phishing",
+        "threat-cryptominers",
+        "threat-fake-scam",
+    }
     missing = required - known
     if missing:
         errors.append("provider Android hilang: " + ", ".join(sorted(missing)))
+    for provider in required:
+        if f"RULE-SET,{provider},REJECT" not in rules:
+            errors.append(f"rule Android hilang: {provider}")
     return errors
 
 

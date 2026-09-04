@@ -203,6 +203,11 @@ ANDROID_ADULT_PROVIDERS: dict[str, dict[str, Any]] = {
 }
 
 ANDROID_STRICT_PROVIDERS: dict[str, dict[str, Any]] = {
+    "threat-fake-scam": {
+        "type": "file",
+        "behavior": "domain",
+        "path": "./rule_providers/threat-fake-scam_android.yaml",
+    },
     "privacy-extra": _http_classical(
         "./rule_providers/privacy-extra.yaml",
         "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Privacy/Privacy.yaml",
@@ -303,7 +308,10 @@ def provider_reject_rules(
             "RULE-SET,threat-cryptominers,REJECT",
         ])
         if profile in {"strict", "child-safe", "app-safe", "threat-safe"}:
-            rules.append("RULE-SET,privacy-extra,REJECT")
+            rules.extend([
+                "RULE-SET,threat-fake-scam,REJECT",
+                "RULE-SET,privacy-extra,REJECT",
+            ])
         if indonesia_ads and android_snapshot_exists:
             rules.append("RULE-SET,ads_indonesia,REJECT")
         rules.extend([
