@@ -63,9 +63,11 @@ def main() -> int:
         "PROVIDER_CACHE": "true",
         "PING_CHECK_LAZY": "true",
         "CF_WARMUP_LAZY": "true",
+        "WARMUP_LAZY": "true",
         "STREAMING_HEALTH_LAZY": "true",
         "FALLBACK_LAZY": "true",
         "LOAD_BALANCE_LAZY": "true",
+        "AUTO_FAST_LAZY": "true",
     }
     for key, expected in required.items():
         if str(cfg.get(key, "")).strip().lower() != expected:

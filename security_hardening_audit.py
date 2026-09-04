@@ -68,7 +68,9 @@ def audit_feed_lkg() -> None:
     original_specs = feed_guard._feed_specs
     original_fetch = feed_guard._fetch
     old_drop = os.environ.get("FEED_MAX_DROP_RATIO")
+    old_ttl = os.environ.get("FEED_REFRESH_TTL_SEC")
     try:
+        os.environ["FEED_REFRESH_TTL_SEC"] = "0"
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             feed_guard._feed_specs = lambda: [feed_guard.FeedSpec("test-feed", "https://invalid.local/test", "domain", 2)]
@@ -89,6 +91,10 @@ def audit_feed_lkg() -> None:
             os.environ.pop("FEED_MAX_DROP_RATIO", None)
         else:
             os.environ["FEED_MAX_DROP_RATIO"] = old_drop
+        if old_ttl is None:
+            os.environ.pop("FEED_REFRESH_TTL_SEC", None)
+        else:
+            os.environ["FEED_REFRESH_TTL_SEC"] = old_ttl
 
 
 def main() -> int:

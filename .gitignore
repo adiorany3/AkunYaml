@@ -1,0 +1,8 @@
+# Local runtime state
+.runtime_cache/
+__pycache__/
+*.py[cod]
+
+# Feed cache is reproducible from feed_guard.py; keep tracked LKG files explicit.
+.feed_cache/*.json
+.feed_cache/*.tmp

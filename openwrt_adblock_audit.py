@@ -19,13 +19,17 @@ def check_order(rules:list[str], a:str, b:str, failures:list[str], name:str):
 def main()->int:
     failures=[]
     cfg=json.loads((ROOT/'local_config.json').read_text())
-    if cfg.get('OPENWRT_ADBLOCK_LEVEL')!='enhanced': failures.append('OPENWRT_ADBLOCK_LEVEL harus enhanced')
+    if cfg.get('OPENWRT_ADBLOCK_LEVEL') not in {'compact', 'enhanced'}: failures.append('OPENWRT_ADBLOCK_LEVEL harus compact atau enhanced')
     if cfg.get('OPENWRT_LITE_ADBLOCK_LEVEL')!='compact': failures.append('OPENWRT_LITE_ADBLOCK_LEVEL harus compact')
+    level = str(cfg.get('OPENWRT_ADBLOCK_LEVEL', 'compact')).strip().lower()
     expected={
-        'openclash_auto.yaml': {'hagezi-pro-plus-mini','popup-ads','ads_indonesia','ads_domain','tracker-domain'},
-        'openclash_fresh_pool.yaml': {'hagezi-pro-plus-mini','popup-ads','ads_indonesia','ads_domain','tracker-domain'},
+        'openclash_auto.yaml': {'popup-ads','ads_indonesia','ads_domain','tracker-domain'},
+        'openclash_fresh_pool.yaml': {'popup-ads','ads_indonesia','ads_domain','tracker-domain'},
         'openclash_lite.yaml': {'popup-ads','ads_indonesia','ads_domain','tracker-domain'},
     }
+    if level == 'enhanced':
+        expected['openclash_auto.yaml'].add('hagezi-pro-plus-mini')
+        expected['openclash_fresh_pool.yaml'].add('hagezi-pro-plus-mini')
     for name, needed in expected.items():
         d=yaml.safe_load((ROOT/name).read_text()) or {}
         providers=set((d.get('rule-providers') or {}).keys())
@@ -34,8 +38,10 @@ def main()->int:
         if name=='openclash_lite.yaml' and 'hagezi-pro-plus-mini' in providers:
             failures.append('Lite tidak boleh memakai Pro++ Mini secara default')
         rules=[str(x) for x in d.get('rules',[]) or []]
-        if name!='openclash_lite.yaml' and 'RULE-SET,hagezi-pro-plus-mini,REJECT' not in rules:
-            failures.append(f'{name}: rule Pro++ Mini hilang')
+        if level == 'enhanced' and name!='openclash_lite.yaml' and 'RULE-SET,hagezi-pro-plus-mini,REJECT' not in rules:
+            failures.append(f'{name}: rule Pro++ Mini hilang pada mode enhanced')
+        if level == 'compact' and name!='openclash_lite.yaml' and 'hagezi-pro-plus-mini' in providers:
+            failures.append(f'{name}: Pro++ Mini tidak boleh aktif pada mode compact')
         if 'RULE-SET,popup-ads,REJECT' not in rules:
             failures.append(f'{name}: popup rule hilang')
         check_order(rules,'RULE-SET,threat-malware,','RULE-SET,popup-ads,',failures,name)
@@ -53,6 +59,6 @@ def main()->int:
     if failures:
         for f in failures: print('[FAIL]',f)
         return 1
-    print('[OK] OpenWrt adblock: enhanced Auto/Fresh, compact Lite; Android diperiksa audit terpisah')
+    print(f'[OK] OpenWrt adblock: {level} Auto/Fresh, compact Lite; Android diperiksa audit terpisah')
     return 0
 if __name__=='__main__': raise SystemExit(main())

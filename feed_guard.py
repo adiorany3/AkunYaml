@@ -189,13 +189,23 @@ def refresh_security_feeds(workdir: Path, *, refresh: bool = True, log=print) ->
     metadata = _load_meta(metadata_path)
     max_drop = _float_env("FEED_MAX_DROP_RATIO", 0.65, 0.05, 0.95)
     max_growth = _float_env("FEED_MAX_GROWTH_RATIO", 4.0, 1.1, 20.0)
+    refresh_ttl = _float_env("FEED_REFRESH_TTL_SEC", 43200.0, 0.0, 2592000.0)
+    now = time.time()
     report: dict[str, dict[str, Any]] = {}
     specs = _feed_specs()
     fetched: dict[str, bytes | Exception] = {}
-    if refresh and specs:
-        workers = min(6, len(specs))
+    refresh_specs = [
+        spec for spec in specs
+        if refresh and (
+            refresh_ttl == 0
+            or not isinstance(metadata.get(spec.name), dict)
+            or now - float((metadata.get(spec.name) or {}).get("updated_unix") or 0) >= refresh_ttl
+        )
+    ]
+    if refresh_specs:
+        workers = min(6, len(refresh_specs))
         with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
-            future_map = {executor.submit(_fetch, spec.url): spec for spec in specs}
+            future_map = {executor.submit(_fetch, spec.url): spec for spec in refresh_specs}
             for future, spec in ((f, future_map[f]) for f in future_map):
                 try:
                     fetched[spec.name] = future.result()
@@ -212,7 +222,7 @@ def refresh_security_feeds(workdir: Path, *, refresh: bool = True, log=print) ->
         count = old_count
         sha256 = str(old.get("sha256") or "")
 
-        if refresh:
+        if spec.name in fetched:
             try:
                 raw_or_error = fetched.get(spec.name, RuntimeError("feed fetch missing"))
                 if isinstance(raw_or_error, Exception):
