@@ -109,6 +109,15 @@ ROUTER_GAMBLING_PROVIDERS: dict[str, dict[str, Any]] = {
     ),
 }
 
+ROUTER_ADULT_PROVIDERS: dict[str, dict[str, Any]] = {
+    "adult-category": _http_domain(
+        "./rule_providers/adult-category.mrs",
+        "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-porn.mrs",
+        fmt="mrs",
+        interval=86400,
+    ),
+}
+
 ROUTER_LOCAL_SAFETY_PROVIDERS: dict[str, dict[str, Any]] = {
     "adult-local": {
         "type": "file",
@@ -185,6 +194,14 @@ ANDROID_BASE_PROVIDERS: dict[str, dict[str, Any]] = {
     ),
 }
 
+ANDROID_ADULT_PROVIDERS: dict[str, dict[str, Any]] = {
+    "adult-category": _http_classical(
+        "./rule_providers/adult-category.yaml",
+        "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/classical/category-porn.yaml",
+        interval=86400,
+    ),
+}
+
 ANDROID_STRICT_PROVIDERS: dict[str, dict[str, Any]] = {
     "privacy-extra": _http_classical(
         "./rule_providers/privacy-extra.yaml",
@@ -224,6 +241,7 @@ def provider_catalog(
 
     if platform == "android":
         out = _with_interval(ANDROID_BASE_PROVIDERS, interval)
+        out.update(_with_interval(ANDROID_ADULT_PROVIDERS, max(int(interval), 86400)))
         if not indonesia_ads or not android_snapshot_exists:
             out.pop("ads_indonesia", None)
         if profile in {"strict", "child-safe", "app-safe", "threat-safe"}:
@@ -231,6 +249,7 @@ def provider_catalog(
         return out
 
     out = _with_interval(ROUTER_BASE_PROVIDERS, interval)
+    out.update(_with_interval(ROUTER_ADULT_PROVIDERS, max(int(interval), 86400)))
     if not indonesia_ads:
         out.pop("ads_indonesia", None)
     if gambling_block:
@@ -278,6 +297,7 @@ def provider_reject_rules(
     rules: list[str] = []
     if platform == "android":
         rules.extend([
+            "RULE-SET,adult-category,REJECT",
             "RULE-SET,threat-malware,REJECT",
             "RULE-SET,threat-phishing,REJECT",
             "RULE-SET,threat-cryptominers,REJECT",
@@ -306,6 +326,7 @@ def provider_reject_rules(
     if gambling_block:
         rules.append("RULE-SET,gambling-mini,REJECT")
     rules.extend([
+        "RULE-SET,adult-category,REJECT",
         "RULE-SET,adult-local,REJECT",
         "RULE-SET,pinjol-local,REJECT",
     ])
@@ -340,10 +361,12 @@ def managed_provider_names() -> set[str]:
         ROUTER_STRICT_PROVIDERS,
         ROUTER_ENHANCED_AD_PROVIDERS,
         ROUTER_GAMBLING_PROVIDERS,
+        ROUTER_ADULT_PROVIDERS,
         ROUTER_LOCAL_SAFETY_PROVIDERS,
         ROUTER_THREAT_SAFE_PROVIDERS,
         ROUTER_THREAT_IP_PROVIDERS,
         ANDROID_BASE_PROVIDERS,
+        ANDROID_ADULT_PROVIDERS,
         ANDROID_STRICT_PROVIDERS,
     ):
         names.update(catalog)
