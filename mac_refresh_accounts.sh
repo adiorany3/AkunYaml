@@ -77,9 +77,8 @@ if [[ ! -x .venv/bin/python ]]; then
 fi
 
 PY="$ROOT/.venv/bin/python"
-echo "[SETUP] Memastikan dependency Python..."
-"$PY" -m pip install --disable-pip-version-check -q -r requirements.txt
 
+# local_runner hanya memasang dependency jika import belum tersedia.
 # Mac membangun validator exact dari source commit target jika belum ada.
 "$ROOT/mac_build_target_core.sh"
 CORE="$ROOT/.local_bin/mihomo"

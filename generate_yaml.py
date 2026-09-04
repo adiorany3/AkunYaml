@@ -1758,6 +1758,14 @@ def main() -> int:
     manual_akun_text = build_akun_txt(manual_nodes)
     manual_skipped_text = "\n".join(manual_skipped) + ("\n" if manual_skipped else "")
 
+    # Fail closed before writing anything: keep the previous known-good outputs
+    # when public feeds cannot supply the configured minimum healthy accounts.
+    if len(alive_nodes) < min_output_nodes:
+        raise SystemExit(
+            f"[ERROR] Node otomatis hidup hanya {len(alive_nodes)}/{min_output_nodes}; "
+            "output lama dipertahankan."
+        )
+
     # Final structural cleanup. This must happen after every group mutation.
     yaml_text = _prune_missing_proxy_group_refs_yaml_text(yaml_text)
     android_yaml_text = _prune_missing_proxy_group_refs_yaml_text(android_yaml_text)
@@ -1838,8 +1846,6 @@ def main() -> int:
     Path(output_stamp).write_text(summary, encoding="utf-8")
 
     print(summary)
-    if len(alive_nodes) < min_output_nodes:
-        print(f"[WARN] Node otomatis yang lolos NekoBox/sing-box test hanya {len(alive_nodes)}/{min_output_nodes}. YAML tetap dibuat dengan node yang tersedia.")
     return 0
 
 

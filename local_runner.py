@@ -604,6 +604,10 @@ youtube.com##.ytp-ad-progress-list
 youtube.com##ytd-rich-item-renderer:has(ytd-ad-slot-renderer)
 youtube.com##ytd-search ytd-ad-slot-renderer
 youtube.com##ytd-watch-next-secondary-results-renderer ytd-ad-slot-renderer
+youtube.com##ytm-ad-slot-renderer
+youtube.com##ytm-promoted-video-renderer
+youtube.com##ytm-rich-item-renderer:has(ytm-ad-slot-renderer)
+youtube.com##ytm-promoted-sparkles-web-renderer
 """
 
 YOUTUBE_BROWSER_FILTERS_ENHANCED = """\
@@ -626,6 +630,7 @@ YOUTUBE_BROWSER_FILTERS_ENHANCED = """\
 ||ads.youtube.com^$domain=youtube.com
 ||youtube.com/api/stats/ads^$xhr,domain=youtube.com
 ||youtube.com/pagead/*$xhr,domain=youtube.com
+||youtube.com/pagead/parallelad^$xhr,domain=youtube.com
 ||youtube.com/ptracking^$xhr,domain=youtube.com
 
 ! Conservative in-page pruning for browser blockers that support uBO scriptlets.
