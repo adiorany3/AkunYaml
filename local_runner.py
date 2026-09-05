@@ -118,6 +118,7 @@ DEFAULT_ENV = {
     "RESERVE_POOL_NODES": "120",
     "ATTEMPTS": "3",
     "REQUIRE_SUCCESSES": "2",
+    "REQUIRE_ORIGINAL": "true",
     "TCP_TIMEOUT": "3.0",
     "FETCH_TIMEOUT": "12",
     "MAX_WORKERS": "64",
