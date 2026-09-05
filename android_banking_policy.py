@@ -21,6 +21,34 @@ DEFAULT_SUFFIX_DOMAINS = (
 
 DEFAULT_EXACT_DOMAINS: tuple[str, ...] = ()
 
+ALL_BANK_SUFFIX_DOMAINS = (
+    "blu.co.id", "jago.com", "seabank.co.id", "bca.co.id", "klikbca.com",
+    "mybca.co.id", "bankmandiri.co.id", "livinbymandiri.co.id", "bri.co.id",
+    "bni.co.id", "btn.co.id", "cimbniaga.co.id", "octo.co.id", "danamon.co.id",
+    "permatabank.com", "panin.co.id", "ocbc.id", "ocbcnisp.com", "maybank.co.id",
+    "hsbc.co.id", "uob.co.id", "dbs.com", "dbs.id", "sc.com", "citibank.co.id",
+    "bankmega.com", "bankmega.co.id", "btpn.com", "jenius.com", "bankjago.com",
+    "bankneo.co.id", "allobank.com", "bankraya.co.id", "bankaladin.co.id",
+    "bankina.co.id", "bankbsi.co.id", "bankmuamalat.co.id",
+    "bankmega-syariah.co.id", "bcasyariah.co.id", "btpnsyariah.com",
+    "bankvictoriasyariah.co.id", "banksinarmas.com", "bankmas.co.id",
+    "bankmestika.co.id", "bankmayapada.com", "bankcapital.co.id",
+    "bankganesha.co.id", "bankindex.co.id", "bankmayora.com",
+    "bankwoorisaudara.com", "kebhana.co.id", "shinhan.co.id", "bankbisnis.com",
+    "banksampoerna.com", "banknobu.com", "bankbjb.co.id", "bankdki.co.id",
+    "bankjateng.co.id", "bankjatim.co.id", "bpddiy.co.id", "banksumut.co.id",
+    "bankaceh.co.id", "banknagari.co.id", "bankriaukepri.co.id",
+    "banksumselbabel.com", "banklampung.co.id", "bankkalbar.co.id",
+    "bankkalsel.co.id", "bankkalteng.co.id", "bankaltimtara.co.id",
+    "banksulselbar.co.id", "banksulutgo.co.id", "bankntbsyariah.co.id",
+    "bpdbali.co.id", "bpdntt.co.id", "bankmalukumalut.co.id", "bankpapua.co.id",
+)
+
+
+def all_bank_suffix_domains() -> tuple[str, ...]:
+    """Return bank domains routed through Sing-box manual nodes."""
+    return ALL_BANK_SUFFIX_DOMAINS
+
 
 def _env_bool(name: str, default: bool) -> bool:
     raw = os.getenv(name)

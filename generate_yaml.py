@@ -18,8 +18,8 @@ import json
 import yaml
 import requests
 
+from android_banking_policy import all_bank_suffix_domains
 from android_banking_policy import exact_domains as banking_exact_domains
-from android_banking_policy import suffix_domains as banking_suffix_domains
 from openclash_target import (
     MIHOMO_TARGET_LABEL,
     assert_target_mihomo,
@@ -658,7 +658,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     proxy_outbounds: list[dict[str, Any]] = []
     tagged_nodes: list[tuple[str, Any]] = []
     tags: list[str] = []
-    used_tags = {"proxy", "automatic", "direct", "block"}
+    used_tags = {"proxy", "automatic", "SOCIAL", "BANK", "direct", "block"}
     allowed_protocols = {"vless", "vmess", "trojan"}
     for index, node in enumerate(nodes, start=1):
         clash = getattr(node, "clash", {}) or {}
@@ -716,9 +716,9 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
             ad_domains.append(domain)
 
     bank_exact = list(banking_exact_domains())
-    bank_suffix = list(banking_suffix_domains())
+    bank_suffix = list(all_bank_suffix_domains())
     bank_dns_rule: dict[str, Any] = {"action": "route", "server": "local"}
-    bank_route_rule: dict[str, Any] = {"action": "route", "outbound": "direct"}
+    bank_route_rule: dict[str, Any] = {"action": "route", "outbound": "BANK"}
     if bank_exact:
         bank_dns_rule["domain"] = bank_exact
         bank_route_rule["domain"] = bank_exact
@@ -749,15 +749,23 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         route_rules.insert(3, bank_route_rule)
     if ad_domains:
         route_rules.append({"domain_suffix": ad_domains, "action": "reject"})
+    if not manual_tags:
+        raise ValueError("routing bank memerlukan minimal satu node manual")
+    bank_outbound = {
+        "type": "selector",
+        "tag": "BANK",
+        "outbounds": manual_tags,
+        "default": manual_tags[0],
+    }
     social_candidates = [*manual_tags, *primary_tags[:1]]
     if not social_candidates:
         social_candidates = ["proxy"]
-    social_outbound = [{
+    social_outbound = {
         "type": "selector",
         "tag": "SOCIAL",
         "outbounds": social_candidates,
         "default": social_candidates[0],
-    }]
+    }
 
     config = {
         "$schema": "https://sing-box.sagernet.org/schema.json",
@@ -778,7 +786,8 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         "outbounds": [
             {"type": "selector", "tag": "proxy", "outbounds": ["automatic", *primary_tags], "default": "automatic"},
             {"type": "urltest", "tag": "automatic", "outbounds": primary_tags, "url": os.getenv("ANDROID_TEST_URL", os.getenv("TEST_URL", ALT_TEST_URL)), "interval": "3m", "tolerance": 50},
-            *social_outbound,
+            social_outbound,
+            bank_outbound,
             *proxy_outbounds,
             {"type": "direct", "tag": "direct"},
             {"type": "block", "tag": "block"},
