@@ -41,8 +41,8 @@
       "tag": "proxy",
       "outbounds": [
         "automatic",
-        "AKUN-011-CLOUDFLARE-VMESS-WS-226MS",
-        "AKUN-013-CLOUDFLARE-VMESS-WS-165MS"
+        "AKUN-011-CLOUDFLARE-VMESS-WS-227MS",
+        "AKUN-013-CLOUDFLARE-VMESS-WS-175MS"
       ],
       "default": "automatic"
     },
@@ -50,8 +50,8 @@
       "type": "urltest",
       "tag": "automatic",
       "outbounds": [
-        "AKUN-011-CLOUDFLARE-VMESS-WS-226MS",
-        "AKUN-013-CLOUDFLARE-VMESS-WS-165MS"
+        "AKUN-011-CLOUDFLARE-VMESS-WS-227MS",
+        "AKUN-013-CLOUDFLARE-VMESS-WS-175MS"
       ],
       "url": "https://www.gstatic.com/generate_204",
       "interval": "3m",
@@ -59,7 +59,7 @@
     },
     {
       "type": "vmess",
-      "tag": "AKUN-011-CLOUDFLARE-VMESS-WS-226MS",
+      "tag": "AKUN-011-CLOUDFLARE-VMESS-WS-227MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "66827e09-9743-47d4-952c-d9c90f31fe48",
@@ -87,7 +87,7 @@
     },
     {
       "type": "vmess",
-      "tag": "AKUN-013-CLOUDFLARE-VMESS-WS-165MS",
+      "tag": "AKUN-013-CLOUDFLARE-VMESS-WS-175MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "4ee97185-f0ea-4842-b116-aaa1832665cc",
@@ -149,6 +149,7 @@
       }
     ],
     "final": "proxy",
+    "auto_detect_interface": true,
     "default_domain_resolver": "local"
   }
 }

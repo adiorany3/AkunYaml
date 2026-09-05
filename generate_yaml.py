@@ -723,7 +723,12 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
             {"type": "direct", "tag": "direct"},
             {"type": "block", "tag": "block"},
         ],
-        "route": {"rules": route_rules, "final": "proxy", "default_domain_resolver": "local"},
+        "route": {
+            "rules": route_rules,
+            "final": "proxy",
+            "auto_detect_interface": True,
+            "default_domain_resolver": "local",
+        },
     }
     return json.dumps(config, ensure_ascii=False, indent=2) + "\n"
 
