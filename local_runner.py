@@ -235,6 +235,7 @@ DEFAULT_ENV = {
     "MANUAL_NODES_FILE": "manual_nodes.txt",
     "OUTPUT_YAML": "openclash_auto.yaml",
     "OUTPUT_ANDROID_YAML": "openclash_android.yaml",
+    "OUTPUT_SINGBOX_ANDROID": "singbox_android.json",
     "OUTPUT_LITE_YAML": "openclash_lite.yaml",
     "OUTPUT_FRESH_YAML": "openclash_fresh_pool.yaml",
     "OUTPUT_CSV": "openclash_auto_report.csv",
@@ -2772,12 +2773,8 @@ def main() -> int:
         return 2
     if args.no_nekobox:
         preliminary["REQUIRE_NEKOBOX_TEST"] = "false"
-    need_singbox = str(preliminary.get("REQUIRE_NEKOBOX_TEST", "false")).strip().lower() in {"1", "true", "yes", "y", "on", "aktif"}
-    singbox = None
-    if need_singbox:
-        singbox = ensure_binary(workdir, SINGBOX_REPO, "sing-box", select_singbox_asset, args.refresh_binaries)
-    else:
-        log("NekoBox/sing-box test nonaktif; download sing-box dilewati")
+    # sing-box tetap diperlukan untuk validasi output Android meski URL test dimatikan.
+    singbox = ensure_binary(workdir, SINGBOX_REPO, "sing-box", select_singbox_asset, args.refresh_binaries)
 
     env = build_environment(args, workdir, mihomo, singbox)
 
@@ -2912,6 +2909,7 @@ def main() -> int:
     print("\n[OK] Semua output yang tersedia lolos validasi Mihomo.")
     for name in (
         *output_files,
+        env.get("OUTPUT_SINGBOX_ANDROID", "singbox_android.json"),
         env.get("OUTPUT_AKUN", "akun.txt"),
         env.get("OUTPUT_CSV", "openclash_auto_report.csv"),
         env.get("OUTPUT_OPENCLASH_COMPAT_REPORT", "openclash_compat_report.csv"),

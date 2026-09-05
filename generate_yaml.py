@@ -18,6 +18,8 @@ import json
 import yaml
 import requests
 
+from android_banking_policy import exact_domains as banking_exact_domains
+from android_banking_policy import suffix_domains as banking_suffix_domains
 from openclash_target import (
     MIHOMO_TARGET_LABEL,
     assert_target_mihomo,
@@ -599,12 +601,12 @@ def _singbox_transport(node: Any) -> dict[str, Any] | None:
     return transport
 
 
-def _singbox_outbound_from_node(node: Any) -> dict[str, Any] | None:
+def _singbox_outbound_from_node(node: Any, *, tag: str = "proxy") -> dict[str, Any] | None:
     clash = getattr(node, "clash", {}) or {}
     proto = str(clash.get("type") or getattr(node, "type", "")).lower()
     server = str(clash.get("server") or TARGET_SERVER).strip()
     port = _as_int(clash.get("port"), ONLY_PORT) or ONLY_PORT
-    base: dict[str, Any] = {"type": proto, "tag": "proxy", "server": server, "server_port": port}
+    base: dict[str, Any] = {"type": proto, "tag": tag, "server": server, "server_port": port}
 
     transport = _singbox_transport(node)
     tls = _singbox_tls(clash, node)
@@ -649,6 +651,94 @@ def _singbox_outbound_from_node(node: Any) -> dict[str, Any] | None:
     if transport and proto in {"vless", "trojan", "vmess"}:
         base["transport"] = transport
     return base
+
+
+def _build_singbox_android_json(nodes: list[Any]) -> str:
+    """Build a standalone sing-box 1.14 Android TUN profile."""
+    proxy_outbounds: list[dict[str, Any]] = []
+    tags: list[str] = []
+    used_tags = {"proxy", "automatic", "direct", "block"}
+    for index, node in enumerate(nodes, start=1):
+        base_tag = safe_proxy_name(_node_name(node), f"account-{index}").strip()
+        tag = base_tag
+        suffix = 2
+        while tag in used_tags:
+            tag = f"{base_tag}-{suffix}"
+            suffix += 1
+        outbound = _singbox_outbound_from_node(node, tag=tag)
+        if outbound is None:
+            continue
+        used_tags.add(tag)
+        tags.append(tag)
+        proxy_outbounds.append(outbound)
+
+    if not proxy_outbounds:
+        raise ValueError("tidak ada akun yang kompatibel dengan sing-box")
+
+    bank_exact = list(banking_exact_domains())
+    bank_suffix = list(banking_suffix_domains())
+    bank_dns_rule: dict[str, Any] = {"action": "route", "server": "local"}
+    bank_route_rule: dict[str, Any] = {"action": "route", "outbound": "direct"}
+    if bank_exact:
+        bank_dns_rule["domain"] = bank_exact
+        bank_route_rule["domain"] = bank_exact
+    if bank_suffix:
+        bank_dns_rule["domain_suffix"] = bank_suffix
+        bank_route_rule["domain_suffix"] = bank_suffix
+
+    dns_rules = [bank_dns_rule] if bank_exact or bank_suffix else []
+    route_rules: list[dict[str, Any]] = [
+        {"protocol": "dns", "action": "hijack-dns"},
+        {"ip_is_private": True, "action": "route", "outbound": "direct"},
+    ]
+    if bank_exact or bank_suffix:
+        route_rules.insert(0, bank_route_rule)
+    route_rules.append({"protocol": ["http", "tls"], "action": "sniff"})
+
+    config = {
+        "$schema": "https://sing-box.sagernet.org/schema.json",
+        "log": {"level": "info", "timestamp": True},
+        "dns": {
+            "servers": [{"type": "local", "tag": "local"}],
+            "rules": dns_rules,
+            "final": "local",
+            "strategy": "prefer_ipv4",
+        },
+        "inbounds": [{
+            "type": "tun",
+            "tag": "tun-in",
+            "address": ["172.19.0.1/30", "fdfe:dcba:9876::1/126"],
+            "auto_route": True,
+            "strict_route": True,
+        }],
+        "outbounds": [
+            {"type": "selector", "tag": "proxy", "outbounds": ["automatic", *tags], "default": "automatic"},
+            {"type": "urltest", "tag": "automatic", "outbounds": tags, "url": os.getenv("ANDROID_TEST_URL", os.getenv("TEST_URL", ALT_TEST_URL)), "interval": "3m", "tolerance": 50},
+            *proxy_outbounds,
+            {"type": "direct", "tag": "direct"},
+            {"type": "block", "tag": "block"},
+        ],
+        "route": {"rules": route_rules, "final": "proxy", "default_domain_resolver": "local"},
+    }
+    return json.dumps(config, ensure_ascii=False, indent=2) + "\n"
+
+
+def _validate_singbox_json(config_text: str, core_path: str) -> None:
+    core = Path(core_path)
+    if not core.is_file():
+        raise RuntimeError(f"sing-box binary tidak ditemukan: {core}")
+    with tempfile.NamedTemporaryFile("w", suffix=".json", encoding="utf-8") as handle:
+        handle.write(config_text)
+        handle.flush()
+        result = subprocess.run(
+            [str(core), "check", "-c", handle.name],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    if result.returncode:
+        detail = (result.stderr or result.stdout).strip()
+        raise RuntimeError(f"sing-box check gagal: {detail}")
 
 
 def _wait_local_port(port: int, timeout_s: float = 8.0) -> bool:
@@ -1623,6 +1713,7 @@ def main() -> int:
     output_nekobox_report = os.getenv("OUTPUT_NEKOBOX_REPORT", "nekobox_test_report.csv")
     output_openclash_compat_report = os.getenv("OUTPUT_OPENCLASH_COMPAT_REPORT", "openclash_compat_report.csv")
     output_android_yaml = os.getenv("OUTPUT_ANDROID_YAML", "openclash_android.yaml")
+    output_singbox_android = os.getenv("OUTPUT_SINGBOX_ANDROID", "singbox_android.json")
     output_lite_yaml = os.getenv("OUTPUT_LITE_YAML", "openclash_lite.yaml")
     output_node_quality_report = os.getenv("OUTPUT_NODE_QUALITY_REPORT", "node_quality_report.md")
     output_fresh_yaml = os.getenv("OUTPUT_FRESH_YAML", "openclash_fresh_pool.yaml")
@@ -1792,6 +1883,11 @@ def main() -> int:
     akun_text = build_akun_txt(alive_nodes)
     manual_akun_text = build_akun_txt(manual_nodes)
     manual_skipped_text = "\n".join(manual_skipped) + ("\n" if manual_skipped else "")
+    singbox_android_text = _build_singbox_android_json(alive_nodes)
+    _validate_singbox_json(
+        singbox_android_text,
+        os.getenv("SINGBOX_PATH", "./sing-box").strip() or "./sing-box",
+    )
 
     # Fail closed before writing anything: keep the previous known-good outputs
     # when public feeds cannot supply the configured minimum healthy accounts.
@@ -1827,6 +1923,7 @@ def main() -> int:
 
     Path(output_yaml).write_text(yaml_text, encoding="utf-8")
     Path(output_android_yaml).write_text(android_yaml_text, encoding="utf-8")
+    Path(output_singbox_android).write_text(singbox_android_text, encoding="utf-8")
     Path(output_lite_yaml).write_text(lite_yaml_text, encoding="utf-8")
     Path(output_fresh_yaml).write_text(fresh_yaml_text, encoding="utf-8")
     fresh_dir = Path(output_fresh_dir)
@@ -1857,6 +1954,7 @@ def main() -> int:
         f"Mode: FAST10 + Mihomo URL test + NekoBox/sing-box test early-stop\n"
         f"OpenClash YAML: {output_yaml}\n"
         f"Android YAML: {output_android_yaml}\n"
+        f"sing-box Android JSON: {output_singbox_android}\n"
         f"Lite router YAML: {output_lite_yaml}\n"
         f"Fresh pool YAML: {output_fresh_yaml}\n"
         f"Fresh pool candidates: {len(fresh_nodes)}\n"

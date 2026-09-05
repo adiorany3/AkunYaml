@@ -105,7 +105,7 @@ set +e
 GENERATOR_EXIT=${PIPESTATUS[0]}
 set -e
 if [[ "$GENERATOR_EXIT" -ne 0 ]]; then
-  REQUIRED_OUTPUTS=(openclash_auto.yaml openclash_android.yaml openclash_lite.yaml openclash_fresh_pool.yaml akun.txt)
+  REQUIRED_OUTPUTS=(openclash_auto.yaml openclash_android.yaml singbox_android.json openclash_lite.yaml openclash_fresh_pool.yaml akun.txt)
   MISSING_OUTPUTS=()
   for f in "${REQUIRED_OUTPUTS[@]}"; do
     [[ -s "$f" ]] || MISSING_OUTPUTS+=("$f")
@@ -152,12 +152,27 @@ echo "[VALIDATE] Memeriksa output final dengan exact core..."
   openclash_lite.yaml \
   openclash_fresh_pool.yaml
 
+echo "[VALIDATE] Memeriksa profil sing-box Android..."
+SINGBOX="${SINGBOX_PATH:-}"
+if [[ -z "$SINGBOX" || ! -x "$SINGBOX" ]]; then
+  SINGBOX="$(command -v sing-box || true)"
+fi
+if [[ -z "$SINGBOX" || ! -x "$SINGBOX" ]]; then
+  SINGBOX="$ROOT/.local_bin/sing-box"
+fi
+if [[ ! -x "$SINGBOX" ]]; then
+  echo "[ERROR] sing-box binary tidak ditemukan. Set SINGBOX_PATH atau instal sing-box."
+  exit 7
+fi
+"$SINGBOX" check -c singbox_android.json
+
 if [[ "$STALE_FALLBACK" -eq 1 ]]; then
   printf '\n[OK] Output known-good lama lolos seluruh audit; refresh akun ditunda.\n'
 else
   printf '\n[OK] Refresh akun selesai.\n'
 fi
 printf '     OpenClash utama: %s/openclash_auto.yaml\n' "$ROOT"
+printf '     sing-box Android: %s/singbox_android.json\n' "$ROOT"
 printf '     Akun URI       : %s/akun.txt\n' "$ROOT"
 printf '     Fresh pool     : %s/fresh_pool/\n' "$ROOT"
 
@@ -185,6 +200,7 @@ if [[ "$DO_PUSH" -eq 1 ]]; then
     openclash_android.yaml
     openclash_lite.yaml
     openclash_fresh_pool.yaml
+    singbox_android.json
     akun.txt
     akun_manual.txt
     last_update.txt
