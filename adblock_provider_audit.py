@@ -88,7 +88,13 @@ def audit(path: Path, network: bool, timeout: float) -> list[str]:
         behavior = str(provider.get("behavior") or "")
         pth = str(provider.get("path") or "")
         is_local_mrs = provider_type == "file" and str(provider.get("format") or "").lower() == "mrs"
-        is_android_snapshot = path.name == "openclash_android.yaml" and name == "ads_indonesia" and provider_type == "file"
+        android_snapshot_names = {"ads_indonesia", "threat-fake-scam"}
+        is_android_snapshot = (
+            path.name == "openclash_android.yaml"
+            and name in android_snapshot_names
+            and provider_type == "file"
+            and pth.endswith("_android.yaml")
+        )
         if provider_type != "http" and not is_local_mrs and not is_android_snapshot:
             errors.append(f"provider {name} type tidak valid: {provider_type}")
         if behavior not in {"domain", "classical", "ipcidr"}:

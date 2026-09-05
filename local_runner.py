@@ -195,6 +195,10 @@ DEFAULT_ENV = {
     "FALLBACK_LAZY": "true",
     "BALANCE_INTERVAL": "180",
     "LOAD_BALANCE_LAZY": "true",
+    "LOAD_BALANCE_STRATEGY": "sticky-sessions",
+    "LOAD_BALANCE_NODE_LIMIT": "4",
+    "KEEP_ALIVE_INTERVAL": "15",
+    "KEEP_ALIVE_IDLE": "30",
     "AI_SERVICE_NODE_LIMIT": "8",
     "THREAT_SAFE_FAMILY_DNS": "true",
     # OpenWrt router adblock tier. Enhanced adds a compact HaGeZi Pro++ Mini
@@ -1659,8 +1663,8 @@ def apply_responsiveness(path: Path) -> bool:
     config["tcp-concurrent"] = True
     config["find-process-mode"] = "off"
     config["disable-keep-alive"] = False
-    config["keep-alive-interval"] = 15
-    config["keep-alive-idle"] = 30
+    config["keep-alive-interval"] = perf_int("KEEP_ALIVE_INTERVAL", 15, 5, 120)
+    config["keep-alive-idle"] = perf_int("KEEP_ALIVE_IDLE", 30, 15, 3600)
 
     dns = config.get("dns")
     if isinstance(dns, dict) and dns.get("enable") is not False:
@@ -1722,8 +1726,8 @@ def apply_responsiveness(path: Path) -> bool:
     if isinstance(groups, list):
         group_names = {str(g.get("name")) for g in groups if isinstance(g, dict) and g.get("name")}
         compact = {
-            "GLOBAL": (["WARM-UP", "AUTO-FAST", "ANDROID-COLD-BACKUP"] if is_android else ["FALLBACK", "WARM-UP", "WARM-UP-CF", "AUTO-FAST"]),
-            "PROXY": ["GLOBAL", "WARM-UP", "AUTO-FAST", "FALLBACK"],
+            "GLOBAL": (["WARM-UP", "AUTO-FAST", "ANDROID-COLD-BACKUP"] if is_android else ["LOAD-BALANCE", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]),
+            "PROXY": (["GLOBAL", "WARM-UP", "AUTO-FAST", "FALLBACK"] if is_android else ["GLOBAL", "LOAD-BALANCE", "WARM-UP", "AUTO-FAST", "FALLBACK"]),
             "SOCIAL-MEDIA": ["WARM-UP", "AUTO-FAST", "FALLBACK"],
             "YOUTUBE": ["WARM-UP-CF", "STREAMING-FAST", "AUTO-FAST", "FALLBACK"],
             "EDUKASI": ["WARM-UP", "AUTO-FAST", "FALLBACK"],
@@ -1810,7 +1814,9 @@ def apply_responsiveness(path: Path) -> bool:
                 g["timeout"] = max(int(g.get("timeout") or 5000), 5000)
             elif name == "LOAD-BALANCE":
                 if isinstance(g.get("proxies"), list):
-                    g["proxies"] = g["proxies"][:5]
+                    g["proxies"] = g["proxies"][:perf_int("LOAD_BALANCE_NODE_LIMIT", 4, 2, 8)]
+                strategy = str(os.environ.get("LOAD_BALANCE_STRATEGY", "sticky-sessions")).strip().lower()
+                g["strategy"] = strategy if strategy in {"consistent-hashing", "round-robin", "sticky-sessions"} else "sticky-sessions"
                 g["interval"] = perf_int("BALANCE_INTERVAL", 300, 60, 1200)
                 g["lazy"] = perf_bool("LOAD_BALANCE_LAZY", True)
             elif name == "MANUAL" and gtype in {"fallback", "url-test"}:
@@ -2716,6 +2722,7 @@ def main() -> int:
         "FAST_NODE_LIMIT", "WAKEUP_INTERVAL", "AUTO_FAST_LAZY",
         "STREAMING_NODE_LIMIT", "STREAMING_HEALTH_LAZY", "PING_CHECK_INTERVAL", "PING_CHECK_LAZY",
         "FALLBACK_INTERVAL", "FALLBACK_LAZY", "BALANCE_INTERVAL", "LOAD_BALANCE_LAZY",
+        "LOAD_BALANCE_STRATEGY", "LOAD_BALANCE_NODE_LIMIT", "KEEP_ALIVE_INTERVAL", "KEEP_ALIVE_IDLE",
         "AI_SERVICE_NODE_LIMIT",
     )
     for key in security_env_keys:

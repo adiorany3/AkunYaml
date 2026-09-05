@@ -321,6 +321,12 @@ def _mihomo_keep_alive_config() -> dict[str, Any]:
     }
 
 
+def _load_balance_strategy() -> str:
+    """Return a Mihomo-supported strategy; preserve sessions on invalid input."""
+    value = os.getenv("LOAD_BALANCE_STRATEGY", "sticky-sessions").strip().lower()
+    return value if value in {"consistent-hashing", "round-robin", "sticky-sessions"} else "sticky-sessions"
+
+
 def _active_health_interval(interval: int) -> int:
     """Use a shorter active health-check interval without allowing extreme values."""
     return _env_int_range("WAKEUP_INTERVAL", max(45, min(int(interval), 60)), 20, 300)
@@ -2638,6 +2644,8 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
     fast_or_direct = fast_names or direct_or_names
     streaming_or_direct = streaming_names or warmup_or_direct
     fallback_or_direct = fallback_names or direct_or_names
+    balance_limit = _env_int_range("LOAD_BALANCE_NODE_LIMIT", 4, 2, 8)
+    balance_or_direct = warmup_or_direct[:balance_limit]
     active_interval = _active_health_interval(interval)
     warmup_interval = _env_int_range("WARMUP_INTERVAL", 60, 10, 300)
     cf_interval = _env_int_range("CF_WARMUP_INTERVAL", 120, 10, 600)
@@ -2836,13 +2844,13 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         {
             "name": "GLOBAL",
             "type": "select",
-            # WARM-UP dibuat paling depan supaya fresh import langsung memakai pool kecil yang sudah dipanaskan.
-            "proxies": ["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"],
+            # General traffic shares four healthy exits; explicit sensitive rules still win first.
+            "proxies": ["LOAD-BALANCE", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"],
         },
         {
             "name": "PROXY",
             "type": "select",
-            "proxies": ["GLOBAL", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"],
+            "proxies": ["GLOBAL", "LOAD-BALANCE", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"],
         },
         _ai_health_group("AI-OPENAI", ai_service_names, ai_openai_test_url, ai_interval, ai_timeout),
         _ai_health_group("AI-CLAUDE", ai_service_names, ai_claude_test_url, ai_interval, ai_timeout),
@@ -2960,8 +2968,8 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         {
             "name": "LOAD-BALANCE",
             "type": "load-balance",
-            "strategy": "sticky-sessions",
-            "proxies": warmup_or_direct,
+            "strategy": _load_balance_strategy(),
+            "proxies": balance_or_direct,
             "url": test_url,
             "interval": balance_interval,
             "lazy": _env_bool_value("LOAD_BALANCE_LAZY", True),

@@ -83,7 +83,8 @@ PY="$ROOT/.venv/bin/python"
 "$ROOT/mac_build_target_core.sh"
 CORE="$ROOT/.local_bin/mihomo"
 
-echo "[CORE] $($CORE -v | head -1)"
+CORE_VERSION="$($CORE -v)"
+echo "[CORE] ${CORE_VERSION%%$'\n'*}"
 
 ARGS=(
   "$PY" local_runner.py
@@ -94,8 +95,35 @@ ARGS=(
 [[ -n "$MIN_NODES" ]] && ARGS+=(--min-nodes "$MIN_NODES")
 [[ -n "$CANDIDATE_MIN" ]] && ARGS+=(--candidate-min "$CANDIDATE_MIN")
 
+STALE_FALLBACK=0
+GENERATOR_LOG="$(mktemp -t akunyaml-generator.XXXXXX)"
+trap 'rm -f "$GENERATOR_LOG"' EXIT
+
 echo "[RUN] Mencari, mengetes, dan memilih akun baru..."
-"${ARGS[@]}"
+set +e
+"${ARGS[@]}" 2>&1 | tee "$GENERATOR_LOG"
+GENERATOR_EXIT=${PIPESTATUS[0]}
+set -e
+if [[ "$GENERATOR_EXIT" -ne 0 ]]; then
+  REQUIRED_OUTPUTS=(openclash_auto.yaml openclash_android.yaml openclash_lite.yaml openclash_fresh_pool.yaml akun.txt)
+  MISSING_OUTPUTS=()
+  for f in "${REQUIRED_OUTPUTS[@]}"; do
+    [[ -s "$f" ]] || MISSING_OUTPUTS+=("$f")
+  done
+  if grep -q "Node otomatis hidup hanya" "$GENERATOR_LOG" \
+      && grep -q "output lama dipertahankan" "$GENERATOR_LOG" \
+      && [[ ${#MISSING_OUTPUTS[@]} -eq 0 ]]; then
+    STALE_FALLBACK=1
+    echo "[WARN] Feed tidak memberi minimum node sehat; memakai output known-good lama."
+    echo "[WARN] Audit penuh tetap wajib; --push akan ditolak."
+  else
+    echo "[ERROR] Pipeline generator gagal, exit=$GENERATOR_EXIT"
+    if [[ ${#MISSING_OUTPUTS[@]} -gt 0 ]]; then
+      echo "[ERROR] Output fallback hilang: ${MISSING_OUTPUTS[*]}"
+    fi
+    exit "$GENERATOR_EXIT"
+  fi
+fi
 
 echo "[AUDIT] Memeriksa keamanan, adblock, kategori judi, dan budget performa..."
 "$PY" adblock_provider_audit.py
@@ -107,6 +135,7 @@ echo "[AUDIT] Memeriksa keamanan, adblock, kategori judi, dan budget performa...
 "$PY" security_hardening_audit.py
 "$PY" openwrt_adblock_audit.py
 "$PY" performance_budget_audit.py
+"$PY" load_balance_policy_audit.py
 "$PY" semantic_rule_audit.py \
   openclash_auto.yaml \
   openclash_android.yaml \
@@ -120,7 +149,11 @@ echo "[VALIDATE] Memeriksa output final dengan exact core..."
   openclash_lite.yaml \
   openclash_fresh_pool.yaml
 
-printf '\n[OK] Refresh akun selesai.\n'
+if [[ "$STALE_FALLBACK" -eq 1 ]]; then
+  printf '\n[OK] Output known-good lama lolos seluruh audit; refresh akun ditunda.\n'
+else
+  printf '\n[OK] Refresh akun selesai.\n'
+fi
 printf '     OpenClash utama: %s/openclash_auto.yaml\n' "$ROOT"
 printf '     Akun URI       : %s/akun.txt\n' "$ROOT"
 printf '     Fresh pool     : %s/fresh_pool/\n' "$ROOT"
@@ -131,6 +164,10 @@ if [[ -d .git ]]; then
 fi
 
 if [[ "$DO_PUSH" -eq 1 ]]; then
+  if [[ "$STALE_FALLBACK" -eq 1 ]]; then
+    echo "[ERROR] --push ditolak: refresh memakai output known-good lama."
+    exit 6
+  fi
   if [[ ! -d .git ]]; then
     echo "[ERROR] --push membutuhkan repository hasil git clone."
     exit 5
