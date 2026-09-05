@@ -3629,7 +3629,7 @@ def build_openclash_android_yaml(
 
 def build_csv(nodes: list[ProxyNode]) -> str:
     buffer = io.StringIO()
-    writer = csv.writer(buffer)
+    writer = csv.writer(buffer, lineterminator="\n")
     writer.writerow([
         "name",
         "original_name",

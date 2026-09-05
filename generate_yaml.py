@@ -36,6 +36,7 @@ from sumberyaml_core import (
     build_csv,
     build_openclash_android_yaml,
     build_openclash_yaml,
+    check_node_bug_compat,
     extract_uris,
     expand_multi_host_variants,
     looks_like_ip,
@@ -367,7 +368,7 @@ def _build_openclash_compat_report_csv(rows: list[dict[str, Any]]) -> str:
 
     fields = ["source", "name", "type", "network", "compatible", "reason"]
     buffer = io.StringIO()
-    writer = csv.DictWriter(buffer, fieldnames=fields)
+    writer = csv.DictWriter(buffer, fieldnames=fields, lineterminator="\n")
     writer.writeheader()
     for row in rows:
         writer.writerow({field: row.get(field, "") for field in fields})
@@ -540,7 +541,7 @@ def _build_urltest_report_csv(rows: list[dict[str, Any]]) -> str:
         "handshake_ms", "ws_upgrade_ms", "url_test_ms", "url_test_status", "url_test_success",
     ]
     buffer = io.StringIO()
-    writer = csv.DictWriter(buffer, fieldnames=fields)
+    writer = csv.DictWriter(buffer, fieldnames=fields, lineterminator="\n")
     writer.writeheader()
     for row in rows:
         writer.writerow({field: row.get(field, "") for field in fields})
@@ -815,7 +816,7 @@ def _build_nekobox_report_csv(rows: list[dict[str, Any]]) -> str:
         "mihomo_status", "url_test_ms", "nekobox_test_ms", "nekobox_status", "nekobox_ready",
     ]
     buffer = io.StringIO()
-    writer = csv.DictWriter(buffer, fieldnames=fields)
+    writer = csv.DictWriter(buffer, fieldnames=fields, lineterminator="\n")
     writer.writeheader()
     for row in rows:
         writer.writerow({field: row.get(field, "") for field in fields})
@@ -1652,21 +1653,37 @@ def main() -> int:
         if manual_text:
             Path(manual_file).write_text(manual_text, encoding="utf-8")
     manual_nodes, manual_skipped = parse_manual_nodes_unscreened(manual_text)
+    manual_tcp_timeout = max(0.1, _env_float("TCP_TIMEOUT", 2.0))
+    manual_attempts = max(1, _env_int("ATTEMPTS", 2))
+    manual_require_ws = _env_bool("REQUIRE_WS_UPGRADE", True)
+    manual_passed: list[Any] = []
+    for node in manual_nodes:
+        check_node_bug_compat(
+            node,
+            manual_tcp_timeout,
+            manual_attempts,
+            _env_bool("REQUIRE_ORIGINAL", False),
+            manual_require_ws,
+        )
+        if getattr(node, "status", "") == "alive":
+            manual_passed.append(node)
+        else:
+            manual_skipped.append(f"{_node_name(node)}: TCPing gagal: {getattr(node, 'reason', '')}")
+    manual_nodes = manual_passed
     manual_nodes, manual_compat_rows = _mihomo_openclash_compatibility_filter(manual_nodes, label="manual")
 
     print("[INFO] Generate YAML OpenClash otomatis")
     print(f"[INFO] Target output otomatis: {max_nodes} node, minimal: {min_output_nodes} node")
     print(f"[INFO] Links subscription: {len([x for x in links_text.splitlines() if x.strip()])}")
-    print(f"[INFO] Manual nodes parsed: {len(manual_nodes)}; skipped: {len(manual_skipped)}")
+    print(f"[INFO] Manual nodes TCPing passed: {len(manual_nodes)}; skipped: {len(manual_skipped)}")
     if multi_host_active:
         print(f"[INFO] Multi-host aktif ({BUG_MODE}): {len(TARGET_SERVERS)} target; manual source dipertahankan")
     else:
         print(f"[INFO] Manual node server normalized to {TARGET_SERVER}:{ONLY_PORT}: {manual_server_changes} link")
 
-    # Important: manual_text is intentionally NOT passed into process_sources.
-    # Manual nodes must not be strict-filtered and must not reduce the automatic quota.
-    # We first collect a small strict WS pool, then run a real URL test through Mihomo
-    # and stop as soon as MAX_NODES alive nodes are found.
+    # Keep manual nodes outside the automatic quota, but include only nodes that
+    # passed the same TCP/TLS/WS endpoint check above. Automatic nodes continue
+    # through the stricter Mihomo URL test pipeline.
     compat_pool_multiplier = max(1, _env_int("OPENCLASH_COMPAT_POOL_MULTIPLIER", 4))
     urltest_pool_nodes = max(max_nodes * compat_pool_multiplier, _env_int("URLTEST_POOL_NODES", max(30, max_nodes * 3)))
     print(f"[INFO] Pool kandidat sebelum URL test: {urltest_pool_nodes} node")
