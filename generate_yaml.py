@@ -680,6 +680,22 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     if not proxy_outbounds:
         raise ValueError("tidak ada akun yang kompatibel dengan sing-box")
 
+    social_domains = [
+        "old.reddit.com",
+        "reddit.com",
+        "redditmedia.com",
+        "redd.it",
+        "twitter.com",
+        "x.com",
+        "api.twitter.com",
+        "api.x.com",
+        "t.co",
+        "linkedin.com",
+        "linkedin.cn",
+        "licdn.com",
+        "licdn.net",
+    ]
+
     bank_exact = list(banking_exact_domains())
     bank_suffix = list(banking_suffix_domains())
     bank_dns_rule: dict[str, Any] = {"action": "route", "server": "local"}
@@ -692,13 +708,32 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         bank_route_rule["domain_suffix"] = bank_suffix
 
     dns_rules = [bank_dns_rule] if bank_exact or bank_suffix else []
+    dns_rules.append({
+        "domain_suffix": social_domains,
+        "action": "route",
+        "server": "local",
+    })
     route_rules: list[dict[str, Any]] = [
         {"protocol": "dns", "action": "hijack-dns"},
         {"ip_is_private": True, "action": "route", "outbound": "direct"},
     ]
     if bank_exact or bank_suffix:
         route_rules.insert(0, bank_route_rule)
+    route_rules.insert(0, {
+        "domain_suffix": social_domains,
+        "action": "route",
+        "outbound": "SOCIAL",
+    })
     route_rules.append({"protocol": ["http", "tls"], "action": "sniff"})
+    route_rules.extend([
+        {"rule_set": ["ads", "trackers"], "action": "reject"},
+    ])
+    social_outbound = [{
+        "type": "selector",
+        "tag": "SOCIAL",
+        "outbounds": ["automatic", *tags],
+        "default": "automatic",
+    }]
 
     config = {
         "$schema": "https://sing-box.sagernet.org/schema.json",
@@ -719,11 +754,28 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         "outbounds": [
             {"type": "selector", "tag": "proxy", "outbounds": ["automatic", *tags], "default": "automatic"},
             {"type": "urltest", "tag": "automatic", "outbounds": tags, "url": os.getenv("ANDROID_TEST_URL", os.getenv("TEST_URL", ALT_TEST_URL)), "interval": "3m", "tolerance": 50},
+            *social_outbound,
             *proxy_outbounds,
             {"type": "direct", "tag": "direct"},
             {"type": "block", "tag": "block"},
         ],
         "route": {
+            "rule_set": [
+                {
+                    "type": "remote",
+                    "tag": "ads",
+                    "format": "binary",
+                    "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.srs",
+                    "download_detour": "direct",
+                },
+                {
+                    "type": "remote",
+                    "tag": "trackers",
+                    "format": "binary",
+                    "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-tracker.srs",
+                    "download_detour": "direct",
+                },
+            ],
             "rules": route_rules,
             "final": "proxy",
             "auto_detect_interface": True,
