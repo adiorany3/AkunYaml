@@ -76,14 +76,17 @@ dns:
   - '*.*.xboxlive.com'
   cache-algorithm: arc
   default-nameserver:
-  - 1.1.1.1
-  - 8.8.8.8
+  - https://1.1.1.1/dns-query
+  - https://9.9.9.9/dns-query
   nameserver:
   - https://family.dns.bebasid.com/dns-query
   - tls://family.dns.bebasid.com:853
   proxy-server-nameserver:
   - https://1.1.1.1/dns-query
   - https://dns.google/dns-query
+  - https://dns.quad9.net/dns-query
+  - https://9.9.9.9/dns-query
+  - https://94.140.14.14/dns-query
   nameserver-policy:
     +.openai.com:
     - https://1.1.1.1/dns-query
@@ -109,7 +112,7 @@ dns:
   fallback:
   - https://family.dns.bebasid.com/dns-query
   - tls://family.dns.bebasid.com:853
-  fallback-lazy-query: true
+  fallback-lazy-query: false
   fallback-filter:
     geoip: true
     geoip-code: ID
@@ -117,7 +120,8 @@ dns:
     - 240.0.0.0/4
   prefer-h3: false
   use-hosts: true
-  use-system-hosts: true
+  use-system-hosts: false
+  respect-rules: true
 proxies:
 - name: AKUN-001-CLOUDFLARE-VLESS-WS-101MS
   type: vless

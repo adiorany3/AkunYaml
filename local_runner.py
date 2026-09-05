@@ -1697,19 +1697,30 @@ def apply_responsiveness(path: Path) -> bool:
     if isinstance(dns, dict) and dns.get("enable") is not False:
         dns["cache-algorithm"] = "arc"
         dns["prefer-h3"] = False
+        dns["respect-rules"] = True
+        dns["default-nameserver"] = [
+            "https://1.1.1.1/dns-query",
+            "https://9.9.9.9/dns-query",
+        ]
         dns["use-hosts"] = True
-        dns["use-system-hosts"] = True
+        dns["use-system-hosts"] = False
         # Keep the primary family-safe resolver, but provide an independent
         # family-safe backup so ordinary DNS resolution does not become a
         # single point of failure. Blocking rules remain unchanged.
         dns["fallback"] = [
             "https://family.cloudflare-dns.com/dns-query",
             "tls://family.cloudflare-dns.com:853",
+            "https://dns.quad9.net/dns-query",
+            "tls://dns.quad9.net:853",
         ]
-        dns["fallback-lazy-query"] = True
+        # Mihomo races fallback resolvers and keeps fastest healthy result.
+        dns["fallback-lazy-query"] = False
         dns["proxy-server-nameserver"] = [
             "https://1.1.1.1/dns-query",
             "https://dns.google/dns-query",
+            "https://dns.quad9.net/dns-query",
+            "https://9.9.9.9/dns-query",
+            "https://94.140.14.14/dns-query",
         ]
         fake_filter = dns.setdefault("fake-ip-filter", [])
         if isinstance(fake_filter, list):
