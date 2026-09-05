@@ -3,6 +3,8 @@ from pathlib import Path
 import yaml
 
 ROOT=Path(__file__).resolve().parent
+# Exact Spotify/FreeWheel ad and measurement hosts. These are safe control-plane
+# targets; shared Spotify audio/CDN namespaces stay unblocked to preserve playback.
 DOMAINS={
     "video-akpcw.spotifycdn.com",
     "805ba.v.fwmrm.net",
@@ -41,9 +43,10 @@ for name in FILES:
 
     missing=DOMAINS-got
     if missing:
-        raise SystemExit(f"[FAIL] {name}: missing {sorted(missing)}")
+        raise SystemExit(f"[FAIL] {name}: missing Spotify audio/video ad controls {sorted(missing)}")
 
-    # Guard against high-risk broad blocks.
+    # Guard against high-risk broad blocks. Shared audio/CDN delivery can carry
+    # both ads and licensed music, so DNS rules cannot safely target it by suffix.
     bad=("DOMAIN-SUFFIX,spotifycdn.com,REJECT","DOMAIN-SUFFIX,scdn.co,REJECT","DOMAIN-SUFFIX,fwmrm.net,REJECT","DOMAIN-SUFFIX,akamaized.net,REJECT")
     if any(x in rules for x in bad):
         raise SystemExit(f"[FAIL] {name}: broad streaming CDN block detected")
