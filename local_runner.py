@@ -1972,6 +1972,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         "RULE-SET,threat-tif-ip,",
         "RULE-SET,ads_indonesia,",
         "RULE-SET,ads_domain,",
+        "RULE-SET,anti-ad,",
         "GEOSITE,category-ads-all,",
         "GEOSITE,tracker,",
     )
@@ -2155,7 +2156,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         # every generation path while still allowing platform-specific inline rules.
         ad_start = len(provider_rules)
         for idx, rule in enumerate(provider_rules):
-            if rule.startswith(("RULE-SET,ads_indonesia,", "RULE-SET,ads_domain,", "RULE-SET,tracker-domain,")):
+            if rule.startswith(("RULE-SET,ads_indonesia,", "RULE-SET,ads_domain,", "RULE-SET,anti-ad,", "RULE-SET,tracker-domain,")):
                 ad_start = idx
                 break
         provider_before_ads = provider_rules[:ad_start]
@@ -2211,7 +2212,26 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         security_rules.extend(banking_rules)
         security_rules.extend(marketplace_rules)
 
-    new_rules = security_rules + cleaned
+    # Preserve fixed-account Reddit/X routing even when a pinned reference
+    # profile replaces generated rules before this final optimization pass.
+    reddit_rules = [
+        "DOMAIN-SUFFIX,reddit.com,REDDIT",
+        "DOMAIN-SUFFIX,redditmedia.com,REDDIT",
+        "DOMAIN-SUFFIX,redd.it,REDDIT",
+        "DOMAIN,old.reddit.com,REDDIT",
+        "DOMAIN-KEYWORD,reddit,REDDIT",
+        "DOMAIN-SUFFIX,twitter.com,REDDIT",
+        "DOMAIN-SUFFIX,x.com,REDDIT",
+        "DOMAIN-SUFFIX,api.twitter.com,REDDIT",
+        "DOMAIN-SUFFIX,api.x.com,REDDIT",
+        "DOMAIN-SUFFIX,t.co,REDDIT",
+    ]
+    reddit_rule_set = set(reddit_rules)
+    cleaned = [rule for rule in cleaned if rule not in reddit_rule_set]
+    valid_policies = _valid_policies(config)
+    routed_reddit_rules = reddit_rules if "REDDIT" in valid_policies else []
+
+    new_rules = security_rules + routed_reddit_rules + cleaned
     if is_android:
         new_rules.append("MATCH,GLOBAL")
 

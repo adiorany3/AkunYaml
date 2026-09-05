@@ -78,7 +78,7 @@ dns:
   default-nameserver:
   - 1.1.1.1
   - 8.8.8.8
-  nameserver:
+  nameserver: &id001
   - https://family.dns.bebasid.com/dns-query
   - tls://family.dns.bebasid.com:853
   proxy-server-nameserver:
@@ -106,9 +106,7 @@ dns:
     +.gemini.google.com:
     - https://1.1.1.1/dns-query
     - https://dns.google/dns-query
-  fallback:
-  - https://family.dns.bebasid.com/dns-query
-  - tls://family.dns.bebasid.com:853
+  fallback: *id001
   fallback-lazy-query: true
   fallback-filter:
     geoip: true
@@ -396,7 +394,7 @@ proxy-groups:
   - MANUAL-TROJAN WS Melbikomas UAB
   - MANUAL-VMess-WS-TLS-443-akuku8
   url: https://www.gstatic.com/generate_204
-  interval: 300
+  interval: 180
   tolerance: 100
   lazy: true
   timeout: 5000
@@ -412,7 +410,7 @@ proxy-groups:
   url: https://www.gstatic.com/generate_204
   interval: 60
   tolerance: 150
-  lazy: false
+  lazy: true
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
@@ -424,7 +422,7 @@ proxy-groups:
   - AKUN-005-CLOUDFLARE-VLESS-WS-107MS
   - AKUN-006-CLOUDFLARE-VLESS-WS-110MS
   url: https://cp.cloudflare.com
-  interval: 120
+  interval: 90
   tolerance: 150
   lazy: true
   timeout: 5000
@@ -435,9 +433,9 @@ proxy-groups:
   proxies:
   - AKUN-004-CHATGPT-VLESS-WS-110MS
   url: https://www.gstatic.com/generate_204
-  interval: 90
+  interval: 60
   tolerance: 150
-  lazy: false
+  lazy: true
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
@@ -459,7 +457,7 @@ proxy-groups:
   - AKUN-009-CLOUDFLARE-VLESS-WS-115MS
   - AKUN-010-CLOUDFLARE-VLESS-WS-115MS
   url: https://www.gstatic.com/generate_204
-  interval: 180
+  interval: 120
   lazy: true
   timeout: 6000
   expected-status: 200/204/301/302
@@ -491,8 +489,10 @@ proxy-groups:
   type: fallback
   proxies:
   - WARM-UP-CF
+  - WARM-UP
   - AUTO-FAST
   - FALLBACK
+  - GLOBAL
   url: https://www.gstatic.com/generate_204
   interval: 120
   lazy: true
@@ -549,6 +549,7 @@ rules:
 - RULE-SET,adult-category,REJECT
 - RULE-SET,adult-local,REJECT
 - RULE-SET,pinjol-local,REJECT
+- RULE-SET,popup-ads,REJECT
 - DOMAIN,video-akpcw.spotifycdn.com,REJECT
 - DOMAIN,805ba.v.fwmrm.net,REJECT
 - DOMAIN,tvm-mtv-freewheel.akamaized.net,REJECT
@@ -600,17 +601,7 @@ rules:
 - RULE-SET,app-ad-safe,REJECT
 - RULE-SET,ads_indonesia,REJECT
 - RULE-SET,ads_domain,REJECT
-- RULE-SET,anti-ad,REJECT
 - RULE-SET,tracker-domain,REJECT
-- DOMAIN-SUFFIX,reddit.com,REDDIT
-- DOMAIN-SUFFIX,redditmedia.com,REDDIT
-- DOMAIN-SUFFIX,redd.it,REDDIT
-- DOMAIN-KEYWORD,reddit,REDDIT
-- DOMAIN-SUFFIX,twitter.com,REDDIT
-- DOMAIN-SUFFIX,x.com,REDDIT
-- DOMAIN-SUFFIX,api.twitter.com,REDDIT
-- DOMAIN-SUFFIX,api.x.com,REDDIT
-- DOMAIN-SUFFIX,t.co,REDDIT
 - DOMAIN-SUFFIX,x.com,MANUAL
 - DOMAIN-SUFFIX,api.x.com,MANUAL
 - DOMAIN-SUFFIX,twitter.com,MANUAL
@@ -672,6 +663,11 @@ rule-providers:
     behavior: classical
     format: yaml
     path: ./rule_providers/security-pinjol.yaml
+  popup-ads:
+    type: file
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/popup-ads.mrs
   threat-malware:
     type: file
     behavior: domain
@@ -779,10 +775,3 @@ rule-providers:
     path: ./rule_providers/youtube.mrs
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs
     interval: 43200
-  anti-ad:
-    type: http
-    behavior: domain
-    path: ./rule_providers/anti-ad-clash.yaml
-    url: https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-clash.yaml
-    interval: 43200
-    format: yaml

@@ -451,7 +451,7 @@ proxy-groups:
   - WARM-UP
   - AUTO-FAST
   url: https://www.gstatic.com/generate_204
-  interval: 180
+  interval: 300
   lazy: true
   timeout: 5000
   expected-status: 200/204/301/302
@@ -594,7 +594,7 @@ proxy-groups:
   - MANUAL-TROJAN WS Melbikomas UAB
   - MANUAL-VMess-WS-TLS-443-akuku8
   url: https://www.gstatic.com/generate_204
-  interval: 300
+  interval: 180
   tolerance: 100
   lazy: true
   timeout: 5000
@@ -610,7 +610,7 @@ proxy-groups:
   url: https://www.gstatic.com/generate_204
   interval: 60
   tolerance: 150
-  lazy: false
+  lazy: true
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
@@ -622,7 +622,7 @@ proxy-groups:
   - AKUN-005-CLOUDFLARE-VLESS-WS-107MS
   - AKUN-006-CLOUDFLARE-VLESS-WS-110MS
   url: https://cp.cloudflare.com
-  interval: 120
+  interval: 90
   tolerance: 150
   lazy: true
   timeout: 5000
@@ -637,7 +637,7 @@ proxy-groups:
   - AKUN-006-CLOUDFLARE-VLESS-WS-110MS
   - AKUN-002-CLOUDINARY-VLESS-WS-102MS
   url: https://cp.cloudflare.com
-  interval: 90
+  interval: 60
   tolerance: 150
   lazy: true
   timeout: 5000
@@ -648,7 +648,7 @@ proxy-groups:
   proxies:
   - AKUN-004-CHATGPT-VLESS-WS-110MS
   url: https://www.gstatic.com/generate_204
-  interval: 90
+  interval: 60
   tolerance: 150
   lazy: true
   timeout: 5000
@@ -672,7 +672,7 @@ proxy-groups:
   - AKUN-009-CLOUDFLARE-VLESS-WS-115MS
   - AKUN-010-CLOUDFLARE-VLESS-WS-115MS
   url: https://www.gstatic.com/generate_204
-  interval: 180
+  interval: 120
   lazy: true
   timeout: 6000
   expected-status: 200/204/301/302
@@ -703,10 +703,12 @@ proxy-groups:
 - name: YOUTUBE
   type: fallback
   proxies:
-  - WARM-UP-CF
   - STREAMING-FAST
+  - WARM-UP-CF
+  - WARM-UP
   - AUTO-FAST
   - FALLBACK
+  - GLOBAL
   url: https://www.gstatic.com/generate_204
   interval: 120
   lazy: true
@@ -764,13 +766,6 @@ rule-providers:
     path: ./rule_providers/privacy-extra.yaml
     url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Privacy/Privacy.yaml
     interval: 43200
-  anti-ad:
-    type: http
-    behavior: domain
-    path: ./rule_providers/anti-ad-clash.yaml
-    url: https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-clash.yaml
-    interval: 43200
-    format: yaml
 rules:
 - DOMAIN-SUFFIX,local,DIRECT
 - DOMAIN-SUFFIX,lan,DIRECT
@@ -1169,7 +1164,6 @@ rules:
 - DOMAIN-SUFFIX,adjoe.io,REJECT
 - RULE-SET,ads_indonesia,REJECT
 - RULE-SET,ads_domain,REJECT
-- RULE-SET,anti-ad,REJECT
 - RULE-SET,tracker-domain,REJECT
 - DOMAIN-SUFFIX,reddit.com,REDDIT
 - DOMAIN-SUFFIX,redditmedia.com,REDDIT

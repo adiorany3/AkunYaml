@@ -78,7 +78,7 @@ dns:
   default-nameserver:
   - 1.1.1.1
   - 8.8.8.8
-  nameserver:
+  nameserver: &id001
   - https://family.dns.bebasid.com/dns-query
   - tls://family.dns.bebasid.com:853
   proxy-server-nameserver:
@@ -106,9 +106,7 @@ dns:
     +.gemini.google.com:
     - https://1.1.1.1/dns-query
     - https://dns.google/dns-query
-  fallback:
-  - https://family.dns.bebasid.com/dns-query
-  - tls://family.dns.bebasid.com:853
+  fallback: *id001
   fallback-lazy-query: true
   fallback-filter:
     geoip: true
@@ -941,7 +939,7 @@ proxy-groups:
   - MANUAL-TROJAN WS Melbikomas UAB
   - MANUAL-VMess-WS-TLS-443-akuku8
   url: https://www.gstatic.com/generate_204
-  interval: 300
+  interval: 180
   tolerance: 100
   lazy: true
   timeout: 5000
@@ -957,7 +955,7 @@ proxy-groups:
   url: https://www.gstatic.com/generate_204
   interval: 60
   tolerance: 150
-  lazy: false
+  lazy: true
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
@@ -969,7 +967,7 @@ proxy-groups:
   - AKUN-015-CLOUDFLARE-VLESS-WS-100MS
   - AKUN-003-CLOUDFLARE-VLESS-WS-102MS
   url: https://cp.cloudflare.com
-  interval: 120
+  interval: 90
   tolerance: 150
   lazy: true
   timeout: 5000
@@ -984,7 +982,7 @@ proxy-groups:
   - AKUN-003-CLOUDFLARE-VLESS-WS-102MS
   - AKUN-002-CLOUDINARY-VLESS-WS-102MS
   url: https://cp.cloudflare.com
-  interval: 90
+  interval: 60
   tolerance: 150
   lazy: true
   timeout: 5000
@@ -1007,9 +1005,9 @@ proxy-groups:
   proxies:
   - AKUN-018-NOTION-WEB-VLESS-WS-103MS
   url: https://www.gstatic.com/generate_204
-  interval: 90
+  interval: 60
   tolerance: 150
-  lazy: false
+  lazy: true
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
@@ -1051,7 +1049,7 @@ proxy-groups:
   - AKUN-029-UNKNOWN-VLESS-WS-365MS
   - AKUN-041-INTERLIR-CUSTOMER-VLESS-WS-855MS
   url: https://www.gstatic.com/generate_204
-  interval: 180
+  interval: 120
   lazy: true
   timeout: 6000
   expected-status: 200/204/301/302
@@ -1065,7 +1063,7 @@ proxy-groups:
   - AKUN-015-CLOUDFLARE-VLESS-WS-100MS
   - AKUN-002-CLOUDINARY-VLESS-WS-102MS
   url: https://www.gstatic.com/generate_204
-  interval: 300
+  interval: 180
   lazy: true
   timeout: 6000
   expected-status: 200/204/301/302
@@ -1278,18 +1276,6 @@ rule-providers:
     - .amazon-adsystem.com
     - .mopub.com
     - .adjoe.io
-  anti-ad:
-    type: http
-    behavior: domain
-    path: ./rule_providers/anti-ad-clash.yaml
-    url: https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-clash.yaml
-    interval: 43200
-    format: yaml
-  hagezi-pro-plus-mini:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/hagezi-pro-plus-mini.mrs
 rules:
 - DOMAIN-SUFFIX,local,DIRECT
 - DOMAIN-SUFFIX,lan,DIRECT
@@ -1428,7 +1414,6 @@ rules:
 - RULE-SET,adult-category,REJECT
 - RULE-SET,adult-local,REJECT
 - RULE-SET,pinjol-local,REJECT
-- RULE-SET,hagezi-pro-plus-mini,REJECT
 - RULE-SET,popup-ads,REJECT
 - RULE-SET,threat-tif-ip,REJECT,no-resolve
 - DOMAIN,video-akpcw.spotifycdn.com,REJECT
@@ -1482,17 +1467,7 @@ rules:
 - RULE-SET,app-ad-safe,REJECT
 - RULE-SET,ads_indonesia,REJECT
 - RULE-SET,ads_domain,REJECT
-- RULE-SET,anti-ad,REJECT
 - RULE-SET,tracker-domain,REJECT
-- DOMAIN-SUFFIX,reddit.com,REDDIT
-- DOMAIN-SUFFIX,redditmedia.com,REDDIT
-- DOMAIN-SUFFIX,redd.it,REDDIT
-- DOMAIN-KEYWORD,reddit,REDDIT
-- DOMAIN-SUFFIX,twitter.com,REDDIT
-- DOMAIN-SUFFIX,x.com,REDDIT
-- DOMAIN-SUFFIX,api.twitter.com,REDDIT
-- DOMAIN-SUFFIX,api.x.com,REDDIT
-- DOMAIN-SUFFIX,t.co,REDDIT
 - DOMAIN-SUFFIX,x.com,MANUAL
 - DOMAIN-SUFFIX,api.x.com,MANUAL
 - DOMAIN-SUFFIX,twitter.com,MANUAL

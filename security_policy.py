@@ -59,6 +59,11 @@ ROUTER_BASE_PROVIDERS: dict[str, dict[str, Any]] = {
         "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs",
         fmt="mrs",
     ),
+    "anti-ad": _http_domain(
+        "./rule_providers/anti-ad-clash.yaml",
+        "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-clash.yaml",
+        fmt="yaml",
+    ),
     "tracker-domain": _http_domain(
         "./rule_providers/tracker.mrs",
         "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tracker.mrs",
@@ -172,6 +177,11 @@ ANDROID_BASE_PROVIDERS: dict[str, dict[str, Any]] = {
         "./rule_providers/ads_domain.yaml",
         "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/category-ads-all.yaml",
         fmt="",
+    ),
+    "anti-ad": _http_domain(
+        "./rule_providers/anti-ad-clash.yaml",
+        "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-clash.yaml",
+        fmt="yaml",
     ),
     "tracker-domain": _http_classical(
         "./rule_providers/tracker.yaml",
@@ -316,6 +326,7 @@ def provider_reject_rules(
             rules.append("RULE-SET,ads_indonesia,REJECT")
         rules.extend([
             "RULE-SET,ads_domain,REJECT",
+            "RULE-SET,anti-ad,REJECT",
             "RULE-SET,tracker-domain,REJECT",
         ])
         return rules
@@ -357,6 +368,7 @@ def provider_reject_rules(
         rules.append("RULE-SET,ads_indonesia,REJECT")
     rules.extend([
         "RULE-SET,ads_domain,REJECT",
+        "RULE-SET,anti-ad,REJECT",
         "RULE-SET,tracker-domain,REJECT",
     ])
     return rules
