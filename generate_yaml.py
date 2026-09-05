@@ -656,6 +656,7 @@ def _singbox_outbound_from_node(node: Any, *, tag: str = "proxy") -> dict[str, A
 def _build_singbox_android_json(nodes: list[Any]) -> str:
     """Build standalone sing-box 1.14 Android TUN profile for VLESS/VMess/Trojan."""
     proxy_outbounds: list[dict[str, Any]] = []
+    tagged_nodes: list[tuple[str, Any]] = []
     tags: list[str] = []
     used_tags = {"proxy", "automatic", "direct", "block"}
     allowed_protocols = {"vless", "vmess", "trojan"}
@@ -675,17 +676,27 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
             continue
         used_tags.add(tag)
         tags.append(tag)
+        tagged_nodes.append((tag, node))
         proxy_outbounds.append(outbound)
 
     if not proxy_outbounds:
         raise ValueError("tidak ada akun yang kompatibel dengan sing-box")
 
+    manual_tags = [
+        tag for tag, node in tagged_nodes
+        if str(getattr(node, "tier", "")).upper() == "MANUAL"
+    ]
+    primary_tags = [tag for tag in tags if tag not in manual_tags]
     social_domains = [
         "old.reddit.com",
         "reddit.com",
         "redditmedia.com",
+        "redditstatic.com",
+        "redditinc.com",
         "redd.it",
         "twitter.com",
+        "twitterusercontent.com",
+        "twimg.com",
         "x.com",
         "api.twitter.com",
         "api.x.com",
@@ -734,11 +745,14 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
                 ad_domains.append(domain)
     if ad_domains:
         route_rules.append({"domain_suffix": ad_domains, "action": "reject"})
+    social_candidates = [*manual_tags, *primary_tags[:1]]
+    if not social_candidates:
+        social_candidates = ["proxy"]
     social_outbound = [{
         "type": "selector",
         "tag": "SOCIAL",
-        "outbounds": ["automatic", *tags],
-        "default": "automatic",
+        "outbounds": social_candidates,
+        "default": social_candidates[0],
     }]
 
     config = {
@@ -758,8 +772,8 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
             "strict_route": True,
         }],
         "outbounds": [
-            {"type": "selector", "tag": "proxy", "outbounds": ["automatic", *tags], "default": "automatic"},
-            {"type": "urltest", "tag": "automatic", "outbounds": tags, "url": os.getenv("ANDROID_TEST_URL", os.getenv("TEST_URL", ALT_TEST_URL)), "interval": "3m", "tolerance": 50},
+            {"type": "selector", "tag": "proxy", "outbounds": ["automatic", *primary_tags], "default": "automatic"},
+            {"type": "urltest", "tag": "automatic", "outbounds": primary_tags, "url": os.getenv("ANDROID_TEST_URL", os.getenv("TEST_URL", ALT_TEST_URL)), "interval": "3m", "tolerance": 50},
             *social_outbound,
             *proxy_outbounds,
             {"type": "direct", "tag": "direct"},
@@ -1935,6 +1949,10 @@ def main() -> int:
     akun_text = build_akun_txt(alive_nodes)
     manual_akun_text = build_akun_txt(manual_nodes)
     manual_skipped_text = "\n".join(manual_skipped) + ("\n" if manual_skipped else "")
+    for node in alive_nodes:
+        node.tier = "PRIMARY"
+    for node in manual_nodes:
+        node.tier = "MANUAL"
     singbox_nodes = [*alive_nodes, *manual_nodes]
     unique_names(singbox_nodes)
     singbox_android_text = _build_singbox_android_json(singbox_nodes)
