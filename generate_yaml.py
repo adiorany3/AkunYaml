@@ -1888,7 +1888,9 @@ def main() -> int:
     akun_text = build_akun_txt(alive_nodes)
     manual_akun_text = build_akun_txt(manual_nodes)
     manual_skipped_text = "\n".join(manual_skipped) + ("\n" if manual_skipped else "")
-    singbox_android_text = _build_singbox_android_json(alive_nodes)
+    singbox_nodes = [*alive_nodes, *manual_nodes]
+    unique_names(singbox_nodes)
+    singbox_android_text = _build_singbox_android_json(singbox_nodes)
     _validate_singbox_json(
         singbox_android_text,
         os.getenv("SINGBOX_PATH", "./sing-box").strip() or "./sing-box",
