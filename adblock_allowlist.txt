@@ -1,4 +1,9 @@
 # Domain yang harus lolos adblock. Satu domain per baris.
+# LinkedIn resmi: cegah false positive pada website dan app; domain phishing mirip tetap tidak ikut.
+linkedin.com
+linkedin.cn
+licdn.com
+lnkd.in
 challenges.cloudflare.com
 hcaptcha.com
 recaptcha.net
