@@ -13,6 +13,13 @@ FILES = (
 AD_RULES = (
     "DOMAIN,adstatistics.av380.net,REJECT",
     "DOMAIN,logs.av380.net,REJECT",
+    "DOMAIN,ad.av380.net,REJECT",
+    "DOMAIN,ads.av380.net,REJECT",
+    "DOMAIN,advert.av380.net,REJECT",
+    "DOMAIN,advertising.av380.net,REJECT",
+    "DOMAIN,promotion.av380.net,REJECT",
+    "DOMAIN,promotions.av380.net,REJECT",
+    "DOMAIN,app-ad.av380.net,REJECT",
     "DOMAIN,veepai-device-log.eye4.cn,REJECT",
     "DOMAIN,eulog.ezvizlife.com,REJECT",
     "DOMAIN,log.ezvizlife.com,REJECT",
@@ -44,9 +51,9 @@ for filename in FILES:
     required = (*AD_RULES, SERVICE_RULE, *LAN_RULES)
     missing = [rule for rule in required if rule not in rules]
     broad_vendor_rejects = sorted(BROAD_VENDOR_REJECTS.intersection(rules))
-    v380_ad_indexes = [rules.index(rule) for rule in AD_RULES[:2] if rule in rules]
+    v380_ad_indexes = [rules.index(rule) for rule in AD_RULES if rule in rules and "av380.net" in rule]
     service_indexes = [rules.index(SERVICE_RULE)] if SERVICE_RULE in rules else []
-    order_ok = not missing and max(v380_ad_indexes) < min(service_indexes)
+    order_ok = not missing and bool(v380_ad_indexes) and max(v380_ad_indexes) < min(service_indexes)
     if missing or not order_ok or broad_vendor_rejects:
         failed = True
         print(f"[FAIL] {filename}: missing={missing}, v380-ad-before-service={order_ok}, broad-vendor-rejects={broad_vendor_rejects}")

@@ -895,6 +895,13 @@ rules:
 - DOMAIN-SUFFIX,ggpht.com,YOUTUBE
 - DOMAIN,adstatistics.av380.net,REJECT
 - DOMAIN,logs.av380.net,REJECT
+- DOMAIN,ad.av380.net,REJECT
+- DOMAIN,ads.av380.net,REJECT
+- DOMAIN,advert.av380.net,REJECT
+- DOMAIN,advertising.av380.net,REJECT
+- DOMAIN,promotion.av380.net,REJECT
+- DOMAIN,promotions.av380.net,REJECT
+- DOMAIN,app-ad.av380.net,REJECT
 - DOMAIN-SUFFIX,av380.net,DIRECT
 - DOMAIN,veepai-device-log.eye4.cn,REJECT
 - DOMAIN,eulog.ezvizlife.com,REJECT

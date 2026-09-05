@@ -452,6 +452,13 @@ APP_SAFE_SUFFIXES = tuple(dict.fromkeys(APP_SDK_AD_SUFFIXES))
 V380_AD_RULES = (
     "DOMAIN,adstatistics.av380.net,REJECT",
     "DOMAIN,logs.av380.net,REJECT",
+    "DOMAIN,ad.av380.net,REJECT",
+    "DOMAIN,ads.av380.net,REJECT",
+    "DOMAIN,advert.av380.net,REJECT",
+    "DOMAIN,advertising.av380.net,REJECT",
+    "DOMAIN,promotion.av380.net,REJECT",
+    "DOMAIN,promotions.av380.net,REJECT",
+    "DOMAIN,app-ad.av380.net,REJECT",
 )
 V380_SERVICE_RULES = (
     "DOMAIN-SUFFIX,av380.net,DIRECT",
