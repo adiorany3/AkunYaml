@@ -1,12 +1,12 @@
 # Node Quality Report - Smart Stable
 
 ## Ringkasan
-- Total proxy di YAML: 13
+- Total proxy di YAML: 10
 - WARM-UP harian: 4 node
 - WARM-UP-CF Cloudflare/Worker: 4 node
 - STREAMING-FAST: 5 node
 - AUTO-FAST: 1 node
-- FALLBACK: 13 referensi, manual backup: 3 node
+- FALLBACK: 10 referensi, manual backup: 3 node
 
 ## Rekomendasi Pakai
 - Harian/browsing: pilih `WARM-UP` atau `AUTO-FAST`.
@@ -15,26 +15,26 @@
 - Router RAM kecil: pakai `openclash_lite.yaml`.
 
 ## Tier 1 - WARM-UP
-- AKUN-001-CLOUDFLARE-VLESS-WS-102MS
+- AKUN-001-CLOUDFLARE-VLESS-WS-101MS
+- AKUN-006-CLOUDFLARE-VLESS-WS-102MS
 - AKUN-003-CLOUDFLARE-VLESS-WS-103MS
-- AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-- AKUN-005-CLOUDFLARE-VLESS-WS-106MS
+- AKUN-002-CLOUDFLARE-VLESS-WS-119MS
 
 ## Tier 1B - WARM-UP-CF
-- AKUN-001-CLOUDFLARE-VLESS-WS-102MS
+- AKUN-001-CLOUDFLARE-VLESS-WS-101MS
+- AKUN-006-CLOUDFLARE-VLESS-WS-102MS
 - AKUN-003-CLOUDFLARE-VLESS-WS-103MS
-- AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-- AKUN-005-CLOUDFLARE-VLESS-WS-106MS
+- AKUN-002-CLOUDFLARE-VLESS-WS-119MS
 
 ## Streaming Pool
-- AKUN-001-CLOUDFLARE-VLESS-WS-102MS
+- AKUN-001-CLOUDFLARE-VLESS-WS-101MS
+- AKUN-006-CLOUDFLARE-VLESS-WS-102MS
 - AKUN-003-CLOUDFLARE-VLESS-WS-103MS
-- AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-- AKUN-005-CLOUDFLARE-VLESS-WS-106MS
-- AKUN-006-CLOUDFLARE-VLESS-WS-106MS
+- AKUN-002-CLOUDFLARE-VLESS-WS-119MS
+- AKUN-005-AKARI-JP-TYO1-09-VLESS-WS-123MS
 
 ## Node Berisiko dari NekoBox/sing-box Test
-- Tidak ada yang gagal pada laporan terakhir
+- Tes NekoBox/sing-box dinonaktifkan; node tidak diuji.
 
 ## Catatan Smart Mode
 - Health-check cepat hanya untuk pool kecil, bukan semua node.

@@ -382,15 +382,11 @@ def _mihomo_url_test_nodes(
     test_url: str,
     timeout_ms: int,
 ) -> tuple[list[Any], int, str, list[dict[str, Any]]]:
-    """Filter automatic nodes with a real Mihomo URL test.
-
-    This test is intentionally applied only to automatic subscription nodes.
-    Manual nodes are handled outside this function and are not filtered.
-    """
+    """Filter nodes with a real Mihomo URL test."""
     target_count = max(1, int(target_count))
     rows: list[dict[str, Any]] = []
     if not nodes:
-        return [], 0, "no automatic nodes to URL test", rows
+        return [], 0, "no nodes to URL test", rows
 
     if not _env_bool("REQUIRE_URL_TEST", True):
         final_nodes = nodes[:target_count]
@@ -504,7 +500,7 @@ def _mihomo_url_test_nodes(
                 "original_server": getattr(node, "original_server", ""),
                 "bug_sni": getattr(node, "bug_sni", ""),
                 "handshake_ms": getattr(node, "best_delay_ms", ""),
-                "ws_upgrade_ms": getattr(node, "ws_best_delay_ms", ""),
+                "ws_upgrade_ms": getattr(node, "ws_upgrade_ms", ""),
                 "url_test_ms": elapsed,
                 "url_test_status": status_text,
                 "url_test_success": "yes" if success else "no",
@@ -687,9 +683,9 @@ def _singbox_url_test_nodes(
     if not _env_bool("REQUIRE_NEKOBOX_TEST", True):
         final_nodes = nodes[:target_count]
         for node in final_nodes:
-            node.nekobox_status = "skipped-disabled"
-            node.nekobox_ready = True
-        return final_nodes, len(final_nodes), "NekoBox/sing-box test disabled", rows
+            node.nekobox_status = "untested-disabled"
+            node.nekobox_ready = None
+        return final_nodes, 0, "NekoBox/sing-box test disabled; nodes untested", rows
 
     core_path = os.getenv("SINGBOX_PATH", "./sing-box").strip() or "./sing-box"
     if not Path(core_path).exists():
@@ -922,10 +918,9 @@ def _unique_manual_names(nodes: list[Any]) -> None:
       source fragment: Singapore-VIP
       YAML name      : MANUAL-Singapore-VIP
 
-    Manual nodes are intentionally not strict-filtered or tested. This function
-    only ensures the final YAML proxy names stay unique, because OpenClash/Mihomo
-    requires every proxy name to be unique and proxy-groups must reference the
-    exact same names.
+    Validation runs separately after parsing so manual nodes stay outside the
+    automatic quota. This function only ensures final YAML proxy names stay
+    unique and proxy-groups reference exact names.
     """
     seen: set[str] = set()
     for i, node in enumerate(nodes, start=1):
@@ -948,9 +943,9 @@ def _unique_manual_names(nodes: list[Any]) -> None:
         seen.add(name)
         node.name = name
         node.clash["name"] = name
-        node.status = "manual-unfiltered"
+        node.status = "manual-pending"
         node.tier = "MANUAL"
-        node.reason = "manual_nodes.txt: added without strict filtering/testing; name kept from source with MANUAL prefix"
+        node.reason = "manual_nodes.txt: parsed; endpoint and traffic validation pending"
 
 def parse_manual_nodes_unscreened(manual_text: str) -> tuple[list[Any], list[str]]:
     """Parse manual_nodes.txt and do not run strict SNI/WS filtering on it.
@@ -1040,9 +1035,9 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
         if not isinstance(proxies_list, list):
             continue
         if name == "FALLBACK":
-            # Start FALLBACK with MANUAL first, then automatic nodes
-            for manual_name in reversed(manual_names):
-                _insert_once(proxies_list, manual_name, 0)
+            # Keep URL-tested automatic nodes first; manual nodes are late backup.
+            for manual_name in manual_names:
+                _insert_once(proxies_list, manual_name)
         elif name == "GLOBAL":
             # GLOBAL starts with FALLBACK (fallback type)
             _insert_once(proxies_list, "FALLBACK", 0)
@@ -1493,7 +1488,10 @@ def _build_node_quality_report(yaml_text: str, urltest_rows: list[dict[str, Any]
     lines += ["", "## Streaming Pool"]
     lines += [f"- {name}" for name in stream] or ["- Tidak ada"]
     lines += ["", "## Node Berisiko dari NekoBox/sing-box Test"]
-    lines += [f"- {name}: {neko_map[name].get('nekobox_status', '')}" for name in risky[:30]] or ["- Tidak ada yang gagal pada laporan terakhir"]
+    if not _env_bool("REQUIRE_NEKOBOX_TEST", True):
+        lines.append("- Tes NekoBox/sing-box dinonaktifkan; node tidak diuji.")
+    else:
+        lines += [f"- {name}: {neko_map[name].get('nekobox_status', '')}" for name in risky[:30]] or ["- Tidak ada yang gagal pada laporan terakhir"]
     lines += ["", "## Catatan Smart Mode", "- Health-check cepat hanya untuk pool kecil, bukan semua node.", "- Cloudflare/Worker punya endpoint test sendiri: `https://cp.cloudflare.com`.", "- `fake-ip-filter` diperluas untuk domain LAN, NTP, connectivity check, router, dan perbankan."]
     return "\n".join(lines) + "\n"
 
@@ -1721,6 +1719,20 @@ def main() -> int:
     )
     print(f"[INFO] URL test Mihomo otomatis: {urltest_reason}")
 
+    manual_candidates = list(manual_nodes)
+    manual_nodes, manual_urltest_checked, manual_urltest_reason, manual_urltest_rows = _mihomo_url_test_nodes(
+        manual_candidates,
+        target_count=max(1, len(manual_candidates)),
+        test_url=os.getenv("URL_TEST_URL", os.getenv("TEST_URL", ALT_TEST_URL)),
+        timeout_ms=_env_int("URL_TEST_TIMEOUT_MS", _env_int("HEALTH_TIMEOUT_MS", 5000)),
+    )
+    manual_pass_ids = {id(node) for node in manual_nodes}
+    for node in manual_candidates:
+        if id(node) not in manual_pass_ids:
+            manual_skipped.append(f"{_node_name(node)}: Mihomo URL test gagal: {getattr(node, 'url_test_status', '')}")
+    urltest_rows.extend(manual_urltest_rows)
+    print(f"[INFO] URL test Mihomo manual: {manual_urltest_reason}")
+
     alive_nodes, nekobox_checked_count, nekobox_reason, nekobox_rows = _singbox_url_test_nodes(
         mihomo_pass_nodes,
         target_count=max_nodes,
@@ -1772,8 +1784,9 @@ def main() -> int:
     fresh_yaml_text = add_manual_group_to_yaml_text(fresh_yaml_text, manual_nodes, android=False)
     fresh_yaml_text = _enforce_no_selector_no_direct_yaml_text(fresh_yaml_text)
     fresh_yaml_text = _ensure_ping_check_group_yaml_text(fresh_yaml_text)
-    fresh_report_text = _build_fresh_pool_report(fresh_nodes, alive_nodes, urltest_rows, nekobox_rows, fresh_yaml_text)
-    fresh_json_text = _build_fresh_pool_json(fresh_nodes, alive_nodes, urltest_rows, nekobox_rows)
+    strict_nodes = alive_nodes if _env_bool("REQUIRE_NEKOBOX_TEST", True) else []
+    fresh_report_text = _build_fresh_pool_report(fresh_nodes, strict_nodes, urltest_rows, nekobox_rows, fresh_yaml_text)
+    fresh_json_text = _build_fresh_pool_json(fresh_nodes, strict_nodes, urltest_rows, nekobox_rows)
 
     csv_text = build_csv(all_nodes + manual_nodes)
     akun_text = build_akun_txt(alive_nodes)
@@ -1821,7 +1834,7 @@ def main() -> int:
     Path(output_node_quality_report).write_text(node_quality_text, encoding="utf-8")
 
     fresh_akun_text = build_akun_txt(fresh_nodes)
-    strict_akun_text = build_akun_txt(alive_nodes)
+    strict_akun_text = build_akun_txt(strict_nodes)
     (fresh_dir / "fresh_candidates.txt").write_text(fresh_akun_text, encoding="utf-8")
     (fresh_dir / "fresh_candidates_strict.txt").write_text(strict_akun_text, encoding="utf-8")
 
@@ -1854,6 +1867,8 @@ def main() -> int:
         f"Automatic Mihomo URL-test result: {urltest_reason}\n"
         f"Automatic NekoBox/sing-box checked: {nekobox_checked_count}\n"
         f"Automatic NekoBox/sing-box result: {nekobox_reason}\n"
+        f"Manual Mihomo URL-test checked: {manual_urltest_checked}\n"
+        f"Manual Mihomo URL-test result: {manual_urltest_reason}\n"
         f"Manual group nodes: {len(manual_nodes)}\n"
         f"Akun txt automatic: {len([x for x in akun_text.splitlines() if x.strip()])}\n"
         f"Akun txt manual: {len([x for x in manual_akun_text.splitlines() if x.strip()])}\n"
