@@ -654,11 +654,11 @@ def _singbox_outbound_from_node(node: Any, *, tag: str = "proxy") -> dict[str, A
 
 
 def _build_singbox_android_json(nodes: list[Any]) -> str:
-    """Build a standalone sing-box 1.14 Android TUN profile."""
+    """Build standalone sing-box 1.14 Android TUN profile for VLESS/VMess/Trojan."""
     proxy_outbounds: list[dict[str, Any]] = []
     tags: list[str] = []
     used_tags = {"proxy", "automatic", "direct", "block"}
-    allowed_protocols = {"vmess", "trojan"}
+    allowed_protocols = {"vless", "vmess", "trojan"}
     for index, node in enumerate(nodes, start=1):
         clash = getattr(node, "clash", {}) or {}
         protocol = str(clash.get("type") or getattr(node, "type", "")).strip().lower()
