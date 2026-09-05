@@ -736,15 +736,6 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         "outbound": "SOCIAL",
     })
     route_rules.append({"protocol": ["http", "tls"], "action": "sniff"})
-    ad_domains = []
-    for raw_line in _read_text_file("rule_providers/universal-adblock-safe.yaml").splitlines():
-        line = raw_line.strip()
-        if line.startswith("- DOMAIN-SUFFIX,"):
-            domain = line.removeprefix("- DOMAIN-SUFFIX,").split(",", 1)[0].strip().lower()
-            if domain and domain not in ad_domains:
-                ad_domains.append(domain)
-    if ad_domains:
-        route_rules.append({"domain_suffix": ad_domains, "action": "reject"})
     social_candidates = [*manual_tags, *primary_tags[:1]]
     if not social_candidates:
         social_candidates = ["proxy"]
