@@ -128,6 +128,7 @@ fi
 echo "[AUDIT] Memeriksa keamanan, adblock, kategori judi, dan budget performa..."
 "$PY" adblock_provider_audit.py
 "$PY" app_ad_audit.py
+"$PY" cctv_app_audit.py
 "$PY" popup_game_ad_audit.py
 "$PY" youtube_adblock_audit.py --mode enhanced --dedup lean
 "$PY" youtube_gambling_sponsor_audit.py

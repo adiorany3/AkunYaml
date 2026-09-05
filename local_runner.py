@@ -446,6 +446,31 @@ DESKTOP_APP_AD_DOMAINS = (
 APP_SAFE_EXACT_DOMAINS = tuple(dict.fromkeys(ANDROID_OEM_APP_AD_DOMAINS + DESKTOP_APP_AD_DOMAINS))
 APP_SAFE_SUFFIXES = tuple(dict.fromkeys(APP_SDK_AD_SUFFIXES))
 
+# V380 Pro uses av380.net for cloud traffic. Reject only known ad/telemetry
+# hosts first, then bypass broad third-party blocklists for remaining service
+# traffic. LAN camera/NVR access is already covered by LAN_DIRECT_RULES.
+V380_AD_RULES = (
+    "DOMAIN,adstatistics.av380.net,REJECT",
+    "DOMAIN,logs.av380.net,REJECT",
+)
+V380_SERVICE_RULES = (
+    "DOMAIN-SUFFIX,av380.net,DIRECT",
+)
+
+# Exact CCTV ad/telemetry hosts observed in local threat feed. Never block
+# vendor suffixes: those suffixes also carry login, push, camera, playback.
+CHINA_CCTV_AD_DOMAINS = (
+    "veepai-device-log.eye4.cn",
+    "eulog.ezvizlife.com",
+    "log.ezvizlife.com",
+    "salog.ezvizlife.com",
+    "sgplog.ezvizlife.com",
+    "uslog.ezvizlife.com",
+    "rum-apis.reolink.com",
+    "sentry.tuyaus.com",
+)
+CHINA_CCTV_AD_RULES = tuple(f"DOMAIN,{domain},REJECT" for domain in CHINA_CCTV_AD_DOMAINS)
+
 
 def load_turtlecute_domains(workdir: Path) -> list[str]:
     snapshot = workdir / TURTLECUTE_SNAPSHOT_FILE
@@ -1985,12 +2010,16 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     )
     intrusive_managed_rules = {f"DOMAIN-SUFFIX,{domain},REJECT" for domain in INTRUSIVE_AD_SUFFIXES}
     app_managed_rules = ({f"DOMAIN,{domain},REJECT" for domain in APP_SAFE_EXACT_DOMAINS} | {f"DOMAIN-SUFFIX,{domain},REJECT" for domain in APP_SAFE_SUFFIXES})
+    v380_managed_rules = set(V380_AD_RULES + V380_SERVICE_RULES)
+    china_cctv_managed_rules = set(CHINA_CCTV_AD_RULES)
     cleaned = [
         rule for rule in current_rules
         if not rule.startswith(managed_prefixes)
         and rule not in OVERBROAD_AD_KEYWORD_RULES
         and rule not in intrusive_managed_rules
         and rule not in app_managed_rules
+        and rule not in v380_managed_rules
+        and rule not in china_cctv_managed_rules
     ]
 
     # Android uses rule mode so blocklists are evaluated.  Unmatched traffic still
@@ -2137,7 +2166,17 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         skip_domain = list(sniff_cfg.get("skip-domain") or [])
         sniff_cfg["skip-domain"] = list(dict.fromkeys(skip_domain + android_marketplace_live_sniffer_skip_domains()))
 
-    security_rules = lan_rules + ai_guard_rules + list(allow_rules) + youtube_compat_rules + youtube_ad_rules + youtube_guard_rules
+    security_rules = (
+        lan_rules
+        + ai_guard_rules
+        + list(V380_AD_RULES)
+        + list(V380_SERVICE_RULES)
+        + list(CHINA_CCTV_AD_RULES)
+        + list(allow_rules)
+        + youtube_compat_rules
+        + youtube_ad_rules
+        + youtube_guard_rules
+    )
     if profile != "off":
         provider_rules = shared_provider_reject_rules(
             platform="android" if is_android else "router",
