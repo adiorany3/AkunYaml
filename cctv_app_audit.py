@@ -21,6 +21,7 @@ AD_RULES = (
     "DOMAIN,uslog.ezvizlife.com,REJECT",
     "DOMAIN,rum-apis.reolink.com,REJECT",
     "DOMAIN,sentry.tuyaus.com,REJECT",
+    "DOMAIN,promotion-en.xmeye.net,REJECT",
 )
 SERVICE_RULE = "DOMAIN-SUFFIX,av380.net,DIRECT"
 BROAD_VENDOR_REJECTS = {
@@ -28,6 +29,7 @@ BROAD_VENDOR_REJECTS = {
     "DOMAIN-SUFFIX,ezvizlife.com,REJECT",
     "DOMAIN-SUFFIX,reolink.com,REJECT",
     "DOMAIN-SUFFIX,tuyaus.com,REJECT",
+    "DOMAIN-SUFFIX,xmeye.net,REJECT",
 }
 LAN_RULES = (
     "IP-CIDR,10.0.0.0/8,DIRECT,no-resolve",

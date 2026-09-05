@@ -1,24 +1,14 @@
 mixed-port: 7890
-redir-port: 7892
-tproxy-port: 7895
-allow-lan: true
+allow-lan: false
 bind-address: '*'
-lan-allowed-ips:
-- 127.0.0.0/8
-- 10.0.0.0/8
-- 172.16.0.0/12
-- 192.168.0.0/16
 mode: rule
 log-level: warning
 ipv6: false
 unified-delay: true
 tcp-concurrent: true
-find-process-mode: 'off'
 keep-alive-interval: 15
 keep-alive-idle: 30
 disable-keep-alive: false
-external-controller: 127.0.0.1:9090
-secret: reyre
 profile:
   store-selected: true
   store-fake-ip: true
@@ -34,19 +24,35 @@ sniffer:
       - 80
       - 8080-8880
       override-destination: true
-    QUIC:
-      ports:
-      - 443
-      - 8443
-  force-domain:
-  - +.v2ex.com
   skip-domain:
   - +.lan
   - +.local
+  - +.seabank.co.id
+  - +.shopee.co.id
+  - +.shopee.com
+  - +.shopee.sg
+  - +.shopeemobile.com
+  - +.shopeeusercontent.com
+  - +.susercontent.com
+  - +.shp.ee
+  - +.tokopedia.com
+  - +.tokopedia.net
+  - +.lazada.co.id
+  - +.lazada.com
+  - +.lzd.co
+  - +.lazcdn.com
+  - +.slatic.net
+  - +.blibli.com
+  - +.bukalapak.com
+  - +.tiktokv.com
+  - +.tiktokcdn.com
+  - +.ibytedtos.com
+  - +.byteimg.com
+  - business-api.tiktok.com
+  - log.byteoversea.com
 dns:
   enable: true
   ipv6: false
-  listen: 0.0.0.0:7874
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter:
@@ -67,6 +73,29 @@ dns:
   - +.bni.co.id
   - +.bri.co.id
   - +.mandiri.co.id
+  - +.seabank.co.id
+  - +.shopee.co.id
+  - +.shopee.com
+  - +.shopee.sg
+  - +.shopeemobile.com
+  - +.shopeeusercontent.com
+  - +.susercontent.com
+  - +.shp.ee
+  - +.tokopedia.com
+  - +.tokopedia.net
+  - +.lazada.co.id
+  - +.lazada.com
+  - +.lzd.co
+  - +.lazcdn.com
+  - +.slatic.net
+  - +.blibli.com
+  - +.bukalapak.com
+  - +.tiktokv.com
+  - +.tiktokcdn.com
+  - +.ibytedtos.com
+  - +.byteimg.com
+  - business-api.tiktok.com
+  - log.byteoversea.com
   - +.stun.*.*
   - +.stun.*.*.*
   - +.stun.*.*.*.*
@@ -74,7 +103,6 @@ dns:
   - '*.n.n.srv.nintendo.net'
   - xbox.*.*.microsoft.com
   - '*.*.xboxlive.com'
-  cache-algorithm: arc
   default-nameserver:
   - 1.1.1.1
   - 8.8.8.8
@@ -106,18 +134,83 @@ dns:
     +.gemini.google.com:
     - https://1.1.1.1/dns-query
     - https://dns.google/dns-query
+    +.seabank.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shopee.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shopee.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shopee.sg:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shopeemobile.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shopeeusercontent.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.susercontent.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shp.ee:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.tokopedia.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.tokopedia.net:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.lazada.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.lazada.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.lzd.co:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.lazcdn.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.slatic.net:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.blibli.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bukalapak.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.tiktokv.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.tiktokcdn.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.ibytedtos.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.byteimg.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.business-api.tiktok.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.log.byteoversea.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+  cache-algorithm: arc
+  prefer-h3: false
+  use-hosts: true
+  use-system-hosts: true
   fallback:
   - https://family.dns.bebasid.com/dns-query
   - tls://family.dns.bebasid.com:853
   fallback-lazy-query: true
-  fallback-filter:
-    geoip: true
-    geoip-code: ID
-    ipcidr:
-    - 240.0.0.0/4
-  prefer-h3: false
-  use-hosts: true
-  use-system-hosts: true
 proxies:
 - name: AKUN-001-CLOUDFLARE-VLESS-WS-101MS
   type: vless
@@ -289,346 +382,6 @@ proxies:
       Host: dry-butterfly-8eb9.tmpgnacio83.workers.dev
   alpn:
   - http/1.1
-- name: AKUN-012-CLOUDFLARE-VLESS-WS-109MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: aebe5a70-0ca3-46ce-8208-8b5bab1346ce
-  udp: true
-  tls: true
-  servername: rAyAn-007.nAsTaRaN.DpDnS.OrG
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: rayan-007.nastaran.dpdns.org
-  alpn:
-  - http/1.1
-- name: AKUN-013-CLOUDFLARE-VLESS-WS-109MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 0f0b7f69-78e1-4e9e-8b35-0986444613e4
-  udp: true
-  tls: true
-  servername: xwrivr.pages.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /?ed=2048-MTMVPN
-    headers:
-      Host: xwrivr.pages.dev
-  alpn:
-  - http/1.1
-- name: AKUN-015-CLOUDFLARE-VLESS-WS-109MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: f09f4baa-7688-4514-8062-c3ea8e319624
-  udp: true
-  tls: true
-  servername: dark-leaf-93a1.440-02e.workers.dev
-  network: ws
-  client-fingerprint: unsafe
-  skip-cert-verify: true
-  ws-opts:
-    path: /pyip=ProxyIP.US.CMLiussss.net
-    headers:
-      Host: dark-leaf-93a1.440-02e.workers.dev
-  alpn:
-  - http/1.1
-- name: AKUN-016-CLOUDFLARE-VLESS-WS-105MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: f2a73750-3087-48ff-a763-1348c15dce68
-  udp: true
-  tls: true
-  servername: rAyAn-007.mAxImA.DpDnS.OrG
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /?ed=2560
-    headers:
-      Host: rAyAn-007.mAxImA.DpDnS.OrG
-  alpn:
-  - http/1.1
-- name: AKUN-017-CLOUDFLARE-VLESS-WS-105MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 50414e45-4c5f-5a45-5553-e0dfede8abc0
-  udp: true
-  tls: true
-  servername: xoz60debusrs.lezuwaeiunjs.workers.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /stream/PANEL_ZEUS/e0dfede8abc0
-    headers:
-      Host: xoz60debusrs.lezuwaeiunjs.workers.dev
-  alpn:
-  - http/1.1
-- name: AKUN-018-CLOUDFLARE-VLESS-WS-108MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 36a857e4-f3d4-43aa-8b90-d7da849da989
-  udp: true
-  tls: true
-  servername: 002.Inc-ElectROcElL-001-002.WoRKERS.DEV
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  alpn:
-  - http/1.1
-  ws-opts:
-    path: /eyJqdW5rIjoib0RnakxTZUZvOSIsInByb3RvY29sIjoidmwiLCJtb2RlIjoicHJveHlpcCIsInBhbmVsSVBzIjpbXX0=
-    headers:
-      Host: 002.inc-electrocell-001-002.workers.dev
-- name: AKUN-019-CLOUDFLARE-VLESS-WS-110MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 5934b979-e128-4c90-a600-744b97bffc8c
-  udp: true
-  tls: true
-  servername: 5DKTCUajb2a1jxIX7csNrmEUCg.MAhRADeMAmi.wORkeRs.dEV
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  alpn:
-  - http/1.1
-  ws-opts:
-    path: /vl/Fi3kP8cNjBoo8UPv
-    headers:
-      Host: 5dktcuajb2a1jxix7csnrmeucg.mahrademami.workers.dev
-- name: AKUN-021-CLOUDFLARE-VLESS-WS-108MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 9b18ccef-b9e0-41d1-8990-9d970569e142
-  udp: true
-  tls: true
-  servername: web-socket.tgdaosheng.ggff.net
-  network: ws
-  client-fingerprint: unsafe
-  skip-cert-verify: true
-  ws-opts:
-    path: /proxyip=bpb.yousef.isegaro.com
-    headers:
-      Host: web-socket.tgdaosheng.ggff.net
-  alpn:
-  - http/1.1
-- name: AKUN-022-UNKNOWN-VLESS-WS-115MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 50414e45-4c5f-5a45-5553-ef859652a80e
-  udp: true
-  tls: true
-  servername: trex-panel-nubj0s.samifakor.workers.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /stream/TrexBridge/ef859652a80e
-    headers:
-      Host: trex-panel-nubj0s.samifakor.workers.dev
-  alpn:
-  - http/1.1
-- name: AKUN-023-CLOUDFLARE-VLESS-WS-116MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 513beae3-56e7-4954-a17e-930e06237b27
-  udp: true
-  tls: true
-  servername: cFOi-2fX16G3-8ry2KDxMcJ.wjESV2IlA3rXBuhpC2NsUgrAChGAWk.wOrKerS.DEv
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  alpn:
-  - http/1.1
-  ws-opts:
-    path: /vl/FuJlzLUhMmosE6ySAHYtJDUq6XlF?ed=2560
-    headers:
-      Host: cfoi-2fx16g3-8ry2kdxmcj.wjesv2ila3rxbuhpc2nsugrachgawk.workers.dev
-- name: AKUN-024-CLOUDFLARE-VLESS-WS-106MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 56b52604-0074-44b9-8f7d-2826943a54d7
-  udp: true
-  tls: true
-  servername: YEllOW-tRUTH-67EB.FRGFEREFg234E4343.WORkERs.DeV
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  alpn:
-  - http/1.1
-  ws-opts:
-    path: /eyJqdW5rIjoiamd3OFpKWlluUFlMM25IUyIsInByb3RvY29sIjoidmwiLCJtb2RlIjoicHJlZml4IiwicGFuZWxJUHMiOlsiWzI2MDI6ZmM1OTpiMDo2NDo6XSJdfQ==?ed=2560
-    headers:
-      Host: yellow-truth-67eb.frgferefg234e4343.workers.dev
-- name: AKUN-025-CLOUDFLARE-VLESS-WS-110MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 513beae3-56e7-4954-a17e-930e06237b27
-  udp: true
-  tls: true
-  servername: cfOI-2FX16g3-8RY2kDXmCj.WJeSV2iLa3rxbUHPc2nsUGRAcHgaWK.WorKerS.DEV
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  alpn:
-  - http/1.1
-  ws-opts:
-    path: /vl/1NM75lSM9FVMO5loRH5RSHTFj1g?ed=2560
-    headers:
-      Host: cfoi-2fx16g3-8ry2kdxmcj.wjesv2ila3rxbuhpc2nsugrachgawk.workers.dev
-- name: AKUN-026-CLOUDFLARE-VLESS-WS-123MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 0f0b7f69-78e1-4e9e-8b35-0986444613e4
-  udp: true
-  tls: true
-  servername: xwrivr.pages.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /?TELEGRAM-TOOTFFARANGI?ed=512
-    headers:
-      Host: xwrivr.pages.dev
-  alpn:
-  - http/1.1
-- name: AKUN-027-UNKNOWN-VLESS-WS-110MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 7da33b25-cdd6-e481-afcf-c5d532361a70
-  udp: true
-  tls: true
-  servername: ez-1bc8ab.sekiro-c18.workers.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /sync
-    headers:
-      Host: ez-1bc8ab.sekiro-c18.workers.dev
-  alpn:
-  - http/1.1
-- name: AKUN-028-CLOUDINARY-VLESS-WS-105MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 07974401-62dd-4ec3-b9e0-42c08accbc04
-  udp: true
-  tls: true
-  servername: wallweb-9gw.pages.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /
-    headers:
-      Host: wallweb-9gw.pages.dev
-  alpn:
-  - http/1.1
-- name: AKUN-029-CLOUDFLARE-VLESS-WS-108MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 0f0b7f69-78e1-4e9e-8b35-0986444613e4
-  udp: true
-  tls: true
-  servername: xwrivr.pages.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /?TELEGRAM--TOOTFFARANGI?ed=512
-    headers:
-      Host: xwrivr.pages.dev
-  alpn:
-  - http/1.1
-- name: AKUN-030-CLOUDFLARE-VLESS-WS-106MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 07821f66-cdb7-4c70-9de6-e230cffac470
-  udp: true
-  tls: true
-  servername: wgrcqwtkfyqujs43.ghydgdbdbddvv.workers.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  alpn:
-  - http/1.1
-  ws-opts:
-    path: /vl/-i10VPN-i10VPN-i10VPN-i10VPN-i10VPN-i10VPN-i10VPN-i10VPN-i10VPN-i10VPN-i10VPN-i10VPN-i10VPN-i10VPN-i10VPN?ed
-    headers:
-      Host: wgrcqwtkfyqujs43.ghydgdbdbddvv.workers.dev
-- name: AKUN-031-CLOUDFLARE-VLESS-WS-107MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 7e81824b-35e0-4eb1-89e9-592f0c92aa6b
-  udp: true
-  tls: true
-  servername: yx.zhourf2006.dpdns.org
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /
-    headers:
-      Host: yx.zhourf2006.dpdns.org
-  alpn:
-  - http/1.1
-- name: AKUN-032-CLOUDFLARE-VLESS-WS-115MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 6a110378-70b6-4fda-a092-5dcf23207710
-  udp: true
-  tls: true
-  servername: nq7qh6khkkjlcmuorei7dgcjd3no63fdai3jqojvltpglwbtxumtofqosr2w6pm.sd4yn.workers.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: '/:'
-    headers:
-      Host: nq7qh6khkkjlcmuorei7dgcjd3no63fdai3jqojvltpglwbtxumtofqosr2w6pm.sd4yn.workers.dev
-  alpn:
-  - http/1.1
-- name: AKUN-035-CLOUDFLARE-VLESS-WS-126MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 0f0b7f69-78e1-4e9e-8b35-0986444613e4
-  udp: true
-  tls: true
-  servername: xwrivr.pages.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /?ed=2048
-    headers:
-      Host: xwrivr.pages.dev
-  alpn:
-  - http/1.1
 - name: MANUAL-VMess-WS-TLS-443-singa08
   type: vmess
   server: 104.17.3.81
@@ -695,25 +448,8 @@ proxy-groups:
 - name: GLOBAL
   type: fallback
   proxies:
-  - LOAD-BALANCE
-  - WARM-UP
-  - WARM-UP-CF
-  - AUTO-FAST
-  - FALLBACK
-  url: https://www.gstatic.com/generate_204
-  interval: 300
-  lazy: true
-  timeout: 5000
-  expected-status: 200/204/301/302
-  max-failed-times: 3
-- name: PROXY
-  type: fallback
-  proxies:
-  - GLOBAL
-  - LOAD-BALANCE
   - WARM-UP
   - AUTO-FAST
-  - FALLBACK
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -808,14 +544,8 @@ proxy-groups:
 - name: AI-BACKUP
   type: fallback
   proxies:
-  - AKUN-016-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-017-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-028-CLOUDINARY-VLESS-WS-105MS
   - AKUN-004-UNKNOWN-VLESS-WS-106MS
   - AKUN-008-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-024-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-030-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-031-CLOUDFLARE-VLESS-WS-107MS
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -825,14 +555,8 @@ proxy-groups:
 - name: AI-MANUAL
   type: fallback
   proxies:
-  - AKUN-016-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-017-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-028-CLOUDINARY-VLESS-WS-105MS
   - AKUN-004-UNKNOWN-VLESS-WS-106MS
   - AKUN-008-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-024-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-030-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-031-CLOUDFLARE-VLESS-WS-107MS
   url: https://www.gstatic.com/generate_204
   interval: 600
   lazy: true
@@ -852,59 +576,6 @@ proxy-groups:
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 3
-- name: SOCIAL-MEDIA
-  type: url-test
-  proxies:
-  - WARM-UP
-  - AUTO-FAST
-  - FALLBACK
-  url: https://www.gstatic.com/generate_204
-  interval: 60
-  tolerance: 50
-  lazy: true
-  timeout: 3000
-  expected-status: 200/204/301/302
-  max-failed-times: 2
-- name: YOUTUBE
-  type: fallback
-  proxies:
-  - WARM-UP-CF
-  - STREAMING-FAST
-  - AUTO-FAST
-  - FALLBACK
-  url: https://www.gstatic.com/generate_204
-  interval: 120
-  lazy: true
-  timeout: 3000
-  expected-status: 200/204/301/302
-  max-failed-times: 2
-- name: EDUKASI
-  type: url-test
-  proxies:
-  - WARM-UP
-  - AUTO-FAST
-  - FALLBACK
-  url: https://www.gstatic.com/generate_204
-  interval: 60
-  tolerance: 50
-  lazy: true
-  timeout: 3000
-  expected-status: 200/204/301/302
-  max-failed-times: 2
-- name: STREAMING
-  type: url-test
-  proxies:
-  - STREAMING-FAST
-  - WARM-UP-CF
-  - AUTO-FAST
-  - FALLBACK
-  url: https://cp.cloudflare.com
-  interval: 60
-  tolerance: 50
-  lazy: true
-  timeout: 3000
-  expected-status: 200/204/301/302
-  max-failed-times: 2
 - name: PING-CHECK
   type: url-test
   proxies:
@@ -918,32 +589,12 @@ proxy-groups:
   - AKUN-008-CLOUDFLARE-VLESS-WS-106MS
   - AKUN-009-CLOUDFLARE-VLESS-WS-104MS
   - AKUN-010-NOTION-WEB-VLESS-WS-105MS
-  - AKUN-012-CLOUDFLARE-VLESS-WS-109MS
-  - AKUN-013-CLOUDFLARE-VLESS-WS-109MS
-  - AKUN-015-CLOUDFLARE-VLESS-WS-109MS
-  - AKUN-016-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-017-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-018-CLOUDFLARE-VLESS-WS-108MS
-  - AKUN-019-CLOUDFLARE-VLESS-WS-110MS
-  - AKUN-021-CLOUDFLARE-VLESS-WS-108MS
-  - AKUN-022-UNKNOWN-VLESS-WS-115MS
-  - AKUN-023-CLOUDFLARE-VLESS-WS-116MS
-  - AKUN-024-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-025-CLOUDFLARE-VLESS-WS-110MS
-  - AKUN-026-CLOUDFLARE-VLESS-WS-123MS
-  - AKUN-027-UNKNOWN-VLESS-WS-110MS
-  - AKUN-028-CLOUDINARY-VLESS-WS-105MS
-  - AKUN-029-CLOUDFLARE-VLESS-WS-108MS
-  - AKUN-030-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-031-CLOUDFLARE-VLESS-WS-107MS
-  - AKUN-032-CLOUDFLARE-VLESS-WS-115MS
-  - AKUN-035-CLOUDFLARE-VLESS-WS-126MS
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   - MANUAL-TROJAN WS Melbikomas UAB
   - MANUAL-VMess-WS-TLS-443-akuku8
   url: https://www.gstatic.com/generate_204
-  interval: 300
+  interval: 180
   tolerance: 100
   lazy: true
   timeout: 5000
@@ -959,7 +610,7 @@ proxy-groups:
   url: https://www.gstatic.com/generate_204
   interval: 60
   tolerance: 150
-  lazy: false
+  lazy: true
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
@@ -971,7 +622,7 @@ proxy-groups:
   - AKUN-002-CLOUDFLARE-VLESS-WS-102MS
   - AKUN-006-CLOUDFLARE-VLESS-WS-104MS
   url: https://cp.cloudflare.com
-  interval: 120
+  interval: 90
   tolerance: 150
   lazy: true
   timeout: 5000
@@ -986,32 +637,20 @@ proxy-groups:
   - AKUN-006-CLOUDFLARE-VLESS-WS-104MS
   - AKUN-003-BIGCOMMERCE-VLESS-WS-104MS
   url: https://cp.cloudflare.com
-  interval: 90
+  interval: 60
   tolerance: 150
   lazy: true
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
-- name: CLEAN
-  type: fallback
-  proxies:
-  - WARM-UP
-  - AUTO-FAST
-  - FALLBACK
-  url: https://www.gstatic.com/generate_204
-  interval: 300
-  lazy: true
-  timeout: 5000
-  expected-status: 200/204/301/302
-  max-failed-times: 3
 - name: AUTO-FAST
   type: url-test
   proxies:
   - AKUN-007-CHATGPT-VLESS-WS-104MS
   url: https://www.gstatic.com/generate_204
-  interval: 90
+  interval: 60
   tolerance: 150
-  lazy: false
+  lazy: true
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
@@ -1030,44 +669,10 @@ proxy-groups:
   - AKUN-007-CHATGPT-VLESS-WS-104MS
   - AKUN-009-CLOUDFLARE-VLESS-WS-104MS
   - AKUN-010-NOTION-WEB-VLESS-WS-105MS
-  - AKUN-016-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-017-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-028-CLOUDINARY-VLESS-WS-105MS
   - AKUN-004-UNKNOWN-VLESS-WS-106MS
   - AKUN-008-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-024-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-030-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-031-CLOUDFLARE-VLESS-WS-107MS
-  - AKUN-018-CLOUDFLARE-VLESS-WS-108MS
-  - AKUN-021-CLOUDFLARE-VLESS-WS-108MS
-  - AKUN-029-CLOUDFLARE-VLESS-WS-108MS
-  - AKUN-012-CLOUDFLARE-VLESS-WS-109MS
-  - AKUN-013-CLOUDFLARE-VLESS-WS-109MS
-  - AKUN-015-CLOUDFLARE-VLESS-WS-109MS
-  - AKUN-019-CLOUDFLARE-VLESS-WS-110MS
-  - AKUN-025-CLOUDFLARE-VLESS-WS-110MS
-  - AKUN-027-UNKNOWN-VLESS-WS-110MS
-  - AKUN-022-UNKNOWN-VLESS-WS-115MS
-  - AKUN-032-CLOUDFLARE-VLESS-WS-115MS
-  - AKUN-023-CLOUDFLARE-VLESS-WS-116MS
-  - AKUN-026-CLOUDFLARE-VLESS-WS-123MS
-  - AKUN-035-CLOUDFLARE-VLESS-WS-126MS
   url: https://www.gstatic.com/generate_204
-  interval: 180
-  lazy: true
-  timeout: 6000
-  expected-status: 200/204/301/302
-  max-failed-times: 3
-- name: LOAD-BALANCE
-  type: load-balance
-  strategy: sticky-sessions
-  proxies:
-  - AKUN-005-CLOUDFLARE-VLESS-WS-96MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-101MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-102MS
-  - AKUN-003-BIGCOMMERCE-VLESS-WS-104MS
-  url: https://www.gstatic.com/generate_204
-  interval: 300
+  interval: 120
   lazy: true
   timeout: 6000
   expected-status: 200/204/301/302
@@ -1095,19 +700,32 @@ proxy-groups:
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
+- name: YOUTUBE
+  type: fallback
+  proxies:
+  - STREAMING-FAST
+  - WARM-UP-CF
+  - WARM-UP
+  - AUTO-FAST
+  - FALLBACK
+  - GLOBAL
+  url: https://www.gstatic.com/generate_204
+  interval: 120
+  lazy: true
+  timeout: 3000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
 rule-providers:
   ads_indonesia:
     type: file
     behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/ads_indonesia.mrs
+    path: ./rule_providers/ads_indonesia_android.yaml
   ads_domain:
     type: http
     behavior: domain
-    path: ./rule_providers/ads_domain.mrs
-    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs
+    path: ./rule_providers/ads_domain.yaml
+    url: https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/category-ads-all.yaml
     interval: 43200
-    format: mrs
   anti-ad:
     type: http
     behavior: domain
@@ -1117,181 +735,44 @@ rule-providers:
     format: yaml
   tracker-domain:
     type: http
-    behavior: domain
-    path: ./rule_providers/tracker.mrs
-    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tracker.mrs
+    behavior: classical
+    path: ./rule_providers/tracker.yaml
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/classical/tracker.yaml
     interval: 43200
-    format: mrs
-  threat-tif-mini:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-tif-mini.mrs
-  adult-category:
+  threat-malware:
     type: http
     behavior: domain
-    path: ./rule_providers/adult-category.mrs
-    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-porn.mrs
+    path: ./rule_providers/malware.yaml
+    url: https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/malware.yaml
     interval: 43200
-    format: mrs
-  gambling-mini:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/gambling-mini.mrs
-  adult-local:
-    type: file
-    behavior: classical
-    format: yaml
-    path: ./rule_providers/security-adult.yaml
-  pinjol-local:
-    type: file
-    behavior: classical
-    format: yaml
-    path: ./rule_providers/security-pinjol.yaml
-  popup-ads:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/popup-ads.mrs
-  threat-malware:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-malware.mrs
   threat-phishing:
-    type: file
+    type: http
     behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-phishing.mrs
+    path: ./rule_providers/phishing.yaml
+    url: https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/phishing.yaml
+    interval: 43200
   threat-cryptominers:
-    type: file
+    type: http
     behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-cryptominers.mrs
+    path: ./rule_providers/cryptominers.yaml
+    url: https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/cryptominers.yaml
+    interval: 43200
+  adult-category:
+    type: http
+    behavior: classical
+    path: ./rule_providers/adult-category.yaml
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/classical/category-porn.yaml
+    interval: 43200
   threat-fake-scam:
     type: file
     behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-fake-scam.mrs
-  openai_domain:
+    path: ./rule_providers/threat-fake-scam_android.yaml
+  privacy-extra:
     type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/openai.mrs
-    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/openai.mrs
-  ai_category:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/category-ai-not-cn.mrs
-    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs
-  chatgpt_voice:
-    type: http
-    interval: 43200
     behavior: classical
-    format: yaml
-    path: ./rule_providers/chatgpt_voice.txt
-    url: https://ruleset.skk.moe/Clash/ip/ai.txt
-  youtube_domain:
-    type: http
-    interval: 86400
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/youtube.mrs
-    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs
-  threat-tif-ip:
-    type: file
-    behavior: ipcidr
-    format: mrs
-    path: ./rule_providers/compiled/threat-tif-ip.mrs
-  app-ad-safe:
-    type: inline
-    behavior: domain
-    payload:
-    - adv.sec.intl.miui.com
-    - adv.l7.34.sec.miui.com
-    - adv.sec.miui.com
-    - ad.miui.com
-    - api.ads.xiaomi.com
-    - ad.eu.xiaomi.com
-    - ad.quickapp.hybrid.xiaomi.com
-    - ad.india.xiaomi.com
-    - ad.intl.xiaomi.com
-    - xadx.file.market.xiaomi.com
-    - wtradv.market.xiaomi.com
-    - ad.cdn.pandora.xiaomi.com
-    - ads.heytapmobi.com
-    - ads.heytapmobile.com
-    - ads-bdapi-my.heytapmobile.com
-    - ads-bdapi-ph.heytapmobile.com
-    - ads-bdapi-th.heytapmobile.com
-    - ads-bdapi-vn.heytapmobile.com
-    - ad-growth-in.heytapmobile.com
-    - ad-growth-ru.heytapmobile.com
-    - ad-growth-sg.heytapmobile.com
-    - adx-ads-fr.heytapmobile.com
-    - adx-ads-ru.heytapmobile.com
-    - bdapi-ads-sg.heytapmobile.com
-    - cldata-ads-fr.heytapmobile.com
-    - cldata-ads-ru.heytapmobile.com
-    - sms-ads-in.heytapmobile.com
-    - sms-ads-ru.heytapmobile.com
-    - stgdata-ads-fr.heytapmobile.com
-    - ads.oppomobile.com
-    - adsfs.oppomobile.com
-    - ads.bing.com
-    - adserver.bing.com
-    - outlookads.live.com
-    - ads.microsoft.com
-    - adsdk.microsoft.com
-    - advertising.microsoft.com
-    - bingads.microsoft.com
-    - msadsscale.microsoft.com
-    - ads.eu.msn.com
-    - rmads.eu.msn.com
-    - ads.jp.msn.com
-    - advertising.jp.msn.com
-    - ad.msn.com
-    - adevents.msn.com
-    - ads.msn.com
-    - ads1.msn.com
-    - mobileads.msn.com
-    - rads.msn.com
-    - rmads.msn.com
-    - srtb.msn.com
-    - prod.editor.ads.trafficmanager.net
-    - ads-msn-com-profile.trafficmanager.net
-    - adsdk.trafficmanager.net
-    - dsp-ad-cache-tm.trafficmanager.net
-    - ssp-prod-eastus-nonmutt.trafficmanager.net
-    - msads.net
-    - advertising.apple.com
-    - advp.apple.com
-    - api-adservices.apple.com
-    - iad.apple.com
-    - iadcontent.apple.com
-    - iadmoo.apple.com
-    - iadsdk.apple.com
-    - iadworkbench.apple.com
-    - searchads.apple.com
-    - .smaato.com
-    - .smaato.net
-    - .ogury.com
-    - .ogury.co
-    - .pubnative.net
-    - .hyprmx.com
-    - .mobilefuse.com
-    - .amazon-adsystem.com
-    - .mopub.com
-    - .adjoe.io
-  hagezi-pro-plus-mini:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/hagezi-pro-plus-mini.mrs
+    path: ./rule_providers/privacy-extra.yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Privacy/Privacy.yaml
+    interval: 43200
 rules:
 - DOMAIN-SUFFIX,local,DIRECT
 - DOMAIN-SUFFIX,lan,DIRECT
@@ -1384,9 +865,6 @@ rules:
 - IP-CIDR,172.207.173.200/32,AI-OPENAI,no-resolve
 - IP-CIDR,172.214.226.198/32,AI-OPENAI,no-resolve
 - IP-CIDR,191.233.251.27/32,AI-OPENAI,no-resolve
-- RULE-SET,openai_domain,AI-OPENAI
-- RULE-SET,ai_category,AI-OTHER
-- RULE-SET,chatgpt_voice,AI-OPENAI,no-resolve
 - DOMAIN,static.doubleclick.net,YOUTUBE
 - DOMAIN,jnn-pa.googleapis.com,YOUTUBE
 - DOMAIN,googleads.g.doubleclick.net,REJECT
@@ -1405,11 +883,6 @@ rules:
 - DOMAIN-SUFFIX,googleadapis.com,REJECT
 - DOMAIN,mobileads.google.com,REJECT
 - DOMAIN,pagead.l.google.com,REJECT
-- DOMAIN,adservice.google.com,REJECT
-- DOMAIN,stats.g.doubleclick.net,REJECT
-- DOMAIN,m.doubleclick.net,REJECT
-- DOMAIN,mediavisor.doubleclick.net,REJECT
-- RULE-SET,youtube_domain,YOUTUBE
 - DOMAIN-SUFFIX,youtube.com,YOUTUBE
 - DOMAIN-SUFFIX,youtu.be,YOUTUBE
 - DOMAIN-SUFFIX,youtube-nocookie.com,YOUTUBE
@@ -1429,22 +902,161 @@ rules:
 - DOMAIN,uslog.ezvizlife.com,REJECT
 - DOMAIN,rum-apis.reolink.com,REJECT
 - DOMAIN,sentry.tuyaus.com,REJECT
-- DOMAIN,promotion-en.xmeye.net,REJECT
 - DOMAIN-SUFFIX,challenges.cloudflare.com,DIRECT
 - DOMAIN-SUFFIX,hcaptcha.com,DIRECT
 - DOMAIN-SUFFIX,recaptcha.net,DIRECT
 - RULE-SET,threat-malware,REJECT
 - RULE-SET,threat-phishing,REJECT
 - RULE-SET,threat-cryptominers,REJECT
-- RULE-SET,threat-fake-scam,REJECT
-- RULE-SET,threat-tif-mini,REJECT
-- RULE-SET,gambling-mini,REJECT
+- DOMAIN-SUFFIX,seabank.co.id,DIRECT
+- DOMAIN,business-api.tiktok.com,GLOBAL
+- DOMAIN,log.byteoversea.com,GLOBAL
+- DOMAIN-SUFFIX,shopee.co.id,GLOBAL
+- DOMAIN-SUFFIX,shopee.com,GLOBAL
+- DOMAIN-SUFFIX,shopee.sg,GLOBAL
+- DOMAIN-SUFFIX,shopeemobile.com,GLOBAL
+- DOMAIN-SUFFIX,shopeeusercontent.com,GLOBAL
+- DOMAIN-SUFFIX,susercontent.com,GLOBAL
+- DOMAIN-SUFFIX,shp.ee,GLOBAL
+- DOMAIN-SUFFIX,tokopedia.com,GLOBAL
+- DOMAIN-SUFFIX,tokopedia.net,GLOBAL
+- DOMAIN-SUFFIX,lazada.co.id,GLOBAL
+- DOMAIN-SUFFIX,lazada.com,GLOBAL
+- DOMAIN-SUFFIX,lzd.co,GLOBAL
+- DOMAIN-SUFFIX,lazcdn.com,GLOBAL
+- DOMAIN-SUFFIX,slatic.net,GLOBAL
+- DOMAIN-SUFFIX,blibli.com,GLOBAL
+- DOMAIN-SUFFIX,bukalapak.com,GLOBAL
+- DOMAIN-SUFFIX,tiktokv.com,GLOBAL
+- DOMAIN-SUFFIX,tiktokcdn.com,GLOBAL
+- DOMAIN-SUFFIX,ibytedtos.com,GLOBAL
+- DOMAIN-SUFFIX,byteimg.com,GLOBAL
 - RULE-SET,adult-category,REJECT
-- RULE-SET,adult-local,REJECT
-- RULE-SET,pinjol-local,REJECT
-- RULE-SET,hagezi-pro-plus-mini,REJECT
-- RULE-SET,popup-ads,REJECT
-- RULE-SET,threat-tif-ip,REJECT,no-resolve
+- RULE-SET,threat-fake-scam,REJECT
+- RULE-SET,privacy-extra,REJECT
+- DOMAIN,adtago.s3.amazonaws.com,REJECT
+- DOMAIN,analyticsengine.s3.amazonaws.com,REJECT
+- DOMAIN,analytics.s3.amazonaws.com,REJECT
+- DOMAIN,advice-ads.s3.amazonaws.com,REJECT
+- DOMAIN,adservice.google.com,REJECT
+- DOMAIN,stats.g.doubleclick.net,REJECT
+- DOMAIN,m.doubleclick.net,REJECT
+- DOMAIN,mediavisor.doubleclick.net,REJECT
+- DOMAIN,ads30.adcolony.com,REJECT
+- DOMAIN,adc3-launch.adcolony.com,REJECT
+- DOMAIN,events3alt.adcolony.com,REJECT
+- DOMAIN,wd.adcolony.com,REJECT
+- DOMAIN,static.media.net,REJECT
+- DOMAIN,media.net,REJECT
+- DOMAIN,adservetx.media.net,REJECT
+- DOMAIN,analytics.google.com,REJECT
+- DOMAIN,click.googleanalytics.com,REJECT
+- DOMAIN,google-analytics.com,REJECT
+- DOMAIN,ssl.google-analytics.com,REJECT
+- DOMAIN,adm.hotjar.com,REJECT
+- DOMAIN,identify.hotjar.com,REJECT
+- DOMAIN,insights.hotjar.com,REJECT
+- DOMAIN,script.hotjar.com,REJECT
+- DOMAIN,surveys.hotjar.com,REJECT
+- DOMAIN,careers.hotjar.com,REJECT
+- DOMAIN,events.hotjar.io,REJECT
+- DOMAIN,mouseflow.com,REJECT
+- DOMAIN,cdn.mouseflow.com,REJECT
+- DOMAIN,o2.mouseflow.com,REJECT
+- DOMAIN,gtm.mouseflow.com,REJECT
+- DOMAIN,api.mouseflow.com,REJECT
+- DOMAIN,tools.mouseflow.com,REJECT
+- DOMAIN,cdn-test.mouseflow.com,REJECT
+- DOMAIN,freshmarketer.com,REJECT
+- DOMAIN,claritybt.freshmarketer.com,REJECT
+- DOMAIN,fwtracks.freshmarketer.com,REJECT
+- DOMAIN,luckyorange.com,REJECT
+- DOMAIN,api.luckyorange.com,REJECT
+- DOMAIN,realtime.luckyorange.com,REJECT
+- DOMAIN,cdn.luckyorange.com,REJECT
+- DOMAIN,w1.luckyorange.com,REJECT
+- DOMAIN,upload.luckyorange.net,REJECT
+- DOMAIN,cs.luckyorange.net,REJECT
+- DOMAIN,settings.luckyorange.net,REJECT
+- DOMAIN,stats.wp.com,REJECT
+- DOMAIN,notify.bugsnag.com,REJECT
+- DOMAIN,sessions.bugsnag.com,REJECT
+- DOMAIN,api.bugsnag.com,REJECT
+- DOMAIN,app.bugsnag.com,REJECT
+- DOMAIN,browser.sentry-cdn.com,REJECT
+- DOMAIN,app.getsentry.com,REJECT
+- DOMAIN,pixel.facebook.com,REJECT
+- DOMAIN,an.facebook.com,REJECT
+- DOMAIN,static.ads-twitter.com,REJECT
+- DOMAIN,ads-api.twitter.com,REJECT
+- DOMAIN,ads.linkedin.com,REJECT
+- DOMAIN,analytics.pointdrive.linkedin.com,REJECT
+- DOMAIN,ads.pinterest.com,REJECT
+- DOMAIN,log.pinterest.com,REJECT
+- DOMAIN,trk.pinterest.com,REJECT
+- DOMAIN,events.reddit.com,REJECT
+- DOMAIN,events.redditmedia.com,REJECT
+- DOMAIN,ads-api.tiktok.com,REJECT
+- DOMAIN,analytics.tiktok.com,REJECT
+- DOMAIN,ads-sg.tiktok.com,REJECT
+- DOMAIN,analytics-sg.tiktok.com,REJECT
+- DOMAIN,business-api.tiktok.com,REJECT
+- DOMAIN,ads.tiktok.com,REJECT
+- DOMAIN,log.byteoversea.com,REJECT
+- DOMAIN,ads.yahoo.com,REJECT
+- DOMAIN,analytics.yahoo.com,REJECT
+- DOMAIN,geo.yahoo.com,REJECT
+- DOMAIN,udcm.yahoo.com,REJECT
+- DOMAIN,analytics.query.yahoo.com,REJECT
+- DOMAIN,partnerads.ysm.yahoo.com,REJECT
+- DOMAIN,log.fc.yahoo.com,REJECT
+- DOMAIN,gemini.yahoo.com,REJECT
+- DOMAIN,adtech.yahooinc.com,REJECT
+- DOMAIN,extmaps-api.yandex.net,REJECT
+- DOMAIN,appmetrica.yandex.ru,REJECT
+- DOMAIN,adfstat.yandex.ru,REJECT
+- DOMAIN,metrika.yandex.ru,REJECT
+- DOMAIN,offerwall.yandex.net,REJECT
+- DOMAIN,adfox.yandex.ru,REJECT
+- DOMAIN,auction.unityads.unity3d.com,REJECT
+- DOMAIN,webview.unityads.unity3d.com,REJECT
+- DOMAIN,config.unityads.unity3d.com,REJECT
+- DOMAIN,adserver.unityads.unity3d.com,REJECT
+- DOMAIN,iot-eu-logser.realme.com,REJECT
+- DOMAIN,iot-logser.realme.com,REJECT
+- DOMAIN,bdapi-ads.realmemobile.com,REJECT
+- DOMAIN,bdapi-in-ads.realmemobile.com,REJECT
+- DOMAIN,api.ad.xiaomi.com,REJECT
+- DOMAIN,data.mistat.xiaomi.com,REJECT
+- DOMAIN,data.mistat.india.xiaomi.com,REJECT
+- DOMAIN,data.mistat.rus.xiaomi.com,REJECT
+- DOMAIN,sdkconfig.ad.xiaomi.com,REJECT
+- DOMAIN,sdkconfig.ad.intl.xiaomi.com,REJECT
+- DOMAIN,tracking.rus.miui.com,REJECT
+- DOMAIN,adsfs.oppomobile.com,REJECT
+- DOMAIN,adx.ads.oppomobile.com,REJECT
+- DOMAIN,ck.ads.oppomobile.com,REJECT
+- DOMAIN,data.ads.oppomobile.com,REJECT
+- DOMAIN,metrics.data.hicloud.com,REJECT
+- DOMAIN,metrics2.data.hicloud.com,REJECT
+- DOMAIN,grs.hicloud.com,REJECT
+- DOMAIN,logservice.hicloud.com,REJECT
+- DOMAIN,logservice1.hicloud.com,REJECT
+- DOMAIN,logbak.hicloud.com,REJECT
+- DOMAIN,click.oneplus.cn,REJECT
+- DOMAIN,open.oneplus.net,REJECT
+- DOMAIN,samsungads.com,REJECT
+- DOMAIN,smetrics.samsung.com,REJECT
+- DOMAIN,nmetrics.samsung.com,REJECT
+- DOMAIN,samsung-com.112.2o7.net,REJECT
+- DOMAIN,analytics-api.samsunghealthcn.com,REJECT
+- DOMAIN,iadsdk.apple.com,REJECT
+- DOMAIN,metrics.icloud.com,REJECT
+- DOMAIN,metrics.mzstatic.com,REJECT
+- DOMAIN,api-adservices.apple.com,REJECT
+- DOMAIN,books-analytics-events.apple.com,REJECT
+- DOMAIN,weather-analytics-events.apple.com,REJECT
+- DOMAIN,notes-analytics-events.apple.com,REJECT
 - DOMAIN,video-akpcw.spotifycdn.com,REJECT
 - DOMAIN,805ba.v.fwmrm.net,REJECT
 - DOMAIN,tvm-mtv-freewheel.akamaized.net,REJECT
@@ -1493,7 +1105,79 @@ rules:
 - DOMAIN-SUFFIX,startapp.com,REJECT
 - DOMAIN-SUFFIX,fyber.com,REJECT
 - DOMAIN-SUFFIX,inner-active.mobi,REJECT
-- RULE-SET,app-ad-safe,REJECT
+- DOMAIN,adv.sec.intl.miui.com,REJECT
+- DOMAIN,adv.l7.34.sec.miui.com,REJECT
+- DOMAIN,adv.sec.miui.com,REJECT
+- DOMAIN,ad.miui.com,REJECT
+- DOMAIN,api.ads.xiaomi.com,REJECT
+- DOMAIN,ad.eu.xiaomi.com,REJECT
+- DOMAIN,ad.quickapp.hybrid.xiaomi.com,REJECT
+- DOMAIN,ad.india.xiaomi.com,REJECT
+- DOMAIN,ad.intl.xiaomi.com,REJECT
+- DOMAIN,xadx.file.market.xiaomi.com,REJECT
+- DOMAIN,wtradv.market.xiaomi.com,REJECT
+- DOMAIN,ad.cdn.pandora.xiaomi.com,REJECT
+- DOMAIN,ads.heytapmobi.com,REJECT
+- DOMAIN,ads.heytapmobile.com,REJECT
+- DOMAIN,ads-bdapi-my.heytapmobile.com,REJECT
+- DOMAIN,ads-bdapi-ph.heytapmobile.com,REJECT
+- DOMAIN,ads-bdapi-th.heytapmobile.com,REJECT
+- DOMAIN,ads-bdapi-vn.heytapmobile.com,REJECT
+- DOMAIN,ad-growth-in.heytapmobile.com,REJECT
+- DOMAIN,ad-growth-ru.heytapmobile.com,REJECT
+- DOMAIN,ad-growth-sg.heytapmobile.com,REJECT
+- DOMAIN,adx-ads-fr.heytapmobile.com,REJECT
+- DOMAIN,adx-ads-ru.heytapmobile.com,REJECT
+- DOMAIN,bdapi-ads-sg.heytapmobile.com,REJECT
+- DOMAIN,cldata-ads-fr.heytapmobile.com,REJECT
+- DOMAIN,cldata-ads-ru.heytapmobile.com,REJECT
+- DOMAIN,sms-ads-in.heytapmobile.com,REJECT
+- DOMAIN,sms-ads-ru.heytapmobile.com,REJECT
+- DOMAIN,stgdata-ads-fr.heytapmobile.com,REJECT
+- DOMAIN,ads.oppomobile.com,REJECT
+- DOMAIN,ads.bing.com,REJECT
+- DOMAIN,adserver.bing.com,REJECT
+- DOMAIN,outlookads.live.com,REJECT
+- DOMAIN,ads.microsoft.com,REJECT
+- DOMAIN,adsdk.microsoft.com,REJECT
+- DOMAIN,advertising.microsoft.com,REJECT
+- DOMAIN,bingads.microsoft.com,REJECT
+- DOMAIN,msadsscale.microsoft.com,REJECT
+- DOMAIN,ads.eu.msn.com,REJECT
+- DOMAIN,rmads.eu.msn.com,REJECT
+- DOMAIN,ads.jp.msn.com,REJECT
+- DOMAIN,advertising.jp.msn.com,REJECT
+- DOMAIN,ad.msn.com,REJECT
+- DOMAIN,adevents.msn.com,REJECT
+- DOMAIN,ads.msn.com,REJECT
+- DOMAIN,ads1.msn.com,REJECT
+- DOMAIN,mobileads.msn.com,REJECT
+- DOMAIN,rads.msn.com,REJECT
+- DOMAIN,rmads.msn.com,REJECT
+- DOMAIN,srtb.msn.com,REJECT
+- DOMAIN,prod.editor.ads.trafficmanager.net,REJECT
+- DOMAIN,ads-msn-com-profile.trafficmanager.net,REJECT
+- DOMAIN,adsdk.trafficmanager.net,REJECT
+- DOMAIN,dsp-ad-cache-tm.trafficmanager.net,REJECT
+- DOMAIN,ssp-prod-eastus-nonmutt.trafficmanager.net,REJECT
+- DOMAIN,msads.net,REJECT
+- DOMAIN,advertising.apple.com,REJECT
+- DOMAIN,advp.apple.com,REJECT
+- DOMAIN,iad.apple.com,REJECT
+- DOMAIN,iadcontent.apple.com,REJECT
+- DOMAIN,iadmoo.apple.com,REJECT
+- DOMAIN,iadworkbench.apple.com,REJECT
+- DOMAIN,searchads.apple.com,REJECT
+- DOMAIN-SUFFIX,smaato.com,REJECT
+- DOMAIN-SUFFIX,smaato.net,REJECT
+- DOMAIN-SUFFIX,ogury.com,REJECT
+- DOMAIN-SUFFIX,ogury.co,REJECT
+- DOMAIN-SUFFIX,pubnative.net,REJECT
+- DOMAIN-SUFFIX,hyprmx.com,REJECT
+- DOMAIN-SUFFIX,mobilefuse.com,REJECT
+- DOMAIN-SUFFIX,amazon-adsystem.com,REJECT
+- DOMAIN-SUFFIX,mopub.com,REJECT
+- DOMAIN-SUFFIX,adjoe.io,REJECT
 - RULE-SET,ads_indonesia,REJECT
 - RULE-SET,ads_domain,REJECT
 - RULE-SET,anti-ad,REJECT
@@ -1507,25 +1191,5 @@ rules:
 - DOMAIN-SUFFIX,api.twitter.com,REDDIT
 - DOMAIN-SUFFIX,api.x.com,REDDIT
 - DOMAIN-SUFFIX,t.co,REDDIT
-- DOMAIN-SUFFIX,x.com,MANUAL
-- DOMAIN-SUFFIX,api.x.com,MANUAL
-- DOMAIN-SUFFIX,twitter.com,MANUAL
-- DOMAIN-SUFFIX,api.twitter.com,MANUAL
-- DOMAIN-SUFFIX,t.co,MANUAL
-- DOMAIN-SUFFIX,twimg.com,MANUAL
-- DOMAIN-SUFFIX,abs.twimg.com,MANUAL
-- DOMAIN-SUFFIX,pbs.twimg.com,MANUAL
-- DOMAIN-SUFFIX,video.twimg.com,MANUAL
-- DOMAIN-SUFFIX,cloudflare.com,MANUAL
-- DOMAIN-SUFFIX,hcaptcha.com,MANUAL
-- DOMAIN-SUFFIX,recaptcha.net,MANUAL
-- DOMAIN-SUFFIX,gstatic.com,MANUAL
-- DOMAIN-SUFFIX,facebook.com,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,fbcdn.net,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,instagram.com,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,cdninstagram.com,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,tiktok.com,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,tiktokcdn.com,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,t.me,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,telegram.org,SOCIAL-MEDIA
 - MATCH,GLOBAL
+find-process-mode: 'off'

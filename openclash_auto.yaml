@@ -569,7 +569,7 @@ proxy-groups:
   - MANUAL-TROJAN WS Melbikomas UAB
   - MANUAL-VMess-WS-TLS-443-akuku8
   url: https://www.gstatic.com/generate_204
-  interval: 180
+  interval: 300
   tolerance: 100
   lazy: true
   timeout: 5000
@@ -585,7 +585,7 @@ proxy-groups:
   url: https://www.gstatic.com/generate_204
   interval: 60
   tolerance: 150
-  lazy: true
+  lazy: false
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
@@ -597,7 +597,7 @@ proxy-groups:
   - AKUN-002-CLOUDFLARE-VLESS-WS-102MS
   - AKUN-006-CLOUDFLARE-VLESS-WS-104MS
   url: https://cp.cloudflare.com
-  interval: 90
+  interval: 120
   tolerance: 150
   lazy: true
   timeout: 5000
@@ -612,7 +612,7 @@ proxy-groups:
   - AKUN-006-CLOUDFLARE-VLESS-WS-104MS
   - AKUN-003-BIGCOMMERCE-VLESS-WS-104MS
   url: https://cp.cloudflare.com
-  interval: 60
+  interval: 90
   tolerance: 150
   lazy: true
   timeout: 5000
@@ -635,9 +635,9 @@ proxy-groups:
   proxies:
   - AKUN-007-CHATGPT-VLESS-WS-104MS
   url: https://www.gstatic.com/generate_204
-  interval: 60
+  interval: 90
   tolerance: 150
-  lazy: true
+  lazy: false
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
@@ -659,7 +659,7 @@ proxy-groups:
   - AKUN-004-UNKNOWN-VLESS-WS-106MS
   - AKUN-008-CLOUDFLARE-VLESS-WS-106MS
   url: https://www.gstatic.com/generate_204
-  interval: 120
+  interval: 180
   lazy: true
   timeout: 6000
   expected-status: 200/204/301/302
@@ -673,7 +673,7 @@ proxy-groups:
   - AKUN-002-CLOUDFLARE-VLESS-WS-102MS
   - AKUN-003-BIGCOMMERCE-VLESS-WS-104MS
   url: https://www.gstatic.com/generate_204
-  interval: 180
+  interval: 300
   lazy: true
   timeout: 6000
   expected-status: 200/204/301/302
@@ -862,6 +862,11 @@ rule-providers:
     behavior: domain
     format: mrs
     path: ./rule_providers/compiled/threat-fake-scam.mrs
+  hagezi-pro-plus-mini:
+    type: file
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/hagezi-pro-plus-mini.mrs
   threat-tif-ip:
     type: file
     behavior: ipcidr
@@ -1106,6 +1111,7 @@ rules:
 - DOMAIN,uslog.ezvizlife.com,REJECT
 - DOMAIN,rum-apis.reolink.com,REJECT
 - DOMAIN,sentry.tuyaus.com,REJECT
+- DOMAIN,promotion-en.xmeye.net,REJECT
 - DOMAIN-SUFFIX,challenges.cloudflare.com,DIRECT
 - DOMAIN-SUFFIX,hcaptcha.com,DIRECT
 - DOMAIN-SUFFIX,recaptcha.net,DIRECT
@@ -1118,6 +1124,7 @@ rules:
 - RULE-SET,adult-category,REJECT
 - RULE-SET,adult-local,REJECT
 - RULE-SET,pinjol-local,REJECT
+- RULE-SET,hagezi-pro-plus-mini,REJECT
 - RULE-SET,popup-ads,REJECT
 - RULE-SET,threat-tif-ip,REJECT,no-resolve
 - DOMAIN,video-akpcw.spotifycdn.com,REJECT

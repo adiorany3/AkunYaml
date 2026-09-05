@@ -78,7 +78,7 @@ dns:
   default-nameserver:
   - 1.1.1.1
   - 8.8.8.8
-  nameserver:
+  nameserver: &id001
   - https://family.dns.bebasid.com/dns-query
   - tls://family.dns.bebasid.com:853
   proxy-server-nameserver:
@@ -106,9 +106,7 @@ dns:
     +.gemini.google.com:
     - https://1.1.1.1/dns-query
     - https://dns.google/dns-query
-  fallback:
-  - https://family.dns.bebasid.com/dns-query
-  - tls://family.dns.bebasid.com:853
+  fallback: *id001
   fallback-lazy-query: true
   fallback-filter:
     geoip: true
@@ -943,7 +941,7 @@ proxy-groups:
   - MANUAL-TROJAN WS Melbikomas UAB
   - MANUAL-VMess-WS-TLS-443-akuku8
   url: https://www.gstatic.com/generate_204
-  interval: 300
+  interval: 180
   tolerance: 100
   lazy: true
   timeout: 5000
@@ -959,7 +957,7 @@ proxy-groups:
   url: https://www.gstatic.com/generate_204
   interval: 60
   tolerance: 150
-  lazy: false
+  lazy: true
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
@@ -971,7 +969,7 @@ proxy-groups:
   - AKUN-002-CLOUDFLARE-VLESS-WS-102MS
   - AKUN-006-CLOUDFLARE-VLESS-WS-104MS
   url: https://cp.cloudflare.com
-  interval: 120
+  interval: 90
   tolerance: 150
   lazy: true
   timeout: 5000
@@ -986,7 +984,7 @@ proxy-groups:
   - AKUN-006-CLOUDFLARE-VLESS-WS-104MS
   - AKUN-003-BIGCOMMERCE-VLESS-WS-104MS
   url: https://cp.cloudflare.com
-  interval: 90
+  interval: 60
   tolerance: 150
   lazy: true
   timeout: 5000
@@ -1009,9 +1007,9 @@ proxy-groups:
   proxies:
   - AKUN-007-CHATGPT-VLESS-WS-104MS
   url: https://www.gstatic.com/generate_204
-  interval: 90
+  interval: 60
   tolerance: 150
-  lazy: false
+  lazy: true
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
@@ -1053,7 +1051,7 @@ proxy-groups:
   - AKUN-026-CLOUDFLARE-VLESS-WS-123MS
   - AKUN-035-CLOUDFLARE-VLESS-WS-126MS
   url: https://www.gstatic.com/generate_204
-  interval: 180
+  interval: 120
   lazy: true
   timeout: 6000
   expected-status: 200/204/301/302
@@ -1067,7 +1065,7 @@ proxy-groups:
   - AKUN-002-CLOUDFLARE-VLESS-WS-102MS
   - AKUN-003-BIGCOMMERCE-VLESS-WS-104MS
   url: https://www.gstatic.com/generate_204
-  interval: 300
+  interval: 180
   lazy: true
   timeout: 6000
   expected-status: 200/204/301/302
@@ -1287,11 +1285,6 @@ rule-providers:
     - .amazon-adsystem.com
     - .mopub.com
     - .adjoe.io
-  hagezi-pro-plus-mini:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/hagezi-pro-plus-mini.mrs
 rules:
 - DOMAIN-SUFFIX,local,DIRECT
 - DOMAIN-SUFFIX,lan,DIRECT
@@ -1429,7 +1422,6 @@ rules:
 - DOMAIN,uslog.ezvizlife.com,REJECT
 - DOMAIN,rum-apis.reolink.com,REJECT
 - DOMAIN,sentry.tuyaus.com,REJECT
-- DOMAIN,promotion-en.xmeye.net,REJECT
 - DOMAIN-SUFFIX,challenges.cloudflare.com,DIRECT
 - DOMAIN-SUFFIX,hcaptcha.com,DIRECT
 - DOMAIN-SUFFIX,recaptcha.net,DIRECT
@@ -1442,7 +1434,6 @@ rules:
 - RULE-SET,adult-category,REJECT
 - RULE-SET,adult-local,REJECT
 - RULE-SET,pinjol-local,REJECT
-- RULE-SET,hagezi-pro-plus-mini,REJECT
 - RULE-SET,popup-ads,REJECT
 - RULE-SET,threat-tif-ip,REJECT,no-resolve
 - DOMAIN,video-akpcw.spotifycdn.com,REJECT

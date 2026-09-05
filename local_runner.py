@@ -468,6 +468,8 @@ CHINA_CCTV_AD_DOMAINS = (
     "uslog.ezvizlife.com",
     "rum-apis.reolink.com",
     "sentry.tuyaus.com",
+    # iCSee/XMEye promotion endpoint.
+    "promotion-en.xmeye.net",
 )
 CHINA_CCTV_AD_RULES = tuple(f"DOMAIN,{domain},REJECT" for domain in CHINA_CCTV_AD_DOMAINS)
 
