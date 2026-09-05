@@ -658,7 +658,12 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     proxy_outbounds: list[dict[str, Any]] = []
     tags: list[str] = []
     used_tags = {"proxy", "automatic", "direct", "block"}
+    allowed_protocols = {"vmess", "trojan"}
     for index, node in enumerate(nodes, start=1):
+        clash = getattr(node, "clash", {}) or {}
+        protocol = str(clash.get("type") or getattr(node, "type", "")).strip().lower()
+        if protocol not in allowed_protocols:
+            continue
         base_tag = safe_proxy_name(_node_name(node), f"account-{index}").strip()
         tag = base_tag
         suffix = 2
