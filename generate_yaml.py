@@ -709,7 +709,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
 
     bank_exact = list(banking_exact_domains())
     bank_suffix = list(banking_suffix_domains())
-    bank_dns_rule: dict[str, Any] = {"action": "route", "server": "dns-remote"}
+    bank_dns_rule: dict[str, Any] = {"action": "route", "server": "local"}
     bank_route_rule: dict[str, Any] = {"action": "route", "outbound": "direct"}
     if bank_exact:
         bank_dns_rule["domain"] = bank_exact
@@ -722,7 +722,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     dns_rules.append({
         "domain_suffix": social_domains,
         "action": "route",
-        "server": "dns-remote",
+        "server": "local",
     })
     route_rules: list[dict[str, Any]] = [
         {"protocol": "dns", "action": "hijack-dns"},
@@ -750,19 +750,9 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         "$schema": "https://sing-box.sagernet.org/schema.json",
         "log": {"level": "info", "timestamp": True},
         "dns": {
-            "servers": [
-                {"type": "local", "tag": "local"},
-                {
-                    "type": "tls",
-                    "tag": "dns-remote",
-                    "server": "1.1.1.1",
-                    "server_port": 853,
-                    "tls": {"server_name": "cloudflare-dns.com"},
-                    "detour": "direct",
-                },
-            ],
+            "servers": [{"type": "local", "tag": "local"}],
             "rules": dns_rules,
-            "final": "dns-remote",
+            "final": "local",
             "strategy": "prefer_ipv4",
         },
         "inbounds": [{
@@ -784,7 +774,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
             "rules": route_rules,
             "final": "proxy",
             "auto_detect_interface": True,
-            "default_domain_resolver": "dns-remote",
+            "default_domain_resolver": "local",
         },
     }
     return json.dumps(config, ensure_ascii=False, indent=2) + "\n"

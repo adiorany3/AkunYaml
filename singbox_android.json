@@ -9,22 +9,12 @@
       {
         "type": "local",
         "tag": "local"
-      },
-      {
-        "type": "tls",
-        "tag": "dns-remote",
-        "server": "1.1.1.1",
-        "server_port": 853,
-        "tls": {
-          "server_name": "cloudflare-dns.com"
-        },
-        "detour": "direct"
       }
     ],
     "rules": [
       {
         "action": "route",
-        "server": "dns-remote",
+        "server": "local",
         "domain_suffix": [
           "seabank.co.id"
         ]
@@ -50,10 +40,10 @@
           "licdn.net"
         ],
         "action": "route",
-        "server": "dns-remote"
+        "server": "local"
       }
     ],
-    "final": "dns-remote",
+    "final": "local",
     "strategy": "prefer_ipv4"
   },
   "inbounds": [
@@ -74,16 +64,16 @@
       "tag": "proxy",
       "outbounds": [
         "automatic",
-        "AKUN-001-CLOUDFLARE-VLESS-WS-113MS",
-        "AKUN-002-CLOUDFLARE-VLESS-WS-107MS",
-        "AKUN-003-CLOUDFLARE-VLESS-WS-114MS",
-        "AKUN-004-CLOUDFLARE-VLESS-WS-105MS",
-        "AKUN-005-CLOUDFLARE-VLESS-WS-108MS",
-        "AKUN-006-CLOUDFLARE-VLESS-WS-116MS",
-        "AKUN-007-CLOUDFLARE-VLESS-WS-134MS",
-        "AKUN-008-CLOUDFLARE-VLESS-WS-128MS",
-        "AKUN-009-CLOUDFLARE-VLESS-WS-114MS",
-        "AKUN-010-CLOUDFLARE-VLESS-WS-128MS"
+        "MANUAL-AKUN-001-CLOUDFLARE-VLESS-WS-113MS",
+        "MANUAL-AKUN-002-CLOUDFLARE-VLESS-WS-107MS",
+        "MANUAL-AKUN-003-CLOUDFLARE-VLESS-WS-114MS",
+        "MANUAL-AKUN-004-CLOUDFLARE-VLESS-WS-105MS",
+        "MANUAL-AKUN-005-CLOUDFLARE-VLESS-WS-108MS",
+        "MANUAL-AKUN-006-CLOUDFLARE-VLESS-WS-116MS",
+        "MANUAL-AKUN-007-CLOUDFLARE-VLESS-WS-134MS",
+        "MANUAL-AKUN-008-CLOUDFLARE-VLESS-WS-128MS",
+        "MANUAL-AKUN-009-CLOUDFLARE-VLESS-WS-114MS",
+        "MANUAL-AKUN-010-CLOUDFLARE-VLESS-WS-128MS"
       ],
       "default": "automatic"
     },
@@ -91,16 +81,16 @@
       "type": "urltest",
       "tag": "automatic",
       "outbounds": [
-        "AKUN-001-CLOUDFLARE-VLESS-WS-113MS",
-        "AKUN-002-CLOUDFLARE-VLESS-WS-107MS",
-        "AKUN-003-CLOUDFLARE-VLESS-WS-114MS",
-        "AKUN-004-CLOUDFLARE-VLESS-WS-105MS",
-        "AKUN-005-CLOUDFLARE-VLESS-WS-108MS",
-        "AKUN-006-CLOUDFLARE-VLESS-WS-116MS",
-        "AKUN-007-CLOUDFLARE-VLESS-WS-134MS",
-        "AKUN-008-CLOUDFLARE-VLESS-WS-128MS",
-        "AKUN-009-CLOUDFLARE-VLESS-WS-114MS",
-        "AKUN-010-CLOUDFLARE-VLESS-WS-128MS"
+        "MANUAL-AKUN-001-CLOUDFLARE-VLESS-WS-113MS",
+        "MANUAL-AKUN-002-CLOUDFLARE-VLESS-WS-107MS",
+        "MANUAL-AKUN-003-CLOUDFLARE-VLESS-WS-114MS",
+        "MANUAL-AKUN-004-CLOUDFLARE-VLESS-WS-105MS",
+        "MANUAL-AKUN-005-CLOUDFLARE-VLESS-WS-108MS",
+        "MANUAL-AKUN-006-CLOUDFLARE-VLESS-WS-116MS",
+        "MANUAL-AKUN-007-CLOUDFLARE-VLESS-WS-134MS",
+        "MANUAL-AKUN-008-CLOUDFLARE-VLESS-WS-128MS",
+        "MANUAL-AKUN-009-CLOUDFLARE-VLESS-WS-114MS",
+        "MANUAL-AKUN-010-CLOUDFLARE-VLESS-WS-128MS"
       ],
       "url": "https://www.gstatic.com/generate_204",
       "interval": "3m",
@@ -110,16 +100,17 @@
       "type": "selector",
       "tag": "SOCIAL",
       "outbounds": [
-        "AKUN-011-CLOUDFLARE-VMESS-WS-234MS",
-        "AKUN-012-CLOUDFLARE-VLESS-WS-165MS",
-        "AKUN-013-CLOUDFLARE-VMESS-WS-165MS",
-        "AKUN-001-CLOUDFLARE-VLESS-WS-113MS"
+        "MANUAL-VMess-WS-TLS-443-singa08",
+        "MANUAL-VLESS-WS-TLS-443-apt50atpprem",
+        "MANUAL-TROJAN-WS-Melbikomas-UAB",
+        "MANUAL-VMess-WS-TLS-443-akuku8",
+        "MANUAL-AKUN-001-CLOUDFLARE-VLESS-WS-113MS"
       ],
-      "default": "AKUN-011-CLOUDFLARE-VMESS-WS-234MS"
+      "default": "MANUAL-VMess-WS-TLS-443-singa08"
     },
     {
       "type": "vless",
-      "tag": "AKUN-001-CLOUDFLARE-VLESS-WS-113MS",
+      "tag": "MANUAL-AKUN-001-CLOUDFLARE-VLESS-WS-113MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "77777777-8a3e-6666-b6d1-a9c5f0e8b3a2",
@@ -145,7 +136,7 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-002-CLOUDFLARE-VLESS-WS-107MS",
+      "tag": "MANUAL-AKUN-002-CLOUDFLARE-VLESS-WS-107MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "9b18ccef-b9e0-41d1-8990-9d970569e142",
@@ -171,7 +162,7 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-003-CLOUDFLARE-VLESS-WS-114MS",
+      "tag": "MANUAL-AKUN-003-CLOUDFLARE-VLESS-WS-114MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "77777777-8a3e-6666-b6d1-a9c5f0e8b3a2",
@@ -197,7 +188,7 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-004-CLOUDFLARE-VLESS-WS-105MS",
+      "tag": "MANUAL-AKUN-004-CLOUDFLARE-VLESS-WS-105MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "0f0b7f69-78e1-4e9e-8b35-0986444613e4",
@@ -215,7 +206,7 @@
       },
       "transport": {
         "type": "ws",
-        "path": "/%2F%3Fed%3D2048",
+        "path": "%2F%3Fed%3D2048",
         "headers": {
           "Host": "xwrivr.pages.dev"
         }
@@ -223,7 +214,7 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-005-CLOUDFLARE-VLESS-WS-108MS",
+      "tag": "MANUAL-AKUN-005-CLOUDFLARE-VLESS-WS-108MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "5dc15e15-f285-4a9d-959b-0e4fbdd77b63",
@@ -249,7 +240,7 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-006-CLOUDFLARE-VLESS-WS-116MS",
+      "tag": "MANUAL-AKUN-006-CLOUDFLARE-VLESS-WS-116MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "0f0b7f69-78e1-4e9e-8b35-0986444613e4",
@@ -275,7 +266,7 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-007-CLOUDFLARE-VLESS-WS-134MS",
+      "tag": "MANUAL-AKUN-007-CLOUDFLARE-VLESS-WS-134MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "0f0b7f69-78e1-4e9e-8b35-0986444613e4",
@@ -301,7 +292,7 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-008-CLOUDFLARE-VLESS-WS-128MS",
+      "tag": "MANUAL-AKUN-008-CLOUDFLARE-VLESS-WS-128MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "0f0b7f69-78e1-4e9e-8b35-0986444613e4",
@@ -327,7 +318,7 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-009-CLOUDFLARE-VLESS-WS-114MS",
+      "tag": "MANUAL-AKUN-009-CLOUDFLARE-VLESS-WS-114MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "0f0b7f69-78e1-4e9e-8b35-0986444613e4",
@@ -353,7 +344,7 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-010-CLOUDFLARE-VLESS-WS-128MS",
+      "tag": "MANUAL-AKUN-010-CLOUDFLARE-VLESS-WS-128MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "0f0b7f69-78e1-4e9e-8b35-0986444613e4",
@@ -379,7 +370,7 @@
     },
     {
       "type": "vmess",
-      "tag": "AKUN-011-CLOUDFLARE-VMESS-WS-234MS",
+      "tag": "MANUAL-VMess-WS-TLS-443-singa08",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "66827e09-9743-47d4-952c-d9c90f31fe48",
@@ -407,7 +398,7 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-012-CLOUDFLARE-VLESS-WS-165MS",
+      "tag": "MANUAL-VLESS-WS-TLS-443-apt50atpprem",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "c13ff27e-268a-4c69-a464-d8a625fd01b3",
@@ -432,8 +423,34 @@
       }
     },
     {
+      "type": "trojan",
+      "tag": "MANUAL-TROJAN-WS-Melbikomas-UAB",
+      "server": "104.17.3.81",
+      "server_port": 443,
+      "password": "3b01a777-55e7-49f6-8637-d94ee69607c6",
+      "tls": {
+        "enabled": true,
+        "server_name": "jibtnl.eu.cc",
+        "insecure": true,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "alpn": [
+          "http/1.1"
+        ]
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/91.192.81.154=2053",
+        "headers": {
+          "Host": "jibtnl.eu.cc"
+        }
+      }
+    },
+    {
       "type": "vmess",
-      "tag": "AKUN-013-CLOUDFLARE-VMESS-WS-165MS",
+      "tag": "MANUAL-VMess-WS-TLS-443-akuku8",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "4ee97185-f0ea-4842-b116-aaa1832665cc",
@@ -519,6 +536,6 @@
     ],
     "final": "proxy",
     "auto_detect_interface": true,
-    "default_domain_resolver": "dns-remote"
+    "default_domain_resolver": "local"
   }
 }
