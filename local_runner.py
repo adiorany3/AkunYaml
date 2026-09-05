@@ -67,7 +67,7 @@ REFERENCE_PROFILE_URL = (
 )
 REFERENCE_PROFILE_CACHE = ".reference/openclash_auto.reference.yaml"
 
-CORE_FILES = ("generate_yaml.py", "sumberyaml_core.py", "security_policy.py", "android_marketplace_policy.py", "android_banking_policy.py", "feed_guard.py", "manual_routing_provider.py", "mrs_compile.py", "semantic_rule_audit.py", "requirements.txt", "openclash_target.py")
+CORE_FILES = ("generate_yaml.py", "sumberyaml_core.py", "security_policy.py", "android_marketplace_policy.py", "android_banking_policy.py", "feed_guard.py", "ai_adblock_classifier.py", "manual_routing_provider.py", "mrs_compile.py", "semantic_rule_audit.py", "requirements.txt", "openclash_target.py")
 OUTPUT_YAMLS = (
     "openclash_auto.yaml",
     "openclash_android.yaml",
@@ -136,6 +136,13 @@ DEFAULT_ENV = {
     "FEED_REFRESH_TTL_SEC": "43200",
     "FEED_MAX_DROP_RATIO": "0.65",
     "FEED_MAX_GROWTH_RATIO": "4.0",
+    "AI_ADBLOCK_ENABLED": "false",
+    "AI_ADBLOCK_BASE_URL": "https://ai.tamandata.com/v1",
+    "AI_ADBLOCK_MODEL": "tamandata",
+    "AI_ADBLOCK_API_KEY_FILE": ".secrets/ai_adblock.key",
+    "AI_ADBLOCK_BATCH_SIZE": "25",
+    "AI_ADBLOCK_MIN_CONFIDENCE": "0.98",
+    "AI_ADBLOCK_TIMEOUT_SEC": "30",
     "MANUAL_ROUTING_COMPRESS": "true",
     "MANUAL_ROUTING_COMPRESS_THRESHOLD": "40",
     "MRS_COMPILE": "auto",
@@ -1168,6 +1175,16 @@ def load_allowlist(workdir: Path) -> list[str]:
     return sorted(set(domains))
 
 
+def load_ai_adblock_domains(workdir: Path, allowlist: set[str]) -> list[str]:
+    if os.environ.get("AI_ADBLOCK_ENABLED", "false").strip().lower() in {"0", "false", "no", "off"}:
+        return []
+    from ai_adblock_classifier import is_allowlisted, load_domains
+
+    return [
+        domain for domain in load_domains(workdir / ".runtime_cache" / "ai_adblock_blocklist.txt")
+        if not is_allowlisted(domain, allowlist)
+    ]
+
 def _safe_provider_path(name: str, provider: dict) -> str:
     fmt = str(provider.get("format") or "yaml").lower()
     ext = ".mrs" if fmt == "mrs" else ".txt" if fmt == "text" else ".yaml"
@@ -2032,6 +2049,11 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     app_managed_rules = ({f"DOMAIN,{domain},REJECT" for domain in APP_SAFE_EXACT_DOMAINS} | {f"DOMAIN-SUFFIX,{domain},REJECT" for domain in APP_SAFE_SUFFIXES})
     v380_managed_rules = set(V380_AD_RULES + V380_SERVICE_RULES)
     china_cctv_managed_rules = set(CHINA_CCTV_AD_RULES)
+    from ai_adblock_classifier import load_domains as load_ai_candidate_domains
+    ai_adblock_managed_rules = {
+        f"DOMAIN,{domain},REJECT"
+        for domain in load_ai_candidate_domains(workdir / "adblock_ai_candidates.txt")
+    }
     cleaned = [
         rule for rule in current_rules
         if not rule.startswith(managed_prefixes)
@@ -2040,6 +2062,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         and rule not in app_managed_rules
         and rule not in v380_managed_rules
         and rule not in china_cctv_managed_rules
+        and rule not in ai_adblock_managed_rules
     ]
 
     # Android uses rule mode so blocklists are evaluated.  Unmatched traffic still
@@ -2144,7 +2167,9 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         remaining_rules.append(rule)
     cleaned = remaining_rules
 
-    allow_rules = [f"DOMAIN-SUFFIX,{domain},DIRECT" for domain in load_allowlist(workdir)]
+    allowlist = set(load_allowlist(workdir))
+    allow_rules = [f"DOMAIN-SUFFIX,{domain},DIRECT" for domain in sorted(allowlist)]
+    ai_adblock_rules = [f"DOMAIN,{domain},REJECT" for domain in load_ai_adblock_domains(workdir, allowlist)]
     banking_rules: list[str] = []
     if is_android and android_banking_enabled():
         # Banking Safe Mode is deliberately conservative: DIRECT routing, real
@@ -2193,6 +2218,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         + list(V380_SERVICE_RULES)
         + list(CHINA_CCTV_AD_RULES)
         + list(allow_rules)
+        + ai_adblock_rules
         + youtube_compat_rules
         + youtube_ad_rules
         + youtube_guard_rules
@@ -2762,6 +2788,8 @@ def main() -> int:
         "ADBLOCK_PROFILE", "ADBLOCK_PROVIDER_INTERVAL", "INDONESIA_ADBLOCK",
         "THREAT_IP_BLOCKING", "SECURITY_FEED_GUARD", "REFRESH_SECURITY_FEEDS",
         "FEED_REFRESH_TTL_SEC", "FEED_MAX_DROP_RATIO", "FEED_MAX_GROWTH_RATIO", "ADBLOCK_DEDUP_MODE",
+        "AI_ADBLOCK_ENABLED", "AI_ADBLOCK_BASE_URL", "AI_ADBLOCK_MODEL", "AI_ADBLOCK_API_KEY_FILE",
+        "AI_ADBLOCK_BATCH_SIZE", "AI_ADBLOCK_MIN_CONFIDENCE", "AI_ADBLOCK_TIMEOUT_SEC",
         "MANUAL_ROUTING_COMPRESS", "MANUAL_ROUTING_COMPRESS_THRESHOLD", "MRS_COMPILE", "SEMANTIC_RULE_OPTIMIZE",
         "OPENWRT_ADBLOCK_LEVEL", "OPENWRT_LITE_ADBLOCK_LEVEL",
         "THREAT_SAFE_FAMILY_DNS",
@@ -2800,6 +2828,26 @@ def main() -> int:
             # Feed preflight is intentionally non-fatal. Remote Mihomo providers
             # keep their normal cache/update behavior if the workstation is offline.
             log(f"Security feed guard dilewati: {exc}")
+
+    if env.get("AI_ADBLOCK_ENABLED", "false").strip().lower() not in {"0", "false", "no", "off"}:
+        from ai_adblock_classifier import classify_candidates
+
+        key_file = Path(env.get("AI_ADBLOCK_API_KEY_FILE", ".secrets/ai_adblock.key")).expanduser()
+        if not key_file.is_absolute():
+            key_file = workdir / key_file
+        try:
+            classify_candidates(
+                workdir,
+                base_url=env.get("AI_ADBLOCK_BASE_URL", "https://ai.tamandata.com/v1"),
+                model=env.get("AI_ADBLOCK_MODEL", "tamandata"),
+                key_file=key_file,
+                batch_size=max(1, min(100, int(env.get("AI_ADBLOCK_BATCH_SIZE", "25")))),
+                min_confidence=max(0.95, min(1.0, float(env.get("AI_ADBLOCK_MIN_CONFIDENCE", "0.98")))),
+                timeout=max(5.0, min(120.0, float(env.get("AI_ADBLOCK_TIMEOUT_SEC", "30")))),
+                log=log,
+            )
+        except Exception as exc:
+            log(f"AI adblock fail-open: {type(exc).__name__}: {exc}")
 
     log("Menjalankan generate_yaml.py")
     result = subprocess.run([sys.executable, "generate_yaml.py"], cwd=workdir, env=env, check=False)
