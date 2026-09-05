@@ -709,7 +709,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
 
     bank_exact = list(banking_exact_domains())
     bank_suffix = list(banking_suffix_domains())
-    bank_dns_rule: dict[str, Any] = {"action": "route", "server": "local"}
+    bank_dns_rule: dict[str, Any] = {"action": "route", "server": "dns-remote"}
     bank_route_rule: dict[str, Any] = {"action": "route", "outbound": "direct"}
     if bank_exact:
         bank_dns_rule["domain"] = bank_exact
@@ -722,7 +722,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     dns_rules.append({
         "domain_suffix": social_domains,
         "action": "route",
-        "server": "local",
+        "server": "dns-remote",
     })
     route_rules: list[dict[str, Any]] = [
         {"protocol": "dns", "action": "hijack-dns"},
@@ -750,9 +750,19 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         "$schema": "https://sing-box.sagernet.org/schema.json",
         "log": {"level": "info", "timestamp": True},
         "dns": {
-            "servers": [{"type": "local", "tag": "local"}],
+            "servers": [
+                {"type": "local", "tag": "local"},
+                {
+                    "type": "tls",
+                    "tag": "dns-remote",
+                    "server": "1.1.1.1",
+                    "server_port": 853,
+                    "tls": {"server_name": "cloudflare-dns.com"},
+                    "detour": "direct",
+                },
+            ],
             "rules": dns_rules,
-            "final": "local",
+            "final": "dns-remote",
             "strategy": "prefer_ipv4",
         },
         "inbounds": [{
@@ -760,7 +770,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
             "tag": "tun-in",
             "address": ["172.19.0.1/30", "fdfe:dcba:9876::1/126"],
             "auto_route": True,
-            "strict_route": True,
+            "strict_route": False,
         }],
         "outbounds": [
             {"type": "selector", "tag": "proxy", "outbounds": ["automatic", *primary_tags], "default": "automatic"},
@@ -774,7 +784,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
             "rules": route_rules,
             "final": "proxy",
             "auto_detect_interface": True,
-            "default_domain_resolver": "local",
+            "default_domain_resolver": "dns-remote",
         },
     }
     return json.dumps(config, ensure_ascii=False, indent=2) + "\n"
