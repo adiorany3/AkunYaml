@@ -706,6 +706,14 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         "licdn.com",
         "licdn.net",
     ]
+    ad_domains: list[str] = []
+    for raw_line in _read_text_file("rule_providers/universal-adblock-safe.yaml").splitlines():
+        line = raw_line.strip()
+        if not line.startswith("- DOMAIN-SUFFIX,"):
+            continue
+        domain = line.removeprefix("- DOMAIN-SUFFIX,").split(",", 1)[0].strip().lower()
+        if domain and domain not in ad_domains:
+            ad_domains.append(domain)
 
     bank_exact = list(banking_exact_domains())
     bank_suffix = list(banking_suffix_domains())
@@ -725,17 +733,22 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         "server": "local",
     })
     route_rules: list[dict[str, Any]] = [
+        {"action": "sniff"},
         {"protocol": "dns", "action": "hijack-dns"},
         {"ip_is_private": True, "action": "route", "outbound": "direct"},
+        # Cloudflare WebSocket nodes carry TCP reliably, not QUIC. Rejecting
+        # UDP/443 makes Android apps immediately retry HTTPS over TCP.
+        {"network": "udp", "port": 443, "action": "reject"},
+        {
+            "domain_suffix": social_domains,
+            "action": "route",
+            "outbound": "SOCIAL",
+        },
     ]
     if bank_exact or bank_suffix:
-        route_rules.insert(0, bank_route_rule)
-    route_rules.insert(0, {
-        "domain_suffix": social_domains,
-        "action": "route",
-        "outbound": "SOCIAL",
-    })
-    route_rules.append({"protocol": ["http", "tls"], "action": "sniff"})
+        route_rules.insert(3, bank_route_rule)
+    if ad_domains:
+        route_rules.append({"domain_suffix": ad_domains, "action": "reject"})
     social_candidates = [*manual_tags, *primary_tags[:1]]
     if not social_candidates:
         social_candidates = ["proxy"]
