@@ -3044,18 +3044,17 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         "RULE-SET,privacy_classical,REJECT",
         "RULE-SET,hijacking_classical,REJECT",
 
-        # Reddit dan X/Twitter harus pakai node manual agar tidak terjebak pada
-        # pool otomatis yang sering gagal di akun gratisan atau pada web tertentu.
-        "DOMAIN-SUFFIX,reddit.com,MANUAL",
-        "DOMAIN-SUFFIX,redditmedia.com,MANUAL",
-        "DOMAIN-SUFFIX,redd.it,MANUAL",
-        "DOMAIN,old.reddit.com,MANUAL",
-        "DOMAIN-KEYWORD,reddit,MANUAL",
-        "DOMAIN-SUFFIX,twitter.com,MANUAL",
-        "DOMAIN-SUFFIX,x.com,MANUAL",
-        "DOMAIN-SUFFIX,api.twitter.com,MANUAL",
-        "DOMAIN-SUFFIX,api.x.com,MANUAL",
-        "DOMAIN-SUFFIX,t.co,MANUAL",
+        # Reddit memakai satu akun manual khusus, bukan fallback seluruh akun.
+        "DOMAIN-SUFFIX,reddit.com,REDDIT",
+        "DOMAIN-SUFFIX,redditmedia.com,REDDIT",
+        "DOMAIN-SUFFIX,redd.it,REDDIT",
+        "DOMAIN,old.reddit.com,REDDIT",
+        "DOMAIN-KEYWORD,reddit,REDDIT",
+        "DOMAIN-SUFFIX,twitter.com,REDDIT",
+        "DOMAIN-SUFFIX,x.com,REDDIT",
+        "DOMAIN-SUFFIX,api.twitter.com,REDDIT",
+        "DOMAIN-SUFFIX,api.x.com,REDDIT",
+        "DOMAIN-SUFFIX,t.co,REDDIT",
 
         # Sosial media.
         "RULE-SET,telegram_domain,SOCIAL-MEDIA",
@@ -3578,6 +3577,16 @@ def build_openclash_android_yaml(
         "IP-CIDR,169.254.0.0/16,DIRECT,no-resolve",
         "GEOIP,LAN,DIRECT,no-resolve",
         *_ai_proxy_rules(),
+        "DOMAIN-SUFFIX,reddit.com,REDDIT",
+        "DOMAIN-SUFFIX,redditmedia.com,REDDIT",
+        "DOMAIN-SUFFIX,redd.it,REDDIT",
+        "DOMAIN,old.reddit.com,REDDIT",
+        "DOMAIN-KEYWORD,reddit,REDDIT",
+        "DOMAIN-SUFFIX,twitter.com,REDDIT",
+        "DOMAIN-SUFFIX,x.com,REDDIT",
+        "DOMAIN-SUFFIX,api.twitter.com,REDDIT",
+        "DOMAIN-SUFFIX,api.x.com,REDDIT",
+        "DOMAIN-SUFFIX,t.co,REDDIT",
     ]
     if security_profile != "off":
         provider_rules = shared_security_provider_reject_rules(

@@ -1006,11 +1006,12 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
             existing_proxy_names.add(name)
 
     groups = config.setdefault("proxy-groups", [])
-    # Remove previous manual helper groups when regenerating from an existing config.
+    # Reddit must use one fixed manual account, never the whole MANUAL pool.
+    reddit_account = "MANUAL-VMess-WS-TLS-443-singa08"
     groups[:] = [
         g
         for g in groups
-        if not (isinstance(g, dict) and g.get("name") in {"MANUAL", "MANUAL-WARMUP"})
+        if not (isinstance(g, dict) and g.get("name") in {"MANUAL", "MANUAL-WARMUP", "REDDIT"})
     ]
 
     manual_group = {
@@ -1024,6 +1025,8 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
         "expected-status": "200/204/301/302",
         "max-failed-times": 2,
     }
+    if reddit_account in manual_names:
+        groups.append({"name": "REDDIT", "type": "select", "proxies": [reddit_account]})
 
     # Manual nodes remain outside the automatic quota. Smart mode keeps strict
     # automatic nodes first in FALLBACK, then appends manual nodes as late-stage
@@ -1325,7 +1328,7 @@ def _build_lite_yaml_from_text(yaml_text: str) -> str:
     if not isinstance(config, dict):
         return yaml_text
     groups = _group_map(config)
-    keep_group_names = ["GLOBAL", "PROXY", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK", "MANUAL"]
+    keep_group_names = ["GLOBAL", "PROXY", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK", "MANUAL", "REDDIT"]
     proxies = [p for p in config.get("proxies", []) if isinstance(p, dict)]
     proxy_names = [str(p.get("name")) for p in proxies if p.get("name")]
     # Hanya group yang benar-benar dipertahankan di profile Lite boleh menjadi target.
@@ -1354,6 +1357,8 @@ def _build_lite_yaml_from_text(yaml_text: str) -> str:
             new_g.setdefault("max-failed-times", 2)
             preferred = ["FALLBACK", "AUTO-FAST", "WARM-UP", "MANUAL"]
             refs = _dedupe_values([x for x in preferred if x in refs_available] + [x for x in refs if x in refs_available and x != "DIRECT"])
+        elif name == "REDDIT":
+            refs = refs[:1]
         elif name == "PROXY":
             # Start with MANUAL first
             preferred = ["MANUAL", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]
