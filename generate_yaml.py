@@ -706,14 +706,38 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         "licdn.com",
         "licdn.net",
     ]
-    ad_domains: list[str] = []
-    for raw_line in _read_text_file("rule_providers/universal-adblock-safe.yaml").splitlines():
-        line = raw_line.strip()
-        if not line.startswith("- DOMAIN-SUFFIX,"):
-            continue
-        domain = line.removeprefix("- DOMAIN-SUFFIX,").split(",", 1)[0].strip().lower()
-        if domain and domain not in ad_domains:
-            ad_domains.append(domain)
+    blocklist_files = (
+        "rule_providers/universal-adblock-safe.yaml",
+        "rule_providers/ads_indonesia_android.yaml",
+        ".feed_cache/last_good/hagezi-pro-plus-mini.txt",
+        ".feed_cache/last_good/popup-ads.txt",
+        ".feed_cache/last_good/gambling-mini.txt",
+        ".feed_cache/last_good/threat-malware.txt",
+        ".feed_cache/last_good/threat-phishing.txt",
+        ".feed_cache/last_good/threat-fake-scam.txt",
+        ".feed_cache/last_good/threat-cryptominers.txt",
+    )
+    blocked_domains: list[str] = []
+    seen_blocked_domains: set[str] = set()
+    for blocklist_file in blocklist_files:
+        for raw_line in _read_text_file(blocklist_file).splitlines():
+            line = raw_line.strip().lower()
+            if not line or line.startswith(("#", "payload:")):
+                continue
+            if line.startswith("- domain-suffix,"):
+                domain = line.removeprefix("- domain-suffix,").split(",", 1)[0].strip()
+            else:
+                domain = line.removeprefix("- ").lstrip(".").split()[0]
+            domain = domain.rstrip(".")
+            if (
+                domain not in seen_blocked_domains
+                and "." in domain
+                and len(domain) <= 253
+                and re.fullmatch(r"[a-z0-9_-]+(?:\.[a-z0-9_-]+)+", domain)
+                and not looks_like_ip(domain)
+            ):
+                seen_blocked_domains.add(domain)
+                blocked_domains.append(domain)
 
     bank_exact = list(banking_exact_domains())
     bank_suffix = list(all_bank_suffix_domains())
@@ -747,8 +771,8 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     ]
     if bank_exact or bank_suffix:
         route_rules.insert(3, bank_route_rule)
-    if ad_domains:
-        route_rules.append({"domain_suffix": ad_domains, "action": "reject"})
+    if blocked_domains:
+        route_rules.append({"domain_suffix": blocked_domains, "action": "reject"})
     if not manual_tags:
         raise ValueError("routing bank memerlukan minimal satu node manual")
     bank_outbound = {
