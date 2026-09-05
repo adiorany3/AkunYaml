@@ -758,7 +758,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         "inbounds": [{
             "type": "tun",
             "tag": "tun-in",
-            "address": ["172.19.0.1/30", "fdfe:dcba:9876::1/126"],
+            "address": ["172.19.0.1/30"],
             "auto_route": True,
             "strict_route": False,
         }],

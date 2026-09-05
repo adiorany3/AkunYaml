@@ -51,8 +51,7 @@
       "type": "tun",
       "tag": "tun-in",
       "address": [
-        "172.19.0.1/30",
-        "fdfe:dcba:9876::1/126"
+        "172.19.0.1/30"
       ],
       "auto_route": true,
       "strict_route": false
@@ -64,15 +63,15 @@
       "tag": "proxy",
       "outbounds": [
         "automatic",
-        "AKUN-001-CLOUDFLARE-VLESS-WS-106MS",
-        "AKUN-002-ALIBABA-VLESS-WS-118MS",
-        "AKUN-003-CLOUDFLARE-VLESS-WS-120MS",
-        "AKUN-004-CLOUDFLARE-VLESS-WS-115MS",
-        "AKUN-005-CLOUDFLARE-VLESS-WS-120MS",
-        "AKUN-006-CLOUDFLARE-VLESS-WS-127MS",
-        "AKUN-007-CLOUDFLARE-VLESS-WS-118MS",
-        "AKUN-008-UNKNOWN-VLESS-WS-107MS",
-        "AKUN-009-CLOUDFLARE-VLESS-WS-106MS",
+        "AKUN-001-CLOUDFLARE-VLESS-WS-108MS",
+        "AKUN-002-CLOUDFLARE-VLESS-WS-103MS",
+        "AKUN-003-CLOUDFLARE-VLESS-WS-104MS",
+        "AKUN-004-CLOUDFLARE-VLESS-WS-119MS",
+        "AKUN-005-CLOUDFLARE-VLESS-WS-110MS",
+        "AKUN-006-CLOUDFLARE-VLESS-WS-100MS",
+        "AKUN-007-CLOUDFLARE-VLESS-WS-117MS",
+        "AKUN-008-CLOUDFLARE-VLESS-WS-127MS",
+        "AKUN-009-CLOUDFLARE-VLESS-WS-104MS",
         "AKUN-010-CLOUDFLARE-VLESS-WS-105MS"
       ],
       "default": "automatic"
@@ -81,15 +80,15 @@
       "type": "urltest",
       "tag": "automatic",
       "outbounds": [
-        "AKUN-001-CLOUDFLARE-VLESS-WS-106MS",
-        "AKUN-002-ALIBABA-VLESS-WS-118MS",
-        "AKUN-003-CLOUDFLARE-VLESS-WS-120MS",
-        "AKUN-004-CLOUDFLARE-VLESS-WS-115MS",
-        "AKUN-005-CLOUDFLARE-VLESS-WS-120MS",
-        "AKUN-006-CLOUDFLARE-VLESS-WS-127MS",
-        "AKUN-007-CLOUDFLARE-VLESS-WS-118MS",
-        "AKUN-008-UNKNOWN-VLESS-WS-107MS",
-        "AKUN-009-CLOUDFLARE-VLESS-WS-106MS",
+        "AKUN-001-CLOUDFLARE-VLESS-WS-108MS",
+        "AKUN-002-CLOUDFLARE-VLESS-WS-103MS",
+        "AKUN-003-CLOUDFLARE-VLESS-WS-104MS",
+        "AKUN-004-CLOUDFLARE-VLESS-WS-119MS",
+        "AKUN-005-CLOUDFLARE-VLESS-WS-110MS",
+        "AKUN-006-CLOUDFLARE-VLESS-WS-100MS",
+        "AKUN-007-CLOUDFLARE-VLESS-WS-117MS",
+        "AKUN-008-CLOUDFLARE-VLESS-WS-127MS",
+        "AKUN-009-CLOUDFLARE-VLESS-WS-104MS",
         "AKUN-010-CLOUDFLARE-VLESS-WS-105MS"
       ],
       "url": "https://www.gstatic.com/generate_204",
@@ -100,16 +99,42 @@
       "type": "selector",
       "tag": "SOCIAL",
       "outbounds": [
-        "AKUN-011-CLOUDFLARE-VMESS-WS-291MS",
-        "AKUN-012-CLOUDFLARE-VLESS-WS-163MS",
-        "AKUN-013-CLOUDFLARE-VMESS-WS-167MS",
-        "AKUN-001-CLOUDFLARE-VLESS-WS-106MS"
+        "AKUN-011-CLOUDFLARE-VMESS-WS-224MS",
+        "AKUN-012-CLOUDFLARE-VLESS-WS-164MS",
+        "AKUN-013-CLOUDFLARE-VMESS-WS-172MS",
+        "AKUN-001-CLOUDFLARE-VLESS-WS-108MS"
       ],
-      "default": "AKUN-011-CLOUDFLARE-VMESS-WS-291MS"
+      "default": "AKUN-011-CLOUDFLARE-VMESS-WS-224MS"
     },
     {
       "type": "vless",
-      "tag": "AKUN-001-CLOUDFLARE-VLESS-WS-106MS",
+      "tag": "AKUN-001-CLOUDFLARE-VLESS-WS-108MS",
+      "server": "104.17.3.81",
+      "server_port": 443,
+      "uuid": "0f0b7f69-78e1-4e9e-8b35-0986444613e4",
+      "tls": {
+        "enabled": true,
+        "server_name": "xwrivr.pages.dev",
+        "insecure": true,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "alpn": [
+          "http/1.1"
+        ]
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "xwrivr.pages.dev"
+        }
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "AKUN-002-CLOUDFLARE-VLESS-WS-103MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "77777777-8a3e-6666-b6d1-a9c5f0e8b3a2",
@@ -135,163 +160,7 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-002-ALIBABA-VLESS-WS-118MS",
-      "server": "104.17.3.81",
-      "server_port": 443,
-      "uuid": "2cf94f4d-9d5b-49ca-81a3-ddc0529a2dac",
-      "tls": {
-        "enabled": true,
-        "server_name": "python-test123.pages.dev",
-        "insecure": true,
-        "utls": {
-          "enabled": true,
-          "fingerprint": "chrome"
-        },
-        "alpn": [
-          "http/1.1"
-        ]
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "python-test123.pages.dev"
-        }
-      }
-    },
-    {
-      "type": "vless",
-      "tag": "AKUN-003-CLOUDFLARE-VLESS-WS-120MS",
-      "server": "104.17.3.81",
-      "server_port": 443,
-      "uuid": "0f0b7f69-78e1-4e9e-8b35-0986444613e4",
-      "tls": {
-        "enabled": true,
-        "server_name": "xwrivr.pages.dev",
-        "insecure": true,
-        "utls": {
-          "enabled": true,
-          "fingerprint": "chrome"
-        },
-        "alpn": [
-          "http/1.1"
-        ]
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/%2F%3Fed%3D2048",
-        "headers": {
-          "Host": "xwrivr.pages.dev"
-        }
-      }
-    },
-    {
-      "type": "vless",
-      "tag": "AKUN-004-CLOUDFLARE-VLESS-WS-115MS",
-      "server": "104.17.3.81",
-      "server_port": 443,
-      "uuid": "0f0b7f69-78e1-4e9e-8b35-0986444613e4",
-      "tls": {
-        "enabled": true,
-        "server_name": "xwrivr.pages.dev",
-        "insecure": true,
-        "utls": {
-          "enabled": true,
-          "fingerprint": "chrome"
-        },
-        "alpn": [
-          "http/1.1"
-        ]
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/?TELEGRAM-TOOTFFARANGI?ed=512",
-        "headers": {
-          "Host": "xwrivr.pages.dev"
-        }
-      }
-    },
-    {
-      "type": "vless",
-      "tag": "AKUN-005-CLOUDFLARE-VLESS-WS-120MS",
-      "server": "104.17.3.81",
-      "server_port": 443,
-      "uuid": "0f0b7f69-78e1-4e9e-8b35-0986444613e4",
-      "tls": {
-        "enabled": true,
-        "server_name": "xwrivr.pages.dev",
-        "insecure": true,
-        "utls": {
-          "enabled": true,
-          "fingerprint": "chrome"
-        },
-        "alpn": [
-          "http/1.1"
-        ]
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "xwrivr.pages.dev"
-        }
-      }
-    },
-    {
-      "type": "vless",
-      "tag": "AKUN-006-CLOUDFLARE-VLESS-WS-127MS",
-      "server": "104.17.3.81",
-      "server_port": 443,
-      "uuid": "0f0b7f69-78e1-4e9e-8b35-0986444613e4",
-      "tls": {
-        "enabled": true,
-        "server_name": "xwrivr.pages.dev",
-        "insecure": true,
-        "utls": {
-          "enabled": true,
-          "fingerprint": "chrome"
-        },
-        "alpn": [
-          "http/1.1"
-        ]
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/?ed=2048",
-        "headers": {
-          "Host": "xwrivr.pages.dev"
-        }
-      }
-    },
-    {
-      "type": "vless",
-      "tag": "AKUN-007-CLOUDFLARE-VLESS-WS-118MS",
-      "server": "104.17.3.81",
-      "server_port": 443,
-      "uuid": "0f0b7f69-78e1-4e9e-8b35-0986444613e4",
-      "tls": {
-        "enabled": true,
-        "server_name": "xwrivr.pages.dev",
-        "insecure": true,
-        "utls": {
-          "enabled": true,
-          "fingerprint": "chrome"
-        },
-        "alpn": [
-          "http/1.1"
-        ]
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/?TELEGRAM--TOOTFFARANGI?ed=512",
-        "headers": {
-          "Host": "xwrivr.pages.dev"
-        }
-      }
-    },
-    {
-      "type": "vless",
-      "tag": "AKUN-008-UNKNOWN-VLESS-WS-107MS",
+      "tag": "AKUN-003-CLOUDFLARE-VLESS-WS-104MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "9b18ccef-b9e0-41d1-8990-9d970569e142",
@@ -317,13 +186,13 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-009-CLOUDFLARE-VLESS-WS-106MS",
+      "tag": "AKUN-004-CLOUDFLARE-VLESS-WS-119MS",
       "server": "104.17.3.81",
       "server_port": 443,
-      "uuid": "77777777-8a3e-6666-b6d1-a9c5f0e8b3a2",
+      "uuid": "0f0b7f69-78e1-4e9e-8b35-0986444613e4",
       "tls": {
         "enabled": true,
-        "server_name": "fx3h2kf8xn.fx6hsv0.ccwu.cc",
+        "server_name": "xwrivr.pages.dev",
         "insecure": true,
         "utls": {
           "enabled": true,
@@ -335,15 +204,93 @@
       },
       "transport": {
         "type": "ws",
-        "path": "/?ed=2560",
+        "path": "/?ed=2048",
         "headers": {
-          "Host": "fx3h2kf8xn.fx6hsv0.ccwu.cc"
+          "Host": "xwrivr.pages.dev"
         }
       }
     },
     {
       "type": "vless",
-      "tag": "AKUN-010-CLOUDFLARE-VLESS-WS-105MS",
+      "tag": "AKUN-005-CLOUDFLARE-VLESS-WS-110MS",
+      "server": "104.17.3.81",
+      "server_port": 443,
+      "uuid": "0f0b7f69-78e1-4e9e-8b35-0986444613e4",
+      "tls": {
+        "enabled": true,
+        "server_name": "xwrivr.pages.dev",
+        "insecure": true,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "alpn": [
+          "http/1.1"
+        ]
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/?TELEGRAM-V2ray_confiig?ed=512",
+        "headers": {
+          "Host": "xwrivr.pages.dev"
+        }
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "AKUN-006-CLOUDFLARE-VLESS-WS-100MS",
+      "server": "104.17.3.81",
+      "server_port": 443,
+      "uuid": "0f0b7f69-78e1-4e9e-8b35-0986444613e4",
+      "tls": {
+        "enabled": true,
+        "server_name": "xwrivr.pages.dev",
+        "insecure": true,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "alpn": [
+          "http/1.1"
+        ]
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN-MTMVPN",
+        "headers": {
+          "Host": "xwrivr.pages.dev"
+        }
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "AKUN-007-CLOUDFLARE-VLESS-WS-117MS",
+      "server": "104.17.3.81",
+      "server_port": 443,
+      "uuid": "0f0b7f69-78e1-4e9e-8b35-0986444613e4",
+      "tls": {
+        "enabled": true,
+        "server_name": "xwrivr.pages.dev",
+        "insecure": true,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "alpn": [
+          "http/1.1"
+        ]
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/?TELEGRAM--madshopx?ed=512",
+        "headers": {
+          "Host": "xwrivr.pages.dev"
+        }
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "AKUN-008-CLOUDFLARE-VLESS-WS-127MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "0f0b7f69-78e1-4e9e-8b35-0986444613e4",
@@ -368,8 +315,60 @@
       }
     },
     {
+      "type": "vless",
+      "tag": "AKUN-009-CLOUDFLARE-VLESS-WS-104MS",
+      "server": "104.17.3.81",
+      "server_port": 443,
+      "uuid": "5dc15e15-f285-4a9d-959b-0e4fbdd77b63",
+      "tls": {
+        "enabled": true,
+        "server_name": "powered-by-surena.configfarsi695fd01a94fe7.workers.dev",
+        "insecure": true,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "alpn": [
+          "http/1.1"
+        ]
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/?ed=2560",
+        "headers": {
+          "Host": "powered-by-surena.configfarsi695fd01a94fe7.workers.dev"
+        }
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "AKUN-010-CLOUDFLARE-VLESS-WS-105MS",
+      "server": "104.17.3.81",
+      "server_port": 443,
+      "uuid": "77777777-8a3e-6666-b6d1-a9c5f0e8b3a2",
+      "tls": {
+        "enabled": true,
+        "server_name": "fx3h2kf8xn.fx6hsv0.ccwu.cc",
+        "insecure": true,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "alpn": [
+          "http/1.1"
+        ]
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/?ed=2560",
+        "headers": {
+          "Host": "fx3h2kf8xn.fx6hsv0.ccwu.cc"
+        }
+      }
+    },
+    {
       "type": "vmess",
-      "tag": "AKUN-011-CLOUDFLARE-VMESS-WS-291MS",
+      "tag": "AKUN-011-CLOUDFLARE-VMESS-WS-224MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "66827e09-9743-47d4-952c-d9c90f31fe48",
@@ -397,7 +396,7 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-012-CLOUDFLARE-VLESS-WS-163MS",
+      "tag": "AKUN-012-CLOUDFLARE-VLESS-WS-164MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "c13ff27e-268a-4c69-a464-d8a625fd01b3",
@@ -423,7 +422,7 @@
     },
     {
       "type": "vmess",
-      "tag": "AKUN-013-CLOUDFLARE-VMESS-WS-167MS",
+      "tag": "AKUN-013-CLOUDFLARE-VMESS-WS-172MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "4ee97185-f0ea-4842-b116-aaa1832665cc",
