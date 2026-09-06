@@ -1371,9 +1371,6 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
             existing_proxy_names.add(name)
 
     groups = config.setdefault("proxy-groups", [])
-    # Reddit prefers its pinned account, then safely falls back to first manual node.
-    pinned_reddit_account = "MANUAL-VMess-WS-TLS-443-singa08"
-    reddit_account = pinned_reddit_account if pinned_reddit_account in manual_names else manual_names[0]
     groups[:] = [
         g
         for g in groups
@@ -1391,7 +1388,7 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
         "expected-status": "200/204/301/302",
         "max-failed-times": 2,
     }
-    groups.append({"name": "REDDIT", "type": "select", "proxies": [reddit_account]})
+    groups.append({"name": "REDDIT", "type": "select", "proxies": ["MANUAL"]})
 
     # Manual nodes remain outside the automatic quota. Smart mode keeps strict
     # automatic nodes first in FALLBACK, then appends manual nodes as late-stage
