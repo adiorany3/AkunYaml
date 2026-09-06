@@ -19,6 +19,18 @@ DOMAIN_RE = re.compile(
 )
 ALLOWED_LABELS = {"allow", "block", "review"}
 BLOCK_CATEGORIES = {"advertising", "tracking"}
+STREAMING_MARKERS = {
+    "disneyplus", "freewheel", "fwmrm", "hulu", "netflix", "paramountplus",
+    "peacocktv", "roku", "spotify", "twitch", "youtube",
+}
+TELEMETRY_MARKERS = {
+    "ad", "ads", "advertising", "analytics", "beacon", "bloodhound", "crashdump",
+    "event", "events", "log", "logs", "metric", "metrics", "pixel", "telemetry", "track", "tracker",
+}
+CANDIDATE_FEEDS = (
+    ".feed_cache/last_good/hagezi-pro-plus-mini.txt",
+    ".feed_cache/last_good/popup-ads.txt",
+)
 
 
 def normalize_domain(raw: str) -> str | None:
@@ -37,8 +49,45 @@ def load_domains(path: Path) -> list[str]:
     return sorted({domain for raw in path.read_text(encoding="utf-8", errors="ignore").splitlines() if (domain := normalize_domain(raw))})
 
 
+def _has_label(domain: str, markers: set[str]) -> bool:
+    return bool(set(re.split(r"[.-]", domain)) & markers)
+
+
+def _has_streaming_marker(domain: str) -> bool:
+    labels = re.split(r"[.-]", domain)
+    return any(
+        label == marker or label.startswith(marker) or label.endswith(marker)
+        for label in labels
+        for marker in STREAMING_MARKERS
+    )
+
+
 def is_allowlisted(domain: str, allowlist: set[str]) -> bool:
     return any(domain == allowed or domain.endswith("." + allowed) for allowed in allowlist)
+
+
+def refresh_streaming_candidates(workdir: Path, *, log=print) -> list[str]:
+    """Rebuild exact streaming ad/telemetry candidates from refreshed LKG feeds."""
+    allowlist = set(load_domains(workdir / "adblock_allowlist.txt"))
+    discovered = {
+        domain
+        for relative_path in CANDIDATE_FEEDS
+        for domain in load_domains(workdir / relative_path)
+        if _has_streaming_marker(domain)
+        and _has_label(domain, TELEMETRY_MARKERS)
+        and not is_allowlisted(domain, allowlist)
+    }
+    output = workdir / ".runtime_cache" / "ai_adblock_candidates.txt"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    temporary = output.with_suffix(output.suffix + ".tmp")
+    temporary.write_text(
+        "# Generated from refreshed Last-Known-Good feeds; AI classification still required.\n"
+        + "".join(f"{domain}\n" for domain in sorted(discovered)),
+        encoding="utf-8",
+    )
+    temporary.replace(output)
+    log(f"AI adblock candidates: {len(discovered)} host telemetri streaming terkini")
+    return sorted(discovered)
 
 
 def parse_response(content: str, expected: list[str]) -> list[dict[str, Any]]:
@@ -126,11 +175,19 @@ def classify_candidates(
     timeout: float = 30.0,
     log=print,
 ) -> dict[str, Any]:
-    candidates_path = workdir / "adblock_ai_candidates.txt"
+    candidate_paths = (
+        workdir / "adblock_ai_candidates.txt",
+        workdir / ".runtime_cache" / "ai_adblock_candidates.txt",
+    )
     output_path = workdir / ".runtime_cache" / "ai_adblock_blocklist.txt"
     report_path = workdir / ".runtime_cache" / "ai_adblock_report.json"
     allowlist = set(load_domains(workdir / "adblock_allowlist.txt"))
-    candidates = [domain for domain in load_domains(candidates_path) if not is_allowlisted(domain, allowlist)]
+    candidates = sorted({
+        domain
+        for candidate_path in candidate_paths
+        for domain in load_domains(candidate_path)
+        if not is_allowlisted(domain, allowlist)
+    })
     output_path.unlink(missing_ok=True)
     if not candidates:
         return {"status": "skipped", "reason": "tidak ada kandidat non-allowlist", "count": 0}

@@ -768,6 +768,11 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     )
     blocked_domains: list[str] = []
     seen_blocked_domains: set[str] = set()
+    allowlisted_domains = {
+        line.strip().lower().rstrip(".")
+        for line in _read_text_file("adblock_allowlist.txt").splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    }
     for blocklist_file in blocklist_files:
         for raw_line in _read_text_file(blocklist_file).splitlines():
             line = raw_line.strip().lower()
@@ -784,9 +789,15 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
                 and len(domain) <= 253
                 and re.fullmatch(r"[a-z0-9_-]+(?:\.[a-z0-9_-]+)+", domain)
                 and not looks_like_ip(domain)
+                and not any(domain == allowed or domain.endswith("." + allowed) for allowed in allowlisted_domains)
             ):
                 seen_blocked_domains.add(domain)
                 blocked_domains.append(domain)
+    ai_blocked_domains = [
+        domain
+        for domain in _read_text_file(".runtime_cache/ai_adblock_blocklist.txt").splitlines()
+        if domain and not domain.startswith("#") and re.fullmatch(r"[a-z0-9-]+(?:\.[a-z0-9-]+)+", domain)
+    ]
 
     bank_exact = list(banking_exact_domains())
     bank_suffix = list(all_bank_suffix_domains())
@@ -812,7 +823,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         # UDP/443 makes Android apps immediately retry HTTPS over TCP.
         {"network": "udp", "port": 443, "action": "reject"},
         {
-            "domain": streaming_ad_domains,
+            "domain": list(dict.fromkeys(streaming_ad_domains + ai_blocked_domains)),
             "action": "reject",
         },
         {

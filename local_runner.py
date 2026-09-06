@@ -2053,7 +2053,11 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     from ai_adblock_classifier import load_domains as load_ai_candidate_domains
     ai_adblock_managed_rules = {
         f"DOMAIN,{domain},REJECT"
-        for domain in load_ai_candidate_domains(workdir / "adblock_ai_candidates.txt")
+        for candidate_path in (
+            workdir / "adblock_ai_candidates.txt",
+            workdir / ".runtime_cache" / "ai_adblock_candidates.txt",
+        )
+        for domain in load_ai_candidate_domains(candidate_path)
     }
     cleaned = [
         rule for rule in current_rules
@@ -2702,7 +2706,7 @@ def network_test() -> int:
 def parse_args():
     parser = argparse.ArgumentParser(description=f"AkunYaml runner for OpenClash {OPENCLASH_TARGET_VERSION} + {MIHOMO_TARGET_LABEL}")
     parser.add_argument("--workdir", type=Path, default=Path.cwd())
-    parser.add_argument("--config", type=Path, default=None)
+    parser.add_argument("--config", type=Path, default=Path("local_config.json"))
     parser.add_argument("--max-nodes", type=int, default=None, help="Override MAX_NODES dari local_config.json")
     parser.add_argument("--min-nodes", type=int, default=None, help="Override MIN_OUTPUT_NODES dari local_config.json")
     parser.add_argument("--candidate-min", type=int)
@@ -2827,13 +2831,14 @@ def main() -> int:
             log(f"Security feed guard dilewati: {exc}")
 
     if env.get("AI_ADBLOCK_ENABLED", "false").strip().lower() not in {"0", "false", "no", "off"}:
-        from ai_adblock_classifier import classify_candidates
+        from ai_adblock_classifier import classify_candidates, refresh_streaming_candidates
 
         key_file = Path(env.get("AI_ADBLOCK_API_KEY_FILE", ".secrets/ai_adblock.key")).expanduser()
         if not key_file.is_absolute():
             key_file = workdir / key_file
         try:
-            classify_candidates(
+            refresh_streaming_candidates(workdir, log=log)
+            ai_result = classify_candidates(
                 workdir,
                 base_url=env.get("AI_ADBLOCK_BASE_URL", "https://ai.tamandata.com/v1"),
                 model=env.get("AI_ADBLOCK_MODEL", "tamandata"),
@@ -2843,6 +2848,7 @@ def main() -> int:
                 timeout=max(5.0, min(120.0, float(env.get("AI_ADBLOCK_TIMEOUT_SEC", "30")))),
                 log=log,
             )
+            log(f"AI adblock: {ai_result['status']} ({ai_result.get('count', 0)} kandidat)")
         except Exception as exc:
             log(f"AI adblock fail-open: {type(exc).__name__}: {exc}")
 
