@@ -1910,7 +1910,7 @@ def main() -> int:
     manual_file = os.getenv("MANUAL_NODES_FILE", "manual_nodes.txt")
 
     max_nodes = max(1, _env_int("MAX_NODES", 10))
-    min_output_nodes = max(1, _env_int("MIN_OUTPUT_NODES", 10))
+    min_output_nodes = max(1, _env_int("MIN_OUTPUT_NODES", 1))
     fetch_timeout = max(1, _env_int("FETCH_TIMEOUT", 12))
     tcp_timeout = max(0.1, _env_float("TCP_TIMEOUT", 2.0))
     max_workers = max(1, _env_int("MAX_WORKERS", 64))
@@ -1933,7 +1933,6 @@ def main() -> int:
     manual_tcp_timeout = max(0.1, _env_float("TCP_TIMEOUT", 2.0))
     manual_attempts = max(1, _env_int("ATTEMPTS", 2))
     manual_require_ws = _env_bool("REQUIRE_WS_UPGRADE", True)
-    manual_passed: list[Any] = []
     for node in manual_nodes:
         check_node_bug_compat(
             node,
@@ -1942,12 +1941,10 @@ def main() -> int:
             _env_bool("REQUIRE_ORIGINAL", False),
             manual_require_ws,
         )
-        if getattr(node, "status", "") == "alive":
-            manual_passed.append(node)
-        else:
+        if getattr(node, "status", "") != "alive":
             manual_skipped.append(f"{_node_name(node)}: TCPing gagal: {getattr(node, 'reason', '')}")
-    manual_nodes = manual_passed
-    manual_nodes, manual_compat_rows = _mihomo_openclash_compatibility_filter(manual_nodes, label="manual")
+    # Manual nodes are mandatory input. Tests still report health, but never remove them.
+    _, manual_compat_rows = _mihomo_openclash_compatibility_filter(manual_nodes, label="manual")
 
     print("[INFO] Generate YAML OpenClash otomatis")
     print(f"[INFO] Target output otomatis: {max_nodes} node, minimal: {min_output_nodes} node")
@@ -1999,13 +1996,13 @@ def main() -> int:
     print(f"[INFO] URL test Mihomo otomatis: {urltest_reason}")
 
     manual_candidates = list(manual_nodes)
-    manual_nodes, manual_urltest_checked, manual_urltest_reason, manual_urltest_rows = _mihomo_url_test_nodes(
+    manual_checked, manual_urltest_checked, manual_urltest_reason, manual_urltest_rows = _mihomo_url_test_nodes(
         manual_candidates,
         target_count=max(1, len(manual_candidates)),
         test_url=os.getenv("URL_TEST_URL", os.getenv("TEST_URL", ALT_TEST_URL)),
         timeout_ms=_env_int("URL_TEST_TIMEOUT_MS", _env_int("HEALTH_TIMEOUT_MS", 5000)),
     )
-    manual_pass_ids = {id(node) for node in manual_nodes}
+    manual_pass_ids = {id(node) for node in manual_checked}
     for node in manual_candidates:
         if id(node) not in manual_pass_ids:
             manual_skipped.append(f"{_node_name(node)}: Mihomo URL test gagal: {getattr(node, 'url_test_status', '')}")
@@ -2083,11 +2080,12 @@ def main() -> int:
         os.getenv("SINGBOX_PATH", "./sing-box").strip() or "./sing-box",
     )
 
-    # Fail closed before writing anything: keep the previous known-good outputs
-    # when public feeds cannot supply the configured minimum healthy accounts.
-    if len(alive_nodes) < min_output_nodes:
+    # Fail closed before writing anything when combined output misses minimum.
+    # Manual nodes count because they are mandatory input and remain outside auto quota.
+    total_output_nodes = len(alive_nodes) + len(manual_nodes)
+    if total_output_nodes < min_output_nodes:
         raise SystemExit(
-            f"[ERROR] Node otomatis hidup hanya {len(alive_nodes)}/{min_output_nodes}; "
+            f"[ERROR] Total node output hanya {total_output_nodes}/{min_output_nodes}; "
             "output lama dipertahankan."
         )
 

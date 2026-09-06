@@ -22,8 +22,8 @@ Pemakaian:
 Opsi:
   --push                Commit + push hasil generator ke branch aktif GitHub.
   --no-pull             Jangan git pull sebelum pencarian akun.
-  --max-nodes N         Override jumlah node output.
-  --min-nodes N         Override minimum node output.
+  --max-nodes N         Override jumlah node otomatis output.
+  --min-nodes N         Override minimum total node output (otomatis + manual).
   --candidate-min N     Override minimum kandidat yang diperiksa.
   -h, --help            Bantuan.
 TXT
