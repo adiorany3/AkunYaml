@@ -36,10 +36,18 @@ node = SimpleNamespace(
 )
 generated = json.loads(_build_singbox_android_json([node]))
 rules = generated["route"]["rules"]
+proxy_outbound = next(outbound for outbound in generated["outbounds"] if outbound.get("tag") == "proxy")
+assert proxy_outbound["default"] == "self-check"
+assert proxy_outbound["outbounds"][0] == "self-check"
 payment_rule_index = next(
     index
     for index, rule in enumerate(rules)
     if rule.get("outbound") == "direct" and "shopee.co.id" in rule.get("domain_suffix", [])
+)
+grab_rule_index = next(
+    index
+    for index, rule in enumerate(rules)
+    if rule.get("outbound") == "proxy" and "grab.com" in rule.get("domain_suffix", [])
 )
 marketplace_rule_index = next(
     index
@@ -52,7 +60,10 @@ quic_reject_index = next(
     if rule.get("action") == "reject" and rule.get("network") == "udp" and rule.get("port") == 443
 )
 assert payment_rule_index < quic_reject_index
+assert grab_rule_index < quic_reject_index
 assert marketplace_rule_index < quic_reject_index
+assert "grabtaxi.com" in rules[grab_rule_index]["domain_suffix"]
+assert "grabfood.com" in rules[grab_rule_index]["domain_suffix"]
 assert "shopeemobile.com" in rules[payment_rule_index]["domain_suffix"]
 assert "spaylater.co.id" in rules[payment_rule_index]["domain_suffix"]
 marketplace_rule = rules[marketplace_rule_index]

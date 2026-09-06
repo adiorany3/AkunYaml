@@ -735,6 +735,11 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         tag for tag, node in tagged_nodes
         if str(getattr(node, "tier", "")).upper() == "MANUAL"
     ]
+    manual_vmess_tags = [
+        tag for tag, node in tagged_nodes
+        if str(getattr(node, "tier", "")).upper() == "MANUAL"
+        and str((getattr(node, "clash", {}) or {}).get("type", "")).lower() == "vmess"
+    ]
     primary_tags = [tag for tag in tags if tag not in manual_tags]
     social_domains = [
         "old.reddit.com",
@@ -865,14 +870,15 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
 
     bank_exact = list(banking_exact_domains())
     bank_suffix = list(all_bank_suffix_domains())
-    payment_suffix = list(payment_suffix_domains())
+    grab_suffix = ["grab.com", "grabtaxi.com", "grabfood.com"]
+    payment_suffix = [domain for domain in payment_suffix_domains() if domain not in grab_suffix]
     bank_dns_rule: dict[str, Any] = {"action": "route", "server": "local"}
     bank_route_rule: dict[str, Any] = {"action": "route", "outbound": "BANK"}
     if bank_exact:
         bank_dns_rule["domain"] = bank_exact
         bank_route_rule["domain"] = bank_exact
-    if bank_suffix or payment_suffix:
-        bank_dns_rule["domain_suffix"] = list(dict.fromkeys(bank_suffix + payment_suffix))
+    if bank_suffix or payment_suffix or grab_suffix:
+        bank_dns_rule["domain_suffix"] = list(dict.fromkeys(bank_suffix + payment_suffix + grab_suffix))
     if bank_suffix:
         bank_route_rule["domain_suffix"] = bank_suffix
 
@@ -885,7 +891,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         marketplace_dns_rule["domain_suffix"] = marketplace_suffix
         marketplace_route_rule["domain_suffix"] = marketplace_suffix
 
-    dns_rules = [bank_dns_rule] if bank_exact or bank_suffix or payment_suffix else []
+    dns_rules = [bank_dns_rule] if bank_exact or bank_suffix or payment_suffix or grab_suffix else []
     if marketplace_exact or marketplace_suffix:
         dns_rules.append(marketplace_dns_rule)
     dns_rules.extend([
@@ -901,7 +907,9 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         route_rules.append({"domain_suffix": threat_blocked_domains, "action": "reject"})
     if bank_exact or bank_suffix:
         route_rules.append(bank_route_rule)
-    route_rules.append({"domain_suffix": payment_suffix, "action": "route", "outbound": "direct"})
+    route_rules.append({"domain_suffix": grab_suffix, "action": "route", "outbound": "proxy"})
+    if payment_suffix:
+        route_rules.append({"domain_suffix": payment_suffix, "action": "route", "outbound": "direct"})
     if marketplace_exact or marketplace_suffix:
         route_rules.append(marketplace_route_rule)
     route_rules.extend([
@@ -933,29 +941,29 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         raise ValueError("routing Zoom/Meet memerlukan minimal satu node VMess")
     if not manual_tags:
         raise ValueError("routing bank memerlukan minimal satu node manual")
-    # BANK keeps manual fallback and also includes every VMess account.
-    # This makes newly accepted automatic/manual VMess nodes enter both selectors.
-    bank_tags = list(dict.fromkeys([*manual_tags, *vmess_tags]))
+    if not manual_vmess_tags:
+        raise ValueError("proxy utama sing-box memerlukan minimal satu node VMess manual")
+    # Manual VMess always leads default traffic. Automatic nodes remain fallback.
+    proxy_candidates = list(dict.fromkeys([*manual_vmess_tags, "automatic", *primary_tags, *manual_tags]))
+    bank_tags = list(dict.fromkeys([*manual_vmess_tags, *manual_tags, *vmess_tags]))
     bank_outbound = {
         "type": "selector",
         "tag": "BANK",
         "outbounds": bank_tags,
-        "default": bank_tags[0],
+        "default": manual_vmess_tags[0],
     }
     video_outbound = {
         "type": "selector",
         "tag": "VMESS-VIDEO",
-        "outbounds": vmess_tags,
-        "default": vmess_tags[0],
+        "outbounds": list(dict.fromkeys([*manual_vmess_tags, *vmess_tags])),
+        "default": manual_vmess_tags[0],
     }
-    social_candidates = [*manual_tags, *primary_tags[:1]]
-    if not social_candidates:
-        social_candidates = ["proxy"]
+    social_candidates = list(dict.fromkeys([*manual_vmess_tags, *manual_tags, *primary_tags[:1]]))
     social_outbound = {
         "type": "selector",
         "tag": "SOCIAL",
         "outbounds": social_candidates,
-        "default": social_candidates[0],
+        "default": manual_vmess_tags[0],
     }
 
     config = {
@@ -975,7 +983,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
             "strict_route": False,
         }],
         "outbounds": [
-            {"type": "selector", "tag": "proxy", "outbounds": ["automatic", *primary_tags], "default": "automatic"},
+            {"type": "selector", "tag": "proxy", "outbounds": proxy_candidates, "default": manual_vmess_tags[0]},
             {"type": "urltest", "tag": "automatic", "outbounds": primary_tags, "url": os.getenv("ANDROID_TEST_URL", os.getenv("TEST_URL", ALT_TEST_URL)), "interval": "3m", "tolerance": 50},
             social_outbound,
             bank_outbound,

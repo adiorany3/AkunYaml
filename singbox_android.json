@@ -96,8 +96,6 @@
           "gojek.com",
           "gojekapi.com",
           "gopay.co.id",
-          "grab.com",
-          "grabtaxi.com",
           "ovo.id",
           "dana.id",
           "linkaja.id",
@@ -122,7 +120,10 @@
           "ipaymu.com",
           "oyindonesia.com",
           "qris.id",
-          "bi.go.id"
+          "bi.go.id",
+          "grab.com",
+          "grabtaxi.com",
+          "grabfood.com"
         ]
       },
       {
@@ -222,30 +223,34 @@
       "type": "selector",
       "tag": "proxy",
       "outbounds": [
+        "MANUAL-VMess-WS-TLS-443-ikada543",
+        "MANUAL-VMess-WS-TLS-443-singa08",
+        "MANUAL-VMess-WS-TLS-443-akuku8",
         "automatic",
-        "AKUN-001-MEDIUM-VLESS-WS-113MS",
-        "AKUN-002-CLOUDFLARE-VLESS-WS-114MS",
-        "AKUN-003-CLOUDFLARE-VLESS-WS-141MS",
-        "AKUN-004-CLOUDFLARE-VLESS-WS-112MS",
-        "AKUN-005-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS",
-        "AKUN-006-CLOUDFLARE-VLESS-WS-116MS",
-        "AKUN-007-CLOUDFLARE-VLESS-WS-96MS",
-        "AKUN-008-090227-VLESS-WS-122MS"
+        "AKUN-001-CLOUDFLARE-VLESS-WS-112MS",
+        "AKUN-002-CLOUDFLARE-VLESS-WS-108MS",
+        "AKUN-003-CLOUDFLARE-VLESS-WS-126MS",
+        "AKUN-004-UNKNOWN-VLESS-WS-117MS",
+        "AKUN-005-CLOUDFLARE-VLESS-WS-110MS",
+        "AKUN-006-CLOUDFLARE-VLESS-WS-107MS",
+        "AKUN-007-CLOUDFLARE-VLESS-WS-115MS",
+        "AKUN-008-DIGITALOCEAN-VLESS-WS-114MS",
+        "MANUAL-VLESS-WS-TLS-443-apt50atpprem"
       ],
-      "default": "automatic"
+      "default": "MANUAL-VMess-WS-TLS-443-ikada543"
     },
     {
       "type": "urltest",
       "tag": "automatic",
       "outbounds": [
-        "AKUN-001-MEDIUM-VLESS-WS-113MS",
-        "AKUN-002-CLOUDFLARE-VLESS-WS-114MS",
-        "AKUN-003-CLOUDFLARE-VLESS-WS-141MS",
-        "AKUN-004-CLOUDFLARE-VLESS-WS-112MS",
-        "AKUN-005-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS",
-        "AKUN-006-CLOUDFLARE-VLESS-WS-116MS",
-        "AKUN-007-CLOUDFLARE-VLESS-WS-96MS",
-        "AKUN-008-090227-VLESS-WS-122MS"
+        "AKUN-001-CLOUDFLARE-VLESS-WS-112MS",
+        "AKUN-002-CLOUDFLARE-VLESS-WS-108MS",
+        "AKUN-003-CLOUDFLARE-VLESS-WS-126MS",
+        "AKUN-004-UNKNOWN-VLESS-WS-117MS",
+        "AKUN-005-CLOUDFLARE-VLESS-WS-110MS",
+        "AKUN-006-CLOUDFLARE-VLESS-WS-107MS",
+        "AKUN-007-CLOUDFLARE-VLESS-WS-115MS",
+        "AKUN-008-DIGITALOCEAN-VLESS-WS-114MS"
       ],
       "url": "https://www.gstatic.com/generate_204",
       "interval": "3m",
@@ -259,7 +264,7 @@
         "MANUAL-VMess-WS-TLS-443-singa08",
         "MANUAL-VMess-WS-TLS-443-akuku8",
         "MANUAL-VLESS-WS-TLS-443-apt50atpprem",
-        "AKUN-001-MEDIUM-VLESS-WS-113MS"
+        "AKUN-001-CLOUDFLARE-VLESS-WS-112MS"
       ],
       "default": "MANUAL-VMess-WS-TLS-443-ikada543"
     },
@@ -286,33 +291,7 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-001-MEDIUM-VLESS-WS-113MS",
-      "server": "104.17.3.81",
-      "server_port": 443,
-      "uuid": "f2a73750-3087-48ff-a763-1348c15dce68",
-      "tls": {
-        "enabled": true,
-        "server_name": "rAyAn-007.mAxImA.DpDnS.OrG",
-        "insecure": true,
-        "utls": {
-          "enabled": true,
-          "fingerprint": "chrome"
-        },
-        "alpn": [
-          "http/1.1"
-        ]
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/?ed=2560",
-        "headers": {
-          "Host": "rAyAn-007.mAxImA.DpDnS.OrG"
-        }
-      }
-    },
-    {
-      "type": "vless",
-      "tag": "AKUN-002-CLOUDFLARE-VLESS-WS-114MS",
+      "tag": "AKUN-001-CLOUDFLARE-VLESS-WS-112MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "5dc15e15-f285-4a9d-959b-0e4fbdd77b63",
@@ -338,13 +317,13 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-003-CLOUDFLARE-VLESS-WS-141MS",
+      "tag": "AKUN-002-CLOUDFLARE-VLESS-WS-108MS",
       "server": "104.17.3.81",
       "server_port": 443,
-      "uuid": "f8546acb-185c-43a9-8065-b901c9f353c9",
+      "uuid": "f2a73750-3087-48ff-a763-1348c15dce68",
       "tls": {
         "enabled": true,
-        "server_name": "jtv3y5hswdq0iiykejteoqqecsx.uybhnhbhbj.workers.dev",
+        "server_name": "rAyAn-007.mAxImA.DpDnS.OrG",
         "insecure": true,
         "utls": {
           "enabled": true,
@@ -356,15 +335,93 @@
       },
       "transport": {
         "type": "ws",
-        "path": "/vl/lQvZpD6BDBDFcrhffa1JYDt?ed=2560",
+        "path": "/",
         "headers": {
-          "Host": "jtv3y5hswdq0iiykejteoqqecsx.uybhnhbhbj.workers.dev"
+          "Host": "rAyAn-007.mAxImA.DpDnS.OrG"
         }
       }
     },
     {
       "type": "vless",
-      "tag": "AKUN-004-CLOUDFLARE-VLESS-WS-112MS",
+      "tag": "AKUN-003-CLOUDFLARE-VLESS-WS-126MS",
+      "server": "104.17.3.81",
+      "server_port": 443,
+      "uuid": "b2f2f9f2-1864-48ea-839b-22815faff1f1",
+      "tls": {
+        "enabled": true,
+        "server_name": "stf839dvvyog9d2qa4-b8z6ahgn7b7qi.pages.dev",
+        "insecure": true,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "alpn": [
+          "http/1.1"
+        ]
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/9BozNyvQ8VdRvsYX?ed=2560",
+        "headers": {
+          "Host": "stf839dvvyog9d2qa4-b8z6ahgn7b7qi.pages.dev"
+        }
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "AKUN-004-UNKNOWN-VLESS-WS-117MS",
+      "server": "104.17.3.81",
+      "server_port": 443,
+      "uuid": "ffa431ab-a59b-4092-a418-905fcb1e4d5f",
+      "tls": {
+        "enabled": true,
+        "server_name": "s0P42F8wwpdDE5tF7M4l6L.aB1X-Sn9O4y3N7oNdkRd.workeRS.dev",
+        "insecure": true,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "alpn": [
+          "http/1.1"
+        ]
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/vl/rYScQPG1EEjxXdswdMEU2b3rM4?ed=2560",
+        "headers": {
+          "Host": "s0p42f8wwpdde5tf7m4l6l.ab1x-sn9o4y3n7ondkrd.workers.dev"
+        }
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "AKUN-005-CLOUDFLARE-VLESS-WS-110MS",
+      "server": "104.17.3.81",
+      "server_port": 443,
+      "uuid": "93fa8bdb-9cca-4a3e-8355-b7c12e4f595e",
+      "tls": {
+        "enabled": true,
+        "server_name": "fornewiran.ade-1000.workers.dev",
+        "insecure": true,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "alpn": [
+          "http/1.1"
+        ]
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/vl/yLWNcuUuw1jlJpkDhGy?ed=2560",
+        "headers": {
+          "Host": "fornewiran.ade-1000.workers.dev"
+        }
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "AKUN-006-CLOUDFLARE-VLESS-WS-107MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "77777777-8a3e-6666-b6d1-a9c5f0e8b3a2",
@@ -390,13 +447,13 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-005-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS",
+      "tag": "AKUN-007-CLOUDFLARE-VLESS-WS-115MS",
       "server": "104.17.3.81",
       "server_port": 443,
-      "uuid": "b69b43d1-091d-4d7c-90b2-7a8bbad9d6a9",
+      "uuid": "f8546acb-185c-43a9-8065-b901c9f353c9",
       "tls": {
         "enabled": true,
-        "server_name": "BItter-CreDIT-61b8.b76EbA0aBb.wORkerS.dEv",
+        "server_name": "jtv3y5hswdq0iiykejteoqqecsx.uybhnhbhbj.workers.dev",
         "insecure": true,
         "utls": {
           "enabled": true,
@@ -408,47 +465,21 @@
       },
       "transport": {
         "type": "ws",
-        "path": "/eyJqdW5rIjoiY0U2T212Y21yeEhUZHRKYSIsInByb3RvY29sIjoidmwiLCJtb2RlIjoicHJveHlpcCIsInBhbmVsSVBzIjpbXX0",
+        "path": "/vl/lQvZpD6BDBDFcrhffa1JYDt?ed=2560",
         "headers": {
-          "Host": "BItter-CreDIT-61b8.b76EbA0aBb.wORkerS.dEv"
+          "Host": "jtv3y5hswdq0iiykejteoqqecsx.uybhnhbhbj.workers.dev"
         }
       }
     },
     {
       "type": "vless",
-      "tag": "AKUN-006-CLOUDFLARE-VLESS-WS-116MS",
+      "tag": "AKUN-008-DIGITALOCEAN-VLESS-WS-114MS",
       "server": "104.17.3.81",
       "server_port": 443,
-      "uuid": "1c9daf90-3950-44ac-b06f-4cf9aec63170",
+      "uuid": "8525fe74-67e6-4a55-8a26-95f227bd1384",
       "tls": {
         "enabled": true,
-        "server_name": "FrEe.SeRVEr14peekCoNfIG.WoRKErS.dEV",
-        "insecure": true,
-        "utls": {
-          "enabled": true,
-          "fingerprint": "chrome"
-        },
-        "alpn": [
-          "http/1.1"
-        ]
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/eyJqdW5rIjoiQmFCblN3SmhXYTB3RzVoIiwicHJvdG9jb2wiOiJ2bCIsIm1vZGUiOiJwcmVmaXgiLCJwYW5lbElQcyI6WyJbMjYwMjpmYzU5OjExOjY0OjpdIiwiWzJhMDI6ODk4OjE0Njo2NDo6XSIsIlsyNjAyOmZjNTk6YjA6NjQ6Ol0iXX0=",
-        "headers": {
-          "Host": "free.server14peekconfig.workers.dev"
-        }
-      }
-    },
-    {
-      "type": "vless",
-      "tag": "AKUN-007-CLOUDFLARE-VLESS-WS-96MS",
-      "server": "104.17.3.81",
-      "server_port": 443,
-      "uuid": "77777777-8a3e-6666-b6d1-a9c5f0e8b3a2",
-      "tls": {
-        "enabled": true,
-        "server_name": "faxf32gkfzoxqv.fx6hsv0.ccwu.cc",
+        "server_name": "white-forest-2c01.alvlirm222.workers.dev",
         "insecure": true,
         "utls": {
           "enabled": true,
@@ -462,33 +493,7 @@
         "type": "ws",
         "path": "/",
         "headers": {
-          "Host": "faxf32gkfzoxqv.fx6hsv0.ccwu.cc"
-        }
-      }
-    },
-    {
-      "type": "vless",
-      "tag": "AKUN-008-090227-VLESS-WS-122MS",
-      "server": "104.17.3.81",
-      "server_port": 443,
-      "uuid": "5b374761-e26c-4117-8af8-5c637992fcbf",
-      "tls": {
-        "enabled": true,
-        "server_name": "vls.baiyi.cloudns.org",
-        "insecure": true,
-        "utls": {
-          "enabled": true,
-          "fingerprint": "chrome"
-        },
-        "alpn": [
-          "http/1.1"
-        ]
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/?ed=2560",
-        "headers": {
-          "Host": "vls.baiyi.cloudns.org"
+          "Host": "white-forest-2c01.alvlirm222.workers.dev"
         }
       }
     },
@@ -56125,11 +56130,18 @@
       },
       {
         "domain_suffix": [
+          "grab.com",
+          "grabtaxi.com",
+          "grabfood.com"
+        ],
+        "action": "route",
+        "outbound": "proxy"
+      },
+      {
+        "domain_suffix": [
           "gojek.com",
           "gojekapi.com",
           "gopay.co.id",
-          "grab.com",
-          "grabtaxi.com",
           "ovo.id",
           "dana.id",
           "linkaja.id",
