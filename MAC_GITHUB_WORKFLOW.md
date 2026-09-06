@@ -112,9 +112,13 @@ Script akan:
 
 1. `git pull --ff-only origin main`.
 2. Memastikan `/etc/openclash/core/clash_meta` adalah `alpha` commit `e183c58`.
-3. Menjalankan parser test menggunakan core router.
-4. Hanya jika lolos, menyalin `openclash_auto.yaml` ke `/etc/openclash/config/`.
+3. Menyalin provider ke direktori versi baru di `/etc/openclash/`, menyesuaikan path provider pada salinan YAML, lalu menjalankan parser test menggunakan core router.
+4. Hanya jika lolos, menyimpan YAML sebelumnya sebagai `.bak` dan mengganti `openclash_auto.yaml` secara atomik di `/etc/openclash/config/`.
 5. Tidak me-restart OpenClash otomatis.
+
+`OPENCLASH_DATA_DIR` dapat mengganti direktori data default `/etc/openclash`.
+Versi provider lama sengaja disimpan untuk rollback; hapus hanya versi yang tidak lagi direferensikan konfigurasi aktif maupun backup.
+Parser test bukan uji konektivitas: periksa provider termuat, login, bank, dan browsing melalui LuCI setelah penerapan.
 
 Untuk lokasi repository atau nama config berbeda:
 

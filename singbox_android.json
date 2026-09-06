@@ -227,11 +227,11 @@
         "MANUAL-VMess-WS-TLS-443-singa08",
         "MANUAL-VMess-WS-TLS-443-akuku8",
         "automatic",
-        "AKUN-001-CLOUDFLARE-VLESS-WS-104MS",
-        "AKUN-002-CLOUDFLARE-VLESS-WS-119MS",
-        "AKUN-003-CLOUDFLARE-VLESS-WS-121MS",
-        "AKUN-004-CLOUDFLARE-VLESS-WS-115MS",
-        "AKUN-005-CLOUDFLARE-VLESS-WS-96MS",
+        "AKUN-001-CLOUDFLARE-VLESS-WS-116MS",
+        "AKUN-002-CLOUDFLARE-VLESS-WS-114MS",
+        "AKUN-003-CLOUDFLARE-VLESS-WS-103MS",
+        "AKUN-004-CLOUDFLARE-VLESS-WS-106MS",
+        "AKUN-005-CLOUDFLARE-VLESS-WS-113MS",
         "MANUAL-VLESS-WS-TLS-443-apt50atpprem"
       ],
       "default": "MANUAL-VMess-WS-TLS-443-ikada543"
@@ -240,11 +240,11 @@
       "type": "urltest",
       "tag": "automatic",
       "outbounds": [
-        "AKUN-001-CLOUDFLARE-VLESS-WS-104MS",
-        "AKUN-002-CLOUDFLARE-VLESS-WS-119MS",
-        "AKUN-003-CLOUDFLARE-VLESS-WS-121MS",
-        "AKUN-004-CLOUDFLARE-VLESS-WS-115MS",
-        "AKUN-005-CLOUDFLARE-VLESS-WS-96MS"
+        "AKUN-001-CLOUDFLARE-VLESS-WS-116MS",
+        "AKUN-002-CLOUDFLARE-VLESS-WS-114MS",
+        "AKUN-003-CLOUDFLARE-VLESS-WS-103MS",
+        "AKUN-004-CLOUDFLARE-VLESS-WS-106MS",
+        "AKUN-005-CLOUDFLARE-VLESS-WS-113MS"
       ],
       "url": "https://www.gstatic.com/generate_204",
       "interval": "3m",
@@ -258,7 +258,7 @@
         "MANUAL-VMess-WS-TLS-443-singa08",
         "MANUAL-VMess-WS-TLS-443-akuku8",
         "MANUAL-VLESS-WS-TLS-443-apt50atpprem",
-        "AKUN-001-CLOUDFLARE-VLESS-WS-104MS"
+        "AKUN-001-CLOUDFLARE-VLESS-WS-116MS"
       ],
       "default": "MANUAL-VMess-WS-TLS-443-ikada543"
     },
@@ -285,13 +285,13 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-001-CLOUDFLARE-VLESS-WS-104MS",
+      "tag": "AKUN-001-CLOUDFLARE-VLESS-WS-116MS",
       "server": "104.17.3.81",
       "server_port": 443,
-      "uuid": "a746a471-0339-41ae-9750-d1f572bde296",
+      "uuid": "77777777-8a3e-6666-b6d1-a9c5f0e8b3a2",
       "tls": {
         "enabled": true,
-        "server_name": "ydQbcj3iE4sQjux1aH93X.L9YawN7waGnMFD0-CNZjndc1u24Q.WoRKERs.dEV",
+        "server_name": "fx3l5i2wdfxln0.fx6hsv0.ccwu.cc",
         "insecure": true,
         "utls": {
           "enabled": true,
@@ -303,15 +303,67 @@
       },
       "transport": {
         "type": "ws",
-        "path": "/vl/7yf2GT0XIaJgDSbtvWxhjdjhPh9pVt3?ed=2560",
+        "path": "/?ed=2560",
         "headers": {
-          "Host": "ydqbcj3ie4sqjux1ah93x.l9yawn7wagnmfd0-cnzjndc1u24q.workers.dev"
+          "Host": "fx3l5i2wdfxln0.fx6hsv0.ccwu.cc"
         }
       }
     },
     {
       "type": "vless",
-      "tag": "AKUN-002-CLOUDFLARE-VLESS-WS-119MS",
+      "tag": "AKUN-002-CLOUDFLARE-VLESS-WS-114MS",
+      "server": "104.17.3.81",
+      "server_port": 443,
+      "uuid": "5dc15e15-f285-4a9d-959b-0e4fbdd77b63",
+      "tls": {
+        "enabled": true,
+        "server_name": "powered-by-surena.configfarsi695fd01a94fe7.workers.dev",
+        "insecure": true,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "alpn": [
+          "http/1.1"
+        ]
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/?ed=2560",
+        "headers": {
+          "Host": "powered-by-surena.configfarsi695fd01a94fe7.workers.dev"
+        }
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "AKUN-003-CLOUDFLARE-VLESS-WS-103MS",
+      "server": "104.17.3.81",
+      "server_port": 443,
+      "uuid": "77777777-8a3e-6666-b6d1-a9c5f0e8b3a2",
+      "tls": {
+        "enabled": true,
+        "server_name": "faxf32gkfzoxqv.fx6hsv0.ccwu.cc",
+        "insecure": true,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "alpn": [
+          "http/1.1"
+        ]
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/",
+        "headers": {
+          "Host": "faxf32gkfzoxqv.fx6hsv0.ccwu.cc"
+        }
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "AKUN-004-CLOUDFLARE-VLESS-WS-106MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "3804296d-167f-4c1b-8734-147f80473590",
@@ -337,13 +389,13 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-003-CLOUDFLARE-VLESS-WS-121MS",
+      "tag": "AKUN-005-CLOUDFLARE-VLESS-WS-113MS",
       "server": "104.17.3.81",
       "server_port": 443,
-      "uuid": "daf485ba-60fc-4166-a72c-8d2a5407cbc5",
+      "uuid": "893096ae-ed76-4440-bc34-f77c4872540f",
       "tls": {
         "enabled": true,
-        "server_name": "kievh9yxcgg14-gy4wxqcav0pegkd.d-0ezpk5xp5wk8ltdgb6evlpgc-jin.workers.dev",
+        "server_name": "maSterserVeR1-VSH.KaLlEH.WORkERs.DEV",
         "insecure": true,
         "utls": {
           "enabled": true,
@@ -355,61 +407,9 @@
       },
       "transport": {
         "type": "ws",
-        "path": "/vl/zM8ELyqEIYeZ3ijacV9kuK?ed",
+        "path": "/eyJqdW5rIjoieE1zSFhYR2hkcHZGUHI3cSIsInByb3RvY29sIjoidmwiLCJtb2RlIjoicHJveHlpcCIsInBhbmVsSVBzIjpbXX0=",
         "headers": {
-          "Host": "kievh9yxcgg14-gy4wxqcav0pegkd.d-0ezpk5xp5wk8ltdgb6evlpgc-jin.workers.dev"
-        }
-      }
-    },
-    {
-      "type": "vless",
-      "tag": "AKUN-004-CLOUDFLARE-VLESS-WS-115MS",
-      "server": "104.17.3.81",
-      "server_port": 443,
-      "uuid": "a746a471-0339-41ae-9750-d1f572bde296",
-      "tls": {
-        "enabled": true,
-        "server_name": "YdQBCj3ie4sqjUx1ah93X.l9YaWN7waGnMfd0-CnZJnDc1u24Q.wOrKERS.DeV",
-        "insecure": true,
-        "utls": {
-          "enabled": true,
-          "fingerprint": "chrome"
-        },
-        "alpn": [
-          "http/1.1"
-        ]
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/vl/ValSUss3M3biXqGIHen1DuktJH4z?ed=2560",
-        "headers": {
-          "Host": "ydqbcj3ie4sqjux1ah93x.l9yawn7wagnmfd0-cnzjndc1u24q.workers.dev"
-        }
-      }
-    },
-    {
-      "type": "vless",
-      "tag": "AKUN-005-CLOUDFLARE-VLESS-WS-96MS",
-      "server": "104.17.3.81",
-      "server_port": 443,
-      "uuid": "77777777-8a3e-6666-b6d1-a9c5f0e8b3a2",
-      "tls": {
-        "enabled": true,
-        "server_name": "faxf32gkfzoxqv.fx6hsv0.ccwu.cc",
-        "insecure": true,
-        "utls": {
-          "enabled": true,
-          "fingerprint": "chrome"
-        },
-        "alpn": [
-          "http/1.1"
-        ]
-      },
-      "transport": {
-        "type": "ws",
-        "path": "/",
-        "headers": {
-          "Host": "faxf32gkfzoxqv.fx6hsv0.ccwu.cc"
+          "Host": "maSterserVeR1-VSH.KaLlEH.WORkERs.DEV"
         }
       }
     },
