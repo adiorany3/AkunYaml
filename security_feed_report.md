@@ -5,12 +5,12 @@ A refresh is promoted only after format/count sanity checks. Suspicious updates 
 | Provider | Status | Entries | SHA-256 |
 |---|---:|---:|---|
 | `ads_indonesia` | cached | 154 | `01973614a1bcc66f` |
-| `gambling-mini` | cached | 84783 | `0e58441e6da2c06c` |
-| `hagezi-pro-plus-mini` | cached | 62044 | `29ddbdfc65da9ff2` |
-| `popup-ads` | cached | 50618 | `5bd1c9d2c8903512` |
+| `gambling-mini` | cached | 86847 | `4e47d44f5c2c94cd` |
+| `hagezi-pro-plus-mini` | cached | 60922 | `ef6790820f1483eb` |
+| `popup-ads` | cached | 50447 | `8ea37a25b7ef7abe` |
 | `threat-cryptominers` | cached | 297 | `0b2089ce6ce3a2bf` |
-| `threat-fake-scam` | cached | 16935 | `71302c957ff6195b` |
-| `threat-malware` | cached | 496 | `c7ed7d12d5394a8a` |
-| `threat-phishing` | cached | 37578 | `591a7068a93e2975` |
-| `threat-tif-ip` | cached | 71440 | `4c3e6cb40e5db9d5` |
-| `threat-tif-mini` | cached | 173615 | `d1f09b6f87e85151` |
+| `threat-fake-scam` | cached | 16916 | `3502727361d41847` |
+| `threat-malware` | cached | 502 | `6f2d98d51bb28a03` |
+| `threat-phishing` | cached | 37701 | `097fd62945f95341` |
+| `threat-tif-ip` | cached | 72186 | `b462d396d78b1af3` |
+| `threat-tif-mini` | cached | 180251 | `4795f2a47b539e59` |

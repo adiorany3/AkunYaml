@@ -3,70 +3,70 @@
     "count": 154,
     "kind": "domain",
     "sha256": "01973614a1bcc66f34c8f1d8913ff36abc707050f26691d1b54440005d3bb433",
-    "updated_unix": 1788588649,
+    "updated_unix": 1788652980,
     "url": "https://raw.githubusercontent.com/ABPindo/indonesianadblockrules/master/subscriptions/domain.txt"
   },
   "gambling-mini": {
-    "count": 84783,
+    "count": 86847,
     "kind": "domain",
-    "sha256": "0e58441e6da2c06c502ab5fc1840c4c771c05043e7f62963d66108d7393f815b",
-    "updated_unix": 1788588649,
+    "sha256": "4e47d44f5c2c94cd39dd09dd56aa0a8484f17336e7dc1cd9e93d190ce0074e2f",
+    "updated_unix": 1788652981,
     "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/gambling.mini-onlydomains.txt"
   },
   "hagezi-pro-plus-mini": {
-    "count": 62044,
+    "count": 60922,
     "kind": "domain",
-    "sha256": "29ddbdfc65da9ff23a8c657f401d000e25d49dd65d4b156e8ec0d5f4980c5fa4",
-    "updated_unix": 1788588649,
+    "sha256": "ef6790820f1483ebbefc4c4df0e6f7e88fee2c84b5fc1fad1619cde4ff28693d",
+    "updated_unix": 1788652981,
     "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.plus.mini-onlydomains.txt"
   },
   "popup-ads": {
-    "count": 50618,
+    "count": 50447,
     "kind": "domain",
-    "sha256": "5bd1c9d2c890351266cc739e4700a4f4149a36cdb1da7f2f04177d3f358fb0bf",
-    "updated_unix": 1788588649,
+    "sha256": "8ea37a25b7ef7abec2704392571afabefc0d41669be7845278ea7b1ec8b38032",
+    "updated_unix": 1788652981,
     "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/popupads-onlydomains.txt"
   },
   "threat-cryptominers": {
     "count": 297,
     "kind": "domain",
     "sha256": "0b2089ce6ce3a2bf172f1c15561c713dc057c9941493cdca4e9039a79bba95c4",
-    "updated_unix": 1788588649,
+    "updated_unix": 1788652981,
     "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/cryptominers.txt"
   },
   "threat-fake-scam": {
-    "count": 16935,
+    "count": 16916,
     "kind": "domain",
-    "sha256": "71302c957ff6195bbe6323e121de0e3631f4fd20d8c4269ca1026cb28d44d650",
-    "updated_unix": 1788588649,
+    "sha256": "3502727361d4184752e5e6e890c4a55752cf984410851bbf2748c90eba90f774",
+    "updated_unix": 1788652981,
     "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/fake-onlydomains.txt"
   },
   "threat-malware": {
-    "count": 496,
+    "count": 502,
     "kind": "domain",
-    "sha256": "c7ed7d12d5394a8a78ca556373430684408508e62f3291cbdce5c558ea980d7b",
-    "updated_unix": 1788588649,
+    "sha256": "6f2d98d51bb28a03cb54e7fd1c721412b49e8918398ba06a2664484892c31acd",
+    "updated_unix": 1788652981,
     "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/malware.txt"
   },
   "threat-phishing": {
-    "count": 37578,
+    "count": 37701,
     "kind": "domain",
-    "sha256": "591a7068a93e29750cdb88f1ccc869ad91bcd6aa51e497514bba845c91306bbc",
-    "updated_unix": 1788588649,
+    "sha256": "097fd62945f9534155315d7fdb74f90196a679b083da81d9c96350ba7a4beffb",
+    "updated_unix": 1788652981,
     "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/phishing.txt"
   },
   "threat-tif-ip": {
-    "count": 71440,
+    "count": 72186,
     "kind": "ipcidr",
-    "sha256": "4c3e6cb40e5db9d5b7d7c04ba925907bebc360b72767d4d7c3a174b355fbbc90",
-    "updated_unix": 1788588649,
+    "sha256": "b462d396d78b1af3e014ab1a7bc46fa753c4f2bbd4a24efa4a6b329cbd17517b",
+    "updated_unix": 1788652981,
     "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/ips/tif.txt"
   },
   "threat-tif-mini": {
-    "count": 173615,
+    "count": 180251,
     "kind": "domain",
-    "sha256": "d1f09b6f87e85151c4d378b51ff73b74e95dfdb7f401b2fb26a10c9e0746948b",
-    "updated_unix": 1788588649,
+    "sha256": "4795f2a47b539e5982d5a959a9a58a674982b056796ed5007c901a2cd8389f29",
+    "updated_unix": 1788652980,
     "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.mini-onlydomains.txt"
   }
 }

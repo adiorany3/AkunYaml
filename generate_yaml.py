@@ -658,7 +658,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     proxy_outbounds: list[dict[str, Any]] = []
     tagged_nodes: list[tuple[str, Any]] = []
     tags: list[str] = []
-    used_tags = {"proxy", "automatic", "SOCIAL", "BANK", "direct", "block"}
+    used_tags = {"proxy", "automatic", "SOCIAL", "BANK", "VMESS-VIDEO", "direct", "block"}
     allowed_protocols = {"vless", "vmess", "trojan"}
     for index, node in enumerate(nodes, start=1):
         clash = getattr(node, "clash", {}) or {}
@@ -706,6 +706,55 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         "licdn.com",
         "licdn.net",
     ]
+    video_domains = [
+        "zoom.us",
+        "zoom.com",
+        "zoomgov.com",
+        "meet.google.com",
+        "meetings.googleapis.com",
+        "hangouts.google.com",
+        "teams.microsoft.com",
+        "teams.live.com",
+        "skype.com",
+        "skypeforbusiness.com",
+        "webex.com",
+        "webexcontent.com",
+        "ciscospark.com",
+        "gotomeeting.com",
+        "gotomeet.me",
+        "whereby.com",
+        "jitsi.org",
+        "jitsi.net",
+    ]
+    streaming_ad_domains = [
+        # Spotify/FreeWheel ad and measurement hosts; shared audio/CDN hosts stay open.
+        "video-akpcw.spotifycdn.com",
+        "805ba.v.fwmrm.net",
+        "tvm-mtv-freewheel.akamaized.net",
+        "adeventtracker.spotify.com",
+        "ads.spotify.com",
+        "ads-fa.spotify.com",
+        "ads-ak.spotify.com",
+        "adserver.spotify.com",
+        "adstudio.spotify.com",
+        "ad-analytics.spotify.com",
+        "aet.spotify.com",
+        "analytics.spotify.com",
+        "bloodhound.spotify.com",
+        "crashdump.spotify.com",
+        "pixel.spotify.com",
+        "pixel-static.spotify.com",
+        "pixels.spotify.com",
+        # YouTube/Google ad endpoints; googlevideo.com remains available for playback.
+        "ads.youtube.com",
+        "googleads.g.doubleclick.net",
+        "ad.doubleclick.net",
+        "pagead2.googlesyndication.com",
+        "imasdk.googleapis.com",
+        "adtrafficquality.google",
+        "mobileads.google.com",
+        "pagead.l.google.com",
+    ]
     blocklist_files = (
         "rule_providers/universal-adblock-safe.yaml",
         "rule_providers/ads_indonesia_android.yaml",
@@ -751,11 +800,10 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         bank_route_rule["domain_suffix"] = bank_suffix
 
     dns_rules = [bank_dns_rule] if bank_exact or bank_suffix else []
-    dns_rules.append({
-        "domain_suffix": social_domains,
-        "action": "route",
-        "server": "local",
-    })
+    dns_rules.extend([
+        {"domain_suffix": social_domains, "action": "route", "server": "local"},
+        {"domain_suffix": video_domains, "action": "route", "server": "local"},
+    ])
     route_rules: list[dict[str, Any]] = [
         {"action": "sniff"},
         {"protocol": "dns", "action": "hijack-dns"},
@@ -764,9 +812,18 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         # UDP/443 makes Android apps immediately retry HTTPS over TCP.
         {"network": "udp", "port": 443, "action": "reject"},
         {
+            "domain": streaming_ad_domains,
+            "action": "reject",
+        },
+        {
             "domain_suffix": social_domains,
             "action": "route",
             "outbound": "SOCIAL",
+        },
+        {
+            "domain_suffix": video_domains,
+            "action": "route",
+            "outbound": "VMESS-VIDEO",
         },
     ]
     if bank_exact or bank_suffix:
@@ -780,6 +837,18 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         "tag": "BANK",
         "outbounds": manual_tags,
         "default": manual_tags[0],
+    }
+    vmess_tags = [
+        tag for tag, node in tagged_nodes
+        if str((getattr(node, "clash", {}) or {}).get("type", "")).lower() == "vmess"
+    ]
+    if not vmess_tags:
+        raise ValueError("routing Zoom/Meet memerlukan minimal satu node VMess")
+    video_outbound = {
+        "type": "selector",
+        "tag": "VMESS-VIDEO",
+        "outbounds": vmess_tags,
+        "default": vmess_tags[0],
     }
     social_candidates = [*manual_tags, *primary_tags[:1]]
     if not social_candidates:
@@ -812,6 +881,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
             {"type": "urltest", "tag": "automatic", "outbounds": primary_tags, "url": os.getenv("ANDROID_TEST_URL", os.getenv("TEST_URL", ALT_TEST_URL)), "interval": "3m", "tolerance": 50},
             social_outbound,
             bank_outbound,
+            video_outbound,
             *proxy_outbounds,
             {"type": "direct", "tag": "direct"},
             {"type": "block", "tag": "block"},
