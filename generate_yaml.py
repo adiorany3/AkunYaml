@@ -21,6 +21,8 @@ import requests
 from android_banking_policy import all_bank_suffix_domains
 from android_banking_policy import exact_domains as banking_exact_domains
 from android_banking_policy import payment_suffix_domains
+from android_marketplace_policy import exact_domains as marketplace_exact_domains
+from android_marketplace_policy import suffix_domains as marketplace_suffix_domains
 from openclash_target import (
     MIHOMO_TARGET_LABEL,
     assert_target_mihomo,
@@ -802,44 +804,59 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         "mobileads.google.com",
         "pagead.l.google.com",
     ]
-    blocklist_files = (
+    ad_blocklist_files = (
         "rule_providers/universal-adblock-safe.yaml",
         "rule_providers/ads_indonesia_android.yaml",
         ".feed_cache/last_good/hagezi-pro-plus-mini.txt",
         ".feed_cache/last_good/popup-ads.txt",
         ".feed_cache/last_good/gambling-mini.txt",
+    )
+    threat_blocklist_files = (
         ".feed_cache/last_good/threat-malware.txt",
         ".feed_cache/last_good/threat-phishing.txt",
         ".feed_cache/last_good/threat-fake-scam.txt",
         ".feed_cache/last_good/threat-cryptominers.txt",
     )
-    blocked_domains: list[str] = []
-    seen_blocked_domains: set[str] = set()
     allowlisted_domains = {
         line.strip().lower().rstrip(".")
         for line in _read_text_file("adblock_allowlist.txt").splitlines()
         if line.strip() and not line.lstrip().startswith("#")
     }
-    for blocklist_file in blocklist_files:
-        for raw_line in _read_text_file(blocklist_file).splitlines():
-            line = raw_line.strip().lower()
-            if not line or line.startswith(("#", "payload:")):
-                continue
-            if line.startswith("- domain-suffix,"):
-                domain = line.removeprefix("- domain-suffix,").split(",", 1)[0].strip()
-            else:
-                domain = line.removeprefix("- ").lstrip(".").split()[0]
-            domain = domain.rstrip(".")
-            if (
-                domain not in seen_blocked_domains
-                and "." in domain
-                and len(domain) <= 253
-                and re.fullmatch(r"[a-z0-9_-]+(?:\.[a-z0-9_-]+)+", domain)
-                and not looks_like_ip(domain)
-                and not any(domain == allowed or domain.endswith("." + allowed) for allowed in allowlisted_domains)
-            ):
-                seen_blocked_domains.add(domain)
-                blocked_domains.append(domain)
+    marketplace_exact = list(marketplace_exact_domains())
+    marketplace_suffix = list(marketplace_suffix_domains())
+
+    def load_blocked_domains(blocklist_files: tuple[str, ...], protect_marketplace: bool) -> list[str]:
+        blocked: list[str] = []
+        seen: set[str] = set()
+        for blocklist_file in blocklist_files:
+            for raw_line in _read_text_file(blocklist_file).splitlines():
+                line = raw_line.strip().lower()
+                if not line or line.startswith(("#", "payload:")):
+                    continue
+                if line.startswith("- domain-suffix,"):
+                    domain = line.removeprefix("- domain-suffix,").split(",", 1)[0].strip()
+                else:
+                    domain = line.removeprefix("- ").lstrip(".").split()[0]
+                domain = domain.rstrip(".")
+                marketplace_domain = domain in marketplace_exact or any(
+                    domain == suffix or domain.endswith("." + suffix)
+                    for suffix in marketplace_suffix
+                )
+                if (
+                    domain not in seen
+                    and "." in domain
+                    and len(domain) <= 253
+                    and re.fullmatch(r"[a-z0-9_-]+(?:\.[a-z0-9_-]+)+", domain)
+                    and not looks_like_ip(domain)
+                    and not any(domain == allowed or domain.endswith("." + allowed) for allowed in allowlisted_domains)
+                    and not (protect_marketplace and marketplace_domain)
+                ):
+                    seen.add(domain)
+                    blocked.append(domain)
+        return blocked
+
+    blocked_domains = load_blocked_domains(ad_blocklist_files, protect_marketplace=True)
+    threat_blocked_domains = load_blocked_domains(threat_blocklist_files, protect_marketplace=False)
     ai_blocked_domains = [
         domain
         for domain in _read_text_file(".runtime_cache/ai_adblock_blocklist.txt").splitlines()
@@ -859,7 +876,18 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     if bank_suffix:
         bank_route_rule["domain_suffix"] = bank_suffix
 
+    marketplace_dns_rule: dict[str, Any] = {"action": "route", "server": "local"}
+    marketplace_route_rule: dict[str, Any] = {"action": "route", "outbound": "proxy"}
+    if marketplace_exact:
+        marketplace_dns_rule["domain"] = marketplace_exact
+        marketplace_route_rule["domain"] = marketplace_exact
+    if marketplace_suffix:
+        marketplace_dns_rule["domain_suffix"] = marketplace_suffix
+        marketplace_route_rule["domain_suffix"] = marketplace_suffix
+
     dns_rules = [bank_dns_rule] if bank_exact or bank_suffix or payment_suffix else []
+    if marketplace_exact or marketplace_suffix:
+        dns_rules.append(marketplace_dns_rule)
     dns_rules.extend([
         {"domain_suffix": social_domains, "action": "route", "server": "local"},
         {"domain_suffix": video_domains, "action": "route", "server": "local"},
@@ -868,9 +896,17 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         {"action": "sniff"},
         {"protocol": "dns", "action": "hijack-dns"},
         {"ip_is_private": True, "action": "route", "outbound": "direct"},
-        {"domain_suffix": payment_suffix, "action": "route", "outbound": "direct"},
+    ]
+    if threat_blocked_domains:
+        route_rules.append({"domain_suffix": threat_blocked_domains, "action": "reject"})
+    if bank_exact or bank_suffix:
+        route_rules.append(bank_route_rule)
+    route_rules.append({"domain_suffix": payment_suffix, "action": "route", "outbound": "direct"})
+    if marketplace_exact or marketplace_suffix:
+        route_rules.append(marketplace_route_rule)
+    route_rules.extend([
         # Cloudflare WebSocket nodes carry TCP reliably, not QUIC. Rejecting
-        # UDP/443 makes Android apps immediately retry HTTPS over TCP.
+        # UDP/443 makes other Android apps immediately retry HTTPS over TCP.
         {"network": "udp", "port": 443, "action": "reject"},
         {
             "domain": list(dict.fromkeys(streaming_ad_domains + ai_blocked_domains)),
@@ -886,9 +922,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
             "action": "route",
             "outbound": "VMESS-VIDEO",
         },
-    ]
-    if bank_exact or bank_suffix:
-        route_rules.insert(3, bank_route_rule)
+    ])
     if blocked_domains:
         route_rules.append({"domain_suffix": blocked_domains, "action": "reject"})
     vmess_tags = [

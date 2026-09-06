@@ -140,6 +140,8 @@ echo "[AUDIT] Memeriksa keamanan, adblock, kategori judi, dan budget performa...
 "$PY" openwrt_adblock_audit.py
 "$PY" performance_budget_audit.py
 "$PY" load_balance_policy_audit.py
+"$PY" android_marketplace_live_audit.py
+"$PY" test_android_gambling_adblock.py
 "$PY" semantic_rule_audit.py \
   openclash_auto.yaml \
   openclash_android.yaml \
