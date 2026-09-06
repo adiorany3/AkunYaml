@@ -79,7 +79,7 @@ dns:
   default-nameserver:
   - https://1.1.1.1/dns-query
   - https://9.9.9.9/dns-query
-  nameserver:
+  nameserver: &id001
   - https://family.dns.bebasid.com/dns-query
   - tls://family.dns.bebasid.com:853
   proxy-server-nameserver:
@@ -110,11 +110,7 @@ dns:
     +.gemini.google.com:
     - https://1.1.1.1/dns-query
     - https://dns.google/dns-query
-  fallback:
-  - https://family.cloudflare-dns.com/dns-query
-  - tls://family.cloudflare-dns.com:853
-  - https://dns.quad9.net/dns-query
-  - tls://dns.quad9.net:853
+  fallback: *id001
   fallback-lazy-query: false
   fallback-filter:
     geoip: true
@@ -125,75 +121,7 @@ dns:
   use-hosts: true
   use-system-hosts: false
 proxies:
-- name: AKUN-001-CHATGPT-VLESS-WS-104MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 5dc15e15-f285-4a9d-959b-0e4fbdd77b63
-  udp: true
-  tls: true
-  servername: powered-by-surena.user68f797c2f3e1b.workers.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /?ed
-    headers:
-      Host: powered-by-surena.user68f797c2f3e1b.workers.dev
-  alpn:
-  - http/1.1
-- name: AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 77777777-8a3e-6666-b6d1-a9c5f0e8b3a2
-  udp: true
-  tls: true
-  servername: faxf32gkfzoxqv.fx6hsv0.ccwu.cc
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /
-    headers:
-      Host: faxf32gkfzoxqv.fx6hsv0.ccwu.cc
-  alpn:
-  - http/1.1
-- name: AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 0f0b7f69-78e1-4e9e-8b35-0986444613e4
-  udp: true
-  tls: true
-  servername: xwrivr.pages.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /%2F%3Fed%3D2048
-    headers:
-      Host: xwrivr.pages.dev
-  alpn:
-  - http/1.1
-- name: AKUN-004-SINGAPORE-VLESS-WS-110MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 04c808e2-0b59-47b0-a54b-32fc7ef1c902
-  udp: true
-  tls: true
-  servername: misaka.cndyw.ggff.net
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /?ed=2560fp=chrome
-    headers:
-      Host: misaka.cndyw.ggff.net
-  alpn:
-  - http/1.1
-- name: AKUN-005-CLOUDFLARE-VLESS-WS-120MS
+- name: AKUN-001-008500-VLESS-WS-114MS
   type: vless
   server: 104.17.3.81
   port: 443
@@ -210,91 +138,110 @@ proxies:
       Host: powered-by-surena.configfarsi695fd01a94fe7.workers.dev
   alpn:
   - http/1.1
-- name: AKUN-006-CLOUDFLARE-VLESS-WS-112MS
+- name: AKUN-002-MEDIUM-VLESS-WS-121MS
   type: vless
   server: 104.17.3.81
   port: 443
-  uuid: 63ec2a82-e47c-4782-a89e-9aca2baf17ef
+  uuid: f2a73750-3087-48ff-a763-1348c15dce68
   udp: true
   tls: true
-  servername: quiz.int.vidio.com.ex33r.eu.cc
+  servername: rAyAn-007.mAxImA.DpDnS.OrG
   network: ws
   client-fingerprint: chrome
   skip-cert-verify: true
   ws-opts:
-    path: /id-pusat
+    path: /?ed=2560
     headers:
-      Host: quiz.int.vidio.com.ex33r.eu.cc
+      Host: rAyAn-007.mAxImA.DpDnS.OrG
   alpn:
   - http/1.1
-- name: AKUN-007-CLOUDFLARE-VLESS-WS-115MS
+- name: AKUN-003-BIGCOMMERCE-VLESS-WS-108MS
   type: vless
   server: 104.17.3.81
   port: 443
-  uuid: 0f0b7f69-78e1-4e9e-8b35-0986444613e4
+  uuid: b8b01773-36b1-4b49-9bd0-6249f52345b4
   udp: true
   tls: true
-  servername: xwrivr.pages.dev
+  servername: MiSty-tooth-78cA.FoboGAH414-e7B.WoRKERs.DEv
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /eyJqdW5rIjoiTkNUaFg0ZnJNUjhhcyIsInByb3RvY29sIjoidmwiLCJtb2RlIjoicHJveHlpcCIsInBhbmVsSVBzIjpbXX0=
+    headers:
+      Host: MiSty-tooth-78cA.FoboGAH414-e7B.WoRKERs.DEv
+  alpn:
+  - http/1.1
+- name: AKUN-004-CHATGPT-VLESS-WS-106MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: 5dc15e15-f285-4a9d-959b-0e4fbdd77b63
+  udp: true
+  tls: true
+  servername: powered-by-surena.user68f797c2f3e1b.workers.dev
   network: ws
   client-fingerprint: chrome
   skip-cert-verify: true
   ws-opts:
     path: /?ed
     headers:
-      Host: xwrivr.pages.dev
+      Host: powered-by-surena.user68f797c2f3e1b.workers.dev
   alpn:
   - http/1.1
-- name: AKUN-008-CLOUDFLARE-VLESS-WS-115MS
+- name: AKUN-005-CLOUDFLARE-VLESS-WS-111MS
   type: vless
   server: 104.17.3.81
   port: 443
-  uuid: a8890c1b-3622-3106-c4be-d8671be32d2b
+  uuid: 1c9daf90-3950-44ac-b06f-4cf9aec63170
   udp: true
   tls: true
-  servername: summer-meadow-af5b.woowoorrrkk.workers.dev
+  servername: FrEe.SeRVEr14peekCoNfIG.WoRKErS.dEV
   network: ws
   client-fingerprint: chrome
   skip-cert-verify: true
   ws-opts:
-    path: /sync
+    path: /eyJqdW5rIjoiQmFCblN3SmhXYTB3RzVoIiwicHJvdG9jb2wiOiJ2bCIsIm1vZGUiOiJwcmVmaXgiLCJwYW5lbElQcyI6WyJbMjYwMjpmYzU5OjExOjY0OjpdIiwiWzJhMDI6ODk4OjE0Njo2NDo6XSIsIlsyNjAyOmZjNTk6YjA6NjQ6Ol0iXX0=
     headers:
-      Host: summer-meadow-af5b.woowoorrrkk.workers.dev
+      Host: free.server14peekconfig.workers.dev
   alpn:
   - http/1.1
-- name: AKUN-009-CLOUDFLARE-VLESS-WS-107MS
+- name: AKUN-006-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS
   type: vless
   server: 104.17.3.81
   port: 443
-  uuid: 7e81824b-35e0-4eb1-89e9-592f0c92aa6b
+  uuid: b69b43d1-091d-4d7c-90b2-7a8bbad9d6a9
   udp: true
   tls: true
-  servername: yx.zhourf2006.dpdns.org
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /
-    headers:
-      Host: yx.zhourf2006.dpdns.org
-  alpn:
-  - http/1.1
-- name: AKUN-010-CLOUDFLARE-VLESS-WS-111MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 3804296d-167f-4c1b-8734-147f80473590
-  udp: true
-  tls: true
-  servername: TeLegrAm.FREEPErSiANland1.woRKERS.DEv
+  servername: BItter-CreDIT-61b8.b76EbA0aBb.wORkerS.dEv
   network: ws
   client-fingerprint: chrome
   skip-cert-verify: true
   alpn:
   - http/1.1
   ws-opts:
-    path: /eyJqdW5rIjoiU29DZFZoZzF6RG8iLCJwcm90b2NvbCI6InZsIiwibW9kZSI6InByZWZpeCIsInBhbmVsSVBzIjpbIlsyNjAyOmZjNTk6YjA6NjQ6Ol0iLCJbMjYwMjpmYzU5OjExOjY0OjpdIl19
+    path: /eyJqdW5rIjoiY0U2T212Y21yeEhUZHRKYSIsInByb3RvY29sIjoidmwiLCJtb2RlIjoicHJveHlpcCIsInBhbmVsSVBzIjpbXX0
     headers:
-      Host: telegram.freepersianland1.workers.dev
+      Host: BItter-CreDIT-61b8.b76EbA0aBb.wORkerS.dEv
+- name: MANUAL-VMess-WS-TLS-443-ikada543
+  type: vmess
+  server: 104.17.3.81
+  port: 443
+  uuid: 07b0b1d3-0f2a-4d95-895a-c31be0f6a784
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: fbcdn.sbs
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /modern-analyze-to-machine-learning/buy-vmess-ws-pm-telegram-at-synricha
+    headers:
+      Host: fbcdn.sbs
+  alpn:
+  - http/1.1
 - name: MANUAL-VMess-WS-TLS-443-singa08
   type: vmess
   server: 104.17.3.81
@@ -314,38 +261,6 @@ proxies:
       Host: midtrans.cyou
   alpn:
   - http/1.1
-- name: MANUAL-VLESS-WS-TLS-443-apt50atpprem
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: c13ff27e-268a-4c69-a464-d8a625fd01b3
-  udp: true
-  tls: true
-  servername: atharva.web.id
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /effective-steps-to-cloud-computing/buy-vless-ws-pm-telegram-at-synricha
-    headers:
-      Host: atharva.web.id
-  alpn:
-  - http/1.1
-- name: MANUAL-TROJAN WS Melbikomas UAB
-  type: trojan
-  server: 104.17.3.81
-  port: 443
-  password: 3b01a777-55e7-49f6-8637-d94ee69607c6
-  udp: true
-  sni: jibtnl.eu.cc
-  skip-cert-verify: true
-  network: ws
-  ws-opts:
-    path: /91.192.81.154=2053
-    headers:
-      Host: jibtnl.eu.cc
-  alpn:
-  - http/1.1
 - name: MANUAL-VMess-WS-TLS-443-akuku8
   type: vmess
   server: 104.17.3.81
@@ -363,6 +278,23 @@ proxies:
     path: /beginner-understand-to-growth-hacking/buy-vmess-ws-pm-telegram-at-synricha
     headers:
       Host: fbcdn.sbs
+  alpn:
+  - http/1.1
+- name: MANUAL-VLESS-WS-TLS-443-apt50atpprem
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: c13ff27e-268a-4c69-a464-d8a625fd01b3
+  udp: true
+  tls: true
+  servername: atharva.web.id
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /effective-steps-to-cloud-computing/buy-vless-ws-pm-telegram-at-synricha
+    headers:
+      Host: atharva.web.id
   alpn:
   - http/1.1
 proxy-groups:
@@ -395,22 +327,18 @@ proxy-groups:
 - name: PING-CHECK
   type: url-test
   proxies:
-  - AKUN-001-CHATGPT-VLESS-WS-104MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-004-SINGAPORE-VLESS-WS-110MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-120MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-112MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-115MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-115MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-107MS
-  - AKUN-010-CLOUDFLARE-VLESS-WS-111MS
+  - AKUN-001-008500-VLESS-WS-114MS
+  - AKUN-002-MEDIUM-VLESS-WS-121MS
+  - AKUN-003-BIGCOMMERCE-VLESS-WS-108MS
+  - AKUN-004-CHATGPT-VLESS-WS-106MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-111MS
+  - AKUN-006-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS
+  - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
-  - MANUAL-TROJAN WS Melbikomas UAB
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
-  interval: 300
+  interval: 180
   tolerance: 100
   lazy: true
   timeout: 5000
@@ -419,26 +347,23 @@ proxy-groups:
 - name: WARM-UP
   type: url-test
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-  - AKUN-001-CHATGPT-VLESS-WS-104MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-107MS
+  - AKUN-006-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS
+  - AKUN-004-CHATGPT-VLESS-WS-106MS
+  - AKUN-003-BIGCOMMERCE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-111MS
   url: https://www.gstatic.com/generate_204
   interval: 60
   tolerance: 150
-  lazy: false
+  lazy: true
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
 - name: WARM-UP-CF
   type: url-test
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-107MS
-  - AKUN-010-CLOUDFLARE-VLESS-WS-111MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-111MS
   url: https://cp.cloudflare.com
-  interval: 120
+  interval: 90
   tolerance: 150
   lazy: true
   timeout: 5000
@@ -447,33 +372,29 @@ proxy-groups:
 - name: AUTO-FAST
   type: url-test
   proxies:
-  - AKUN-004-SINGAPORE-VLESS-WS-110MS
+  - AKUN-002-MEDIUM-VLESS-WS-121MS
   url: https://www.gstatic.com/generate_204
-  interval: 90
+  interval: 45
   tolerance: 150
-  lazy: false
+  lazy: true
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
 - name: FALLBACK
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-  - AKUN-001-CHATGPT-VLESS-WS-104MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-107MS
-  - AKUN-010-CLOUDFLARE-VLESS-WS-111MS
-  - AKUN-004-SINGAPORE-VLESS-WS-110MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-112MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-115MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-115MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-120MS
+  - AKUN-006-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS
+  - AKUN-004-CHATGPT-VLESS-WS-106MS
+  - AKUN-003-BIGCOMMERCE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-111MS
+  - AKUN-001-008500-VLESS-WS-114MS
+  - AKUN-002-MEDIUM-VLESS-WS-121MS
+  - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
-  - MANUAL-TROJAN WS Melbikomas UAB
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
-  interval: 180
+  interval: 90
   lazy: true
   timeout: 6000
   expected-status: 200/204/301/302
@@ -481,10 +402,10 @@ proxy-groups:
 - name: MANUAL
   type: fallback
   proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
-  - MANUAL-TROJAN WS Melbikomas UAB
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -505,8 +426,10 @@ proxy-groups:
   type: fallback
   proxies:
   - WARM-UP-CF
+  - WARM-UP
   - AUTO-FAST
   - FALLBACK
+  - GLOBAL
   url: https://www.gstatic.com/generate_204
   interval: 120
   lazy: true
@@ -577,11 +500,65 @@ rules:
 - DOMAIN-SUFFIX,linkedin.com,DIRECT
 - DOMAIN-SUFFIX,lnkd.in,DIRECT
 - DOMAIN-SUFFIX,recaptcha.net,DIRECT
+- RULE-SET,threat-malware,REJECT
+- RULE-SET,threat-phishing,REJECT
+- RULE-SET,threat-cryptominers,REJECT
+- RULE-SET,threat-fake-scam,REJECT
 - RULE-SET,threat-tif-mini,REJECT
 - RULE-SET,gambling-mini,REJECT
 - RULE-SET,adult-category,REJECT
 - RULE-SET,adult-local,REJECT
 - RULE-SET,pinjol-local,REJECT
+- RULE-SET,popup-ads,REJECT
+- DOMAIN,video-akpcw.spotifycdn.com,REJECT
+- DOMAIN,805ba.v.fwmrm.net,REJECT
+- DOMAIN,tvm-mtv-freewheel.akamaized.net,REJECT
+- DOMAIN,adeventtracker.spotify.com,REJECT
+- DOMAIN,ads.spotify.com,REJECT
+- DOMAIN,ads-fa.spotify.com,REJECT
+- DOMAIN,ads-ak.spotify.com,REJECT
+- DOMAIN,adserver.spotify.com,REJECT
+- DOMAIN,adstudio.spotify.com,REJECT
+- DOMAIN,ad-analytics.spotify.com,REJECT
+- DOMAIN,aet.spotify.com,REJECT
+- DOMAIN,analytics.spotify.com,REJECT
+- DOMAIN,bloodhound.spotify.com,REJECT
+- DOMAIN,crashdump.spotify.com,REJECT
+- DOMAIN,pixel.spotify.com,REJECT
+- DOMAIN,pixel-static.spotify.com,REJECT
+- DOMAIN,pixels.spotify.com,REJECT
+- DOMAIN-SUFFIX,popads.net,REJECT
+- DOMAIN-SUFFIX,popcash.net,REJECT
+- DOMAIN-SUFFIX,propellerads.com,REJECT
+- DOMAIN-SUFFIX,adsterra.com,REJECT
+- DOMAIN-SUFFIX,onclickalgo.com,REJECT
+- DOMAIN-SUFFIX,onclickperformance.com,REJECT
+- DOMAIN-SUFFIX,hilltopads.net,REJECT
+- DOMAIN-SUFFIX,richads.com,REJECT
+- DOMAIN-SUFFIX,clickadu.com,REJECT
+- DOMAIN-SUFFIX,adcash.com,REJECT
+- DOMAIN-SUFFIX,applovin.com,REJECT
+- DOMAIN-SUFFIX,applvn.com,REJECT
+- DOMAIN-SUFFIX,unityads.unity3d.com,REJECT
+- DOMAIN-SUFFIX,supersonicads.com,REJECT
+- DOMAIN-SUFFIX,ironsrc.com,REJECT
+- DOMAIN-SUFFIX,vungle.com,REJECT
+- DOMAIN-SUFFIX,vunglecloud.com,REJECT
+- DOMAIN-SUFFIX,chartboost.com,REJECT
+- DOMAIN-SUFFIX,inmobi.com,REJECT
+- DOMAIN-SUFFIX,adcolony.com,REJECT
+- DOMAIN-SUFFIX,mintegral.com,REJECT
+- DOMAIN-SUFFIX,mtgglobals.com,REJECT
+- DOMAIN-SUFFIX,rayjump.com,REJECT
+- DOMAIN-SUFFIX,pangle.io,REJECT
+- DOMAIN-SUFFIX,pangleglobal.com,REJECT
+- DOMAIN-SUFFIX,tapjoy.com,REJECT
+- DOMAIN-SUFFIX,tapjoyads.com,REJECT
+- DOMAIN-SUFFIX,startappservice.com,REJECT
+- DOMAIN-SUFFIX,startapp.com,REJECT
+- DOMAIN-SUFFIX,fyber.com,REJECT
+- DOMAIN-SUFFIX,inner-active.mobi,REJECT
+- RULE-SET,app-ad-safe,REJECT
 - RULE-SET,ads_indonesia,REJECT
 - RULE-SET,ads_domain,REJECT
 - RULE-SET,anti-ad,REJECT
@@ -595,17 +572,6 @@ rules:
 - DOMAIN-SUFFIX,api.twitter.com,REDDIT
 - DOMAIN-SUFFIX,api.x.com,REDDIT
 - DOMAIN-SUFFIX,t.co,REDDIT
-- DOMAIN,video-akpcw.spotifycdn.com,REJECT
-- DOMAIN,805ba.v.fwmrm.net,REJECT
-- DOMAIN,tvm-mtv-freewheel.akamaized.net,REJECT
-- DOMAIN,adeventtracker.spotify.com,REJECT
-- DOMAIN,ads-fa.spotify.com,REJECT
-- DOMAIN,ads-ak.spotify.com,REJECT
-- DOMAIN,adserver.spotify.com,REJECT
-- DOMAIN,adstudio.spotify.com,REJECT
-- DOMAIN,ad-analytics.spotify.com,REJECT
-- DOMAIN,aet.spotify.com,REJECT
-- DOMAIN,pixels.spotify.com,REJECT
 - DOMAIN-SUFFIX,x.com,MANUAL
 - DOMAIN-SUFFIX,api.x.com,MANUAL
 - DOMAIN-SUFFIX,twitter.com,MANUAL
@@ -674,6 +640,111 @@ rule-providers:
     behavior: classical
     format: yaml
     path: ./rule_providers/security-pinjol.yaml
+  popup-ads:
+    type: file
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/popup-ads.mrs
+  threat-malware:
+    type: file
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/threat-malware.mrs
+  threat-phishing:
+    type: file
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/threat-phishing.mrs
+  threat-cryptominers:
+    type: file
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/threat-cryptominers.mrs
+  threat-fake-scam:
+    type: file
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/threat-fake-scam.mrs
+  app-ad-safe:
+    type: inline
+    behavior: domain
+    payload:
+    - adv.sec.intl.miui.com
+    - adv.l7.34.sec.miui.com
+    - adv.sec.miui.com
+    - ad.miui.com
+    - api.ads.xiaomi.com
+    - ad.eu.xiaomi.com
+    - ad.quickapp.hybrid.xiaomi.com
+    - ad.india.xiaomi.com
+    - ad.intl.xiaomi.com
+    - xadx.file.market.xiaomi.com
+    - wtradv.market.xiaomi.com
+    - ad.cdn.pandora.xiaomi.com
+    - ads.heytapmobi.com
+    - ads.heytapmobile.com
+    - ads-bdapi-my.heytapmobile.com
+    - ads-bdapi-ph.heytapmobile.com
+    - ads-bdapi-th.heytapmobile.com
+    - ads-bdapi-vn.heytapmobile.com
+    - ad-growth-in.heytapmobile.com
+    - ad-growth-ru.heytapmobile.com
+    - ad-growth-sg.heytapmobile.com
+    - adx-ads-fr.heytapmobile.com
+    - adx-ads-ru.heytapmobile.com
+    - bdapi-ads-sg.heytapmobile.com
+    - cldata-ads-fr.heytapmobile.com
+    - cldata-ads-ru.heytapmobile.com
+    - sms-ads-in.heytapmobile.com
+    - sms-ads-ru.heytapmobile.com
+    - stgdata-ads-fr.heytapmobile.com
+    - ads.oppomobile.com
+    - adsfs.oppomobile.com
+    - ads.bing.com
+    - adserver.bing.com
+    - outlookads.live.com
+    - ads.microsoft.com
+    - adsdk.microsoft.com
+    - advertising.microsoft.com
+    - bingads.microsoft.com
+    - msadsscale.microsoft.com
+    - ads.eu.msn.com
+    - rmads.eu.msn.com
+    - ads.jp.msn.com
+    - advertising.jp.msn.com
+    - ad.msn.com
+    - adevents.msn.com
+    - ads.msn.com
+    - ads1.msn.com
+    - mobileads.msn.com
+    - rads.msn.com
+    - rmads.msn.com
+    - srtb.msn.com
+    - prod.editor.ads.trafficmanager.net
+    - ads-msn-com-profile.trafficmanager.net
+    - adsdk.trafficmanager.net
+    - dsp-ad-cache-tm.trafficmanager.net
+    - ssp-prod-eastus-nonmutt.trafficmanager.net
+    - msads.net
+    - advertising.apple.com
+    - advp.apple.com
+    - api-adservices.apple.com
+    - iad.apple.com
+    - iadcontent.apple.com
+    - iadmoo.apple.com
+    - iadsdk.apple.com
+    - iadworkbench.apple.com
+    - searchads.apple.com
+    - .smaato.com
+    - .smaato.net
+    - .ogury.com
+    - .ogury.co
+    - .pubnative.net
+    - .hyprmx.com
+    - .mobilefuse.com
+    - .amazon-adsystem.com
+    - .mopub.com
+    - .adjoe.io
   youtube_domain:
     type: http
     behavior: domain

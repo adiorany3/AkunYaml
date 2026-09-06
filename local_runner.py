@@ -1140,7 +1140,7 @@ def build_environment(args, workdir: Path, mihomo: Path, singbox: Path | None) -
     env.update(DEFAULT_ENV)
     env.update(load_config(args.config))
     env["MAX_NODES"] = str(args.max_nodes)
-    env["MIN_OUTPUT_NODES"] = str(min(args.min_nodes, args.max_nodes))
+    env["MIN_OUTPUT_NODES"] = str(args.min_nodes)
     env["MIHOMO_PATH"] = str(mihomo.resolve())
     if getattr(args, "allow_non_target_core", False):
         env["REQUIRE_EXACT_MIHOMO_CORE"] = "false"
@@ -2707,7 +2707,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description=f"AkunYaml runner for OpenClash {OPENCLASH_TARGET_VERSION} + {MIHOMO_TARGET_LABEL}")
     parser.add_argument("--workdir", type=Path, default=Path.cwd())
     parser.add_argument("--config", type=Path, default=Path("local_config.json"))
-    parser.add_argument("--max-nodes", type=int, default=None, help="Override MAX_NODES dari local_config.json")
+    parser.add_argument("--max-nodes", type=int, default=None, help="Override baseline minimum node otomatis dari MAX_NODES")
     parser.add_argument("--min-nodes", type=int, default=None, help="Override MIN_OUTPUT_NODES dari local_config.json")
     parser.add_argument("--candidate-min", type=int)
     parser.add_argument("--urltest-pool", type=int)
@@ -2761,7 +2761,7 @@ def main() -> int:
     if args.max_nodes < 1 or args.min_nodes < 1:
         raise SystemExit("max/min nodes minimal 1")
 
-    log(f"Target output: max otomatis={args.max_nodes}, minimum total={args.min_nodes}")
+    log(f"Target output: baseline otomatis={args.max_nodes}, minimum total={args.min_nodes}")
 
     ensure_core_files(workdir, args.refresh_core)
     patch_core_compatibility(workdir)

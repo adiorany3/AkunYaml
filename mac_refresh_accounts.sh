@@ -22,7 +22,7 @@ Pemakaian:
 Opsi:
   --push                Commit + push hasil generator ke branch aktif GitHub.
   --no-pull             Jangan git pull sebelum pencarian akun.
-  --max-nodes N         Override jumlah node otomatis output.
+  --max-nodes N         Override baseline minimum node otomatis (nama opsi kompatibel lama).
   --min-nodes N         Override minimum total node output (otomatis + manual).
   --candidate-min N     Override minimum kandidat yang diperiksa.
   -h, --help            Bantuan.
@@ -101,9 +101,10 @@ trap 'rm -f "$GENERATOR_LOG"' EXIT
 
 echo "[RUN] Mencari, mengetes, dan memilih akun baru..."
 set +e
-"${ARGS[@]}" 2>&1 | tee "$GENERATOR_LOG"
-GENERATOR_EXIT=${PIPESTATUS[0]}
+"${ARGS[@]}" >"$GENERATOR_LOG" 2>&1
+GENERATOR_EXIT=$?
 set -e
+cat "$GENERATOR_LOG"
 if [[ "$GENERATOR_EXIT" -ne 0 ]]; then
   REQUIRED_OUTPUTS=(openclash_auto.yaml openclash_android.yaml singbox_android.json openclash_lite.yaml openclash_fresh_pool.yaml akun.txt)
   MISSING_OUTPUTS=()

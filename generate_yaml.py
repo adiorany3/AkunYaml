@@ -554,6 +554,52 @@ def _as_int(value: Any, default: int = 0) -> int:
         return default
 
 
+def _node_usage_sort_key(node: Any) -> tuple[int, int, int, int, int, str]:
+    """Rank tested nodes by success, observed latency, stability, and transport."""
+    attempts = max(1, _as_int(getattr(node, "attempts", 0), 1))
+    successes = _as_int(getattr(node, "success_count", 0), 0)
+    return (
+        0 if getattr(node, "url_test_success", None) is not False and getattr(node, "nekobox_ready", None) is not False else 1,
+        _as_int(getattr(node, "url_test_ms", None), 999999),
+        _as_int(getattr(node, "nekobox_test_ms", None), 999999),
+        _as_int(getattr(node, "jitter_ms", None), 999999),
+        -int(1000 * successes / attempts),
+        _node_name(node),
+    )
+
+
+def _smart_select_nodes(nodes: list[Any], minimum_count: int) -> list[Any]:
+    """Keep fastest baseline, then add healthy nodes needed by usage groups."""
+    ranked = sorted(nodes, key=_node_usage_sort_key)
+    if not ranked:
+        return []
+
+    minimum_count = max(1, int(minimum_count))
+    limit = min(len(ranked), minimum_count + max(0, _env_int("SMART_MAX_EXTRA_NODES", 6)))
+    selected = list(ranked[: min(minimum_count, len(ranked))])
+    selected_ids = {id(node) for node in selected}
+    policies = (
+        ("BANK,VMESS-VIDEO", max(1, _env_int("VIDEO_NODE_MIN", 3)),
+         lambda node: str((getattr(node, "clash", {}) or {}).get("type", "")).lower() == "vmess"),
+        ("STREAMING", max(1, _env_int("STREAMING_NODE_MIN", 3)),
+         lambda node: node_network(node) == "ws"),
+    )
+    for groups, quota, matches in policies:
+        matching = [node for node in ranked if matches(node)]
+        for node in matching[:quota]:
+            current_groups = set(filter(None, str(getattr(node, "usage_groups", "")).split(",")))
+            current_groups.update(groups.split(","))
+            node.usage_groups = ",".join(sorted(current_groups))
+            if id(node) not in selected_ids and len(selected) < limit:
+                selected.append(node)
+                selected_ids.add(id(node))
+
+    for node in selected:
+        if not getattr(node, "usage_groups", ""):
+            node.usage_groups = "GENERAL"
+    return sorted(selected, key=_node_usage_sort_key)
+
+
 def _ws_opts(node: Any) -> tuple[str, str]:
     clash = getattr(node, "clash", {}) or {}
     ws_opts = clash.get("ws-opts") if isinstance(clash.get("ws-opts"), dict) else {}
@@ -845,20 +891,23 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         route_rules.insert(3, bank_route_rule)
     if blocked_domains:
         route_rules.append({"domain_suffix": blocked_domains, "action": "reject"})
-    if not manual_tags:
-        raise ValueError("routing bank memerlukan minimal satu node manual")
-    bank_outbound = {
-        "type": "selector",
-        "tag": "BANK",
-        "outbounds": manual_tags,
-        "default": manual_tags[0],
-    }
     vmess_tags = [
         tag for tag, node in tagged_nodes
         if str((getattr(node, "clash", {}) or {}).get("type", "")).lower() == "vmess"
     ]
     if not vmess_tags:
         raise ValueError("routing Zoom/Meet memerlukan minimal satu node VMess")
+    if not manual_tags:
+        raise ValueError("routing bank memerlukan minimal satu node manual")
+    # BANK keeps manual fallback and also includes every VMess account.
+    # This makes newly accepted automatic/manual VMess nodes enter both selectors.
+    bank_tags = list(dict.fromkeys([*manual_tags, *vmess_tags]))
+    bank_outbound = {
+        "type": "selector",
+        "tag": "BANK",
+        "outbounds": bank_tags,
+        "default": bank_tags[0],
+    }
     video_outbound = {
         "type": "selector",
         "tag": "VMESS-VIDEO",
@@ -1205,8 +1254,8 @@ def _unique_manual_names(nodes: list[Any]) -> None:
         source_name = normalize_name(node.name, f"NODE-{i:03d}")
         node.original_name = node.original_name or source_name
 
-        # Keep the user's/source fragment as much as possible. Only add MANUAL-
-        # in front. Do not convert to provider/ASN naming for manual nodes.
+        # Keep source fragment, but normalize repeated MANUAL prefixes.
+        source_name = re.sub(r"^(?:MANUAL[._ -]*)+", "", source_name, flags=re.IGNORECASE)
         base_raw = f"MANUAL-{source_name}"
         base = normalize_name(base_raw, f"MANUAL-NODE-{i:03d}")
         base = base[:96].strip(" -_|/") or f"MANUAL-NODE-{i:03d}"
@@ -1280,8 +1329,9 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
             existing_proxy_names.add(name)
 
     groups = config.setdefault("proxy-groups", [])
-    # Reddit must use one fixed manual account, never the whole MANUAL pool.
-    reddit_account = "MANUAL-VMess-WS-TLS-443-singa08"
+    # Reddit prefers its pinned account, then safely falls back to first manual node.
+    pinned_reddit_account = "MANUAL-VMess-WS-TLS-443-singa08"
+    reddit_account = pinned_reddit_account if pinned_reddit_account in manual_names else manual_names[0]
     groups[:] = [
         g
         for g in groups
@@ -1299,8 +1349,7 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
         "expected-status": "200/204/301/302",
         "max-failed-times": 2,
     }
-    if reddit_account in manual_names:
-        groups.append({"name": "REDDIT", "type": "select", "proxies": [reddit_account]})
+    groups.append({"name": "REDDIT", "type": "select", "proxies": [reddit_account]})
 
     # Manual nodes remain outside the automatic quota. Smart mode keeps strict
     # automatic nodes first in FALLBACK, then appends manual nodes as late-stage
@@ -1947,7 +1996,7 @@ def main() -> int:
     _, manual_compat_rows = _mihomo_openclash_compatibility_filter(manual_nodes, label="manual")
 
     print("[INFO] Generate YAML OpenClash otomatis")
-    print(f"[INFO] Target output otomatis: {max_nodes} node, minimal: {min_output_nodes} node")
+    print(f"[INFO] Baseline otomatis: {max_nodes} node, minimum total: {min_output_nodes} node")
     print(f"[INFO] Links subscription: {len([x for x in links_text.splitlines() if x.strip()])}")
     print(f"[INFO] Manual nodes TCPing passed: {len(manual_nodes)}; skipped: {len(manual_skipped)}")
     if multi_host_active:
@@ -2009,14 +2058,18 @@ def main() -> int:
     urltest_rows.extend(manual_urltest_rows)
     print(f"[INFO] URL test Mihomo manual: {manual_urltest_reason}")
 
-    alive_nodes, nekobox_checked_count, nekobox_reason, nekobox_rows = _singbox_url_test_nodes(
-        mihomo_pass_nodes,
-        target_count=max_nodes,
+    smart_candidate_count = max_nodes + max(0, _env_int("SMART_MAX_EXTRA_NODES", 6))
+    smart_test_candidates = _smart_select_nodes(mihomo_pass_nodes, max_nodes)
+    tested_nodes, nekobox_checked_count, nekobox_reason, nekobox_rows = _singbox_url_test_nodes(
+        smart_test_candidates,
+        target_count=smart_candidate_count,
         test_url=os.getenv("NEKOBOX_TEST_URL", os.getenv("URL_TEST_URL", os.getenv("TEST_URL", ALT_TEST_URL))),
         timeout_ms=_env_int("NEKOBOX_TEST_TIMEOUT_MS", _env_int("URL_TEST_TIMEOUT_MS", _env_int("HEALTH_TIMEOUT_MS", 5000))),
     )
+    alive_nodes = _smart_select_nodes(tested_nodes, max_nodes)
     unique_names(alive_nodes)
     print(f"[INFO] NekoBox/sing-box test otomatis: {nekobox_reason}")
+    print(f"[INFO] Smart selection: {len(alive_nodes)} node untuk baseline, BANK/VMESS-VIDEO, dan STREAMING")
 
     yaml_text = build_openclash_yaml(
         alive_nodes,
@@ -2073,7 +2126,6 @@ def main() -> int:
     for node in manual_nodes:
         node.tier = "MANUAL"
     singbox_nodes = [*alive_nodes, *manual_nodes]
-    unique_names(singbox_nodes)
     singbox_android_text = _build_singbox_android_json(singbox_nodes)
     _validate_singbox_json(
         singbox_android_text,
@@ -2143,7 +2195,7 @@ def main() -> int:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
     summary = (
         f"Last update: {now}\n"
-        f"Mode: FAST10 + Mihomo URL test + NekoBox/sing-box test early-stop\n"
+        f"Mode: smart group/usage selection + Mihomo URL test + NekoBox/sing-box test\n"
         f"OpenClash YAML: {output_yaml}\n"
         f"Android YAML: {output_android_yaml}\n"
         f"sing-box Android JSON: {output_singbox_android}\n"
@@ -2151,7 +2203,8 @@ def main() -> int:
         f"Fresh pool YAML: {output_fresh_yaml}\n"
         f"Fresh pool candidates: {len(fresh_nodes)}\n"
         f"Node quality report: {output_node_quality_report}\n"
-        f"Automatic YAML nodes after NekoBox test: {len(alive_nodes)}\n"
+        f"Automatic YAML nodes after smart selection: {len(alive_nodes)}\n"
+        f"Automatic NekoBox-tested candidates: {len(tested_nodes)}\n"
         f"Automatic strict pool before URL test: {len(auto_pool_nodes)}\n"
         f"Automatic Mihomo URL-test checked: {urltest_checked_count}\n"
         f"Automatic Mihomo URL-test result: {urltest_reason}\n"

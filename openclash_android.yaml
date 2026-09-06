@@ -27,31 +27,9 @@ sniffer:
   skip-domain:
   - +.lan
   - +.local
-  - +.seabank.co.id
-  - +.shopee.co.id
-  - +.shopee.com
-  - +.shopee.sg
-  - +.shopeemobile.com
-  - +.shopeeusercontent.com
-  - +.susercontent.com
-  - +.shp.ee
-  - +.tokopedia.com
-  - +.tokopedia.net
-  - +.lazada.co.id
-  - +.lazada.com
-  - +.lzd.co
-  - +.lazcdn.com
-  - +.slatic.net
-  - +.blibli.com
-  - +.bukalapak.com
-  - +.tiktokv.com
-  - +.tiktokcdn.com
-  - +.ibytedtos.com
-  - +.byteimg.com
-  - business-api.tiktok.com
-  - log.byteoversea.com
   - +.blu.co.id
   - +.jago.com
+  - +.seabank.co.id
   - +.bca.co.id
   - +.klikbca.com
   - +.mybca.co.id
@@ -135,6 +113,14 @@ sniffer:
   - +.dana.id
   - +.linkaja.id
   - +.flip.id
+  - +.shopee.co.id
+  - +.shopee.com
+  - +.shopee.sg
+  - +.shopeemobile.com
+  - +.shopeeusercontent.com
+  - +.susercontent.com
+  - +.shp.ee
+  - +.spaylater.co.id
   - +.midtrans.com
   - +.xendit.co
   - +.doku.com
@@ -148,6 +134,21 @@ sniffer:
   - +.oyindonesia.com
   - +.qris.id
   - +.bi.go.id
+  - +.tokopedia.com
+  - +.tokopedia.net
+  - +.lazada.co.id
+  - +.lazada.com
+  - +.lzd.co
+  - +.lazcdn.com
+  - +.slatic.net
+  - +.blibli.com
+  - +.bukalapak.com
+  - +.tiktokv.com
+  - +.tiktokcdn.com
+  - +.ibytedtos.com
+  - +.byteimg.com
+  - business-api.tiktok.com
+  - log.byteoversea.com
 dns:
   enable: true
   ipv6: false
@@ -171,38 +172,9 @@ dns:
   - +.bni.co.id
   - +.bri.co.id
   - +.mandiri.co.id
-  - +.seabank.co.id
-  - +.shopee.co.id
-  - +.shopee.com
-  - +.shopee.sg
-  - +.shopeemobile.com
-  - +.shopeeusercontent.com
-  - +.susercontent.com
-  - +.shp.ee
-  - +.tokopedia.com
-  - +.tokopedia.net
-  - +.lazada.co.id
-  - +.lazada.com
-  - +.lzd.co
-  - +.lazcdn.com
-  - +.slatic.net
-  - +.blibli.com
-  - +.bukalapak.com
-  - +.tiktokv.com
-  - +.tiktokcdn.com
-  - +.ibytedtos.com
-  - +.byteimg.com
-  - business-api.tiktok.com
-  - log.byteoversea.com
-  - +.stun.*.*
-  - +.stun.*.*.*
-  - +.stun.*.*.*.*
-  - +.stun.*.*.*.*.*
-  - '*.n.n.srv.nintendo.net'
-  - xbox.*.*.microsoft.com
-  - '*.*.xboxlive.com'
   - +.blu.co.id
   - +.jago.com
+  - +.seabank.co.id
   - +.klikbca.com
   - +.mybca.co.id
   - +.bankmandiri.co.id
@@ -283,6 +255,14 @@ dns:
   - +.dana.id
   - +.linkaja.id
   - +.flip.id
+  - +.shopee.co.id
+  - +.shopee.com
+  - +.shopee.sg
+  - +.shopeemobile.com
+  - +.shopeeusercontent.com
+  - +.susercontent.com
+  - +.shp.ee
+  - +.spaylater.co.id
   - +.midtrans.com
   - +.xendit.co
   - +.doku.com
@@ -296,6 +276,28 @@ dns:
   - +.oyindonesia.com
   - +.qris.id
   - +.bi.go.id
+  - +.tokopedia.com
+  - +.tokopedia.net
+  - +.lazada.co.id
+  - +.lazada.com
+  - +.lzd.co
+  - +.lazcdn.com
+  - +.slatic.net
+  - +.blibli.com
+  - +.bukalapak.com
+  - +.tiktokv.com
+  - +.tiktokcdn.com
+  - +.ibytedtos.com
+  - +.byteimg.com
+  - business-api.tiktok.com
+  - log.byteoversea.com
+  - +.stun.*.*
+  - +.stun.*.*.*
+  - +.stun.*.*.*.*
+  - +.stun.*.*.*.*.*
+  - '*.n.n.srv.nintendo.net'
+  - xbox.*.*.microsoft.com
+  - '*.*.xboxlive.com'
   default-nameserver:
   - https://1.1.1.1/dns-query
   - https://9.9.9.9/dns-query
@@ -330,79 +332,13 @@ dns:
     +.gemini.google.com:
     - https://1.1.1.1/dns-query
     - https://dns.google/dns-query
-    +.seabank.co.id:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.shopee.co.id:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.shopee.com:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.shopee.sg:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.shopeemobile.com:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.shopeeusercontent.com:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.susercontent.com:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.shp.ee:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.tokopedia.com:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.tokopedia.net:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.lazada.co.id:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.lazada.com:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.lzd.co:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.lazcdn.com:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.slatic.net:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.blibli.com:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.bukalapak.com:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.tiktokv.com:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.tiktokcdn.com:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.ibytedtos.com:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.byteimg.com:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.business-api.tiktok.com:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-    +.log.byteoversea.com:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
     +.blu.co.id:
     - https://1.1.1.1/dns-query
     - https://dns.google/dns-query
     +.jago.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.seabank.co.id:
     - https://1.1.1.1/dns-query
     - https://dns.google/dns-query
     +.bca.co.id:
@@ -654,6 +590,30 @@ dns:
     +.flip.id:
     - https://1.1.1.1/dns-query
     - https://dns.google/dns-query
+    +.shopee.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shopee.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shopee.sg:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shopeemobile.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shopeeusercontent.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.susercontent.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shp.ee:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.spaylater.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
     +.midtrans.com:
     - https://1.1.1.1/dns-query
     - https://dns.google/dns-query
@@ -693,87 +653,62 @@ dns:
     +.bi.go.id:
     - https://1.1.1.1/dns-query
     - https://dns.google/dns-query
+    +.tokopedia.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.tokopedia.net:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.lazada.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.lazada.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.lzd.co:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.lazcdn.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.slatic.net:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.blibli.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bukalapak.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.tiktokv.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.tiktokcdn.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.ibytedtos.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.byteimg.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.business-api.tiktok.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.log.byteoversea.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
   cache-algorithm: arc
   prefer-h3: false
   respect-rules: true
   use-hosts: true
   use-system-hosts: false
   fallback:
-  - https://family.cloudflare-dns.com/dns-query
-  - tls://family.cloudflare-dns.com:853
-  - https://dns.quad9.net/dns-query
-  - tls://dns.quad9.net:853
+  - https://family.dns.bebasid.com/dns-query
+  - tls://family.dns.bebasid.com:853
   fallback-lazy-query: false
 proxies:
-- name: AKUN-001-CHATGPT-VLESS-WS-104MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 5dc15e15-f285-4a9d-959b-0e4fbdd77b63
-  udp: true
-  tls: true
-  servername: powered-by-surena.user68f797c2f3e1b.workers.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /?ed
-    headers:
-      Host: powered-by-surena.user68f797c2f3e1b.workers.dev
-  alpn:
-  - http/1.1
-- name: AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 77777777-8a3e-6666-b6d1-a9c5f0e8b3a2
-  udp: true
-  tls: true
-  servername: faxf32gkfzoxqv.fx6hsv0.ccwu.cc
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /
-    headers:
-      Host: faxf32gkfzoxqv.fx6hsv0.ccwu.cc
-  alpn:
-  - http/1.1
-- name: AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 0f0b7f69-78e1-4e9e-8b35-0986444613e4
-  udp: true
-  tls: true
-  servername: xwrivr.pages.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /%2F%3Fed%3D2048
-    headers:
-      Host: xwrivr.pages.dev
-  alpn:
-  - http/1.1
-- name: AKUN-004-SINGAPORE-VLESS-WS-110MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 04c808e2-0b59-47b0-a54b-32fc7ef1c902
-  udp: true
-  tls: true
-  servername: misaka.cndyw.ggff.net
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /?ed=2560fp=chrome
-    headers:
-      Host: misaka.cndyw.ggff.net
-  alpn:
-  - http/1.1
-- name: AKUN-005-CLOUDFLARE-VLESS-WS-120MS
+- name: AKUN-001-008500-VLESS-WS-114MS
   type: vless
   server: 104.17.3.81
   port: 443
@@ -790,91 +725,110 @@ proxies:
       Host: powered-by-surena.configfarsi695fd01a94fe7.workers.dev
   alpn:
   - http/1.1
-- name: AKUN-006-CLOUDFLARE-VLESS-WS-112MS
+- name: AKUN-002-MEDIUM-VLESS-WS-121MS
   type: vless
   server: 104.17.3.81
   port: 443
-  uuid: 63ec2a82-e47c-4782-a89e-9aca2baf17ef
+  uuid: f2a73750-3087-48ff-a763-1348c15dce68
   udp: true
   tls: true
-  servername: quiz.int.vidio.com.ex33r.eu.cc
+  servername: rAyAn-007.mAxImA.DpDnS.OrG
   network: ws
   client-fingerprint: chrome
   skip-cert-verify: true
   ws-opts:
-    path: /id-pusat
+    path: /?ed=2560
     headers:
-      Host: quiz.int.vidio.com.ex33r.eu.cc
+      Host: rAyAn-007.mAxImA.DpDnS.OrG
   alpn:
   - http/1.1
-- name: AKUN-007-CLOUDFLARE-VLESS-WS-115MS
+- name: AKUN-003-BIGCOMMERCE-VLESS-WS-108MS
   type: vless
   server: 104.17.3.81
   port: 443
-  uuid: 0f0b7f69-78e1-4e9e-8b35-0986444613e4
+  uuid: b8b01773-36b1-4b49-9bd0-6249f52345b4
   udp: true
   tls: true
-  servername: xwrivr.pages.dev
+  servername: MiSty-tooth-78cA.FoboGAH414-e7B.WoRKERs.DEv
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /eyJqdW5rIjoiTkNUaFg0ZnJNUjhhcyIsInByb3RvY29sIjoidmwiLCJtb2RlIjoicHJveHlpcCIsInBhbmVsSVBzIjpbXX0=
+    headers:
+      Host: MiSty-tooth-78cA.FoboGAH414-e7B.WoRKERs.DEv
+  alpn:
+  - http/1.1
+- name: AKUN-004-CHATGPT-VLESS-WS-106MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: 5dc15e15-f285-4a9d-959b-0e4fbdd77b63
+  udp: true
+  tls: true
+  servername: powered-by-surena.user68f797c2f3e1b.workers.dev
   network: ws
   client-fingerprint: chrome
   skip-cert-verify: true
   ws-opts:
     path: /?ed
     headers:
-      Host: xwrivr.pages.dev
+      Host: powered-by-surena.user68f797c2f3e1b.workers.dev
   alpn:
   - http/1.1
-- name: AKUN-008-CLOUDFLARE-VLESS-WS-115MS
+- name: AKUN-005-CLOUDFLARE-VLESS-WS-111MS
   type: vless
   server: 104.17.3.81
   port: 443
-  uuid: a8890c1b-3622-3106-c4be-d8671be32d2b
+  uuid: 1c9daf90-3950-44ac-b06f-4cf9aec63170
   udp: true
   tls: true
-  servername: summer-meadow-af5b.woowoorrrkk.workers.dev
+  servername: FrEe.SeRVEr14peekCoNfIG.WoRKErS.dEV
   network: ws
   client-fingerprint: chrome
   skip-cert-verify: true
   ws-opts:
-    path: /sync
+    path: /eyJqdW5rIjoiQmFCblN3SmhXYTB3RzVoIiwicHJvdG9jb2wiOiJ2bCIsIm1vZGUiOiJwcmVmaXgiLCJwYW5lbElQcyI6WyJbMjYwMjpmYzU5OjExOjY0OjpdIiwiWzJhMDI6ODk4OjE0Njo2NDo6XSIsIlsyNjAyOmZjNTk6YjA6NjQ6Ol0iXX0=
     headers:
-      Host: summer-meadow-af5b.woowoorrrkk.workers.dev
+      Host: free.server14peekconfig.workers.dev
   alpn:
   - http/1.1
-- name: AKUN-009-CLOUDFLARE-VLESS-WS-107MS
+- name: AKUN-006-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS
   type: vless
   server: 104.17.3.81
   port: 443
-  uuid: 7e81824b-35e0-4eb1-89e9-592f0c92aa6b
+  uuid: b69b43d1-091d-4d7c-90b2-7a8bbad9d6a9
   udp: true
   tls: true
-  servername: yx.zhourf2006.dpdns.org
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /
-    headers:
-      Host: yx.zhourf2006.dpdns.org
-  alpn:
-  - http/1.1
-- name: AKUN-010-CLOUDFLARE-VLESS-WS-111MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 3804296d-167f-4c1b-8734-147f80473590
-  udp: true
-  tls: true
-  servername: TeLegrAm.FREEPErSiANland1.woRKERS.DEv
+  servername: BItter-CreDIT-61b8.b76EbA0aBb.wORkerS.dEv
   network: ws
   client-fingerprint: chrome
   skip-cert-verify: true
   alpn:
   - http/1.1
   ws-opts:
-    path: /eyJqdW5rIjoiU29DZFZoZzF6RG8iLCJwcm90b2NvbCI6InZsIiwibW9kZSI6InByZWZpeCIsInBhbmVsSVBzIjpbIlsyNjAyOmZjNTk6YjA6NjQ6Ol0iLCJbMjYwMjpmYzU5OjExOjY0OjpdIl19
+    path: /eyJqdW5rIjoiY0U2T212Y21yeEhUZHRKYSIsInByb3RvY29sIjoidmwiLCJtb2RlIjoicHJveHlpcCIsInBhbmVsSVBzIjpbXX0
     headers:
-      Host: telegram.freepersianland1.workers.dev
+      Host: BItter-CreDIT-61b8.b76EbA0aBb.wORkerS.dEv
+- name: MANUAL-VMess-WS-TLS-443-ikada543
+  type: vmess
+  server: 104.17.3.81
+  port: 443
+  uuid: 07b0b1d3-0f2a-4d95-895a-c31be0f6a784
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: fbcdn.sbs
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /modern-analyze-to-machine-learning/buy-vmess-ws-pm-telegram-at-synricha
+    headers:
+      Host: fbcdn.sbs
+  alpn:
+  - http/1.1
 - name: MANUAL-VMess-WS-TLS-443-singa08
   type: vmess
   server: 104.17.3.81
@@ -892,38 +846,6 @@ proxies:
     path: /essential-achieve-to-growth-hacking/buy-vmess-ws-pm-telegram-at-synricha
     headers:
       Host: midtrans.cyou
-  alpn:
-  - http/1.1
-- name: MANUAL-VLESS-WS-TLS-443-apt50atpprem
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: c13ff27e-268a-4c69-a464-d8a625fd01b3
-  udp: true
-  tls: true
-  servername: atharva.web.id
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /effective-steps-to-cloud-computing/buy-vless-ws-pm-telegram-at-synricha
-    headers:
-      Host: atharva.web.id
-  alpn:
-  - http/1.1
-- name: MANUAL-TROJAN WS Melbikomas UAB
-  type: trojan
-  server: 104.17.3.81
-  port: 443
-  password: 3b01a777-55e7-49f6-8637-d94ee69607c6
-  udp: true
-  sni: jibtnl.eu.cc
-  skip-cert-verify: true
-  network: ws
-  ws-opts:
-    path: /91.192.81.154=2053
-    headers:
-      Host: jibtnl.eu.cc
   alpn:
   - http/1.1
 - name: MANUAL-VMess-WS-TLS-443-akuku8
@@ -945,6 +867,23 @@ proxies:
       Host: fbcdn.sbs
   alpn:
   - http/1.1
+- name: MANUAL-VLESS-WS-TLS-443-apt50atpprem
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: c13ff27e-268a-4c69-a464-d8a625fd01b3
+  udp: true
+  tls: true
+  servername: atharva.web.id
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /effective-steps-to-cloud-computing/buy-vless-ws-pm-telegram-at-synricha
+    headers:
+      Host: atharva.web.id
+  alpn:
+  - http/1.1
 proxy-groups:
 - name: GLOBAL
   type: fallback
@@ -952,7 +891,7 @@ proxy-groups:
   - WARM-UP
   - AUTO-FAST
   url: https://www.gstatic.com/generate_204
-  interval: 180
+  interval: 300
   lazy: true
   timeout: 5000
   expected-status: 200/204/301/302
@@ -960,14 +899,12 @@ proxy-groups:
 - name: AI-OPENAI
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-  - AKUN-001-CHATGPT-VLESS-WS-104MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-107MS
-  - AKUN-004-SINGAPORE-VLESS-WS-110MS
-  - AKUN-010-CLOUDFLARE-VLESS-WS-111MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-112MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-115MS
+  - AKUN-006-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS
+  - AKUN-004-CHATGPT-VLESS-WS-106MS
+  - AKUN-003-BIGCOMMERCE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-111MS
+  - AKUN-001-008500-VLESS-WS-114MS
+  - AKUN-002-MEDIUM-VLESS-WS-121MS
   url: https://chatgpt.com/favicon.ico
   interval: 300
   lazy: true
@@ -977,14 +914,12 @@ proxy-groups:
 - name: AI-CLAUDE
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-  - AKUN-001-CHATGPT-VLESS-WS-104MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-107MS
-  - AKUN-004-SINGAPORE-VLESS-WS-110MS
-  - AKUN-010-CLOUDFLARE-VLESS-WS-111MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-112MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-115MS
+  - AKUN-006-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS
+  - AKUN-004-CHATGPT-VLESS-WS-106MS
+  - AKUN-003-BIGCOMMERCE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-111MS
+  - AKUN-001-008500-VLESS-WS-114MS
+  - AKUN-002-MEDIUM-VLESS-WS-121MS
   url: https://claude.ai/favicon.ico
   interval: 300
   lazy: true
@@ -994,14 +929,12 @@ proxy-groups:
 - name: AI-GEMINI
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-  - AKUN-001-CHATGPT-VLESS-WS-104MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-107MS
-  - AKUN-004-SINGAPORE-VLESS-WS-110MS
-  - AKUN-010-CLOUDFLARE-VLESS-WS-111MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-112MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-115MS
+  - AKUN-006-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS
+  - AKUN-004-CHATGPT-VLESS-WS-106MS
+  - AKUN-003-BIGCOMMERCE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-111MS
+  - AKUN-001-008500-VLESS-WS-114MS
+  - AKUN-002-MEDIUM-VLESS-WS-121MS
   url: https://gemini.google.com/favicon.ico
   interval: 300
   lazy: true
@@ -1011,14 +944,12 @@ proxy-groups:
 - name: AI-OTHER
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-  - AKUN-001-CHATGPT-VLESS-WS-104MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-107MS
-  - AKUN-004-SINGAPORE-VLESS-WS-110MS
-  - AKUN-010-CLOUDFLARE-VLESS-WS-111MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-112MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-115MS
+  - AKUN-006-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS
+  - AKUN-004-CHATGPT-VLESS-WS-106MS
+  - AKUN-003-BIGCOMMERCE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-111MS
+  - AKUN-001-008500-VLESS-WS-114MS
+  - AKUN-002-MEDIUM-VLESS-WS-121MS
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -1028,14 +959,12 @@ proxy-groups:
 - name: AI-STABLE
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-  - AKUN-001-CHATGPT-VLESS-WS-104MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-107MS
-  - AKUN-004-SINGAPORE-VLESS-WS-110MS
-  - AKUN-010-CLOUDFLARE-VLESS-WS-111MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-112MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-115MS
+  - AKUN-006-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS
+  - AKUN-004-CHATGPT-VLESS-WS-106MS
+  - AKUN-003-BIGCOMMERCE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-111MS
+  - AKUN-001-008500-VLESS-WS-114MS
+  - AKUN-002-MEDIUM-VLESS-WS-121MS
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -1045,8 +974,12 @@ proxy-groups:
 - name: AI-BACKUP
   type: fallback
   proxies:
-  - AKUN-008-CLOUDFLARE-VLESS-WS-115MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-120MS
+  - AKUN-006-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS
+  - AKUN-004-CHATGPT-VLESS-WS-106MS
+  - AKUN-003-BIGCOMMERCE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-111MS
+  - AKUN-001-008500-VLESS-WS-114MS
+  - AKUN-002-MEDIUM-VLESS-WS-121MS
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -1056,8 +989,12 @@ proxy-groups:
 - name: AI-MANUAL
   type: fallback
   proxies:
-  - AKUN-008-CLOUDFLARE-VLESS-WS-115MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-120MS
+  - AKUN-006-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS
+  - AKUN-004-CHATGPT-VLESS-WS-106MS
+  - AKUN-003-BIGCOMMERCE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-111MS
+  - AKUN-001-008500-VLESS-WS-114MS
+  - AKUN-002-MEDIUM-VLESS-WS-121MS
   url: https://www.gstatic.com/generate_204
   interval: 600
   lazy: true
@@ -1080,22 +1017,18 @@ proxy-groups:
 - name: PING-CHECK
   type: url-test
   proxies:
-  - AKUN-001-CHATGPT-VLESS-WS-104MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-004-SINGAPORE-VLESS-WS-110MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-120MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-112MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-115MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-115MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-107MS
-  - AKUN-010-CLOUDFLARE-VLESS-WS-111MS
+  - AKUN-001-008500-VLESS-WS-114MS
+  - AKUN-002-MEDIUM-VLESS-WS-121MS
+  - AKUN-003-BIGCOMMERCE-VLESS-WS-108MS
+  - AKUN-004-CHATGPT-VLESS-WS-106MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-111MS
+  - AKUN-006-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS
+  - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
-  - MANUAL-TROJAN WS Melbikomas UAB
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
-  interval: 300
+  interval: 180
   tolerance: 100
   lazy: true
   timeout: 5000
@@ -1104,26 +1037,23 @@ proxy-groups:
 - name: WARM-UP
   type: url-test
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-  - AKUN-001-CHATGPT-VLESS-WS-104MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-107MS
+  - AKUN-006-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS
+  - AKUN-004-CHATGPT-VLESS-WS-106MS
+  - AKUN-003-BIGCOMMERCE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-111MS
   url: https://www.gstatic.com/generate_204
   interval: 60
   tolerance: 150
-  lazy: false
+  lazy: true
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
 - name: WARM-UP-CF
   type: url-test
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-107MS
-  - AKUN-010-CLOUDFLARE-VLESS-WS-111MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-111MS
   url: https://cp.cloudflare.com
-  interval: 120
+  interval: 90
   tolerance: 150
   lazy: true
   timeout: 5000
@@ -1132,13 +1062,13 @@ proxy-groups:
 - name: STREAMING-FAST
   type: url-test
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-107MS
-  - AKUN-010-CLOUDFLARE-VLESS-WS-111MS
-  - AKUN-001-CHATGPT-VLESS-WS-104MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-111MS
+  - AKUN-006-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS
+  - AKUN-004-CHATGPT-VLESS-WS-106MS
+  - AKUN-003-BIGCOMMERCE-VLESS-WS-108MS
+  - AKUN-001-008500-VLESS-WS-114MS
   url: https://cp.cloudflare.com
-  interval: 90
+  interval: 45
   tolerance: 150
   lazy: true
   timeout: 5000
@@ -1147,9 +1077,9 @@ proxy-groups:
 - name: AUTO-FAST
   type: url-test
   proxies:
-  - AKUN-004-SINGAPORE-VLESS-WS-110MS
+  - AKUN-002-MEDIUM-VLESS-WS-121MS
   url: https://www.gstatic.com/generate_204
-  interval: 90
+  interval: 45
   tolerance: 150
   lazy: true
   timeout: 5000
@@ -1158,22 +1088,18 @@ proxy-groups:
 - name: FALLBACK
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-103MS
-  - AKUN-001-CHATGPT-VLESS-WS-104MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-009-CLOUDFLARE-VLESS-WS-107MS
-  - AKUN-010-CLOUDFLARE-VLESS-WS-111MS
-  - AKUN-004-SINGAPORE-VLESS-WS-110MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-112MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-115MS
-  - AKUN-008-CLOUDFLARE-VLESS-WS-115MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-120MS
+  - AKUN-006-RS-RAPIDSEEDBOX-20190717-VLESS-WS-105MS
+  - AKUN-004-CHATGPT-VLESS-WS-106MS
+  - AKUN-003-BIGCOMMERCE-VLESS-WS-108MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-111MS
+  - AKUN-001-008500-VLESS-WS-114MS
+  - AKUN-002-MEDIUM-VLESS-WS-121MS
+  - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
-  - MANUAL-TROJAN WS Melbikomas UAB
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
-  interval: 180
+  interval: 90
   lazy: true
   timeout: 6000
   expected-status: 200/204/301/302
@@ -1191,10 +1117,10 @@ proxy-groups:
 - name: MANUAL
   type: fallback
   proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
-  - MANUAL-TROJAN WS Melbikomas UAB
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -1204,10 +1130,12 @@ proxy-groups:
 - name: YOUTUBE
   type: fallback
   proxies:
-  - WARM-UP-CF
   - STREAMING-FAST
+  - WARM-UP-CF
+  - WARM-UP
   - AUTO-FAST
   - FALLBACK
+  - GLOBAL
   url: https://www.gstatic.com/generate_204
   interval: 120
   lazy: true
@@ -1261,6 +1189,16 @@ rule-providers:
     behavior: classical
     path: ./rule_providers/adult-category.yaml
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/classical/category-porn.yaml
+    interval: 43200
+  threat-fake-scam:
+    type: file
+    behavior: domain
+    path: ./rule_providers/threat-fake-scam_android.yaml
+  privacy-extra:
+    type: http
+    behavior: classical
+    path: ./rule_providers/privacy-extra.yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Privacy/Privacy.yaml
     interval: 43200
 rules:
 - DOMAIN-SUFFIX,local,DIRECT
@@ -1497,8 +1435,12 @@ rules:
 - DOMAIN-SUFFIX,flip.id,DIRECT
 - DOMAIN-SUFFIX,shopee.co.id,DIRECT
 - DOMAIN-SUFFIX,shopee.com,DIRECT
+- DOMAIN-SUFFIX,shopee.sg,DIRECT
 - DOMAIN-SUFFIX,shopeemobile.com,DIRECT
+- DOMAIN-SUFFIX,shopeeusercontent.com,DIRECT
+- DOMAIN-SUFFIX,susercontent.com,DIRECT
 - DOMAIN-SUFFIX,shp.ee,DIRECT
+- DOMAIN-SUFFIX,spaylater.co.id,DIRECT
 - DOMAIN-SUFFIX,midtrans.com,DIRECT
 - DOMAIN-SUFFIX,xendit.co,DIRECT
 - DOMAIN-SUFFIX,doku.com,DIRECT
@@ -1535,20 +1477,8 @@ rules:
 - DOMAIN-SUFFIX,ibytedtos.com,GLOBAL
 - DOMAIN-SUFFIX,byteimg.com,GLOBAL
 - RULE-SET,adult-category,REJECT
-- RULE-SET,ads_indonesia,REJECT
-- RULE-SET,ads_domain,REJECT
-- RULE-SET,anti-ad,REJECT
-- RULE-SET,tracker-domain,REJECT
-- DOMAIN-SUFFIX,reddit.com,REDDIT
-- DOMAIN-SUFFIX,redditmedia.com,REDDIT
-- DOMAIN-SUFFIX,redd.it,REDDIT
-- DOMAIN,old.reddit.com,REDDIT
-- DOMAIN-KEYWORD,reddit,REDDIT
-- DOMAIN-SUFFIX,twitter.com,REDDIT
-- DOMAIN-SUFFIX,x.com,REDDIT
-- DOMAIN-SUFFIX,api.twitter.com,REDDIT
-- DOMAIN-SUFFIX,api.x.com,REDDIT
-- DOMAIN-SUFFIX,t.co,REDDIT
+- RULE-SET,threat-fake-scam,REJECT
+- RULE-SET,privacy-extra,REJECT
 - DOMAIN,adtago.s3.amazonaws.com,REJECT
 - DOMAIN,analyticsengine.s3.amazonaws.com,REJECT
 - DOMAIN,analytics.s3.amazonaws.com,REJECT
@@ -1648,6 +1578,7 @@ rules:
 - DOMAIN,sdkconfig.ad.xiaomi.com,REJECT
 - DOMAIN,sdkconfig.ad.intl.xiaomi.com,REJECT
 - DOMAIN,tracking.rus.miui.com,REJECT
+- DOMAIN,adsfs.oppomobile.com,REJECT
 - DOMAIN,adx.ads.oppomobile.com,REJECT
 - DOMAIN,ck.ads.oppomobile.com,REJECT
 - DOMAIN,data.ads.oppomobile.com,REJECT
@@ -1664,8 +1595,10 @@ rules:
 - DOMAIN,nmetrics.samsung.com,REJECT
 - DOMAIN,samsung-com.112.2o7.net,REJECT
 - DOMAIN,analytics-api.samsunghealthcn.com,REJECT
+- DOMAIN,iadsdk.apple.com,REJECT
 - DOMAIN,metrics.icloud.com,REJECT
 - DOMAIN,metrics.mzstatic.com,REJECT
+- DOMAIN,api-adservices.apple.com,REJECT
 - DOMAIN,books-analytics-events.apple.com,REJECT
 - DOMAIN,weather-analytics-events.apple.com,REJECT
 - DOMAIN,notes-analytics-events.apple.com,REJECT
@@ -1673,12 +1606,135 @@ rules:
 - DOMAIN,805ba.v.fwmrm.net,REJECT
 - DOMAIN,tvm-mtv-freewheel.akamaized.net,REJECT
 - DOMAIN,adeventtracker.spotify.com,REJECT
+- DOMAIN,ads.spotify.com,REJECT
 - DOMAIN,ads-fa.spotify.com,REJECT
 - DOMAIN,ads-ak.spotify.com,REJECT
 - DOMAIN,adserver.spotify.com,REJECT
 - DOMAIN,adstudio.spotify.com,REJECT
 - DOMAIN,ad-analytics.spotify.com,REJECT
 - DOMAIN,aet.spotify.com,REJECT
+- DOMAIN,analytics.spotify.com,REJECT
+- DOMAIN,bloodhound.spotify.com,REJECT
+- DOMAIN,crashdump.spotify.com,REJECT
+- DOMAIN,pixel.spotify.com,REJECT
+- DOMAIN,pixel-static.spotify.com,REJECT
 - DOMAIN,pixels.spotify.com,REJECT
+- DOMAIN-SUFFIX,popads.net,REJECT
+- DOMAIN-SUFFIX,popcash.net,REJECT
+- DOMAIN-SUFFIX,propellerads.com,REJECT
+- DOMAIN-SUFFIX,adsterra.com,REJECT
+- DOMAIN-SUFFIX,onclickalgo.com,REJECT
+- DOMAIN-SUFFIX,onclickperformance.com,REJECT
+- DOMAIN-SUFFIX,hilltopads.net,REJECT
+- DOMAIN-SUFFIX,richads.com,REJECT
+- DOMAIN-SUFFIX,clickadu.com,REJECT
+- DOMAIN-SUFFIX,adcash.com,REJECT
+- DOMAIN-SUFFIX,applovin.com,REJECT
+- DOMAIN-SUFFIX,applvn.com,REJECT
+- DOMAIN-SUFFIX,unityads.unity3d.com,REJECT
+- DOMAIN-SUFFIX,supersonicads.com,REJECT
+- DOMAIN-SUFFIX,ironsrc.com,REJECT
+- DOMAIN-SUFFIX,vungle.com,REJECT
+- DOMAIN-SUFFIX,vunglecloud.com,REJECT
+- DOMAIN-SUFFIX,chartboost.com,REJECT
+- DOMAIN-SUFFIX,inmobi.com,REJECT
+- DOMAIN-SUFFIX,adcolony.com,REJECT
+- DOMAIN-SUFFIX,mintegral.com,REJECT
+- DOMAIN-SUFFIX,mtgglobals.com,REJECT
+- DOMAIN-SUFFIX,rayjump.com,REJECT
+- DOMAIN-SUFFIX,pangle.io,REJECT
+- DOMAIN-SUFFIX,pangleglobal.com,REJECT
+- DOMAIN-SUFFIX,tapjoy.com,REJECT
+- DOMAIN-SUFFIX,tapjoyads.com,REJECT
+- DOMAIN-SUFFIX,startappservice.com,REJECT
+- DOMAIN-SUFFIX,startapp.com,REJECT
+- DOMAIN-SUFFIX,fyber.com,REJECT
+- DOMAIN-SUFFIX,inner-active.mobi,REJECT
+- DOMAIN,adv.sec.intl.miui.com,REJECT
+- DOMAIN,adv.l7.34.sec.miui.com,REJECT
+- DOMAIN,adv.sec.miui.com,REJECT
+- DOMAIN,ad.miui.com,REJECT
+- DOMAIN,api.ads.xiaomi.com,REJECT
+- DOMAIN,ad.eu.xiaomi.com,REJECT
+- DOMAIN,ad.quickapp.hybrid.xiaomi.com,REJECT
+- DOMAIN,ad.india.xiaomi.com,REJECT
+- DOMAIN,ad.intl.xiaomi.com,REJECT
+- DOMAIN,xadx.file.market.xiaomi.com,REJECT
+- DOMAIN,wtradv.market.xiaomi.com,REJECT
+- DOMAIN,ad.cdn.pandora.xiaomi.com,REJECT
+- DOMAIN,ads.heytapmobi.com,REJECT
+- DOMAIN,ads.heytapmobile.com,REJECT
+- DOMAIN,ads-bdapi-my.heytapmobile.com,REJECT
+- DOMAIN,ads-bdapi-ph.heytapmobile.com,REJECT
+- DOMAIN,ads-bdapi-th.heytapmobile.com,REJECT
+- DOMAIN,ads-bdapi-vn.heytapmobile.com,REJECT
+- DOMAIN,ad-growth-in.heytapmobile.com,REJECT
+- DOMAIN,ad-growth-ru.heytapmobile.com,REJECT
+- DOMAIN,ad-growth-sg.heytapmobile.com,REJECT
+- DOMAIN,adx-ads-fr.heytapmobile.com,REJECT
+- DOMAIN,adx-ads-ru.heytapmobile.com,REJECT
+- DOMAIN,bdapi-ads-sg.heytapmobile.com,REJECT
+- DOMAIN,cldata-ads-fr.heytapmobile.com,REJECT
+- DOMAIN,cldata-ads-ru.heytapmobile.com,REJECT
+- DOMAIN,sms-ads-in.heytapmobile.com,REJECT
+- DOMAIN,sms-ads-ru.heytapmobile.com,REJECT
+- DOMAIN,stgdata-ads-fr.heytapmobile.com,REJECT
+- DOMAIN,ads.oppomobile.com,REJECT
+- DOMAIN,ads.bing.com,REJECT
+- DOMAIN,adserver.bing.com,REJECT
+- DOMAIN,outlookads.live.com,REJECT
+- DOMAIN,ads.microsoft.com,REJECT
+- DOMAIN,adsdk.microsoft.com,REJECT
+- DOMAIN,advertising.microsoft.com,REJECT
+- DOMAIN,bingads.microsoft.com,REJECT
+- DOMAIN,msadsscale.microsoft.com,REJECT
+- DOMAIN,ads.eu.msn.com,REJECT
+- DOMAIN,rmads.eu.msn.com,REJECT
+- DOMAIN,ads.jp.msn.com,REJECT
+- DOMAIN,advertising.jp.msn.com,REJECT
+- DOMAIN,ad.msn.com,REJECT
+- DOMAIN,adevents.msn.com,REJECT
+- DOMAIN,ads.msn.com,REJECT
+- DOMAIN,ads1.msn.com,REJECT
+- DOMAIN,mobileads.msn.com,REJECT
+- DOMAIN,rads.msn.com,REJECT
+- DOMAIN,rmads.msn.com,REJECT
+- DOMAIN,srtb.msn.com,REJECT
+- DOMAIN,prod.editor.ads.trafficmanager.net,REJECT
+- DOMAIN,ads-msn-com-profile.trafficmanager.net,REJECT
+- DOMAIN,adsdk.trafficmanager.net,REJECT
+- DOMAIN,dsp-ad-cache-tm.trafficmanager.net,REJECT
+- DOMAIN,ssp-prod-eastus-nonmutt.trafficmanager.net,REJECT
+- DOMAIN,msads.net,REJECT
+- DOMAIN,advertising.apple.com,REJECT
+- DOMAIN,advp.apple.com,REJECT
+- DOMAIN,iad.apple.com,REJECT
+- DOMAIN,iadcontent.apple.com,REJECT
+- DOMAIN,iadmoo.apple.com,REJECT
+- DOMAIN,iadworkbench.apple.com,REJECT
+- DOMAIN,searchads.apple.com,REJECT
+- DOMAIN-SUFFIX,smaato.com,REJECT
+- DOMAIN-SUFFIX,smaato.net,REJECT
+- DOMAIN-SUFFIX,ogury.com,REJECT
+- DOMAIN-SUFFIX,ogury.co,REJECT
+- DOMAIN-SUFFIX,pubnative.net,REJECT
+- DOMAIN-SUFFIX,hyprmx.com,REJECT
+- DOMAIN-SUFFIX,mobilefuse.com,REJECT
+- DOMAIN-SUFFIX,amazon-adsystem.com,REJECT
+- DOMAIN-SUFFIX,mopub.com,REJECT
+- DOMAIN-SUFFIX,adjoe.io,REJECT
+- RULE-SET,ads_indonesia,REJECT
+- RULE-SET,ads_domain,REJECT
+- RULE-SET,anti-ad,REJECT
+- RULE-SET,tracker-domain,REJECT
+- DOMAIN-SUFFIX,reddit.com,REDDIT
+- DOMAIN-SUFFIX,redditmedia.com,REDDIT
+- DOMAIN-SUFFIX,redd.it,REDDIT
+- DOMAIN-KEYWORD,reddit,REDDIT
+- DOMAIN-SUFFIX,twitter.com,REDDIT
+- DOMAIN-SUFFIX,x.com,REDDIT
+- DOMAIN-SUFFIX,api.twitter.com,REDDIT
+- DOMAIN-SUFFIX,api.x.com,REDDIT
+- DOMAIN-SUFFIX,t.co,REDDIT
 - MATCH,GLOBAL
 find-process-mode: 'off'
