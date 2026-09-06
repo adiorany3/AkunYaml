@@ -15,10 +15,6 @@ import os
 import re
 from typing import Iterable
 
-DEFAULT_SUFFIX_DOMAINS = (
-    "seabank.co.id",
-)
-
 DEFAULT_EXACT_DOMAINS: tuple[str, ...] = ()
 
 ALL_BANK_SUFFIX_DOMAINS = (
@@ -45,9 +41,28 @@ ALL_BANK_SUFFIX_DOMAINS = (
 )
 
 
+PAYMENT_SUFFIX_DOMAINS = (
+    "gojek.com", "gojekapi.com", "gopay.co.id", "grab.com", "grabtaxi.com",
+    "ovo.id", "dana.id", "linkaja.id", "flip.id", "shopee.co.id",
+    "shopee.com", "shopee.sg", "shopeemobile.com", "shopeeusercontent.com",
+    "susercontent.com", "shp.ee", "spaylater.co.id", "midtrans.com", "xendit.co",
+    "doku.com", "faspay.co.id", "nicepay.co.id", "duitku.com", "tripay.co.id",
+    "prismalink.co.id", "finpay.co.id", "ipaymu.com", "oyindonesia.com",
+    "qris.id", "bi.go.id",
+)
+
+DEFAULT_SUFFIX_DOMAINS = tuple(dict.fromkeys((*ALL_BANK_SUFFIX_DOMAINS, *PAYMENT_SUFFIX_DOMAINS)))
+
 def all_bank_suffix_domains() -> tuple[str, ...]:
-    """Return bank domains routed through Sing-box manual nodes."""
-    return ALL_BANK_SUFFIX_DOMAINS
+    """Return configured bank domains routed through Sing-box manual nodes."""
+    payment = set(PAYMENT_SUFFIX_DOMAINS)
+    return tuple(domain for domain in suffix_domains() if domain not in payment)
+
+
+def payment_suffix_domains() -> tuple[str, ...]:
+    """Return configured payment domains routed directly by Sing-box."""
+    configured = set(suffix_domains())
+    return tuple(domain for domain in PAYMENT_SUFFIX_DOMAINS if domain in configured)
 
 
 def _env_bool(name: str, default: bool) -> bool:

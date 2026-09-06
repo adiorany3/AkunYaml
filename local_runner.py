@@ -173,10 +173,10 @@ DEFAULT_ENV = {
     "ANDROID_MARKETPLACE_LIVE_POLICY": "GLOBAL",
     "ANDROID_MARKETPLACE_LIVE_DOMAINS": "",
     "ANDROID_MARKETPLACE_LIVE_EXACT_DOMAINS": "",
-    # Android Banking Safe Mode. Domain traffic is DIRECT + real DNS + no sniffer.
-    # This does not hide the VPN from bank-app device security checks.
+    # Android Banking/QRIS Safe Mode. Domain traffic is DIRECT + real DNS + no sniffer.
+    # This does not hide the VPN from app device security checks.
     "ANDROID_BANKING_SAFE_MODE": "true",
-    "ANDROID_BANKING_DOMAINS": "[\"seabank.co.id\"]",
+    "ANDROID_BANKING_DOMAINS": "",
     "ANDROID_BANKING_EXACT_DOMAINS": "[]",
     "SUBSCRIPTION_CACHE": "true",
     "SUBSCRIPTION_CACHE_TTL_SEC": "1800",

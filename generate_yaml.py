@@ -20,6 +20,7 @@ import requests
 
 from android_banking_policy import all_bank_suffix_domains
 from android_banking_policy import exact_domains as banking_exact_domains
+from android_banking_policy import payment_suffix_domains
 from openclash_target import (
     MIHOMO_TARGET_LABEL,
     assert_target_mihomo,
@@ -801,16 +802,18 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
 
     bank_exact = list(banking_exact_domains())
     bank_suffix = list(all_bank_suffix_domains())
+    payment_suffix = list(payment_suffix_domains())
     bank_dns_rule: dict[str, Any] = {"action": "route", "server": "local"}
     bank_route_rule: dict[str, Any] = {"action": "route", "outbound": "BANK"}
     if bank_exact:
         bank_dns_rule["domain"] = bank_exact
         bank_route_rule["domain"] = bank_exact
+    if bank_suffix or payment_suffix:
+        bank_dns_rule["domain_suffix"] = list(dict.fromkeys(bank_suffix + payment_suffix))
     if bank_suffix:
-        bank_dns_rule["domain_suffix"] = bank_suffix
         bank_route_rule["domain_suffix"] = bank_suffix
 
-    dns_rules = [bank_dns_rule] if bank_exact or bank_suffix else []
+    dns_rules = [bank_dns_rule] if bank_exact or bank_suffix or payment_suffix else []
     dns_rules.extend([
         {"domain_suffix": social_domains, "action": "route", "server": "local"},
         {"domain_suffix": video_domains, "action": "route", "server": "local"},
@@ -819,6 +822,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         {"action": "sniff"},
         {"protocol": "dns", "action": "hijack-dns"},
         {"ip_is_private": True, "action": "route", "outbound": "direct"},
+        {"domain_suffix": payment_suffix, "action": "route", "outbound": "direct"},
         # Cloudflare WebSocket nodes carry TCP reliably, not QUIC. Rejecting
         # UDP/443 makes Android apps immediately retry HTTPS over TCP.
         {"network": "udp", "port": 443, "action": "reject"},

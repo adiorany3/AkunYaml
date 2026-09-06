@@ -77,10 +77,14 @@ dns:
   default-nameserver:
   - https://1.1.1.1/dns-query
   - https://9.9.9.9/dns-query
-  nameserver: &id001
-  - https://family.dns.bebasid.com/dns-query
-  - tls://family.dns.bebasid.com:853
-  fallback: *id001
+  nameserver:
+  - https://1.1.1.1/dns-query
+  - https://dns.google/dns-query
+  fallback:
+  - https://family.cloudflare-dns.com/dns-query
+  - tls://family.cloudflare-dns.com:853
+  - https://dns.quad9.net/dns-query
+  - tls://dns.quad9.net:853
   fallback-filter:
     geoip: true
     geoip-code: ID
@@ -581,7 +585,7 @@ proxy-groups:
   - MANUAL-TROJAN WS Melbikomas UAB
   - MANUAL-VMess-WS-TLS-443-akuku8
   url: https://www.gstatic.com/generate_204
-  interval: 180
+  interval: 300
   tolerance: 100
   lazy: true
   timeout: 5000
@@ -597,7 +601,7 @@ proxy-groups:
   url: https://www.gstatic.com/generate_204
   interval: 60
   tolerance: 150
-  lazy: true
+  lazy: false
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
@@ -609,7 +613,7 @@ proxy-groups:
   - AKUN-009-CLOUDFLARE-VLESS-WS-107MS
   - AKUN-010-CLOUDFLARE-VLESS-WS-111MS
   url: https://cp.cloudflare.com
-  interval: 90
+  interval: 120
   tolerance: 150
   lazy: true
   timeout: 5000
@@ -624,7 +628,7 @@ proxy-groups:
   - AKUN-010-CLOUDFLARE-VLESS-WS-111MS
   - AKUN-001-CHATGPT-VLESS-WS-104MS
   url: https://cp.cloudflare.com
-  interval: 45
+  interval: 90
   tolerance: 150
   lazy: true
   timeout: 5000
@@ -647,9 +651,9 @@ proxy-groups:
   proxies:
   - AKUN-004-SINGAPORE-VLESS-WS-110MS
   url: https://www.gstatic.com/generate_204
-  interval: 45
+  interval: 90
   tolerance: 150
-  lazy: true
+  lazy: false
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
@@ -671,7 +675,7 @@ proxy-groups:
   - MANUAL-TROJAN WS Melbikomas UAB
   - MANUAL-VMess-WS-TLS-443-akuku8
   url: https://www.gstatic.com/generate_204
-  interval: 90
+  interval: 180
   lazy: true
   timeout: 6000
   expected-status: 200/204/301/302
@@ -685,7 +689,7 @@ proxy-groups:
   - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
   - AKUN-009-CLOUDFLARE-VLESS-WS-107MS
   url: https://www.gstatic.com/generate_204
-  interval: 180
+  interval: 300
   lazy: true
   timeout: 6000
   expected-status: 200/204/301/302
@@ -849,116 +853,16 @@ rule-providers:
     behavior: classical
     format: yaml
     path: ./rule_providers/security-pinjol.yaml
+  hagezi-pro-plus-mini:
+    type: file
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/hagezi-pro-plus-mini.mrs
   popup-ads:
     type: file
     behavior: domain
     format: mrs
     path: ./rule_providers/compiled/popup-ads.mrs
-  threat-malware:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-malware.mrs
-  threat-phishing:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-phishing.mrs
-  threat-cryptominers:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-cryptominers.mrs
-  threat-fake-scam:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-fake-scam.mrs
-  threat-tif-ip:
-    type: file
-    behavior: ipcidr
-    format: mrs
-    path: ./rule_providers/compiled/threat-tif-ip.mrs
-  app-ad-safe:
-    type: inline
-    behavior: domain
-    payload:
-    - adv.sec.intl.miui.com
-    - adv.l7.34.sec.miui.com
-    - adv.sec.miui.com
-    - ad.miui.com
-    - api.ads.xiaomi.com
-    - ad.eu.xiaomi.com
-    - ad.quickapp.hybrid.xiaomi.com
-    - ad.india.xiaomi.com
-    - ad.intl.xiaomi.com
-    - xadx.file.market.xiaomi.com
-    - wtradv.market.xiaomi.com
-    - ad.cdn.pandora.xiaomi.com
-    - ads.heytapmobi.com
-    - ads.heytapmobile.com
-    - ads-bdapi-my.heytapmobile.com
-    - ads-bdapi-ph.heytapmobile.com
-    - ads-bdapi-th.heytapmobile.com
-    - ads-bdapi-vn.heytapmobile.com
-    - ad-growth-in.heytapmobile.com
-    - ad-growth-ru.heytapmobile.com
-    - ad-growth-sg.heytapmobile.com
-    - adx-ads-fr.heytapmobile.com
-    - adx-ads-ru.heytapmobile.com
-    - bdapi-ads-sg.heytapmobile.com
-    - cldata-ads-fr.heytapmobile.com
-    - cldata-ads-ru.heytapmobile.com
-    - sms-ads-in.heytapmobile.com
-    - sms-ads-ru.heytapmobile.com
-    - stgdata-ads-fr.heytapmobile.com
-    - ads.oppomobile.com
-    - adsfs.oppomobile.com
-    - ads.bing.com
-    - adserver.bing.com
-    - outlookads.live.com
-    - ads.microsoft.com
-    - adsdk.microsoft.com
-    - advertising.microsoft.com
-    - bingads.microsoft.com
-    - msadsscale.microsoft.com
-    - ads.eu.msn.com
-    - rmads.eu.msn.com
-    - ads.jp.msn.com
-    - advertising.jp.msn.com
-    - ad.msn.com
-    - adevents.msn.com
-    - ads.msn.com
-    - ads1.msn.com
-    - mobileads.msn.com
-    - rads.msn.com
-    - rmads.msn.com
-    - srtb.msn.com
-    - prod.editor.ads.trafficmanager.net
-    - ads-msn-com-profile.trafficmanager.net
-    - adsdk.trafficmanager.net
-    - dsp-ad-cache-tm.trafficmanager.net
-    - ssp-prod-eastus-nonmutt.trafficmanager.net
-    - msads.net
-    - advertising.apple.com
-    - advp.apple.com
-    - api-adservices.apple.com
-    - iad.apple.com
-    - iadcontent.apple.com
-    - iadmoo.apple.com
-    - iadsdk.apple.com
-    - iadworkbench.apple.com
-    - searchads.apple.com
-    - .smaato.com
-    - .smaato.net
-    - .ogury.com
-    - .ogury.co
-    - .pubnative.net
-    - .hyprmx.com
-    - .mobilefuse.com
-    - .amazon-adsystem.com
-    - .mopub.com
-    - .adjoe.io
   manual-routing:
     type: file
     behavior: classical
@@ -1133,66 +1037,13 @@ rules:
 - DOMAIN-SUFFIX,linkedin.com,DIRECT
 - DOMAIN-SUFFIX,lnkd.in,DIRECT
 - DOMAIN-SUFFIX,recaptcha.net,DIRECT
-- RULE-SET,threat-malware,REJECT
-- RULE-SET,threat-phishing,REJECT
-- RULE-SET,threat-cryptominers,REJECT
-- RULE-SET,threat-fake-scam,REJECT
 - RULE-SET,threat-tif-mini,REJECT
 - RULE-SET,gambling-mini,REJECT
 - RULE-SET,adult-category,REJECT
 - RULE-SET,adult-local,REJECT
 - RULE-SET,pinjol-local,REJECT
+- RULE-SET,hagezi-pro-plus-mini,REJECT
 - RULE-SET,popup-ads,REJECT
-- RULE-SET,threat-tif-ip,REJECT,no-resolve
-- DOMAIN,video-akpcw.spotifycdn.com,REJECT
-- DOMAIN,805ba.v.fwmrm.net,REJECT
-- DOMAIN,tvm-mtv-freewheel.akamaized.net,REJECT
-- DOMAIN,adeventtracker.spotify.com,REJECT
-- DOMAIN,ads.spotify.com,REJECT
-- DOMAIN,ads-fa.spotify.com,REJECT
-- DOMAIN,ads-ak.spotify.com,REJECT
-- DOMAIN,adserver.spotify.com,REJECT
-- DOMAIN,adstudio.spotify.com,REJECT
-- DOMAIN,ad-analytics.spotify.com,REJECT
-- DOMAIN,aet.spotify.com,REJECT
-- DOMAIN,analytics.spotify.com,REJECT
-- DOMAIN,bloodhound.spotify.com,REJECT
-- DOMAIN,crashdump.spotify.com,REJECT
-- DOMAIN,pixel.spotify.com,REJECT
-- DOMAIN,pixel-static.spotify.com,REJECT
-- DOMAIN,pixels.spotify.com,REJECT
-- DOMAIN-SUFFIX,popads.net,REJECT
-- DOMAIN-SUFFIX,popcash.net,REJECT
-- DOMAIN-SUFFIX,propellerads.com,REJECT
-- DOMAIN-SUFFIX,adsterra.com,REJECT
-- DOMAIN-SUFFIX,onclickalgo.com,REJECT
-- DOMAIN-SUFFIX,onclickperformance.com,REJECT
-- DOMAIN-SUFFIX,hilltopads.net,REJECT
-- DOMAIN-SUFFIX,richads.com,REJECT
-- DOMAIN-SUFFIX,clickadu.com,REJECT
-- DOMAIN-SUFFIX,adcash.com,REJECT
-- DOMAIN-SUFFIX,applovin.com,REJECT
-- DOMAIN-SUFFIX,applvn.com,REJECT
-- DOMAIN-SUFFIX,unityads.unity3d.com,REJECT
-- DOMAIN-SUFFIX,supersonicads.com,REJECT
-- DOMAIN-SUFFIX,ironsrc.com,REJECT
-- DOMAIN-SUFFIX,vungle.com,REJECT
-- DOMAIN-SUFFIX,vunglecloud.com,REJECT
-- DOMAIN-SUFFIX,chartboost.com,REJECT
-- DOMAIN-SUFFIX,inmobi.com,REJECT
-- DOMAIN-SUFFIX,adcolony.com,REJECT
-- DOMAIN-SUFFIX,mintegral.com,REJECT
-- DOMAIN-SUFFIX,mtgglobals.com,REJECT
-- DOMAIN-SUFFIX,rayjump.com,REJECT
-- DOMAIN-SUFFIX,pangle.io,REJECT
-- DOMAIN-SUFFIX,pangleglobal.com,REJECT
-- DOMAIN-SUFFIX,tapjoy.com,REJECT
-- DOMAIN-SUFFIX,tapjoyads.com,REJECT
-- DOMAIN-SUFFIX,startappservice.com,REJECT
-- DOMAIN-SUFFIX,startapp.com,REJECT
-- DOMAIN-SUFFIX,fyber.com,REJECT
-- DOMAIN-SUFFIX,inner-active.mobi,REJECT
-- RULE-SET,app-ad-safe,REJECT
 - RULE-SET,ads_indonesia,REJECT
 - RULE-SET,ads_domain,REJECT
 - RULE-SET,anti-ad,REJECT

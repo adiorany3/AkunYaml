@@ -2,9 +2,10 @@
 from pathlib import Path
 import yaml
 
+from android_banking_policy import suffix_domains
+
 PATH = Path(__file__).with_name('openclash_android.yaml')
-DOMAIN = 'seabank.co.id'
-RULE = f'DOMAIN-SUFFIX,{DOMAIN},DIRECT'
+DOMAINS = suffix_domains()
 CRITICAL = (
     'RULE-SET,threat-malware,REJECT',
     'RULE-SET,threat-phishing,REJECT',
@@ -21,45 +22,43 @@ if cfg.get('mode') != 'rule':
 
 dns = cfg.get('dns') or {}
 fake = [str(x) for x in dns.get('fake-ip-filter') or []]
-if '+.' + DOMAIN not in fake:
-    fail('SeaBank belum dikecualikan dari Fake-IP')
-
 policy = dns.get('nameserver-policy') or {}
-normal = policy.get('+.' + DOMAIN)
-expected = ['https://1.1.1.1/dns-query', 'https://dns.google/dns-query']
-if normal != expected:
-    fail(f'Nameserver policy SeaBank bukan public DoH: {normal!r}')
-
 skip = [str(x) for x in (cfg.get('sniffer') or {}).get('skip-domain') or []]
-if '+.' + DOMAIN not in skip:
-    fail('SeaBank belum masuk sniffer skip-domain')
-
 rules = [str(x) for x in cfg.get('rules') or []]
-if RULE not in rules:
-    fail('Rule DIRECT SeaBank tidak ditemukan')
-bi = rules.index(RULE)
-for critical in CRITICAL:
-    if critical not in rules or rules.index(critical) > bi:
-        fail('Banking DIRECT harus berada setelah critical threat rules')
+expected_dns = ['https://1.1.1.1/dns-query', 'https://dns.google/dns-query']
 
-# Banking rule must be before marketplace/ad/tracker compatibility boundary.
-for marker in (
-    'DOMAIN-SUFFIX,shopee.co.id,GLOBAL',
-    'RULE-SET,privacy-extra,REJECT',
-    'RULE-SET,ads_domain,REJECT',
-    'RULE-SET,tracker-domain,REJECT',
-):
-    if marker in rules and bi > rules.index(marker):
-        fail(f'Banking DIRECT terlambat, berada setelah {marker}')
+for domain in DOMAINS:
+    if '+.' + domain not in fake:
+        fail(f'{domain} belum dikecualikan dari Fake-IP')
+    if policy.get('+.' + domain) != expected_dns:
+        fail(f'Nameserver policy {domain} bukan public DoH: {policy.get("+." + domain)!r}')
+    if '+.' + domain not in skip:
+        fail(f'{domain} belum masuk sniffer skip-domain')
 
-for r in rules:
-    low = r.lower()
-    if DOMAIN in low and ',reject' in low:
-        fail(f'SeaBank masih memiliki explicit REJECT: {r}')
+    rule = f'DOMAIN-SUFFIX,{domain},DIRECT'
+    if rule not in rules:
+        fail(f'Rule DIRECT {domain} tidak ditemukan')
+    financial_index = rules.index(rule)
+    for critical in CRITICAL:
+        if critical not in rules or rules.index(critical) > financial_index:
+            fail(f'{domain} DIRECT harus berada setelah critical threat rules')
 
-print('[OK] Android Banking Safe Mode')
-print(f'  rule index       : {bi}')
-print('  route            : DIRECT')
-print('  fake-ip          : bypass')
-print('  sniffer          : skipped')
-print('  DNS              : public DoH policy')
+    for marker in (
+        'DOMAIN-SUFFIX,shopee.co.id,GLOBAL',
+        'RULE-SET,privacy-extra,REJECT',
+        'RULE-SET,ads_domain,REJECT',
+        'RULE-SET,tracker-domain,REJECT',
+    ):
+        if marker in rules and financial_index > rules.index(marker):
+            fail(f'{domain} DIRECT terlambat, berada setelah {marker}')
+
+    for configured_rule in rules:
+        if domain in configured_rule.lower() and ',reject' in configured_rule.lower():
+            fail(f'{domain} masih memiliki explicit REJECT: {configured_rule}')
+
+print('[OK] Android Banking/QRIS Safe Mode')
+print(f'  protected sample : {len(DOMAINS)} domains')
+print('  route             : DIRECT')
+print('  fake-ip           : bypass')
+print('  sniffer           : skipped')
+print('  DNS               : public DoH policy')
