@@ -227,11 +227,13 @@
         "MANUAL-VMess-WS-TLS-443-singa08",
         "MANUAL-VMess-WS-TLS-443-akuku8",
         "automatic",
-        "AKUN-001-CLOUDFLARE-VLESS-WS-116MS",
-        "AKUN-002-CLOUDFLARE-VLESS-WS-114MS",
-        "AKUN-003-CLOUDFLARE-VLESS-WS-103MS",
-        "AKUN-004-CLOUDFLARE-VLESS-WS-106MS",
-        "AKUN-005-CLOUDFLARE-VLESS-WS-113MS",
+        "AKUN-001-CLOUDFLARE-VLESS-WS-109MS",
+        "AKUN-002-CLOUDFLARE-VLESS-WS-110MS",
+        "AKUN-003-UNKNOWN-VLESS-WS-106MS",
+        "AKUN-004-CLOUDFLARE-VLESS-WS-110MS",
+        "AKUN-005-CLOUDFLARE-VLESS-WS-109MS",
+        "AKUN-006-CLOUDFLARE-VLESS-WS-116MS",
+        "AKUN-007-CLOUDFLARE-VLESS-WS-111MS",
         "MANUAL-VLESS-WS-TLS-443-apt50atpprem"
       ],
       "default": "MANUAL-VMess-WS-TLS-443-ikada543"
@@ -240,11 +242,13 @@
       "type": "urltest",
       "tag": "automatic",
       "outbounds": [
-        "AKUN-001-CLOUDFLARE-VLESS-WS-116MS",
-        "AKUN-002-CLOUDFLARE-VLESS-WS-114MS",
-        "AKUN-003-CLOUDFLARE-VLESS-WS-103MS",
-        "AKUN-004-CLOUDFLARE-VLESS-WS-106MS",
-        "AKUN-005-CLOUDFLARE-VLESS-WS-113MS"
+        "AKUN-001-CLOUDFLARE-VLESS-WS-109MS",
+        "AKUN-002-CLOUDFLARE-VLESS-WS-110MS",
+        "AKUN-003-UNKNOWN-VLESS-WS-106MS",
+        "AKUN-004-CLOUDFLARE-VLESS-WS-110MS",
+        "AKUN-005-CLOUDFLARE-VLESS-WS-109MS",
+        "AKUN-006-CLOUDFLARE-VLESS-WS-116MS",
+        "AKUN-007-CLOUDFLARE-VLESS-WS-111MS"
       ],
       "url": "https://www.gstatic.com/generate_204",
       "interval": "3m",
@@ -258,7 +262,7 @@
         "MANUAL-VMess-WS-TLS-443-singa08",
         "MANUAL-VMess-WS-TLS-443-akuku8",
         "MANUAL-VLESS-WS-TLS-443-apt50atpprem",
-        "AKUN-001-CLOUDFLARE-VLESS-WS-116MS"
+        "AKUN-001-CLOUDFLARE-VLESS-WS-109MS"
       ],
       "default": "MANUAL-VMess-WS-TLS-443-ikada543"
     },
@@ -285,7 +289,33 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-001-CLOUDFLARE-VLESS-WS-116MS",
+      "tag": "AKUN-001-CLOUDFLARE-VLESS-WS-109MS",
+      "server": "104.17.3.81",
+      "server_port": 443,
+      "uuid": "77777777-8a3e-6666-b6d1-a9c5f0e8b3a2",
+      "tls": {
+        "enabled": true,
+        "server_name": "fx3h2kf8xn.fx6hsv0.ccwu.cc",
+        "insecure": true,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "alpn": [
+          "http/1.1"
+        ]
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/?ed=2560",
+        "headers": {
+          "Host": "fx3h2kf8xn.fx6hsv0.ccwu.cc"
+        }
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "AKUN-002-CLOUDFLARE-VLESS-WS-110MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "77777777-8a3e-6666-b6d1-a9c5f0e8b3a2",
@@ -311,7 +341,33 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-002-CLOUDFLARE-VLESS-WS-114MS",
+      "tag": "AKUN-003-UNKNOWN-VLESS-WS-106MS",
+      "server": "104.17.3.81",
+      "server_port": 443,
+      "uuid": "b8b01773-36b1-4b49-9bd0-6249f52345b4",
+      "tls": {
+        "enabled": true,
+        "server_name": "MiSty-tooth-78cA.FoboGAH414-e7B.WoRKERs.DEv",
+        "insecure": true,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "alpn": [
+          "http/1.1"
+        ]
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/eyJqdW5rIjoiTkNUaFg0ZnJNUjhhcyIsInByb3RvY29sIjoidmwiLCJtb2RlIjoicHJveHlpcCIsInBhbmVsSVBzIjpbXX0=",
+        "headers": {
+          "Host": "MiSty-tooth-78cA.FoboGAH414-e7B.WoRKERs.DEv"
+        }
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "AKUN-004-CLOUDFLARE-VLESS-WS-110MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "5dc15e15-f285-4a9d-959b-0e4fbdd77b63",
@@ -337,7 +393,7 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-003-CLOUDFLARE-VLESS-WS-103MS",
+      "tag": "AKUN-005-CLOUDFLARE-VLESS-WS-109MS",
       "server": "104.17.3.81",
       "server_port": 443,
       "uuid": "77777777-8a3e-6666-b6d1-a9c5f0e8b3a2",
@@ -363,13 +419,13 @@
     },
     {
       "type": "vless",
-      "tag": "AKUN-004-CLOUDFLARE-VLESS-WS-106MS",
+      "tag": "AKUN-006-CLOUDFLARE-VLESS-WS-116MS",
       "server": "104.17.3.81",
       "server_port": 443,
-      "uuid": "3804296d-167f-4c1b-8734-147f80473590",
+      "uuid": "a22bff60-a40a-4250-bde2-4c660e363b47",
       "tls": {
         "enabled": true,
-        "server_name": "TeLegrAm.FREEPErSiANland1.woRKERS.DEv",
+        "server_name": "index.harmonica01.workers.dev",
         "insecure": true,
         "utls": {
           "enabled": true,
@@ -381,21 +437,21 @@
       },
       "transport": {
         "type": "ws",
-        "path": "/eyJqdW5rIjoiU29DZFZoZzF6RG8iLCJwcm90b2NvbCI6InZsIiwibW9kZSI6InByZWZpeCIsInBhbmVsSVBzIjpbIlsyNjAyOmZjNTk6YjA6NjQ6Ol0iLCJbMjYwMjpmYzU5OjExOjY0OjpdIl19",
+        "path": "/axch1mttbxz2k55y01",
         "headers": {
-          "Host": "telegram.freepersianland1.workers.dev"
+          "Host": "index.harmonica01.workers.dev"
         }
       }
     },
     {
       "type": "vless",
-      "tag": "AKUN-005-CLOUDFLARE-VLESS-WS-113MS",
+      "tag": "AKUN-007-CLOUDFLARE-VLESS-WS-111MS",
       "server": "104.17.3.81",
       "server_port": 443,
-      "uuid": "893096ae-ed76-4440-bc34-f77c4872540f",
+      "uuid": "daf485ba-60fc-4166-a72c-8d2a5407cbc5",
       "tls": {
         "enabled": true,
-        "server_name": "maSterserVeR1-VSH.KaLlEH.WORkERs.DEV",
+        "server_name": "kievh9yxcgg14-gy4wxqcav0pegkd.d-0ezpk5xp5wk8ltdgb6evlpgc-jin.workers.dev",
         "insecure": true,
         "utls": {
           "enabled": true,
@@ -407,9 +463,9 @@
       },
       "transport": {
         "type": "ws",
-        "path": "/eyJqdW5rIjoieE1zSFhYR2hkcHZGUHI3cSIsInByb3RvY29sIjoidmwiLCJtb2RlIjoicHJveHlpcCIsInBhbmVsSVBzIjpbXX0=",
+        "path": "/vl/zM8ELyqEIYeZ3ijacV9kuK?ed",
         "headers": {
-          "Host": "maSterserVeR1-VSH.KaLlEH.WORkERs.DEV"
+          "Host": "kievh9yxcgg14-gy4wxqcav0pegkd.d-0ezpk5xp5wk8ltdgb6evlpgc-jin.workers.dev"
         }
       }
     },

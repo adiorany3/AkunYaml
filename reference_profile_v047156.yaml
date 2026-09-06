@@ -88,13 +88,6 @@ dns:
     - https://1.1.1.1/dns-query
     - https://dns.google/dns-query
 rule-providers:
-  bot-check-compatibility:
-    type: http
-    behavior: domain
-    format: text
-    path: ./rule_providers/bot-check-compatibility.txt
-    url: https://example.invalid/bot-check-compatibility.txt
-    interval: 86400
   ads_domain:
     type: http
     behavior: domain

@@ -48,6 +48,31 @@ def rule_policy(rule: str) -> str:
     return parts[-2] if parts[-1].lower() == "no-resolve" else parts[-1]
 
 
+def manual_policy_errors(config: dict[str, Any]) -> list[str]:
+    groups = group_map(config)
+    errors = []
+    if (groups.get("REDDIT") or {}).get("proxies") != ["MANUAL"]:
+        errors.append("REDDIT harus menunjuk hanya ke MANUAL")
+    manual = groups.get("MANUAL") or {}
+    if manual.get("type") != "fallback":
+        errors.append("MANUAL harus berupa fallback")
+    physical = {
+        proxy["name"]
+        for proxy in config.get("proxies", []) or []
+        if isinstance(proxy, dict)
+        and isinstance(proxy.get("name"), str)
+        and proxy["name"].startswith("MANUAL-")
+        and proxy["name"] not in groups
+        and proxy.get("type") not in (None, "", "direct", "reject", "pass", "dns")
+    }
+    members = manual.get("proxies")
+    if not isinstance(members, list) or not members or any(
+        not isinstance(name, str) or name not in physical for name in members
+    ):
+        errors.append("MANUAL harus berisi proxy fisik manual yang valid dan tidak kosong")
+    return errors
+
+
 def main() -> int:
     failures: list[str] = []
     settings = json.loads((ROOT / "local_config.json").read_text(encoding="utf-8"))
@@ -87,10 +112,7 @@ def main() -> int:
         global_group = groups.get("GLOBAL") or {}
         if (global_group.get("proxies") or [None])[0] != "LOAD-BALANCE":
             failures.append(f"{filename}: GLOBAL tidak default ke LOAD-BALANCE")
-        reddit_group = groups.get("REDDIT") or {}
-        reddit_candidates = [str(name) for name in reddit_group.get("proxies", []) or []]
-        if not reddit_candidates or any(name != "MANUAL-VMess-WS-TLS-443-singa08" for name in reddit_candidates):
-            failures.append(f"{filename}: REDDIT tidak terkunci ke akun manual utama")
+        failures.extend(f"{filename}: {error}" for error in manual_policy_errors(config))
         rules = [str(rule) for rule in config.get("rules", []) or []]
         if filename == "openclash_auto.yaml":
             if "RULE-SET,manual-routing,MANUAL" not in rules:
@@ -122,10 +144,7 @@ def main() -> int:
         groups = group_map(config)
         if "LOAD-BALANCE" in groups:
             failures.append(f"{filename}: LOAD-BALANCE bocor ke profil ringan")
-        reddit_group = groups.get("REDDIT") or {}
-        reddit_candidates = [str(name) for name in reddit_group.get("proxies", []) or []]
-        if not reddit_candidates or any(name != "MANUAL-VMess-WS-TLS-443-singa08" for name in reddit_candidates):
-            failures.append(f"{filename}: REDDIT tidak terkunci ke akun manual utama")
+        failures.extend(f"{filename}: {error}" for error in manual_policy_errors(config))
         rules = [str(rule) for rule in config.get("rules", []) or []]
         for domain in ("x.com", "twitter.com"):
             if f"DOMAIN-SUFFIX,{domain},REDDIT" not in rules:
