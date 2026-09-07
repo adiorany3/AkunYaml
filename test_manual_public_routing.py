@@ -1,7 +1,8 @@
-"""Offline regression: public routes and every selector stay manual-only."""
+"""Offline regression: all Android routes and selectors stay manual-only."""
 import copy
 import json
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 import yaml
@@ -75,23 +76,46 @@ def check():
 
         for name in groups:
             walk(name)
-        lan_rules = {
-            "DOMAIN-SUFFIX,local,DIRECT", "DOMAIN-SUFFIX,lan,DIRECT",
-            "DOMAIN-SUFFIX,localhost,DIRECT", "GEOIP,LAN,DIRECT,no-resolve",
-            *(f"IP-CIDR,{cidr},DIRECT,no-resolve" for cidr in (
-                "127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "169.254.0.0/16"
-            )),
-        }
+        assert not any(token in yaml.safe_dump(config) for token in ("DIRECT", "PASS", "COMPATIBLE"))
         for rule in config["rules"]:
             parts = rule.split(",")
             policy = parts[-2] if parts[-1] == "no-resolve" else parts[-1]
-            if policy == "DIRECT":
-                assert rule in lan_rules
-            elif policy not in {"REJECT", "REJECT-DROP"}:
+            if policy not in {"REJECT", "REJECT-DROP"}:
                 walk(policy)
         assert config["rules"][-1] == "MATCH,GLOBAL"
         if profile != "off":
             assert "RULE-SET,threat-malware,REJECT" in config["rules"]
+
+        # Real refresh finalizer must remove bypasses reintroduced by security guards.
+        from local_runner import optimize_outputs
+        with TemporaryDirectory() as directory, \
+             patch("socket.socket", side_effect=AssertionError("Postprocessing attempted network")), \
+             patch("local_runner.write_youtube_filters"):
+            root = Path(directory)
+            path = root / "openclash_android.yaml"
+            injected = copy.deepcopy(config)
+            injected["rules"][:0] = [
+                "IP-CIDR,10.0.0.0/8,DIRECT,no-resolve",
+                "DOMAIN-SUFFIX,local,PASS", "DOMAIN,fixture.example,COMPATIBLE",
+            ]
+            injected["proxy-groups"][0]["proxies"].extend(["DIRECT", "PASS", "COMPATIBLE"])
+            path.write_text(yaml.safe_dump(injected))
+            optimize_outputs(root, [path.name], "balanced" if profile == "artifact" else profile,
+                             43200, "off", "off", "unused.txt")
+            processed = yaml.safe_load(path.read_text())
+            assert not any(token in path.read_text() for token in ("DIRECT", "PASS", "COMPATIBLE"))
+            assert processed["proxies"] == config["proxies"]
+            groups = {item["name"]: item for item in processed["proxy-groups"]}
+            for name in groups:
+                walk(name)
+            for rule in processed["rules"]:
+                parts = rule.split(",")
+                policy = parts[-2] if parts[-1] == "no-resolve" else parts[-1]
+                if policy not in {"REJECT", "REJECT-DROP"}:
+                    walk(policy)
+            assert processed["rules"][-1] == "MATCH,GLOBAL"
+            if profile != "off":
+                assert "RULE-SET,threat-malware,REJECT" in processed["rules"]
 
     for build in (android, generator._build_singbox_android_json):
         for unusable in ([], [automatic], [failed], [automatic, failed]):
@@ -122,7 +146,7 @@ def check():
         for call in publish.call_args_list:
             path, content = call.args
             assert content == path.read_text(encoding="utf-8"), "Offline regeneration must be idempotent"
-    print("OK: manual-only public routing, artifact selectors, TCP failures, threats, empty input, offline publication guards")
+    print("OK: all Android routes manual-only, refresh postprocessing, TCP failures, threats, empty input, offline publication guards")
 
 
 if __name__ == "__main__":

@@ -3304,6 +3304,24 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
     return dump_yaml_no_alias(config)
 
 
+def enforce_android_no_bypass(config: dict) -> None:
+    """Keep Android routing on generated manual nodes, including private traffic."""
+    bypass = {"DIRECT", "PASS", "COMPATIBLE"}
+    names = [proxy["name"] for proxy in config.get("proxies", [])]
+    if not names or bypass.intersection(names):
+        raise ValueError("Android requires manual nodes without reserved bypass names")
+    for group in config.get("proxy-groups", []):
+        for key in ("use", "include-all", "include-all-proxies", "include-all-providers"):
+            group.pop(key, None)
+        group["proxies"] = [ref for ref in group.get("proxies", []) if ref not in bypass] or list(names)
+    for index, rule in enumerate(config.get("rules", [])):
+        parts = rule.split(",")
+        policy_index = -2 if parts[-1].strip() == "no-resolve" else -1
+        if parts[policy_index].strip() in bypass:
+            parts[policy_index] = "GLOBAL"
+            config["rules"][index] = ",".join(parts)
+
+
 def build_openclash_android_yaml(
     nodes: list[ProxyNode],
     interval: int,
@@ -3638,19 +3656,9 @@ def build_openclash_android_yaml(
         if android_marketplace_live_enabled():
             android_rules.extend(android_marketplace_live_guard_rules(android_marketplace_live_policy()))
     android_rules.append("MATCH,GLOBAL")
-    # Only the fixed LAN preamble may bypass manual nodes. Preserve rule order,
-    # including threat rejects before banking/marketplace compatibility rules.
-    lan_rules = set(android_rules[:9])
-    for index, rule in enumerate(android_rules):
-        if rule in lan_rules:
-            continue
-        parts = rule.split(",")
-        policy_index = -2 if parts[-1] == "no-resolve" else -1
-        if parts[policy_index] in {"DIRECT", "PASS", "COMPATIBLE"}:
-            parts[policy_index] = "GLOBAL"
-            android_rules[index] = ",".join(parts)
     config["rules"] = android_rules
     config = _enforce_no_selector_no_direct_config(config)
+    enforce_android_no_bypass(config)
     return dump_yaml_no_alias(config)
 
 

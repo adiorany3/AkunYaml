@@ -10,6 +10,7 @@ import os
 import shutil
 from datetime import datetime
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from local_runner import OUTPUT_YAMLS, optimize_outputs
 from openclash_target import (
@@ -65,6 +66,22 @@ def regenerate_android_offline(workdir: Path, core: Path) -> None:
     text = generator._enforce_no_selector_no_direct_yaml_text(text)
     text = generator._ensure_ping_check_group_yaml_text(text)
     text = generator._prune_missing_proxy_group_refs_yaml_text(text)
+    # Match refresh hardening/adblock without touching other published outputs.
+    from local_runner import DEFAULT_ENV, load_config
+    settings = {**DEFAULT_ENV, **load_config(workdir / "local_config.json")}
+    with TemporaryDirectory(dir=workdir) as directory:
+        staging = Path(directory)
+        if (workdir / "rule_providers").is_dir():
+            shutil.copytree(workdir / "rule_providers", staging / "rule_providers")
+        for source in workdir.iterdir():
+            if source.is_file() and source.suffix in {".txt", ".json"}:
+                shutil.copy2(source, staging / source.name)
+        candidate = staging / paths[0].name
+        candidate.write_text(text, encoding="utf-8")
+        optimize_outputs(staging, [candidate.name], settings["ADBLOCK_PROFILE"],
+                         int(settings["ADBLOCK_PROVIDER_INTERVAL"]), settings["ADBLOCK_DNS_MODE"],
+                         settings["YOUTUBE_ADBLOCK_MODE"], "offline_browser_filters.tmp")
+        text = candidate.read_text(encoding="utf-8")
     if yaml.safe_load(text)["proxies"] != [node.clash for node in yaml_nodes]:
         raise RuntimeError("Offline generation changed manual endpoints; outputs preserved")
     singbox = generator._build_singbox_android_json(nodes)

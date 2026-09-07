@@ -2650,6 +2650,13 @@ def optimize_outputs(
 
             sanitize_yaml(path)
 
+            if is_android:
+                from sumberyaml_core import enforce_android_no_bypass
+
+                config = _yaml_load_config(path)
+                enforce_android_no_bypass(config)
+                _yaml_store_config(path, config)
+
         stats = yaml_transaction_stats(path)
         log(f"Single-pass YAML {filename}: loads={stats.get('loads', 0)}, writes={stats.get('writes', 0)}")
 
