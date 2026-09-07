@@ -83,4 +83,47 @@ marketplace_dns_rules = [
     if rule.get("server") == "local" and "slatic.net" in rule.get("domain_suffix", [])
 ]
 assert marketplace_dns_rules
+
+# Both shipped config and generator must protect ShopeePay, not only Shopee.
+for config in (artifact, generated):
+    route_rules = config["route"]["rules"]
+    payment_index = next(
+        i for i, rule in enumerate(route_rules)
+        if rule.get("outbound") == "direct"
+        and "shopeepay.co.id" in rule.get("domain_suffix", [])
+    )
+    threat_index = next(
+        i for i, rule in enumerate(route_rules) if rule.get("action") == "reject"
+    )
+    assert threat_index < payment_index
+    assert all(
+        i > payment_index
+        for i, rule in enumerate(route_rules)
+        if rule.get("action") == "reject" and i != threat_index
+    )
+    for host in ("shopeepay.co.id", "help.cs.shopeepay.co.id"):
+        for network in ("tcp", "udp"):
+            # Evaluate public HTTPS domain rules; sniff/DNS/private-IP are not routes here.
+            matched = next((
+                rule for rule in route_rules
+                if rule.get("action") in ("route", "reject")
+                and not rule.get("ip_is_private")
+                and rule.get("network", network) == network
+                and rule.get("port", 443) == 443
+                and (
+                    not ("domain" in rule or "domain_suffix" in rule)
+                    or host in rule.get("domain", [])
+                    or any(host == d or host.endswith("." + d) for d in rule.get("domain_suffix", []))
+                )
+            ), {})
+            assert matched.get("outbound") == "direct", (host, network)
+        dns_rule = next(
+            rule for rule in config["dns"]["rules"]
+            if host in rule.get("domain", [])
+            or any(host == d or host.endswith("." + d) for d in rule.get("domain_suffix", []))
+        )
+        assert dns_rule.get("action") == "route" and dns_rule.get("server") == "local"
+    assert config["dns"]["servers"] == [{"type": "local", "tag": "local"}]
+    assert config["dns"]["final"] == "local"
+    assert "shopeepay.co.id" not in route_rules[threat_index].get("domain_suffix", [])
 print("OK")
