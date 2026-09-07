@@ -1,12 +1,12 @@
 # Node Quality Report - Smart Stable
 
 ## Ringkasan
-- Total proxy di YAML: 11
+- Total proxy di YAML: 13
 - WARM-UP harian: 4 node
 - WARM-UP-CF Cloudflare/Worker: 4 node
 - STREAMING-FAST: 5 node
 - AUTO-FAST: 1 node
-- FALLBACK: 11 referensi, manual backup: 4 node
+- FALLBACK: 13 referensi, manual backup: 4 node
 
 ## Rekomendasi Pakai
 - Harian/browsing: pilih `WARM-UP` atau `AUTO-FAST`.
@@ -15,28 +15,26 @@
 - Router RAM kecil: pakai `openclash_lite.yaml`.
 
 ## Tier 1 - WARM-UP
-- AKUN-003-UNKNOWN-VLESS-WS-106MS
-- AKUN-001-CLOUDFLARE-VLESS-WS-109MS
-- AKUN-005-CLOUDFLARE-VLESS-WS-109MS
-- AKUN-002-CLOUDFLARE-VLESS-WS-110MS
+- AKUN-001-CLOUDFLARE-VLESS-WS-49MS
+- AKUN-007-UNKNOWN-VLESS-WS-53MS
+- AKUN-005-CLOUDFLARE-VLESS-WS-54MS
+- AKUN-004-CLOUDFLARE-VLESS-WS-59MS
 
 ## Tier 1B - WARM-UP-CF
-- AKUN-001-CLOUDFLARE-VLESS-WS-109MS
-- AKUN-005-CLOUDFLARE-VLESS-WS-109MS
-- AKUN-002-CLOUDFLARE-VLESS-WS-110MS
-- AKUN-004-CLOUDFLARE-VLESS-WS-110MS
+- AKUN-001-CLOUDFLARE-VLESS-WS-49MS
+- AKUN-005-CLOUDFLARE-VLESS-WS-54MS
+- AKUN-004-CLOUDFLARE-VLESS-WS-59MS
+- AKUN-006-CLOUDFLARE-VLESS-WS-67MS
 
 ## Streaming Pool
-- AKUN-003-UNKNOWN-VLESS-WS-106MS
-- AKUN-001-CLOUDFLARE-VLESS-WS-109MS
-- AKUN-005-CLOUDFLARE-VLESS-WS-109MS
-- AKUN-002-CLOUDFLARE-VLESS-WS-110MS
-- AKUN-004-CLOUDFLARE-VLESS-WS-110MS
+- AKUN-001-CLOUDFLARE-VLESS-WS-49MS
+- AKUN-007-UNKNOWN-VLESS-WS-53MS
+- AKUN-005-CLOUDFLARE-VLESS-WS-54MS
+- AKUN-004-CLOUDFLARE-VLESS-WS-59MS
+- AKUN-006-CLOUDFLARE-VLESS-WS-67MS
 
 ## Node Berisiko dari NekoBox/sing-box Test
-- AKUN-019-CLOUDFLARE-VLESS-WS-135MS: ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))
-- AKUN-018-NOTION-WEB-VLESS-WS-112MS: ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)
-- AKUN-011-DEV-VLESS-WS-114MS: ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))
+- AKUN-026-NOTION-WEB-VLESS-WS-59MS: ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)
 
 ## Catatan Smart Mode
 - Health-check cepat hanya untuk pool kecil, bukan semua node.

@@ -78,7 +78,10 @@ fi
 
 PY="$ROOT/.venv/bin/python"
 
-# local_runner hanya memasang dependency jika import belum tersedia.
+# Bootstrap before local_runner imports modules that require PyYAML.
+if ! "$PY" -c 'import requests, yaml, certifi'; then
+  "$PY" -m pip install --disable-pip-version-check 'requests>=2.31' 'PyYAML>=6.0' 'certifi>=2024.2.2'
+fi
 # Mac membangun validator exact dari source commit target jika belum ada.
 "$ROOT/mac_build_target_core.sh"
 CORE="$ROOT/.local_bin/mihomo"
@@ -111,7 +114,7 @@ if [[ "$GENERATOR_EXIT" -ne 0 ]]; then
   for f in "${REQUIRED_OUTPUTS[@]}"; do
     [[ -s "$f" ]] || MISSING_OUTPUTS+=("$f")
   done
-  if grep -q "Node otomatis hidup hanya" "$GENERATOR_LOG" \
+  if grep -q "Total node output hanya" "$GENERATOR_LOG" \
       && grep -q "output lama dipertahankan" "$GENERATOR_LOG" \
       && [[ ${#MISSING_OUTPUTS[@]} -eq 0 ]]; then
     STALE_FALLBACK=1

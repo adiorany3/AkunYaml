@@ -41,6 +41,25 @@ def env_bool(name: str, default: bool) -> bool:
     return raw in {"1", "true", "yes", "y", "on", "aktif"}
 
 
+def atomic_write_text(path: str | Path, text: str) -> None:
+    """Replace one UTF-8 file only after its full contents have been written."""
+    destination = Path(path).resolve()
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=destination.parent,
+                                         prefix=f".{destination.name}.", delete=False) as handle:
+            temporary = Path(handle.name)
+            if destination.exists():
+                os.fchmod(handle.fileno(), destination.stat().st_mode & 0o777)
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        # ponytail: atomic per file, not across outputs; use staged releases if required.
+        temporary.replace(destination)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
 def mihomo_version_text(core_path: str | Path) -> str:
     core = str(core_path)
     try:
@@ -417,6 +436,10 @@ def validate_generated_text_with_core(
     assert_target_mihomo(core_path, strict=require_exact_core)
     with tempfile.TemporaryDirectory(prefix="akunyaml-target-") as temp_dir:
         root = Path(temp_dir)
+        # ponytail: stage bundled MMDB only; add other assets when profiles require them.
+        geoip = Path(__file__).resolve().parent / "geoip.metadb"
+        if geoip.is_file():
+            shutil.copyfile(geoip, root / geoip.name)
         config_path = root / "config.yaml"
         config_path.write_text(yaml_text, encoding="utf-8")
         ok, output = mihomo_config_test(core_path, config_path, home_dir=root)

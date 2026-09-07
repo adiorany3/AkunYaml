@@ -43,6 +43,7 @@ from mrs_compile import apply_compiled_mrs, load_compiled_report
 from semantic_rule_audit import remove_safe_shadowed_domains
 
 from openclash_target import (
+    atomic_write_text,
     DEFAULT_ROUTER_CORE,
     MIHOMO_TARGET_LABEL,
     MIHOMO_TARGET_REVISION,
@@ -737,9 +738,8 @@ def _yaml_store_config(path: Path, config: dict[str, Any]) -> None:
         _YAML_TX_CACHE[key] = config
         _YAML_TX_DIRTY.add(key)
         return
-    path.write_text(
+    atomic_write_text(path,
         yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=160),
-        encoding="utf-8",
     )
     stats = _YAML_TX_STATS.setdefault(key, {"loads": 0, "writes": 0})
     stats["writes"] += 1
@@ -762,9 +762,8 @@ def yaml_edit_transaction(path: Path):
     try:
         yield obj
         if key in _YAML_TX_DIRTY:
-            path.write_text(
+            atomic_write_text(path,
                 yaml.safe_dump(_YAML_TX_CACHE[key], allow_unicode=True, sort_keys=False, width=160),
-                encoding="utf-8",
             )
             _YAML_TX_STATS[key]["writes"] += 1
     finally:
@@ -2847,7 +2846,8 @@ def main() -> int:
                 timeout=max(5.0, min(120.0, float(env.get("AI_ADBLOCK_TIMEOUT_SEC", "30")))),
                 log=log,
             )
-            log(f"AI adblock: {ai_result['status']} ({ai_result.get('count', 0)} kandidat)")
+            log(f"AI adblock: {ai_result['status']} ({ai_result.get('candidates', ai_result.get('count', 0))} kandidat)"
+                + (f": {ai_result['reason']}" if ai_result.get("reason") else ""))
         except Exception as exc:
             log(f"AI adblock fail-open: {type(exc).__name__}: {exc}")
 

@@ -189,6 +189,7 @@ def classify_candidates(
         if not is_allowlisted(domain, allowlist)
     })
     output_path.unlink(missing_ok=True)
+    report_path.unlink(missing_ok=True)
     if not candidates:
         return {"status": "skipped", "reason": "tidak ada kandidat non-allowlist", "count": 0}
 
@@ -237,7 +238,8 @@ def main() -> int:
     parser.add_argument("--key-file", type=Path, default=Path(os.environ.get("AI_ADBLOCK_API_KEY_FILE", ".secrets/ai_adblock.key")))
     args = parser.parse_args()
     result = classify_candidates(args.workdir.resolve(), base_url=args.base_url, model=args.model, key_file=args.key_file)
-    print(f"AI adblock status: {result['status']}")
+    print(f"AI adblock status: {result['status']}"
+          + (f": {result['reason']}" if result.get("reason") else ""))
     return 0
 
 

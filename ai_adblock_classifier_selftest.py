@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import json
+import os
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 from ai_adblock_classifier import classify_candidates, is_allowlisted, parse_response
 
@@ -14,6 +16,7 @@ def check(condition: bool, message: str) -> None:
     print(f"[OK] {message}")
 
 
+@patch.dict(os.environ, {"AI_ADBLOCK_API_KEY": ""})
 def main() -> int:
     expected = ["ads.example", "api.example"]
     payload = {"results": [
@@ -54,6 +57,20 @@ def main() -> int:
         result = classify_candidates(root, base_url="https://ai.tamandata.com/v1", model="tamandata", key_file=None, log=lambda *_: None)
         check(result["status"] == "skipped", "missing key skips classification")
         check(not output.exists(), "missing key removes stale block rules")
+
+        report = output.with_name("ai_adblock_report.json")
+        (root / "adblock_ai_candidates.txt").write_text("ads.example\napi.example\n", encoding="utf-8")
+        with patch("ai_adblock_classifier._read_api_key", return_value="synthetic"), patch(
+            "ai_adblock_classifier._classify_batch", return_value=parsed
+        ):
+            result = classify_candidates(root, base_url="https://example.invalid", model="test", key_file=None, log=lambda *_: None)
+        check(result["blocked"] == ["ads.example"] and len(result["review"]) == 1, "mock evaluation accepts ads and retains service review")
+        check(report.exists(), "successful classification publishes report")
+        with patch("ai_adblock_classifier._read_api_key", return_value="synthetic"), patch(
+            "ai_adblock_classifier._classify_batch", side_effect=ValueError("invalid response")
+        ):
+            result = classify_candidates(root, base_url="https://example.invalid", model="test", key_file=None, log=lambda *_: None)
+        check(result["status"] == "failed-open" and not output.exists() and not report.exists(), "failure clears stale rules and report")
 
     print("[OK] AI adblock classifier self-test complete")
     return 0

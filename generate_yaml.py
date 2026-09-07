@@ -25,6 +25,7 @@ from android_marketplace_policy import exact_domains as marketplace_exact_domain
 from android_marketplace_policy import suffix_domains as marketplace_suffix_domains
 from openclash_target import (
     MIHOMO_TARGET_LABEL,
+    atomic_write_text,
     assert_target_mihomo,
     validate_generated_text_with_core,
 )
@@ -735,11 +736,19 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         tag for tag, node in tagged_nodes
         if str(getattr(node, "tier", "")).upper() == "MANUAL"
     ]
+    # ponytail: prefer measured Mihomo success; add manual sing-box probes when available.
+    verified_tags = {
+        tag for tag, node in tagged_nodes
+        if getattr(node, "url_test_success", False) is True
+        and str(getattr(node, "url_test_status", "")).startswith("HTTP ")
+    }
     manual_vmess_tags = [
         tag for tag, node in tagged_nodes
         if str(getattr(node, "tier", "")).upper() == "MANUAL"
         and str((getattr(node, "clash", {}) or {}).get("type", "")).lower() == "vmess"
     ]
+    # Stable sort retains account order when no measured success exists.
+    manual_vmess_tags.sort(key=lambda tag: tag not in verified_tags)
     primary_tags = [tag for tag in tags if tag not in manual_tags]
     social_domains = [
         "old.reddit.com",
@@ -944,7 +953,8 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     if not manual_vmess_tags:
         raise ValueError("proxy utama sing-box memerlukan minimal satu node VMess manual")
     # Manual VMess always leads default traffic. Automatic nodes remain fallback.
-    proxy_candidates = list(dict.fromkeys([*manual_vmess_tags, "automatic", *primary_tags, *manual_tags]))
+    automatic = [{"type": "urltest", "tag": "automatic", "outbounds": primary_tags, "url": os.getenv("ANDROID_TEST_URL", os.getenv("TEST_URL", ALT_TEST_URL)), "interval": "3m", "tolerance": 50}] if primary_tags else []
+    proxy_candidates = list(dict.fromkeys([*manual_vmess_tags, *(["automatic"] if automatic else []), *primary_tags, *manual_tags]))
     bank_tags = list(dict.fromkeys([*manual_vmess_tags, *manual_tags, *vmess_tags]))
     bank_outbound = {
         "type": "selector",
@@ -984,7 +994,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         }],
         "outbounds": [
             {"type": "selector", "tag": "proxy", "outbounds": proxy_candidates, "default": manual_vmess_tags[0]},
-            {"type": "urltest", "tag": "automatic", "outbounds": primary_tags, "url": os.getenv("ANDROID_TEST_URL", os.getenv("TEST_URL", ALT_TEST_URL)), "interval": "3m", "tolerance": 50},
+            *automatic,
             social_outbound,
             bank_outbound,
             video_outbound,
@@ -2204,11 +2214,11 @@ def main() -> int:
                 raise SystemExit(f"[ERROR] Final target validation gagal: {exc}") from exc
             print(f"[OK] Final target validation: {_label}")
 
-    Path(output_yaml).write_text(yaml_text, encoding="utf-8")
-    Path(output_android_yaml).write_text(android_yaml_text, encoding="utf-8")
-    Path(output_singbox_android).write_text(singbox_android_text, encoding="utf-8")
-    Path(output_lite_yaml).write_text(lite_yaml_text, encoding="utf-8")
-    Path(output_fresh_yaml).write_text(fresh_yaml_text, encoding="utf-8")
+    atomic_write_text(output_yaml, yaml_text)
+    atomic_write_text(output_android_yaml, android_yaml_text)
+    atomic_write_text(output_singbox_android, singbox_android_text)
+    atomic_write_text(output_lite_yaml, lite_yaml_text)
+    atomic_write_text(output_fresh_yaml, fresh_yaml_text)
     fresh_dir = Path(output_fresh_dir)
     fresh_dir.mkdir(parents=True, exist_ok=True)
     Path(output_node_quality_report).write_text(node_quality_text, encoding="utf-8")
