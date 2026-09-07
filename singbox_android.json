@@ -13,6 +13,24 @@
     ],
     "rules": [
       {
+        "domain_suffix": [
+          "gojek.com",
+          "gojekapi.com",
+          "gopay.co.id",
+          "shopee.co.id",
+          "shopee.com",
+          "shopee.sg",
+          "shopeemobile.com",
+          "shopeeusercontent.com",
+          "susercontent.com",
+          "shp.ee",
+          "spaylater.co.id",
+          "shopeepay.co.id"
+        ],
+        "action": "route",
+        "server": "local"
+      },
+      {
         "action": "route",
         "server": "local",
         "domain_suffix": [
@@ -55913,6 +55931,43 @@
         "action": "reject"
       },
       {
+        "domain_suffix": [
+          "gojek.com",
+          "gojekapi.com",
+          "gopay.co.id",
+          "shopee.co.id",
+          "shopee.com",
+          "shopee.sg",
+          "shopeemobile.com",
+          "shopeeusercontent.com",
+          "susercontent.com",
+          "shp.ee",
+          "spaylater.co.id",
+          "shopeepay.co.id"
+        ],
+        "network": "udp",
+        "port": 443,
+        "action": "reject"
+      },
+      {
+        "domain_suffix": [
+          "gojek.com",
+          "gojekapi.com",
+          "gopay.co.id",
+          "shopee.co.id",
+          "shopee.com",
+          "shopee.sg",
+          "shopeemobile.com",
+          "shopeeusercontent.com",
+          "susercontent.com",
+          "shp.ee",
+          "spaylater.co.id",
+          "shopeepay.co.id"
+        ],
+        "action": "route",
+        "outbound": "proxy"
+      },
+      {
         "action": "route",
         "outbound": "BANK",
         "domain_suffix": [
@@ -56036,7 +56091,7 @@
           "bi.go.id"
         ],
         "action": "route",
-        "outbound": "direct"
+        "outbound": "proxy"
       },
       {
         "action": "route",

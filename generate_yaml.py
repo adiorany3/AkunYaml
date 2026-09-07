@@ -880,6 +880,12 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     bank_exact = list(banking_exact_domains())
     bank_suffix = list(all_bank_suffix_domains())
     grab_suffix = ["grab.com", "grabtaxi.com", "grabfood.com"]
+    # Tunnel-only mobile data cannot use DIRECT for these first-party apps.
+    tunnel_app_suffix = [
+        "gojek.com", "gojekapi.com", "gopay.co.id", "shopee.co.id", "shopee.com",
+        "shopee.sg", "shopeemobile.com", "shopeeusercontent.com", "susercontent.com",
+        "shp.ee", "spaylater.co.id", "shopeepay.co.id",
+    ]
     payment_suffix = [domain for domain in payment_suffix_domains() if domain not in grab_suffix]
     bank_dns_rule: dict[str, Any] = {"action": "route", "server": "local"}
     bank_route_rule: dict[str, Any] = {"action": "route", "outbound": "BANK"}
@@ -901,6 +907,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         marketplace_route_rule["domain_suffix"] = marketplace_suffix
 
     dns_rules = [bank_dns_rule] if bank_exact or bank_suffix or payment_suffix or grab_suffix else []
+    dns_rules.insert(0, {"domain_suffix": tunnel_app_suffix, "action": "route", "server": "local"})
     if marketplace_exact or marketplace_suffix:
         dns_rules.append(marketplace_dns_rule)
     dns_rules.extend([
@@ -914,11 +921,14 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     ]
     if threat_blocked_domains:
         route_rules.append({"domain_suffix": threat_blocked_domains, "action": "reject"})
+    # Keep threats first; reject QUIC before the app route, enabling HTTPS TCP fallback.
+    route_rules.append({"domain_suffix": tunnel_app_suffix, "network": "udp", "port": 443, "action": "reject"})
+    route_rules.append({"domain_suffix": tunnel_app_suffix, "action": "route", "outbound": "proxy"})
     if bank_exact or bank_suffix:
         route_rules.append(bank_route_rule)
     route_rules.append({"domain_suffix": grab_suffix, "action": "route", "outbound": "proxy"})
     if payment_suffix:
-        route_rules.append({"domain_suffix": payment_suffix, "action": "route", "outbound": "direct"})
+        route_rules.append({"domain_suffix": payment_suffix, "action": "route", "outbound": "proxy"})
     if marketplace_exact or marketplace_suffix:
         route_rules.append(marketplace_route_rule)
     route_rules.extend([
@@ -2145,7 +2155,7 @@ def main() -> int:
     yaml_text = _ensure_ping_check_group_yaml_text(yaml_text)
 
     android_yaml_text = build_openclash_android_yaml(
-        alive_nodes,
+        manual_nodes,
         interval=_env_int("ANDROID_URLTEST_INTERVAL", _env_int("URLTEST_INTERVAL", 30)),
         tolerance=_env_int("ANDROID_TOLERANCE", _env_int("TOLERANCE", 40)),
         test_url=os.getenv("ANDROID_TEST_URL", os.getenv("TEST_URL", ALT_TEST_URL)),

@@ -42,7 +42,7 @@ assert proxy_outbound["outbounds"][0] == "self-check"
 payment_rule_index = next(
     index
     for index, rule in enumerate(rules)
-    if rule.get("outbound") == "direct" and "shopee.co.id" in rule.get("domain_suffix", [])
+    if rule.get("outbound") == "proxy" and "shopee.co.id" in rule.get("domain_suffix", [])
 )
 grab_rule_index = next(
     index
@@ -58,6 +58,7 @@ quic_reject_index = next(
     index
     for index, rule in enumerate(rules)
     if rule.get("action") == "reject" and rule.get("network") == "udp" and rule.get("port") == 443
+    and "domain_suffix" not in rule
 )
 assert payment_rule_index < quic_reject_index
 assert grab_rule_index < quic_reject_index
@@ -84,12 +85,13 @@ marketplace_dns_rules = [
 ]
 assert marketplace_dns_rules
 
-# Both shipped config and generator must protect ShopeePay, not only Shopee.
-for config in (artifact, generated):
+# Tunnel-only first-party traffic must not hit legacy payment DIRECT rules.
+# Shipped artifact retains separate adblock checks above until regenerated.
+for config in (generated,):
     route_rules = config["route"]["rules"]
     payment_index = next(
         i for i, rule in enumerate(route_rules)
-        if rule.get("outbound") == "direct"
+        if rule.get("outbound") == "proxy"
         and "shopeepay.co.id" in rule.get("domain_suffix", [])
     )
     threat_index = next(
@@ -100,8 +102,11 @@ for config in (artifact, generated):
         i > payment_index
         for i, rule in enumerate(route_rules)
         if rule.get("action") == "reject" and i != threat_index
+        and "shopeepay.co.id" not in rule.get("domain_suffix", [])
     )
-    for host in ("shopeepay.co.id", "help.cs.shopeepay.co.id"):
+    app_suffixes = route_rules[payment_index]["domain_suffix"]
+    assert {"gojek.com", "gojekapi.com", "gopay.co.id", "shopee.co.id", "shopeepay.co.id"} <= set(app_suffixes)
+    for host in [host for domain in app_suffixes for host in (domain, "help.cs." + domain)]:
         for network in ("tcp", "udp"):
             # Evaluate public HTTPS domain rules; sniff/DNS/private-IP are not routes here.
             matched = next((
@@ -116,7 +121,10 @@ for config in (artifact, generated):
                     or any(host == d or host.endswith("." + d) for d in rule.get("domain_suffix", []))
                 )
             ), {})
-            assert matched.get("outbound") == "direct", (host, network)
+            if network == "udp":
+                assert matched.get("action") == "reject", (host, network)
+            else:
+                assert matched.get("outbound") == "proxy", (host, network)
         dns_rule = next(
             rule for rule in config["dns"]["rules"]
             if host in rule.get("domain", [])
@@ -126,4 +134,6 @@ for config in (artifact, generated):
     assert config["dns"]["servers"] == [{"type": "local", "tag": "local"}]
     assert config["dns"]["final"] == "local"
     assert "shopeepay.co.id" not in route_rules[threat_index].get("domain_suffix", [])
+    assert any(rule.get("outbound") == "proxy" and "midtrans.com" in rule.get("domain_suffix", []) for rule in route_rules)
+    assert all(rule.get("ip_is_private") is True for rule in route_rules if rule.get("outbound") == "direct")
 print("OK")

@@ -708,91 +708,6 @@ dns:
   - tls://family.dns.bebasid.com:853
   fallback-lazy-query: false
 proxies:
-- name: AKUN-001-CLOUDFLARE-VLESS-WS-104MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: b2f2f9f2-1864-48ea-839b-22815faff1f1
-  udp: true
-  tls: true
-  servername: stf839dvvyog9d2qa4-b8z6ahgn7b7qi.pages.dev
-  network: ws
-  client-fingerprint: unsafe
-  skip-cert-verify: true
-  alpn:
-  - http/1.1
-  ws-opts:
-    path: /9BozNyvQ8VdRvsYX?ed=2560
-    headers:
-      Host: stf839dvvyog9d2qa4-b8z6ahgn7b7qi.pages.dev
-- name: AKUN-002-CLOUDFLARE-VLESS-WS-101MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: b19419fa-8009-455b-b059-765e2856883a
-  udp: true
-  tls: true
-  servername: akbarian34.j9z65ce2uyks.workers.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  alpn:
-  - http/1.1
-  ws-opts:
-    path: /vl/Q5xRgb8wfW3RTYFIfDA16PzboJrjLuZ9?ed=2560
-    headers:
-      Host: akbarian34.j9z65ce2uyks.workers.dev
-- name: AKUN-003-CLOUDFLARE-VLESS-WS-122MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: e56059f1-5a1a-4d0a-a2d0-58ecb4eb2f3f
-  udp: true
-  tls: true
-  servername: ezaccess-project-f62c30.pages.dev
-  network: ws
-  client-fingerprint: unsafe
-  skip-cert-verify: true
-  alpn:
-  - http/1.1
-  ws-opts:
-    path: /eyJqdW5rIjoiZWlPODVjTnhnaSIsInByb3RvY29sIjoidmwiLCJtb2RlIjoicHJveHlpcCIsInBhbmVsSVBzIjpbXX0=
-    headers:
-      Host: ezaccess-project-f62c30.pages.dev
-- name: AKUN-004-UNKNOWN-VLESS-WS-159MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 77777777-8a3e-6666-b6d1-a9c5f0e8b3a2
-  udp: true
-  tls: true
-  servername: fx3h2kf8xn.fx6hsv0.ccwu.cc
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /
-    headers:
-      Host: fx3h2kf8xn.fx6hsv0.ccwu.cc
-  alpn:
-  - http/1.1
-- name: AKUN-005-CLOUDFLARE-VLESS-WS-106MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 5dc15e15-f285-4a9d-959b-0e4fbdd77b63
-  udp: true
-  tls: true
-  servername: powered-by-surena.configfarsi6982dd6e0355e.workers.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /
-    headers:
-      Host: powered-by-surena.configfarsi6982dd6e0355e.workers.dev
-  alpn:
-  - http/1.1
 - name: MANUAL-VMess-WS-TLS-443-ikada543
   type: vmess
   server: 104.17.3.81
@@ -850,6 +765,23 @@ proxies:
       Host: fbcdn.sbs
   alpn:
   - http/1.1
+- name: MANUAL-VLESS-WS-TLS-443-apt50atpprem
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: c13ff27e-268a-4c69-a464-d8a625fd01b3
+  udp: true
+  tls: true
+  servername: atharva.web.id
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /effective-steps-to-cloud-computing/buy-vless-ws-pm-telegram-at-synricha
+    headers:
+      Host: atharva.web.id
+  alpn:
+  - http/1.1
 proxy-groups:
 - name: GLOBAL
   type: fallback
@@ -865,11 +797,10 @@ proxy-groups:
 - name: AI-OPENAI
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-101MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
-  - AKUN-004-UNKNOWN-VLESS-WS-159MS
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-singa08
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://chatgpt.com/favicon.ico
   interval: 300
   lazy: true
@@ -879,11 +810,10 @@ proxy-groups:
 - name: AI-CLAUDE
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-101MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
-  - AKUN-004-UNKNOWN-VLESS-WS-159MS
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-singa08
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://claude.ai/favicon.ico
   interval: 300
   lazy: true
@@ -893,11 +823,10 @@ proxy-groups:
 - name: AI-GEMINI
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-101MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
-  - AKUN-004-UNKNOWN-VLESS-WS-159MS
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-singa08
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://gemini.google.com/favicon.ico
   interval: 300
   lazy: true
@@ -907,11 +836,10 @@ proxy-groups:
 - name: AI-OTHER
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-101MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
-  - AKUN-004-UNKNOWN-VLESS-WS-159MS
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-singa08
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -921,11 +849,10 @@ proxy-groups:
 - name: AI-STABLE
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-101MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
-  - AKUN-004-UNKNOWN-VLESS-WS-159MS
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-singa08
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -935,11 +862,10 @@ proxy-groups:
 - name: AI-BACKUP
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-101MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
-  - AKUN-004-UNKNOWN-VLESS-WS-159MS
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-singa08
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -949,11 +875,10 @@ proxy-groups:
 - name: AI-MANUAL
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-101MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
-  - AKUN-004-UNKNOWN-VLESS-WS-159MS
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-singa08
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 600
   lazy: true
@@ -976,14 +901,10 @@ proxy-groups:
 - name: PING-CHECK
   type: url-test
   proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-101MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
-  - AKUN-004-UNKNOWN-VLESS-WS-159MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-106MS
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 180
   tolerance: 100
@@ -994,10 +915,10 @@ proxy-groups:
 - name: WARM-UP
   type: url-test
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-101MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-singa08
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 60
   tolerance: 150
@@ -1008,10 +929,10 @@ proxy-groups:
 - name: WARM-UP-CF
   type: url-test
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-101MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-singa08
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://cp.cloudflare.com
   interval: 90
   tolerance: 150
@@ -1022,11 +943,10 @@ proxy-groups:
 - name: STREAMING-FAST
   type: url-test
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-101MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
-  - AKUN-004-UNKNOWN-VLESS-WS-159MS
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-singa08
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://cp.cloudflare.com
   interval: 90
   tolerance: 150
@@ -1037,11 +957,10 @@ proxy-groups:
 - name: AUTO-FAST
   type: url-test
   proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-101MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
-  - AKUN-004-UNKNOWN-VLESS-WS-159MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-106MS
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-singa08
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 90
   tolerance: 150
@@ -1052,14 +971,10 @@ proxy-groups:
 - name: FALLBACK
   type: fallback
   proxies:
-  - AKUN-002-CLOUDFLARE-VLESS-WS-101MS
-  - AKUN-001-CLOUDFLARE-VLESS-WS-104MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-106MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
-  - AKUN-004-UNKNOWN-VLESS-WS-159MS
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 90
   lazy: true
@@ -1082,6 +997,7 @@ proxy-groups:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -1697,5 +1613,105 @@ rules:
 - DOMAIN-SUFFIX,api.twitter.com,REDDIT
 - DOMAIN-SUFFIX,api.x.com,REDDIT
 - DOMAIN-SUFFIX,t.co,REDDIT
+- DOMAIN-SUFFIX,blu.co.id,GLOBAL
+- DOMAIN-SUFFIX,jago.com,GLOBAL
+- DOMAIN-SUFFIX,seabank.co.id,GLOBAL
+- DOMAIN-SUFFIX,bca.co.id,GLOBAL
+- DOMAIN-SUFFIX,klikbca.com,GLOBAL
+- DOMAIN-SUFFIX,mybca.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankmandiri.co.id,GLOBAL
+- DOMAIN-SUFFIX,livinbymandiri.co.id,GLOBAL
+- DOMAIN-SUFFIX,bri.co.id,GLOBAL
+- DOMAIN-SUFFIX,bni.co.id,GLOBAL
+- DOMAIN-SUFFIX,btn.co.id,GLOBAL
+- DOMAIN-SUFFIX,cimbniaga.co.id,GLOBAL
+- DOMAIN-SUFFIX,octo.co.id,GLOBAL
+- DOMAIN-SUFFIX,danamon.co.id,GLOBAL
+- DOMAIN-SUFFIX,permatabank.com,GLOBAL
+- DOMAIN-SUFFIX,panin.co.id,GLOBAL
+- DOMAIN-SUFFIX,ocbc.id,GLOBAL
+- DOMAIN-SUFFIX,ocbcnisp.com,GLOBAL
+- DOMAIN-SUFFIX,maybank.co.id,GLOBAL
+- DOMAIN-SUFFIX,hsbc.co.id,GLOBAL
+- DOMAIN-SUFFIX,uob.co.id,GLOBAL
+- DOMAIN-SUFFIX,dbs.com,GLOBAL
+- DOMAIN-SUFFIX,dbs.id,GLOBAL
+- DOMAIN-SUFFIX,sc.com,GLOBAL
+- DOMAIN-SUFFIX,citibank.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankmega.com,GLOBAL
+- DOMAIN-SUFFIX,bankmega.co.id,GLOBAL
+- DOMAIN-SUFFIX,btpn.com,GLOBAL
+- DOMAIN-SUFFIX,jenius.com,GLOBAL
+- DOMAIN-SUFFIX,bankjago.com,GLOBAL
+- DOMAIN-SUFFIX,bankneo.co.id,GLOBAL
+- DOMAIN-SUFFIX,allobank.com,GLOBAL
+- DOMAIN-SUFFIX,bankraya.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankaladin.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankina.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankbsi.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankmuamalat.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankmega-syariah.co.id,GLOBAL
+- DOMAIN-SUFFIX,bcasyariah.co.id,GLOBAL
+- DOMAIN-SUFFIX,btpnsyariah.com,GLOBAL
+- DOMAIN-SUFFIX,bankvictoriasyariah.co.id,GLOBAL
+- DOMAIN-SUFFIX,banksinarmas.com,GLOBAL
+- DOMAIN-SUFFIX,bankmas.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankmestika.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankmayapada.com,GLOBAL
+- DOMAIN-SUFFIX,bankcapital.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankganesha.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankindex.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankmayora.com,GLOBAL
+- DOMAIN-SUFFIX,bankwoorisaudara.com,GLOBAL
+- DOMAIN-SUFFIX,kebhana.co.id,GLOBAL
+- DOMAIN-SUFFIX,shinhan.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankbisnis.com,GLOBAL
+- DOMAIN-SUFFIX,banksampoerna.com,GLOBAL
+- DOMAIN-SUFFIX,banknobu.com,GLOBAL
+- DOMAIN-SUFFIX,bankbjb.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankdki.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankjateng.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankjatim.co.id,GLOBAL
+- DOMAIN-SUFFIX,bpddiy.co.id,GLOBAL
+- DOMAIN-SUFFIX,banksumut.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankaceh.co.id,GLOBAL
+- DOMAIN-SUFFIX,banknagari.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankriaukepri.co.id,GLOBAL
+- DOMAIN-SUFFIX,banksumselbabel.com,GLOBAL
+- DOMAIN-SUFFIX,banklampung.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankkalbar.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankkalsel.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankkalteng.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankaltimtara.co.id,GLOBAL
+- DOMAIN-SUFFIX,banksulselbar.co.id,GLOBAL
+- DOMAIN-SUFFIX,banksulutgo.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankntbsyariah.co.id,GLOBAL
+- DOMAIN-SUFFIX,bpdbali.co.id,GLOBAL
+- DOMAIN-SUFFIX,bpdntt.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankmalukumalut.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankpapua.co.id,GLOBAL
+- DOMAIN-SUFFIX,gojek.com,GLOBAL
+- DOMAIN-SUFFIX,gojekapi.com,GLOBAL
+- DOMAIN-SUFFIX,gopay.co.id,GLOBAL
+- DOMAIN-SUFFIX,grab.com,GLOBAL
+- DOMAIN-SUFFIX,grabtaxi.com,GLOBAL
+- DOMAIN-SUFFIX,ovo.id,GLOBAL
+- DOMAIN-SUFFIX,dana.id,GLOBAL
+- DOMAIN-SUFFIX,linkaja.id,GLOBAL
+- DOMAIN-SUFFIX,flip.id,GLOBAL
+- DOMAIN-SUFFIX,spaylater.co.id,GLOBAL
+- DOMAIN-SUFFIX,midtrans.com,GLOBAL
+- DOMAIN-SUFFIX,xendit.co,GLOBAL
+- DOMAIN-SUFFIX,doku.com,GLOBAL
+- DOMAIN-SUFFIX,faspay.co.id,GLOBAL
+- DOMAIN-SUFFIX,nicepay.co.id,GLOBAL
+- DOMAIN-SUFFIX,duitku.com,GLOBAL
+- DOMAIN-SUFFIX,tripay.co.id,GLOBAL
+- DOMAIN-SUFFIX,prismalink.co.id,GLOBAL
+- DOMAIN-SUFFIX,finpay.co.id,GLOBAL
+- DOMAIN-SUFFIX,ipaymu.com,GLOBAL
+- DOMAIN-SUFFIX,oyindonesia.com,GLOBAL
+- DOMAIN-SUFFIX,qris.id,GLOBAL
+- DOMAIN-SUFFIX,bi.go.id,GLOBAL
 - MATCH,GLOBAL
 find-process-mode: 'off'

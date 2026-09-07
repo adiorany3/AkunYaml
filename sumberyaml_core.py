@@ -3317,6 +3317,13 @@ def build_openclash_android_yaml(
     regional ad feed is included only when feed_guard.py has produced its local
     YAML snapshot. No MRS/text security provider is emitted for Android.
     """
+    nodes = [
+        node for node in nodes
+        if str(getattr(node, "tier", "")).upper() == "MANUAL"
+        and getattr(node, "tcp_reachable", None) is not False
+    ]
+    if not nodes:
+        raise ValueError("Android requires usable manual nodes; automatic/direct fallback disabled")
     nodes, names, android_host_fallback_groups = _android_primary_fallback_nodes(
         nodes, test_url=test_url, health_timeout=health_timeout
     )
@@ -3490,6 +3497,7 @@ def build_openclash_android_yaml(
     # Per-account Android host failover groups are intentionally not exposed in
     # GLOBAL. They act as logical nodes underneath the normal policy groups.
     proxy_groups.extend(android_host_fallback_groups)
+    proxy_groups.append({"name": "REDDIT", "type": "select", "proxies": ["GLOBAL"]})
 
     config: dict[str, Any] = {
         "mixed-port": 7890,
@@ -3540,7 +3548,7 @@ def build_openclash_android_yaml(
     }
     if android_banking_enabled():
         # Banking Safe Mode keeps bank traffic off Fake-IP/sniffing and uses
-        # ordinary public DNS. Routing is DIRECT and inserted below after the
+        # ordinary public DNS. Routing uses manual nodes below after the
         # high-confidence threat layer but before ad/tracker filtering.
         dns_cfg = config.get("dns") if isinstance(config.get("dns"), dict) else {}
         fake_filter = list(dns_cfg.get("fake-ip-filter") or [])
@@ -3630,6 +3638,17 @@ def build_openclash_android_yaml(
         if android_marketplace_live_enabled():
             android_rules.extend(android_marketplace_live_guard_rules(android_marketplace_live_policy()))
     android_rules.append("MATCH,GLOBAL")
+    # Only the fixed LAN preamble may bypass manual nodes. Preserve rule order,
+    # including threat rejects before banking/marketplace compatibility rules.
+    lan_rules = set(android_rules[:9])
+    for index, rule in enumerate(android_rules):
+        if rule in lan_rules:
+            continue
+        parts = rule.split(",")
+        policy_index = -2 if parts[-1] == "no-resolve" else -1
+        if parts[policy_index] in {"DIRECT", "PASS", "COMPATIBLE"}:
+            parts[policy_index] = "GLOBAL"
+            android_rules[index] = ",".join(parts)
     config["rules"] = android_rules
     config = _enforce_no_selector_no_direct_config(config)
     return dump_yaml_no_alias(config)
