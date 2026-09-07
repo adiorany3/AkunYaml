@@ -16,11 +16,11 @@ for available, expected in (("MANUAL", "MANUAL"), ("FALLBACK", "FALLBACK"), ("AU
 print("PASS: missing MANUAL policy uses automatic pool or REJECT")
 
 node = SimpleNamespace(
-    name="automatic-vmess",
-    tier="PRIMARY",
+    name="manual-vmess",
+    tier="MANUAL",
     type="vmess",
     clash={
-        "name": "automatic-vmess",
+        "name": "manual-vmess",
         "type": "vmess",
         "server": "example.com",
         "port": 443,
@@ -32,9 +32,9 @@ config_text = _build_singbox_android_json([node])
 config = json.loads(config_text)
 groups = {item["tag"]: item for item in config["outbounds"]}
 for tag in ("proxy", "BANK", "SOCIAL", "VMESS-VIDEO"):
-    assert groups[tag]["default"] == "automatic-vmess", groups[tag]
+    assert groups[tag]["default"] == "manual-vmess", groups[tag]
 _validate_singbox_json(config_text, os.getenv("SINGBOX_PATH", ".local_bin/sing-box"))
-print("PASS: automatic VMess replaces unavailable manual nodes")
+print("PASS: manual VMess supplies sing-box selectors")
 
 for protocol in ("vless", "trojan"):
     node.type = protocol

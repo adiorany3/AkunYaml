@@ -704,13 +704,15 @@ def _singbox_outbound_from_node(node: Any, *, tag: str = "proxy") -> dict[str, A
 
 
 def _build_singbox_android_json(nodes: list[Any]) -> str:
-    """Build standalone sing-box 1.14 Android TUN profile for VLESS/VMess/Trojan."""
+    """Build sing-box 1.14 Android TUN with all supported manual nodes, regardless of health."""
     proxy_outbounds: list[dict[str, Any]] = []
     tagged_nodes: list[tuple[str, Any]] = []
     tags: list[str] = []
     used_tags = {"proxy", "automatic", "SOCIAL", "BANK", "VMESS-VIDEO", "direct", "block"}
     allowed_protocols = {"vless", "vmess", "trojan"}
     for index, node in enumerate(nodes, start=1):
+        if str(getattr(node, "tier", "")).upper() != "MANUAL":
+            continue
         clash = getattr(node, "clash", {}) or {}
         protocol = str(clash.get("type") or getattr(node, "type", "")).strip().lower()
         if protocol not in allowed_protocols:
@@ -730,12 +732,9 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         proxy_outbounds.append(outbound)
 
     if not proxy_outbounds:
-        raise ValueError("tidak ada akun yang kompatibel dengan sing-box")
+        raise ValueError("tidak ada node manual yang kompatibel dengan sing-box; fallback subscription otomatis dinonaktifkan")
 
-    manual_tags = [
-        tag for tag, node in tagged_nodes
-        if str(getattr(node, "tier", "")).upper() == "MANUAL"
-    ]
+    manual_tags = tags
     # ponytail: prefer measured Mihomo success; add manual sing-box probes when available.
     verified_tags = {
         tag for tag, node in tagged_nodes
@@ -744,18 +743,11 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     }
     manual_vmess_tags = [
         tag for tag, node in tagged_nodes
-        if str(getattr(node, "tier", "")).upper() == "MANUAL"
-        and str((getattr(node, "clash", {}) or {}).get("type", "")).lower() == "vmess"
+        if str((getattr(node, "clash", {}) or {}).get("type", "")).lower() == "vmess"
     ]
     # Stable sort retains account order when no measured success exists.
     manual_vmess_tags.sort(key=lambda tag: tag not in verified_tags)
-    primary_tags = [tag for tag in tags if tag not in manual_tags]
-    primary_vmess_tags = [
-        tag for tag, node in tagged_nodes
-        if tag in primary_tags
-        and str((getattr(node, "clash", {}) or {}).get("type", "")).lower() == "vmess"
-    ]
-    preferred_vmess_tags = manual_vmess_tags or primary_vmess_tags
+    preferred_vmess_tags = manual_vmess_tags
     social_domains = [
         "old.reddit.com",
         "reddit.com",
@@ -954,9 +946,8 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     ]
     # ponytail: retain VMESS-VIDEO tag for clients; probe service/UDP suitability separately.
     # VMess is preferred, not required for HTTPS traffic through VLESS/Trojan.
-    preferred_vmess_tags = preferred_vmess_tags or manual_tags or primary_tags
-    automatic = [{"type": "urltest", "tag": "automatic", "outbounds": primary_tags, "url": os.getenv("ANDROID_TEST_URL", os.getenv("TEST_URL", ALT_TEST_URL)), "interval": "3m", "tolerance": 50}] if primary_tags else []
-    proxy_candidates = list(dict.fromkeys([*preferred_vmess_tags, *(["automatic"] if automatic else []), *primary_tags, *manual_tags]))
+    preferred_vmess_tags = preferred_vmess_tags or manual_tags
+    proxy_candidates = list(dict.fromkeys([*preferred_vmess_tags, *manual_tags]))
     bank_tags = list(dict.fromkeys([*preferred_vmess_tags, *manual_tags, *vmess_tags]))
     bank_outbound = {
         "type": "selector",
@@ -970,7 +961,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         "outbounds": list(dict.fromkeys([*preferred_vmess_tags, *vmess_tags])),
         "default": preferred_vmess_tags[0],
     }
-    social_candidates = list(dict.fromkeys([*preferred_vmess_tags, *manual_tags, *primary_tags[:1]]))
+    social_candidates = list(dict.fromkeys([*preferred_vmess_tags, *manual_tags]))
     social_outbound = {
         "type": "selector",
         "tag": "SOCIAL",
@@ -996,7 +987,6 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         }],
         "outbounds": [
             {"type": "selector", "tag": "proxy", "outbounds": proxy_candidates, "default": preferred_vmess_tags[0]},
-            *automatic,
             social_outbound,
             bank_outbound,
             video_outbound,
@@ -2040,6 +2030,8 @@ def main() -> int:
         if manual_text:
             Path(manual_file).write_text(manual_text, encoding="utf-8")
     manual_nodes, manual_skipped = parse_manual_nodes_unscreened(manual_text)
+    # Preserve all parsed manual nodes for sing-box before OpenClash health filters.
+    singbox_manual_nodes = list(manual_nodes)
     manual_tcp_timeout = max(0.1, _env_float("TCP_TIMEOUT", 2.0))
     manual_attempts = max(1, _env_int("ATTEMPTS", 2))
     manual_require_ws = _env_bool("REQUIRE_WS_UPGRADE", True)
@@ -2192,8 +2184,7 @@ def main() -> int:
         node.tier = "PRIMARY"
     for node in manual_nodes:
         node.tier = "MANUAL"
-    singbox_nodes = [*alive_nodes, *manual_nodes]
-    singbox_android_text = _build_singbox_android_json(singbox_nodes)
+    singbox_android_text = _build_singbox_android_json(singbox_manual_nodes)
     _validate_singbox_json(
         singbox_android_text,
         os.getenv("SINGBOX_PATH", "./sing-box").strip() or "./sing-box",

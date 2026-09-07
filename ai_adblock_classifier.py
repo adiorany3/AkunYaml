@@ -99,6 +99,8 @@ def parse_response(content: str, expected: list[str]) -> list[dict[str, Any]]:
     for item in data["results"]:
         if not isinstance(item, dict) or set(item) != {"domain", "label", "category", "confidence", "reason"}:
             raise ValueError("item response memiliki schema tidak valid")
+        if any(not isinstance(item[key], str) for key in ("domain", "label", "category", "reason")):
+            raise ValueError("domain, label, category, dan reason harus string")
         domain = normalize_domain(str(item["domain"]))
         label = str(item["label"]).lower()
         category = str(item["category"]).lower()
@@ -106,6 +108,8 @@ def parse_response(content: str, expected: list[str]) -> list[dict[str, Any]]:
         reason = str(item["reason"]).strip()
         if domain is None or domain in seen or label not in ALLOWED_LABELS:
             raise ValueError("domain atau label response tidak valid")
+        if category not in BLOCK_CATEGORIES | {"service", "unknown"}:
+            raise ValueError("category response tidak valid")
         if isinstance(confidence, bool) or not isinstance(confidence, (int, float)) or not 0 <= float(confidence) <= 1:
             raise ValueError("confidence response tidak valid")
         if not reason or len(reason) > 240:

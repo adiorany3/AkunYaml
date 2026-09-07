@@ -201,10 +201,10 @@ def validate_config_structure(config: Any, *, label: str = "config") -> list[str
     if not isinstance(config, dict):
         return [f"{label}: root YAML harus mapping/dict"]
 
-    proxies = config.get("proxies") or []
-    groups = config.get("proxy-groups") or []
-    rules = config.get("rules") or []
-    providers = config.get("rule-providers") or {}
+    proxies = config.get("proxies", [])
+    groups = config.get("proxy-groups", [])
+    rules = config.get("rules", [])
+    providers = config.get("rule-providers", {})
 
     if not isinstance(proxies, list):
         errors.append(f"{label}: proxies harus list")
@@ -215,9 +215,15 @@ def validate_config_structure(config: Any, *, label: str = "config") -> list[str
     if not isinstance(rules, list):
         errors.append(f"{label}: rules harus list")
         rules = []
-    if providers is not None and not isinstance(providers, dict):
+    if not isinstance(providers, dict):
         errors.append(f"{label}: rule-providers harus mapping")
         providers = {}
+
+    for proxy in proxies:
+        if not isinstance(proxy, dict):
+            errors.append(f"{label}: proxy bukan mapping")
+        elif not isinstance(proxy.get("name"), str) or not proxy["name"].strip():
+            errors.append(f"{label}: proxy tanpa name string yang valid")
 
     proxy_names = [
         str(item.get("name", "")).strip()
@@ -262,7 +268,7 @@ def validate_config_structure(config: Any, *, label: str = "config") -> list[str
         if gtype not in ALLOWED_GROUP_TYPES:
             errors.append(f"{label}: group {name} memiliki type tidak dikenal: {gtype or '<kosong>'}")
 
-        refs = group.get("proxies") or []
+        refs = group.get("proxies", [])
         if not isinstance(refs, list):
             errors.append(f"{label}: group {name} proxies harus list")
             continue
