@@ -1790,6 +1790,16 @@ def _prune_missing_proxy_group_refs_yaml_text(yaml_text: str) -> str:
     builtins = {"DIRECT", "REJECT", "REJECT-DROP", "PASS", "COMPATIBLE"}
     known = proxy_names | group_names | builtins
 
+    if "MANUAL" not in known:
+        fallback = next((name for name in ("FALLBACK", "AUTO-FAST") if name in group_names), "REJECT")
+        rules = config.get("rules", [])
+        for index, rule in enumerate(rules):
+            parts = str(rule).split(",")
+            policy_index = -2 if parts[-1].strip() == "no-resolve" else -1
+            if len(parts) >= 2 and parts[policy_index].strip() == "MANUAL":
+                parts[policy_index] = fallback
+                rules[index] = ",".join(parts)
+
     for group in groups:
         refs = group.get("proxies")
         if not isinstance(refs, list):

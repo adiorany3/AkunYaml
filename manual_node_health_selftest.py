@@ -2,8 +2,18 @@
 import json
 import os
 from types import SimpleNamespace
+import yaml
 
-from generate_yaml import _build_singbox_android_json, _validate_singbox_json
+from generate_yaml import _build_singbox_android_json, _validate_singbox_json, _prune_missing_proxy_group_refs_yaml_text
+
+for available, expected in (("MANUAL", "MANUAL"), ("FALLBACK", "FALLBACK"), ("AUTO-FAST", "AUTO-FAST"), (None, "REJECT")):
+    source = {
+        "proxy-groups": [{"name": available, "type": "select", "proxies": ["REJECT"]}] if available else [],
+        "rules": ["DOMAIN-SUFFIX,cloudflare.com,MANUAL", "IP-CIDR,1.1.1.1/32,MANUAL,no-resolve", "MATCH,REJECT"],
+    }
+    result = yaml.safe_load(_prune_missing_proxy_group_refs_yaml_text(yaml.safe_dump(source)))
+    assert result["rules"] == [f"DOMAIN-SUFFIX,cloudflare.com,{expected}", f"IP-CIDR,1.1.1.1/32,{expected},no-resolve", "MATCH,REJECT"]
+print("PASS: missing MANUAL policy uses automatic pool or REJECT")
 
 node = SimpleNamespace(
     name="automatic-vmess",
