@@ -704,7 +704,7 @@ def _singbox_outbound_from_node(node: Any, *, tag: str = "proxy") -> dict[str, A
 
 
 def _build_singbox_android_json(nodes: list[Any]) -> str:
-    """Build sing-box 1.14 Android TUN with all supported manual nodes, regardless of health."""
+    """Build manual-only sing-box output, excluding confirmed TCP failures."""
     proxy_outbounds: list[dict[str, Any]] = []
     tagged_nodes: list[tuple[str, Any]] = []
     tags: list[str] = []
@@ -712,6 +712,8 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     allowed_protocols = {"vless", "vmess", "trojan"}
     for index, node in enumerate(nodes, start=1):
         if str(getattr(node, "tier", "")).upper() != "MANUAL":
+            continue
+        if getattr(node, "tcp_reachable", None) is False:
             continue
         clash = getattr(node, "clash", {}) or {}
         protocol = str(clash.get("type") or getattr(node, "type", "")).strip().lower()

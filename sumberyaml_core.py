@@ -907,6 +907,7 @@ class ProxyNode:
     clash: dict[str, Any]
     source: str = "manual"
     status: str = "pending"
+    tcp_reachable: bool | None = None
     best_delay_ms: int | None = None
     avg_delay_ms: int | None = None
     jitter_ms: int | None = None
@@ -2230,7 +2231,10 @@ def tls_bug_delay(node: ProxyNode, timeout: float, attempts: int, target_server:
     for attempt_index in range(attempts):
         start = time.perf_counter()
         try:
+            if node.tcp_reachable is None:
+                node.tcp_reachable = False
             raw = socket.create_connection((target_server, ONLY_PORT), timeout=timeout)
+            node.tcp_reachable = True
             raw.settimeout(timeout)
             with raw:
                 with context.wrap_socket(raw, server_hostname=sni):
@@ -2286,7 +2290,10 @@ def ws_upgrade_delay(node: ProxyNode, timeout: float, attempts: int, target_serv
     for attempt_index in range(attempts):
         start = time.perf_counter()
         try:
+            if node.tcp_reachable is None:
+                node.tcp_reachable = False
             raw = socket.create_connection((target_server, ONLY_PORT), timeout=timeout)
+            node.tcp_reachable = True
             raw.settimeout(timeout)
             with raw:
                 with context.wrap_socket(raw, server_hostname=sni) as sock:
@@ -2374,6 +2381,7 @@ def check_node_bug_compat(node: ProxyNode, timeout: float, attempts: int, requir
     Runtime fallback variants are produced later by the YAML builder.
     """
     attempts = max(1, int(attempts))
+    node.tcp_reachable = None
     harden_ws_node(node)
 
     target_candidates = _distributed_target_order(node) if BUG_MODE == "distribute" else list(TARGET_SERVERS)
