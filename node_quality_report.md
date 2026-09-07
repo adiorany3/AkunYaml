@@ -1,12 +1,12 @@
 # Node Quality Report - Smart Stable
 
 ## Ringkasan
-- Total proxy di YAML: 10
+- Total proxy di YAML: 9
 - WARM-UP harian: 4 node
 - WARM-UP-CF Cloudflare/Worker: 4 node
 - STREAMING-FAST: 5 node
-- AUTO-FAST: 1 node
-- FALLBACK: 10 referensi, manual backup: 4 node
+- AUTO-FAST: 5 node
+- FALLBACK: 9 referensi, manual backup: 4 node
 
 ## Rekomendasi Pakai
 - Harian/browsing: pilih `WARM-UP` atau `AUTO-FAST`.
@@ -15,29 +15,30 @@
 - Router RAM kecil: pakai `openclash_lite.yaml`.
 
 ## Tier 1 - WARM-UP
-- AKUN-002-CLOUDFLARE-VLESS-WS-99MS
-- AKUN-003-CLOUDFLARE-VLESS-WS-99MS
-- AKUN-001-CLOUDFLARE-VLESS-WS-101MS
-- AKUN-006-UNKNOWN-VLESS-WS-105MS
+- AKUN-004-CLOUDFLARE-VLESS-WS-109MS
+- AKUN-005-CLOUDFLARE-VLESS-WS-114MS
+- AKUN-002-CLOUDFLARE-VLESS-WS-126MS
+- AKUN-003-CLOUDFLARE-VLESS-WS-130MS
 
 ## Tier 1B - WARM-UP-CF
-- AKUN-002-CLOUDFLARE-VLESS-WS-99MS
-- AKUN-003-CLOUDFLARE-VLESS-WS-99MS
-- AKUN-001-CLOUDFLARE-VLESS-WS-101MS
-- AKUN-004-CLOUDFLARE-VLESS-WS-112MS
+- AKUN-004-CLOUDFLARE-VLESS-WS-109MS
+- AKUN-005-CLOUDFLARE-VLESS-WS-114MS
+- AKUN-002-CLOUDFLARE-VLESS-WS-126MS
+- AKUN-003-CLOUDFLARE-VLESS-WS-130MS
 
 ## Streaming Pool
-- AKUN-002-CLOUDFLARE-VLESS-WS-99MS
-- AKUN-003-CLOUDFLARE-VLESS-WS-99MS
-- AKUN-001-CLOUDFLARE-VLESS-WS-101MS
-- AKUN-006-UNKNOWN-VLESS-WS-105MS
-- AKUN-004-CLOUDFLARE-VLESS-WS-112MS
+- AKUN-004-CLOUDFLARE-VLESS-WS-109MS
+- AKUN-005-CLOUDFLARE-VLESS-WS-114MS
+- AKUN-002-CLOUDFLARE-VLESS-WS-126MS
+- AKUN-003-CLOUDFLARE-VLESS-WS-130MS
+- AKUN-001-CLOUDFLARE-VLESS-WS-165MS
 
 ## Node Berisiko dari NekoBox/sing-box Test
-- AKUN-007-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-103MS: ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))
-- AKUN-011-DEV-VLESS-WS-118MS: ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))
-- AKUN-022-UNKNOWN-VLESS-WS-110MS: ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))
-- AKUN-021-CLOUDFLARE-VLESS-WS-120MS: ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)
+- AKUN-006-CLOUDFLARE-VLESS-WS-114MS: ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))
+- AKUN-002-CLOUDFLARE-VLESS-WS-101MS: ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)
+- AKUN-015-NOTION-WEB-VLESS-WS-115MS: ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)
+- AKUN-010-DEV-VLESS-WS-114MS: ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))
+- AKUN-001-CLOUDFLARE-VLESS-WS-101MS: ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)
 
 ## Catatan Smart Mode
 - Health-check cepat hanya untuk pool kecil, bukan semua node.

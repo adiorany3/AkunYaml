@@ -86,8 +86,7 @@ marketplace_dns_rules = [
 assert marketplace_dns_rules
 
 # Tunnel-only first-party traffic must not hit legacy payment DIRECT rules.
-# Shipped artifact retains separate adblock checks above until regenerated.
-for config in (generated,):
+for config in (generated, artifact):
     route_rules = config["route"]["rules"]
     payment_index = next(
         i for i, rule in enumerate(route_rules)

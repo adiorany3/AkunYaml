@@ -1,6 +1,7 @@
 """Offline regression: public routes and every selector stay manual-only."""
 import copy
 import json
+from pathlib import Path
 from unittest.mock import patch
 
 import yaml
@@ -41,7 +42,7 @@ def check():
     def android(nodes):
         return build_openclash_android_yaml(nodes, 30, 40, "https://www.gstatic.com/generate_204")
 
-    for profile in ("off", "balanced", "threat-safe", "child-safe"):
+    for profile in ("off", "balanced", "threat-safe", "child-safe", "artifact"):
         with patch.dict("os.environ", {"ADBLOCK_PROFILE": profile}):
             text = android(mixed)
         # Exercise the same post-processing stages as main().
@@ -49,8 +50,16 @@ def check():
         text = generator._enforce_no_selector_no_direct_yaml_text(text)
         text = generator._ensure_ping_check_group_yaml_text(text)
         config = yaml.safe_load(generator._prune_missing_proxy_group_refs_yaml_text(text))
+        if profile == "artifact":
+            config = yaml.safe_load(Path(__file__).with_name("openclash_android.yaml").read_text())
         proxies = {item["name"]: item for item in config["proxies"]}
-        assert proxies and all(item["uuid"] == manual.clash["uuid"] for item in proxies.values())
+        assert proxies
+        if profile != "artifact":
+            assert all(item["uuid"] == manual.clash["uuid"] for item in proxies.values())
+        else:
+            source_nodes, skipped = generator.parse_manual_nodes_unscreened(Path(__file__).with_name("manual_nodes.txt").read_text())
+            assert not skipped
+            assert set(proxies) <= {node.name for node in source_nodes}
         assert not any("failed-manual" in name or "subscription" in name for name in proxies)
         groups = {item["name"]: item for item in config["proxy-groups"]}
 
@@ -92,7 +101,28 @@ def check():
                 pass
             else:
                 raise AssertionError("Missing manual nodes must fail closed")
-    print("OK: manual-only public routing, selectors, TCP failures, threats, empty input")
+    # Offline publication must validate both outputs before touching either file.
+    from apply_existing import regenerate_android_offline
+    root = Path(__file__).resolve().parent
+    with patch("socket.socket", side_effect=AssertionError("Offline generation attempted network")), \
+         patch("openclash_target.validate_generated_text_with_core"), \
+         patch.object(generator, "_validate_singbox_json") as validate, \
+         patch("openclash_target.atomic_write_text") as publish:
+        validate.side_effect = RuntimeError("fixture invalid config")
+        try:
+            regenerate_android_offline(root, root / ".local_bin/mihomo")
+        except RuntimeError as exc:
+            assert str(exc) == "fixture invalid config"
+        else:
+            raise AssertionError("Invalid candidate must fail before publication")
+        publish.assert_not_called()
+        validate.side_effect = None
+        regenerate_android_offline(root, root / ".local_bin/mihomo")
+        assert publish.call_count == 2
+        for call in publish.call_args_list:
+            path, content = call.args
+            assert content == path.read_text(encoding="utf-8"), "Offline regeneration must be idempotent"
+    print("OK: manual-only public routing, artifact selectors, TCP failures, threats, empty input, offline publication guards")
 
 
 if __name__ == "__main__":
