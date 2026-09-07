@@ -78,7 +78,7 @@ OUTPUT_YAMLS = (
 
 DEFAULT_ENV = {
     "MAX_NODES": "20",
-    "MIN_OUTPUT_NODES": "1",
+    "MIN_OUTPUT_NODES": "6",
     "URLTEST_POOL_NODES": "60",
     "NEKOBOX_POOL_NODES": "30",
     "FRESH_POOL_NODES": "30",
@@ -2756,7 +2756,7 @@ def main() -> int:
     # CLI hanya meng-override jika user benar-benar memberikan argumen.
     # Minimum total boleh melebihi kuota otomatis karena manual nodes di luar kuota.
     args.max_nodes = args.max_nodes if args.max_nodes is not None else _config_int("MAX_NODES", 20)
-    args.min_nodes = args.min_nodes if args.min_nodes is not None else _config_int("MIN_OUTPUT_NODES", 1)
+    args.min_nodes = args.min_nodes if args.min_nodes is not None else _config_int("MIN_OUTPUT_NODES", 6)
     if args.max_nodes < 1 or args.min_nodes < 1:
         raise SystemExit("max/min nodes minimal 1")
 

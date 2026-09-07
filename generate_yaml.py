@@ -750,6 +750,12 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     # Stable sort retains account order when no measured success exists.
     manual_vmess_tags.sort(key=lambda tag: tag not in verified_tags)
     primary_tags = [tag for tag in tags if tag not in manual_tags]
+    primary_vmess_tags = [
+        tag for tag, node in tagged_nodes
+        if tag in primary_tags
+        and str((getattr(node, "clash", {}) or {}).get("type", "")).lower() == "vmess"
+    ]
+    preferred_vmess_tags = manual_vmess_tags or primary_vmess_tags
     social_domains = [
         "old.reddit.com",
         "reddit.com",
@@ -946,34 +952,30 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         tag for tag, node in tagged_nodes
         if str((getattr(node, "clash", {}) or {}).get("type", "")).lower() == "vmess"
     ]
-    if not vmess_tags:
-        raise ValueError("routing Zoom/Meet memerlukan minimal satu node VMess")
-    if not manual_tags:
-        raise ValueError("routing bank memerlukan minimal satu node manual")
-    if not manual_vmess_tags:
-        raise ValueError("proxy utama sing-box memerlukan minimal satu node VMess manual")
-    # Manual VMess always leads default traffic. Automatic nodes remain fallback.
+    # ponytail: retain VMESS-VIDEO tag for clients; probe service/UDP suitability separately.
+    # VMess is preferred, not required for HTTPS traffic through VLESS/Trojan.
+    preferred_vmess_tags = preferred_vmess_tags or manual_tags or primary_tags
     automatic = [{"type": "urltest", "tag": "automatic", "outbounds": primary_tags, "url": os.getenv("ANDROID_TEST_URL", os.getenv("TEST_URL", ALT_TEST_URL)), "interval": "3m", "tolerance": 50}] if primary_tags else []
-    proxy_candidates = list(dict.fromkeys([*manual_vmess_tags, *(["automatic"] if automatic else []), *primary_tags, *manual_tags]))
-    bank_tags = list(dict.fromkeys([*manual_vmess_tags, *manual_tags, *vmess_tags]))
+    proxy_candidates = list(dict.fromkeys([*preferred_vmess_tags, *(["automatic"] if automatic else []), *primary_tags, *manual_tags]))
+    bank_tags = list(dict.fromkeys([*preferred_vmess_tags, *manual_tags, *vmess_tags]))
     bank_outbound = {
         "type": "selector",
         "tag": "BANK",
         "outbounds": bank_tags,
-        "default": manual_vmess_tags[0],
+        "default": preferred_vmess_tags[0],
     }
     video_outbound = {
         "type": "selector",
         "tag": "VMESS-VIDEO",
-        "outbounds": list(dict.fromkeys([*manual_vmess_tags, *vmess_tags])),
-        "default": manual_vmess_tags[0],
+        "outbounds": list(dict.fromkeys([*preferred_vmess_tags, *vmess_tags])),
+        "default": preferred_vmess_tags[0],
     }
-    social_candidates = list(dict.fromkeys([*manual_vmess_tags, *manual_tags, *primary_tags[:1]]))
+    social_candidates = list(dict.fromkeys([*preferred_vmess_tags, *manual_tags, *primary_tags[:1]]))
     social_outbound = {
         "type": "selector",
         "tag": "SOCIAL",
         "outbounds": social_candidates,
-        "default": manual_vmess_tags[0],
+        "default": preferred_vmess_tags[0],
     }
 
     config = {
@@ -993,7 +995,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
             "strict_route": False,
         }],
         "outbounds": [
-            {"type": "selector", "tag": "proxy", "outbounds": proxy_candidates, "default": manual_vmess_tags[0]},
+            {"type": "selector", "tag": "proxy", "outbounds": proxy_candidates, "default": preferred_vmess_tags[0]},
             *automatic,
             social_outbound,
             bank_outbound,
@@ -2041,13 +2043,18 @@ def main() -> int:
         )
         if getattr(node, "status", "") != "alive":
             manual_skipped.append(f"{_node_name(node)}: TCPing gagal: {getattr(node, 'reason', '')}")
-    # Manual nodes are mandatory input. Tests still report health, but never remove them.
-    _, manual_compat_rows = _mihomo_openclash_compatibility_filter(manual_nodes, label="manual")
+    manual_nodes = [node for node in manual_nodes if getattr(node, "status", "") == "alive"]
+    compatible_manual_nodes, manual_compat_rows = _mihomo_openclash_compatibility_filter(manual_nodes, label="manual")
+    compatible_manual_ids = {id(node) for node in compatible_manual_nodes}
+    for node in manual_nodes:
+        if id(node) not in compatible_manual_ids:
+            manual_skipped.append(f"{_node_name(node)}: OpenClash incompatible: {getattr(node, 'openclash_compat_status', '')}")
+    manual_nodes = compatible_manual_nodes
 
     print("[INFO] Generate YAML OpenClash otomatis")
     print(f"[INFO] Baseline otomatis: {max_nodes} node, minimum total: {min_output_nodes} node")
     print(f"[INFO] Links subscription: {len([x for x in links_text.splitlines() if x.strip()])}")
-    print(f"[INFO] Manual nodes TCPing passed: {len(manual_nodes)}; skipped: {len(manual_skipped)}")
+    print(f"[INFO] Manual nodes TCPing/compat passed: {len(manual_nodes)}; skipped: {len(manual_skipped)}")
     if multi_host_active:
         print(f"[INFO] Multi-host aktif ({BUG_MODE}): {len(TARGET_SERVERS)} target; manual source dipertahankan")
     else:
@@ -2104,6 +2111,7 @@ def main() -> int:
     for node in manual_candidates:
         if id(node) not in manual_pass_ids:
             manual_skipped.append(f"{_node_name(node)}: Mihomo URL test gagal: {getattr(node, 'url_test_status', '')}")
+    manual_nodes = manual_checked
     urltest_rows.extend(manual_urltest_rows)
     print(f"[INFO] URL test Mihomo manual: {manual_urltest_reason}")
 
