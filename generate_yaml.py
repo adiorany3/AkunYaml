@@ -737,19 +737,27 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         raise ValueError("tidak ada node manual yang kompatibel dengan sing-box; fallback subscription otomatis dinonaktifkan")
 
     manual_tags = tags
-    # ponytail: prefer measured Mihomo success; add manual sing-box probes when available.
+    # One shared probe pool. Category selectors must not each probe every node.
     verified_tags = {
         tag for tag, node in tagged_nodes
         if getattr(node, "url_test_success", False) is True
         and str(getattr(node, "url_test_status", "")).startswith("HTTP ")
     }
-    manual_vmess_tags = [
-        tag for tag, node in tagged_nodes
-        if str((getattr(node, "clash", {}) or {}).get("type", "")).lower() == "vmess"
-    ]
-    # Stable sort retains account order when no measured success exists.
-    manual_vmess_tags.sort(key=lambda tag: tag not in verified_tags)
-    preferred_vmess_tags = manual_vmess_tags
+    probe_limit = max(1, _env_int("SINGBOX_URLTEST_NODE_LIMIT", 6))
+    probe_tags = sorted(tags, key=lambda tag: tag not in verified_tags)[:probe_limit]
+    probe_default = probe_tags[0]
+    # Global manual selector keeps explicit node choice; AUTO-FAST is its low-cost default.
+    category_candidates = ["proxy"]
+    urltest_outbound = {
+        "type": "urltest",
+        "tag": "AUTO-FAST",
+        "outbounds": probe_tags,
+        "url": os.getenv("SINGBOX_URLTEST_URL", "https://www.gstatic.com/generate_204"),
+        "interval": os.getenv("SINGBOX_URLTEST_INTERVAL", "10m"),
+        "tolerance": _env_int("SINGBOX_URLTEST_TOLERANCE_MS", 150),
+        "idle_timeout": os.getenv("SINGBOX_URLTEST_IDLE_TIMEOUT", "30m"),
+        "interrupt_exist_connections": False,
+    }
     social_domains = [
         "old.reddit.com",
         "reddit.com",
@@ -956,30 +964,11 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         tag for tag, node in tagged_nodes
         if str((getattr(node, "clash", {}) or {}).get("type", "")).lower() == "vmess"
     ]
-    # ponytail: retain VMESS-VIDEO tag for clients; probe service/UDP suitability separately.
-    # VMess is preferred, not required for HTTPS traffic through VLESS/Trojan.
-    preferred_vmess_tags = preferred_vmess_tags or manual_tags
-    proxy_candidates = list(dict.fromkeys([*preferred_vmess_tags, *manual_tags]))
-    bank_tags = list(dict.fromkeys([*preferred_vmess_tags, *manual_tags, *vmess_tags]))
-    bank_outbound = {
-        "type": "selector",
-        "tag": "BANK",
-        "outbounds": bank_tags,
-        "default": preferred_vmess_tags[0],
-    }
-    video_outbound = {
-        "type": "selector",
-        "tag": "VMESS-VIDEO",
-        "outbounds": list(dict.fromkeys([*preferred_vmess_tags, *vmess_tags])),
-        "default": preferred_vmess_tags[0],
-    }
-    social_candidates = list(dict.fromkeys([*preferred_vmess_tags, *manual_tags]))
-    social_outbound = {
-        "type": "selector",
-        "tag": "SOCIAL",
-        "outbounds": social_candidates,
-        "default": preferred_vmess_tags[0],
-    }
+    # Category selectors share global selector; no duplicate probe pools.
+    bank_outbound = {"type": "selector", "tag": "BANK", "outbounds": category_candidates, "default": "proxy"}
+    video_outbound = {"type": "selector", "tag": "VMESS-VIDEO", "outbounds": category_candidates, "default": "proxy"}
+    social_outbound = {"type": "selector", "tag": "SOCIAL", "outbounds": category_candidates, "default": "proxy"}
+    global_candidates = list(dict.fromkeys(["AUTO-FAST", *manual_tags]))
 
     config = {
         "$schema": "https://sing-box.sagernet.org/schema.json",
@@ -998,7 +987,8 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
             "strict_route": False,
         }],
         "outbounds": [
-            {"type": "selector", "tag": "proxy", "outbounds": proxy_candidates, "default": preferred_vmess_tags[0]},
+            {"type": "selector", "tag": "proxy", "outbounds": global_candidates, "default": "AUTO-FAST"},
+            urltest_outbound,
             social_outbound,
             bank_outbound,
             video_outbound,

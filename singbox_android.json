@@ -241,44 +241,52 @@
       "type": "selector",
       "tag": "proxy",
       "outbounds": [
+        "AUTO-FAST",
         "MANUAL-VMess-WS-TLS-443-ikada543",
         "MANUAL-VMess-WS-TLS-443-singa08",
         "MANUAL-VMess-WS-TLS-443-akuku8",
         "MANUAL-VLESS-WS-TLS-443-apt50atpprem"
       ],
-      "default": "MANUAL-VMess-WS-TLS-443-ikada543"
+      "default": "AUTO-FAST"
+    },
+    {
+      "type": "urltest",
+      "tag": "AUTO-FAST",
+      "outbounds": [
+        "MANUAL-VMess-WS-TLS-443-ikada543",
+        "MANUAL-VMess-WS-TLS-443-singa08",
+        "MANUAL-VMess-WS-TLS-443-akuku8",
+        "MANUAL-VLESS-WS-TLS-443-apt50atpprem"
+      ],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "10m",
+      "tolerance": 150,
+      "idle_timeout": "30m",
+      "interrupt_exist_connections": false
     },
     {
       "type": "selector",
       "tag": "SOCIAL",
       "outbounds": [
-        "MANUAL-VMess-WS-TLS-443-ikada543",
-        "MANUAL-VMess-WS-TLS-443-singa08",
-        "MANUAL-VMess-WS-TLS-443-akuku8",
-        "MANUAL-VLESS-WS-TLS-443-apt50atpprem"
+        "proxy"
       ],
-      "default": "MANUAL-VMess-WS-TLS-443-ikada543"
+      "default": "proxy"
     },
     {
       "type": "selector",
       "tag": "BANK",
       "outbounds": [
-        "MANUAL-VMess-WS-TLS-443-ikada543",
-        "MANUAL-VMess-WS-TLS-443-singa08",
-        "MANUAL-VMess-WS-TLS-443-akuku8",
-        "MANUAL-VLESS-WS-TLS-443-apt50atpprem"
+        "proxy"
       ],
-      "default": "MANUAL-VMess-WS-TLS-443-ikada543"
+      "default": "proxy"
     },
     {
       "type": "selector",
       "tag": "VMESS-VIDEO",
       "outbounds": [
-        "MANUAL-VMess-WS-TLS-443-ikada543",
-        "MANUAL-VMess-WS-TLS-443-singa08",
-        "MANUAL-VMess-WS-TLS-443-akuku8"
+        "proxy"
       ],
-      "default": "MANUAL-VMess-WS-TLS-443-ikada543"
+      "default": "proxy"
     },
     {
       "type": "vmess",

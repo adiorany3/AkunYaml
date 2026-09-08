@@ -26,12 +26,14 @@ def check(nodes, expected):
     for group in groups.values():
         if "outbounds" in group:
             assert group["outbounds"] and set(group["outbounds"]) <= groups.keys(), group
-    for tag in ("proxy", "BANK", "SOCIAL", "VMESS-VIDEO"):
+    proxy = next(item for item in config["outbounds"] if item["tag"] == "proxy")
+    assert proxy["type"] == "selector" and proxy["default"] == "AUTO-FAST", proxy
+    assert proxy["outbounds"][0] == "AUTO-FAST" and set(proxy["outbounds"][1:]) == manual, proxy
+    auto = next(item for item in config["outbounds"] if item["tag"] == "AUTO-FAST")
+    assert auto["type"] == "urltest" and set(auto["outbounds"]) == manual, auto
+    for tag in ("BANK", "SOCIAL", "VMESS-VIDEO"):
         group = next(item for item in config["outbounds"] if item["tag"] == tag)
-        assert group["type"] == "selector", group
-        assert group["default"] == expected, (tag, group["default"], expected)
-        assert group["outbounds"][0] == expected, group
-        assert manual == set(group["outbounds"]), group
+        assert group == {"type": "selector", "tag": tag, "outbounds": ["proxy"], "default": "proxy"}, group
     _validate_singbox_json(json.dumps(config), os.getenv("SINGBOX_PATH", ".local_bin/sing-box"))
     return config
 

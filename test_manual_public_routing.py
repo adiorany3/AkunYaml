@@ -33,8 +33,15 @@ def check():
     assert leaves == {manual.name}
     for item in outbounds.values():
         if item["type"] == "selector":
+            assert item["outbounds"]
+            assert item["default"] in ({"proxy", "AUTO-FAST"} | leaves)
+            assert set(item["outbounds"]) <= ({"proxy", "AUTO-FAST"} | leaves)
+        if item["type"] == "urltest":
             assert item["outbounds"] and set(item["outbounds"]) <= leaves
-            assert item["default"] in leaves
+            assert item["interval"] == "10m"
+            assert item["interrupt_exist_connections"] is False
+    assert outbounds["proxy"]["type"] == "selector"
+    assert outbounds["proxy"]["default"] == "AUTO-FAST"
     assert singbox["route"]["final"] == "proxy"
     rules = singbox["route"]["rules"]
     assert all(rule.get("ip_is_private") is True for rule in rules if rule.get("outbound") == "direct")
@@ -111,6 +118,10 @@ def check():
             path.write_text(yaml.safe_dump(injected))
             optimize_outputs(root, [path.name], "balanced" if profile == "artifact" else profile,
                              43200, "off", "off", "unused.txt")
+            first_pass = path.read_bytes()
+            optimize_outputs(root, [path.name], "balanced" if profile == "artifact" else profile,
+                             43200, "off", "off", "unused.txt")
+            assert path.read_bytes() == first_pass, "Postprocessing must be idempotent"
             processed = yaml.safe_load(path.read_text())
             assert not any(token in path.read_text() for token in ("DIRECT", "PASS", "COMPATIBLE"))
             assert processed["proxies"] == config["proxies"]
@@ -152,9 +163,12 @@ def check():
         validate.side_effect = None
         regenerate_android_offline(root, root / ".local_bin/mihomo")
         assert publish.call_count == 2
-        for call in publish.call_args_list:
-            path, content = call.args
-            assert content == path.read_text(encoding="utf-8"), "Offline regeneration must be idempotent"
+        first_publish = [(call.args[0], call.args[1]) for call in publish.call_args_list]
+        publish.reset_mock()
+        regenerate_android_offline(root, root / ".local_bin/mihomo")
+        assert publish.call_count == 2
+        second_publish = [(call.args[0], call.args[1]) for call in publish.call_args_list]
+        assert first_publish == second_publish, "Offline regeneration must be idempotent"
     print("OK: all Android routes manual-only, refresh postprocessing, TCP failures, threats, empty input, offline publication guards")
 
 

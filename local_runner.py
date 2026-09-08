@@ -2672,7 +2672,7 @@ def optimize_outputs(
                     _yaml_store_config(path, config)
                     log(f"MRS LKG lokal diterapkan: {filename} ({switched} provider)")
 
-            semantic_mode = str(os.environ.get("SEMANTIC_RULE_OPTIMIZE", "router")).strip().lower()
+            semantic_mode = str(os.environ.get("SEMANTIC_RULE_OPTIMIZE", "all")).strip().lower()
             if semantic_mode not in {"off", "false", "0", "no"} and (semantic_mode == "all" or not is_android):
                 removed_semantic = remove_safe_shadowed_domains(config)
                 if removed_semantic:
