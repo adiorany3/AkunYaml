@@ -32,6 +32,7 @@ MANAGED = {
     "threat-tif-ip",
     "hagezi-pro-plus-mini",
     "gambling-mini",
+    "gambling-regex",
 }
 
 
@@ -88,6 +89,7 @@ def audit(path: Path, network: bool, timeout: float) -> list[str]:
         behavior = str(provider.get("behavior") or "")
         pth = str(provider.get("path") or "")
         is_local_mrs = provider_type == "file" and str(provider.get("format") or "").lower() == "mrs"
+        is_local_gambling_regex = name == "gambling-regex" and provider_type == "file" and str(provider.get("format") or "").lower() == "yaml"
         android_snapshot_names = {"ads_indonesia", "threat-fake-scam"}
         is_android_snapshot = (
             path.name == "openclash_android.yaml"
@@ -95,7 +97,7 @@ def audit(path: Path, network: bool, timeout: float) -> list[str]:
             and provider_type == "file"
             and pth.endswith("_android.yaml")
         )
-        if provider_type != "http" and not is_local_mrs and not is_android_snapshot:
+        if provider_type != "http" and not is_local_mrs and not is_local_gambling_regex and not is_android_snapshot:
             errors.append(f"provider {name} type tidak valid: {provider_type}")
         if behavior not in {"domain", "classical", "ipcidr"}:
             errors.append(f"provider {name} behavior tidak valid: {behavior}")

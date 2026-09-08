@@ -2025,6 +2025,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         "RULE-SET,hagezi-pro-mini,",
         "RULE-SET,hagezi-pro-plus-mini,",
         "RULE-SET,gambling-mini,",
+        "RULE-SET,gambling-regex,",
         "RULE-SET,privacy-extra,",
         "RULE-SET,tracker-domain,",
         "RULE-SET,threat-tif-mini,",

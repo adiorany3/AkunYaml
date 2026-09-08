@@ -1,8 +1,5 @@
 payload:
-  - DOMAIN-KEYWORD,judi
-  - DOMAIN-KEYWORD,slot
-  - DOMAIN-KEYWORD,togel
-  - DOMAIN-KEYWORD,gacor
-  - DOMAIN-KEYWORD,casino
-  - DOMAIN-KEYWORD,bet
-  - DOMAIN-KEYWORD,sbobet
+  # Regex host-label guard; avoids broad DOMAIN-KEYWORD false positives.
+  - DOMAIN-REGEX,(?i)(^|\.)[^.]*((casino|casinogame|slot|slots|togel|judi|gacor|poker|jackpot|sbobet)[^.]*)(\.|$),REJECT
+  - DOMAIN-REGEX,(?i)(^|\.)[^.]*((bet|betting|taruhan|deposit|withdraw|spin|bonus)[^.]*)(\.|$),REJECT
+  - DOMAIN-REGEX,(?i)(^|\.)[^.]+\.(bet|casino)(\.|$),REJECT

@@ -32,6 +32,7 @@ AUDITS = (
     ("apps", "app_ad_audit.py"),
     ("streaming", "streaming_ad_audit.py"),
     ("popup/game", "popup_game_ad_audit.py"),
+    ("YouTube gambling sponsor", "youtube_gambling_sponsor_audit.py"),
 )
 
 

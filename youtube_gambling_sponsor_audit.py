@@ -10,7 +10,9 @@ ROUTER_FILES = [
 ]
 ANDROID = ROOT / 'openclash_android.yaml'
 PROVIDER = 'gambling-mini'
+REGEX_PROVIDER = 'gambling-regex'
 RULE = 'RULE-SET,gambling-mini,REJECT'
+REGEX_RULE = 'RULE-SET,gambling-regex,REJECT'
 PLAYBACK_SAFE = ('googlevideo.com', 'static.doubleclick.net', 'ytimg.com', 'youtubei.googleapis.com', 'youtube.googleapis.com')
 
 
@@ -34,9 +36,17 @@ for path in ROUTER_FILES:
         local_path = ROOT / str(provider.get('path') or '').removeprefix('./')
         if not local_path.is_file() or local_path.stat().st_size == 0:
             fail(f'{path.name}: compiled gambling provider missing/empty')
+    regex_provider = providers.get(REGEX_PROVIDER)
+    if not isinstance(regex_provider, dict) or regex_provider.get('path') != './rule_providers/security-gambling.yaml':
+        fail(f'{path.name}: regex gambling provider missing/invalid')
+    if REGEX_RULE not in rules:
+        fail(f'{path.name}: regex gambling reject rule missing')
     if RULE not in rules:
         fail(f'{path.name}: gambling reject rule missing')
     idx = rules.index(RULE)
+    regex_idx = rules.index(REGEX_RULE)
+    if regex_idx <= idx:
+        fail(f'{path.name}: regex gambling rule must follow gambling feed')
     tif = next((i for i,r in enumerate(rules) if r.startswith('RULE-SET,threat-tif-mini,')), -1)
     broad_ad = next((i for i,r in enumerate(rules) if r.startswith(('RULE-SET,hagezi-pro-plus-mini,','RULE-SET,popup-ads,','RULE-SET,ads_indonesia,','RULE-SET,ads_domain,','RULE-SET,tracker-domain,'))), len(rules))
     if tif >= 0 and idx <= tif:
@@ -48,6 +58,8 @@ for path in ROUTER_FILES:
             fail(f'{path}: playback host rejected: {host}')
     if any(r.upper().startswith('DOMAIN-KEYWORD,') and any(k in r.lower() for k in ('gambl','casino','slot','bet')) for r in rules):
         fail(f'{path}: overbroad gambling keyword rule found')
+    if any(r.upper().startswith('DOMAIN-REGEX,') and ',REJECT' not in r.upper() for r in rules):
+        fail(f'{path}: gambling regex must reject')
     print(f'[OK] {path}: gambling sponsor destination guard active')
 
 data = yaml.safe_load(ANDROID.read_text(encoding='utf-8')) or {}

@@ -124,6 +124,12 @@ ROUTER_ADULT_PROVIDERS: dict[str, dict[str, Any]] = {
 }
 
 ROUTER_LOCAL_SAFETY_PROVIDERS: dict[str, dict[str, Any]] = {
+    "gambling-regex": {
+        "type": "file",
+        "behavior": "classical",
+        "format": "yaml",
+        "path": "./rule_providers/security-gambling.yaml",
+    },
     "adult-local": {
         "type": "file",
         "behavior": "classical",
@@ -343,7 +349,10 @@ def provider_reject_rules(
         rules.append("RULE-SET,threat-tif-mini,REJECT")
 
     if gambling_block:
-        rules.append("RULE-SET,gambling-mini,REJECT")
+        rules.extend([
+            "RULE-SET,gambling-mini,REJECT",
+            "RULE-SET,gambling-regex,REJECT",
+        ])
     rules.extend([
         "RULE-SET,adult-category,REJECT",
         "RULE-SET,adult-local,REJECT",
