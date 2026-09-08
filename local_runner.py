@@ -298,7 +298,6 @@ TURTLECUTE_EXCLUDE = {"static.doubleclick.net"}
 # Spotify-specific ad/measurement endpoints are also treated as exact hosts to
 # avoid broad blocking of the service's normal media, auth, and player traffic.
 STREAMING_SAFE_AD_DOMAINS = (
-    "video-akpcw.spotifycdn.com",
     "805ba.v.fwmrm.net",
     "tvm-mtv-freewheel.akamaized.net",
     "adeventtracker.spotify.com",

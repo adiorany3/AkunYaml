@@ -454,7 +454,6 @@ rules:
 - RULE-SET,adult-local,REJECT
 - RULE-SET,pinjol-local,REJECT
 - RULE-SET,popup-ads,REJECT
-- DOMAIN,video-akpcw.spotifycdn.com,REJECT
 - DOMAIN,805ba.v.fwmrm.net,REJECT
 - DOMAIN,tvm-mtv-freewheel.akamaized.net,REJECT
 - DOMAIN,adeventtracker.spotify.com,REJECT

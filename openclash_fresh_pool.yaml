@@ -1221,6 +1221,13 @@ rule-providers:
     behavior: ipcidr
     format: mrs
     path: ./rule_providers/compiled/threat-tif-ip.mrs
+  hagezi-pro-plus-mini:
+    type: http
+    behavior: domain
+    path: ./rule_providers/hagezi-pro-plus-mini.txt
+    url: https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.plus.mini-onlydomains.txt
+    interval: 43200
+    format: text
   app-ad-safe:
     type: inline
     behavior: domain
@@ -1462,9 +1469,9 @@ rules:
 - RULE-SET,adult-category,REJECT
 - RULE-SET,adult-local,REJECT
 - RULE-SET,pinjol-local,REJECT
+- RULE-SET,hagezi-pro-plus-mini,REJECT
 - RULE-SET,popup-ads,REJECT
 - RULE-SET,threat-tif-ip,REJECT,no-resolve
-- DOMAIN,video-akpcw.spotifycdn.com,REJECT
 - DOMAIN,805ba.v.fwmrm.net,REJECT
 - DOMAIN,tvm-mtv-freewheel.akamaized.net,REJECT
 - DOMAIN,adeventtracker.spotify.com,REJECT

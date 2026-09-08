@@ -890,6 +890,7 @@ rules:
 - DOMAIN,tpc.googlesyndication.com,REJECT
 - DOMAIN,www.googleadservices.com,REJECT
 - DOMAIN,imasdk.googleapis.com,REJECT
+- DOMAIN,ads.youtube.com,REJECT
 - DOMAIN-SUFFIX,2mdn.net,REJECT
 - DOMAIN-SUFFIX,googlesyndication.com,REJECT
 - DOMAIN-SUFFIX,googleadservices.com,REJECT
@@ -918,7 +919,6 @@ rules:
 - RULE-SET,hagezi-pro-plus-mini,REJECT
 - RULE-SET,popup-ads,REJECT
 - RULE-SET,threat-tif-ip,REJECT,no-resolve
-- DOMAIN,video-akpcw.spotifycdn.com,REJECT
 - DOMAIN,805ba.v.fwmrm.net,REJECT
 - DOMAIN,tvm-mtv-freewheel.akamaized.net,REJECT
 - DOMAIN,adeventtracker.spotify.com,REJECT

@@ -799,7 +799,6 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     ]
     streaming_ad_domains = [
         # Spotify/FreeWheel ad and measurement hosts; shared audio/CDN hosts stay open.
-        "video-akpcw.spotifycdn.com",
         "805ba.v.fwmrm.net",
         "tvm-mtv-freewheel.akamaized.net",
         "adeventtracker.spotify.com",
@@ -1601,7 +1600,7 @@ def _enforce_no_selector_no_direct_yaml_text(yaml_text: str) -> str:
         return yaml_text
     proxy_names = [str(p.get("name")) for p in config.get("proxies", []) if isinstance(p, dict) and p.get("name")]
     group_names = [str(g.get("name")) for g in groups if isinstance(g, dict) and g.get("name")]
-    defaults = ["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "STREAMING-FAST", "FALLBACK", "LOAD-BALANCE", "PING-CHECK"]
+    defaults = ["AUTO-FAST", "FALLBACK"]
 
     def dedupe(values: list[str]) -> list[str]:
         out: list[str] = []
