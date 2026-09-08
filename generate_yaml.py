@@ -1652,6 +1652,11 @@ def _ensure_ping_check_group_yaml_text(yaml_text: str) -> str:
         return yaml_text
     if not isinstance(config, dict):
         return yaml_text
+    # Router Auto already has shared AUTO-FAST; Android keeps PING-CHECK for UI latency.
+    groups_now = config.get("proxy-groups") or []
+    is_android = any(isinstance(g, dict) and g.get("name") == "ANDROID-COLD-BACKUP" for g in groups_now)
+    if os.getenv("CONSOLIDATE_ROUTER_PROBES", "true").lower() not in {"0", "false", "no", "off"} and not is_android:
+        return yaml_text
     proxies = [p for p in config.get("proxies", []) if isinstance(p, dict) and p.get("name")]
     proxy_names = _dedupe_values([str(p.get("name")) for p in proxies])
     if not proxy_names:

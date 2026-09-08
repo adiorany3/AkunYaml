@@ -2853,12 +2853,12 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "name": "GLOBAL",
             "type": "select",
             # General traffic shares four healthy exits; explicit sensitive rules still win first.
-            "proxies": ["LOAD-BALANCE", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"],
+            "proxies": ["AUTO-FAST", "FALLBACK"],
         },
         {
             "name": "PROXY",
             "type": "select",
-            "proxies": ["GLOBAL", "LOAD-BALANCE", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"],
+            "proxies": ["GLOBAL", "AUTO-FAST", "FALLBACK"],
         },
         _ai_health_group("AI-OPENAI", ai_service_names, ai_openai_test_url, ai_interval, ai_timeout),
         _ai_health_group("AI-CLAUDE", ai_service_names, ai_claude_test_url, ai_interval, ai_timeout),
@@ -2878,12 +2878,12 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
         },
-        _category_health_group("SOCIAL-MEDIA", selector(["FALLBACK", "WARM-UP", "AUTO-FAST", "WARM-UP-CF"]),
+        _category_health_group("SOCIAL-MEDIA", selector(["AUTO-FAST", "FALLBACK"]),
                                os.getenv("SOCIAL_TEST_URL", "https://www.gstatic.com/generate_204"), active_interval, fast_timeout),
         {
             "name": "YOUTUBE",
             "type": "fallback",
-            "proxies": selector(["WARM-UP-CF", "STREAMING-FAST", "AUTO-FAST", "FALLBACK"]),
+            "proxies": selector(["AUTO-FAST", "FALLBACK"]),
             "url": streaming_test_url,
             "interval": 120,
             "lazy": True,
@@ -2891,9 +2891,9 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
         },
-        _category_health_group("EDUKASI", selector(["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]),
+        _category_health_group("EDUKASI", selector(["AUTO-FAST", "FALLBACK"]),
                                os.getenv("EDUKASI_TEST_URL", "https://www.gstatic.com/generate_204"), active_interval, fast_timeout),
-        _category_health_group("STREAMING", selector(["WARM-UP-CF", "STREAMING-FAST", "WARM-UP", "AUTO-FAST", "FALLBACK"]),
+        _category_health_group("STREAMING", selector(["AUTO-FAST", "FALLBACK"]),
                                streaming_test_url, active_interval, fast_timeout),
         {
             "name": "PING-CHECK",
@@ -2986,6 +2986,10 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "max-failed-times": 3,
         },
     ]
+    # OpenWrt uses one shared latency probe; category groups reuse it.
+    if _env_bool_value("CONSOLIDATE_ROUTER_PROBES", True):
+        retired_probe_groups = {"PING-CHECK", "WARM-UP", "WARM-UP-CF", "STREAMING-FAST", "LOAD-BALANCE"}
+        proxy_groups = [g for g in proxy_groups if g.get("name") not in retired_probe_groups]
 
     rules = [
         # LAN/private harus direct sebelum ruleset lain.

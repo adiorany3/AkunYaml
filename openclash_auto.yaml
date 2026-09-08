@@ -250,9 +250,6 @@ proxy-groups:
 - name: GLOBAL
   type: fallback
   proxies:
-  - LOAD-BALANCE
-  - WARM-UP
-  - WARM-UP-CF
   - AUTO-FAST
   - FALLBACK
   url: https://www.gstatic.com/generate_204
@@ -265,8 +262,6 @@ proxy-groups:
   type: fallback
   proxies:
   - GLOBAL
-  - LOAD-BALANCE
-  - WARM-UP
   - AUTO-FAST
   - FALLBACK
   url: https://www.gstatic.com/generate_204
@@ -371,7 +366,6 @@ proxy-groups:
 - name: SOCIAL-MEDIA
   type: url-test
   proxies:
-  - WARM-UP
   - AUTO-FAST
   - FALLBACK
   url: https://www.gstatic.com/generate_204
@@ -384,8 +378,6 @@ proxy-groups:
 - name: YOUTUBE
   type: fallback
   proxies:
-  - WARM-UP-CF
-  - STREAMING-FAST
   - AUTO-FAST
   - FALLBACK
   url: https://www.gstatic.com/generate_204
@@ -397,7 +389,6 @@ proxy-groups:
 - name: EDUKASI
   type: url-test
   proxies:
-  - WARM-UP
   - AUTO-FAST
   - FALLBACK
   url: https://www.gstatic.com/generate_204
@@ -410,8 +401,6 @@ proxy-groups:
 - name: STREAMING
   type: url-test
   proxies:
-  - STREAMING-FAST
-  - WARM-UP-CF
   - AUTO-FAST
   - FALLBACK
   url: https://cp.cloudflare.com
@@ -421,64 +410,9 @@ proxy-groups:
   timeout: 3000
   expected-status: 200/204/301/302
   max-failed-times: 2
-- name: PING-CHECK
-  type: url-test
-  proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-238MS
-  - AKUN-002-UNKNOWN-VLESS-WS-251MS
-  - AKUN-003-UNKNOWN-VLESS-WS-257MS
-  - MANUAL-VMess-WS-TLS-443-ikada543
-  - MANUAL-VMess-WS-TLS-443-singa08
-  - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
-  url: https://www.gstatic.com/generate_204
-  interval: 180
-  tolerance: 100
-  lazy: true
-  timeout: 5000
-  expected-status: 200/204/301/302
-  max-failed-times: 2
-- name: WARM-UP
-  type: url-test
-  proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-238MS
-  - AKUN-002-UNKNOWN-VLESS-WS-251MS
-  - AKUN-003-UNKNOWN-VLESS-WS-257MS
-  url: https://www.gstatic.com/generate_204
-  interval: 60
-  tolerance: 150
-  lazy: true
-  timeout: 5000
-  expected-status: 200/204/301/302
-  max-failed-times: 2
-- name: WARM-UP-CF
-  type: url-test
-  proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-238MS
-  url: https://cp.cloudflare.com
-  interval: 90
-  tolerance: 150
-  lazy: true
-  timeout: 5000
-  expected-status: 200/204/301/302
-  max-failed-times: 2
-- name: STREAMING-FAST
-  type: url-test
-  proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-238MS
-  - AKUN-002-UNKNOWN-VLESS-WS-251MS
-  - AKUN-003-UNKNOWN-VLESS-WS-257MS
-  url: https://cp.cloudflare.com
-  interval: 90
-  tolerance: 150
-  lazy: true
-  timeout: 5000
-  expected-status: 200/204/301/302
-  max-failed-times: 2
 - name: CLEAN
   type: fallback
   proxies:
-  - WARM-UP
   - AUTO-FAST
   - FALLBACK
   url: https://www.gstatic.com/generate_204
@@ -512,19 +446,6 @@ proxy-groups:
   - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 90
-  lazy: true
-  timeout: 6000
-  expected-status: 200/204/301/302
-  max-failed-times: 3
-- name: LOAD-BALANCE
-  type: load-balance
-  strategy: sticky-sessions
-  proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-238MS
-  - AKUN-002-UNKNOWN-VLESS-WS-251MS
-  - AKUN-003-UNKNOWN-VLESS-WS-257MS
-  url: https://www.gstatic.com/generate_204
-  interval: 180
   lazy: true
   timeout: 6000
   expected-status: 200/204/301/302
@@ -568,10 +489,12 @@ rule-providers:
     path: ./rule_providers/youtube.mrs
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs
   threat-tif-mini:
-    type: file
+    type: http
     behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-tif-mini.mrs
+    path: ./rule_providers/threat-tif-mini.txt
+    url: https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.mini-onlydomains.txt
+    interval: 43200
+    format: text
   openai_domain:
     type: http
     interval: 86400
@@ -641,10 +564,12 @@ rule-providers:
     - DOMAIN-SUFFIX,snapchat.com
     - DOMAIN-SUFFIX,snapchatcdn.com
   ads_indonesia:
-    type: file
+    type: http
     behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/ads_indonesia.mrs
+    path: ./rule_providers/ads_indonesia.txt
+    url: https://raw.githubusercontent.com/ABPindo/indonesianadblockrules/master/subscriptions/domain.txt
+    interval: 43200
+    format: text
   anti-ad:
     type: http
     behavior: domain
@@ -667,10 +592,12 @@ rule-providers:
     interval: 43200
     format: mrs
   gambling-mini:
-    type: file
+    type: http
     behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/gambling-mini.mrs
+    path: ./rule_providers/gambling-mini.txt
+    url: https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/gambling.mini-onlydomains.txt
+    interval: 43200
+    format: text
   adult-local:
     type: file
     behavior: classical
@@ -682,35 +609,47 @@ rule-providers:
     format: yaml
     path: ./rule_providers/security-pinjol.yaml
   popup-ads:
-    type: file
+    type: http
     behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/popup-ads.mrs
+    path: ./rule_providers/popup-ads.txt
+    url: https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/popupads-onlydomains.txt
+    interval: 43200
+    format: text
   threat-malware:
-    type: file
+    type: http
     behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-malware.mrs
+    path: ./rule_providers/threat-malware.txt
+    url: https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/malware.txt
+    interval: 43200
+    format: text
   threat-phishing:
-    type: file
+    type: http
     behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-phishing.mrs
+    path: ./rule_providers/threat-phishing.txt
+    url: https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/phishing.txt
+    interval: 43200
+    format: text
   threat-cryptominers:
-    type: file
+    type: http
     behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-cryptominers.mrs
+    path: ./rule_providers/threat-cryptominers.txt
+    url: https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/cryptominers.txt
+    interval: 43200
+    format: text
   threat-fake-scam:
-    type: file
+    type: http
     behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-fake-scam.mrs
+    path: ./rule_providers/threat-fake-scam.txt
+    url: https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/fake-onlydomains.txt
+    interval: 43200
+    format: text
   threat-tif-ip:
-    type: file
+    type: http
     behavior: ipcidr
-    format: mrs
-    path: ./rule_providers/compiled/threat-tif-ip.mrs
+    path: ./rule_providers/threat-tif-ip.txt
+    url: https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/ips/tif.txt
+    interval: 43200
+    format: text
   app-ad-safe:
     type: inline
     behavior: domain
@@ -795,6 +734,13 @@ rule-providers:
     type: file
     behavior: classical
     path: ./rule_providers/manual-routing.yaml
+  hagezi-pro-plus-mini:
+    type: http
+    behavior: domain
+    path: ./rule_providers/hagezi-pro-plus-mini.txt
+    url: https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.plus.mini-onlydomains.txt
+    interval: 43200
+    format: text
 rules:
 - DOMAIN-SUFFIX,local,DIRECT
 - DOMAIN-SUFFIX,lan,DIRECT
@@ -908,37 +854,6 @@ rules:
 - RULE-SET,openai_domain,AI-OPENAI
 - RULE-SET,ai_category,AI-OTHER
 - RULE-SET,chatgpt_voice,AI-OPENAI,no-resolve
-- DOMAIN,static.doubleclick.net,YOUTUBE
-- DOMAIN,jnn-pa.googleapis.com,YOUTUBE
-- DOMAIN,googleads.g.doubleclick.net,REJECT
-- DOMAIN,ad.doubleclick.net,REJECT
-- DOMAIN,pubads.g.doubleclick.net,REJECT
-- DOMAIN,securepubads.g.doubleclick.net,REJECT
-- DOMAIN,pagead2.googlesyndication.com,REJECT
-- DOMAIN,tpc.googlesyndication.com,REJECT
-- DOMAIN,www.googleadservices.com,REJECT
-- DOMAIN,imasdk.googleapis.com,REJECT
-- DOMAIN,ads.youtube.com,REJECT
-- DOMAIN-SUFFIX,2mdn.net,REJECT
-- DOMAIN-SUFFIX,googlesyndication.com,REJECT
-- DOMAIN-SUFFIX,googleadservices.com,REJECT
-- DOMAIN,adtrafficquality.google,REJECT
-- DOMAIN-SUFFIX,googleadapis.com,REJECT
-- DOMAIN,mobileads.google.com,REJECT
-- DOMAIN,pagead.l.google.com,REJECT
-- DOMAIN,adservice.google.com,REJECT
-- DOMAIN,stats.g.doubleclick.net,REJECT
-- DOMAIN,m.doubleclick.net,REJECT
-- DOMAIN,mediavisor.doubleclick.net,REJECT
-- RULE-SET,youtube_domain,YOUTUBE
-- DOMAIN-SUFFIX,youtube.com,YOUTUBE
-- DOMAIN-SUFFIX,youtu.be,YOUTUBE
-- DOMAIN-SUFFIX,youtube-nocookie.com,YOUTUBE
-- DOMAIN-SUFFIX,googlevideo.com,YOUTUBE
-- DOMAIN-SUFFIX,ytimg.com,YOUTUBE
-- DOMAIN-SUFFIX,youtubei.googleapis.com,YOUTUBE
-- DOMAIN-SUFFIX,youtube.googleapis.com,YOUTUBE
-- DOMAIN-SUFFIX,ggpht.com,YOUTUBE
 - DOMAIN,adstatistics.av380.net,REJECT
 - DOMAIN,logs.av380.net,REJECT
 - DOMAIN,ad.av380.net,REJECT
@@ -965,6 +880,32 @@ rules:
 - DOMAIN-SUFFIX,linkedin.com,DIRECT
 - DOMAIN-SUFFIX,lnkd.in,DIRECT
 - DOMAIN-SUFFIX,recaptcha.net,DIRECT
+- DOMAIN,static.doubleclick.net,YOUTUBE
+- DOMAIN,jnn-pa.googleapis.com,YOUTUBE
+- DOMAIN,googleads.g.doubleclick.net,REJECT
+- DOMAIN,ad.doubleclick.net,REJECT
+- DOMAIN,pubads.g.doubleclick.net,REJECT
+- DOMAIN,securepubads.g.doubleclick.net,REJECT
+- DOMAIN,pagead2.googlesyndication.com,REJECT
+- DOMAIN,tpc.googlesyndication.com,REJECT
+- DOMAIN,www.googleadservices.com,REJECT
+- DOMAIN,imasdk.googleapis.com,REJECT
+- DOMAIN-SUFFIX,2mdn.net,REJECT
+- DOMAIN-SUFFIX,googlesyndication.com,REJECT
+- DOMAIN-SUFFIX,googleadservices.com,REJECT
+- DOMAIN,adtrafficquality.google,REJECT
+- DOMAIN-SUFFIX,googleadapis.com,REJECT
+- DOMAIN,mobileads.google.com,REJECT
+- DOMAIN,pagead.l.google.com,REJECT
+- RULE-SET,youtube_domain,YOUTUBE
+- DOMAIN-SUFFIX,youtube.com,YOUTUBE
+- DOMAIN-SUFFIX,youtu.be,YOUTUBE
+- DOMAIN-SUFFIX,youtube-nocookie.com,YOUTUBE
+- DOMAIN-SUFFIX,googlevideo.com,YOUTUBE
+- DOMAIN-SUFFIX,ytimg.com,YOUTUBE
+- DOMAIN-SUFFIX,youtubei.googleapis.com,YOUTUBE
+- DOMAIN-SUFFIX,youtube.googleapis.com,YOUTUBE
+- DOMAIN-SUFFIX,ggpht.com,YOUTUBE
 - RULE-SET,threat-malware,REJECT
 - RULE-SET,threat-phishing,REJECT
 - RULE-SET,threat-cryptominers,REJECT
@@ -974,6 +915,7 @@ rules:
 - RULE-SET,adult-category,REJECT
 - RULE-SET,adult-local,REJECT
 - RULE-SET,pinjol-local,REJECT
+- RULE-SET,hagezi-pro-plus-mini,REJECT
 - RULE-SET,popup-ads,REJECT
 - RULE-SET,threat-tif-ip,REJECT,no-resolve
 - DOMAIN,video-akpcw.spotifycdn.com,REJECT
@@ -1032,12 +974,17 @@ rules:
 - DOMAIN-SUFFIX,reddit.com,REDDIT
 - DOMAIN-SUFFIX,redditmedia.com,REDDIT
 - DOMAIN-SUFFIX,redd.it,REDDIT
+- DOMAIN,old.reddit.com,REDDIT
 - DOMAIN-KEYWORD,reddit,REDDIT
 - DOMAIN-SUFFIX,twitter.com,REDDIT
 - DOMAIN-SUFFIX,x.com,REDDIT
 - DOMAIN-SUFFIX,api.twitter.com,REDDIT
 - DOMAIN-SUFFIX,api.x.com,REDDIT
 - DOMAIN-SUFFIX,t.co,REDDIT
+- DOMAIN,adservice.google.com,REJECT
+- DOMAIN,stats.g.doubleclick.net,REJECT
+- DOMAIN,m.doubleclick.net,REJECT
+- DOMAIN,mediavisor.doubleclick.net,REJECT
 - DOMAIN-SUFFIX,cloudflare.com,DIRECT
 - DOMAIN-SUFFIX,gstatic.com,DIRECT
 - RULE-SET,manual-routing,MANUAL

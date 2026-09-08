@@ -1788,13 +1788,13 @@ def apply_responsiveness(path: Path) -> bool:
     if isinstance(groups, list):
         group_names = {str(g.get("name")) for g in groups if isinstance(g, dict) and g.get("name")}
         compact = {
-            "GLOBAL": (["WARM-UP", "AUTO-FAST", "ANDROID-COLD-BACKUP"] if is_android else ["LOAD-BALANCE", "WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]),
-            "PROXY": (["GLOBAL", "WARM-UP", "AUTO-FAST", "FALLBACK"] if is_android else ["GLOBAL", "LOAD-BALANCE", "WARM-UP", "AUTO-FAST", "FALLBACK"]),
-            "SOCIAL-MEDIA": ["WARM-UP", "AUTO-FAST", "FALLBACK"],
-            "YOUTUBE": ["WARM-UP-CF", "STREAMING-FAST", "AUTO-FAST", "FALLBACK"],
-            "EDUKASI": ["WARM-UP", "AUTO-FAST", "FALLBACK"],
-            "STREAMING": ["STREAMING-FAST", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"],
-            "CLEAN": ["WARM-UP", "AUTO-FAST", "FALLBACK"],
+            "GLOBAL": (["WARM-UP", "AUTO-FAST", "ANDROID-COLD-BACKUP"] if is_android else ["AUTO-FAST", "FALLBACK"]),
+            "PROXY": (["GLOBAL", "WARM-UP", "AUTO-FAST", "FALLBACK"] if is_android else ["GLOBAL", "AUTO-FAST", "FALLBACK"]),
+            "SOCIAL-MEDIA": ["AUTO-FAST", "FALLBACK"],
+            "YOUTUBE": ["AUTO-FAST", "FALLBACK"],
+            "EDUKASI": ["AUTO-FAST", "FALLBACK"],
+            "STREAMING": ["AUTO-FAST", "FALLBACK"],
+            "CLEAN": ["AUTO-FAST", "FALLBACK"],
         }
         for g in groups:
             if not isinstance(g, dict):
@@ -2855,7 +2855,7 @@ def main() -> int:
         "FAST_NODE_LIMIT", "WAKEUP_INTERVAL", "AUTO_FAST_LAZY",
         "STREAMING_NODE_LIMIT", "STREAMING_HEALTH_LAZY", "PING_CHECK_INTERVAL", "PING_CHECK_LAZY",
         "FALLBACK_INTERVAL", "FALLBACK_LAZY", "BALANCE_INTERVAL", "LOAD_BALANCE_LAZY",
-        "LOAD_BALANCE_STRATEGY", "LOAD_BALANCE_NODE_LIMIT", "KEEP_ALIVE_INTERVAL", "KEEP_ALIVE_IDLE",
+        "LOAD_BALANCE_STRATEGY", "LOAD_BALANCE_NODE_LIMIT", "CONSOLIDATE_ROUTER_PROBES", "KEEP_ALIVE_INTERVAL", "KEEP_ALIVE_IDLE",
         "AI_SERVICE_NODE_LIMIT",
     )
     for key in security_env_keys:
