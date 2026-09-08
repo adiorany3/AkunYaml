@@ -6,12 +6,39 @@ import argparse
 import json
 import os
 import re
+import socket
 import ssl
 import stat
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
+
+MAX_API_RETRIES = 2
+RETRY_DELAYS_SEC = (1, 2)
+RETRYABLE_HTTP_STATUS = {429, 500, 502, 503, 504}
+
+
+def _is_timeout(error: BaseException) -> bool:
+    reason = getattr(error, "reason", error)
+    return isinstance(error, (TimeoutError, socket.timeout)) or isinstance(reason, (TimeoutError, socket.timeout))
+
+
+def _open_api(request: urllib.request.Request, timeout: float):
+    for attempt in range(MAX_API_RETRIES + 1):
+        try:
+            return urllib.request.urlopen(request, timeout=timeout, context=ssl.create_default_context())
+        except urllib.error.HTTPError as exc:
+            error, retryable = exc, exc.code in RETRYABLE_HTTP_STATUS
+        except urllib.error.URLError as exc:
+            error, retryable = exc, _is_timeout(exc)
+        except (TimeoutError, socket.timeout) as exc:
+            error, retryable = exc, True
+        if not retryable or attempt == MAX_API_RETRIES:
+            raise error
+        time.sleep(RETRY_DELAYS_SEC[attempt])
+
 
 DOMAIN_RE = re.compile(
     r"^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$",
@@ -157,7 +184,7 @@ def _classify_batch(base_url: str, model: str, api_key: str, domains: list[str],
         method="POST",
         headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json", "Accept": "application/json"},
     )
-    with urllib.request.urlopen(request, timeout=timeout, context=ssl.create_default_context()) as response:
+    with _open_api(request, timeout) as response:
         payload = json.loads(response.read().decode("utf-8"))
     try:
         content = payload["choices"][0]["message"]["content"]
@@ -174,9 +201,9 @@ def classify_candidates(
     base_url: str,
     model: str,
     key_file: Path | None,
-    batch_size: int = 25,
+    batch_size: int = 5,
     min_confidence: float = 0.98,
-    timeout: float = 30.0,
+    timeout: float = 90.0,
     log=print,
 ) -> dict[str, Any]:
     candidate_paths = (
@@ -240,11 +267,35 @@ def main() -> int:
     parser.add_argument("--base-url", default=os.environ.get("AI_ADBLOCK_BASE_URL", "https://ai.tamandata.com/v1"))
     parser.add_argument("--model", default=os.environ.get("AI_ADBLOCK_MODEL", "tamandata"))
     parser.add_argument("--key-file", type=Path, default=Path(os.environ.get("AI_ADBLOCK_API_KEY_FILE", ".secrets/ai_adblock.key")))
+    parser.add_argument("--batch-size", type=int, default=int(os.environ.get("AI_ADBLOCK_BATCH_SIZE", "5")))
+    parser.add_argument("--min-confidence", type=float, default=float(os.environ.get("AI_ADBLOCK_MIN_CONFIDENCE", "0.98")))
+    parser.add_argument("--timeout", type=float, default=float(os.environ.get("AI_ADBLOCK_TIMEOUT_SEC", "90")))
+    parser.add_argument("--no-refresh", action="store_true", help="gunakan feed Last-Known-Good tanpa refresh")
     args = parser.parse_args()
-    result = classify_candidates(args.workdir.resolve(), base_url=args.base_url, model=args.model, key_file=args.key_file)
+    workdir = args.workdir.expanduser().resolve()
+    key_file = args.key_file.expanduser()
+    if not key_file.is_absolute():
+        key_file = workdir / key_file
+    if not args.no_refresh:
+        try:
+            from feed_guard import refresh_security_feeds
+            refresh_security_feeds(workdir, refresh=True)
+        except Exception as exc:
+            print(f"AI adblock feed refresh gagal: {type(exc).__name__}")
+            return 1
+    refresh_streaming_candidates(workdir)
+    result = classify_candidates(
+        workdir,
+        base_url=args.base_url,
+        model=args.model,
+        key_file=key_file,
+        batch_size=max(1, min(100, args.batch_size)),
+        min_confidence=max(0.95, min(1.0, args.min_confidence)),
+        timeout=max(5.0, min(120.0, args.timeout)),
+    )
     print(f"AI adblock status: {result['status']}"
           + (f": {result['reason']}" if result.get("reason") else ""))
-    return 0
+    return 1 if result["status"] == "failed-open" else 0
 
 
 if __name__ == "__main__":

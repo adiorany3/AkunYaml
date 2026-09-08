@@ -141,9 +141,9 @@ DEFAULT_ENV = {
     "AI_ADBLOCK_BASE_URL": "https://ai.tamandata.com/v1",
     "AI_ADBLOCK_MODEL": "tamandata",
     "AI_ADBLOCK_API_KEY_FILE": ".secrets/ai_adblock.key",
-    "AI_ADBLOCK_BATCH_SIZE": "25",
+    "AI_ADBLOCK_BATCH_SIZE": "5",
     "AI_ADBLOCK_MIN_CONFIDENCE": "0.98",
-    "AI_ADBLOCK_TIMEOUT_SEC": "30",
+    "AI_ADBLOCK_TIMEOUT_SEC": "90",
     "MANUAL_ROUTING_COMPRESS": "true",
     "MANUAL_ROUTING_COMPRESS_THRESHOLD": "40",
     "MRS_COMPILE": "auto",
@@ -2951,6 +2951,16 @@ def main() -> int:
         youtube_mode,
         youtube_filter_file,
     )
+
+    log("Menjalankan test iklan terbaru")
+    ad_audit = subprocess.run(
+        [sys.executable, "app_ad_audit.py"],
+        cwd=workdir,
+        env=env,
+        check=False,
+    )
+    if ad_audit.returncode != 0:
+        log(f"Test iklan gagal-open, exit={ad_audit.returncode}")
 
     if not validate_yaml(workdir, mihomo, output_files):
         print("\n[ERROR] Ada YAML yang gagal validasi.")

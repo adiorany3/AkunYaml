@@ -69,9 +69,9 @@
   "AI_ADBLOCK_BASE_URL": "https://ai.tamandata.com/v1",
   "AI_ADBLOCK_MODEL": "tamandata",
   "AI_ADBLOCK_API_KEY_FILE": ".secrets/ai_adblock.key",
-  "AI_ADBLOCK_BATCH_SIZE": "25",
+  "AI_ADBLOCK_BATCH_SIZE": "5",
   "AI_ADBLOCK_MIN_CONFIDENCE": "0.98",
-  "AI_ADBLOCK_TIMEOUT_SEC": "30",
+  "AI_ADBLOCK_TIMEOUT_SEC": "90",
   "BUG_SERVERS": [
     "104.17.3.81"
   ],
