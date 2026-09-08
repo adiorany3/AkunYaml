@@ -3530,6 +3530,15 @@ def build_openclash_android_yaml(
         "unified-delay": True,
         "tcp-concurrent": True,
         **_mihomo_keep_alive_config(),
+        "tun": {
+            "enable": True,
+            "stack": "gvisor",
+            "mtu": 1280,
+            "auto-route": True,
+            "auto-detect-interface": True,
+            "strict-route": True,
+            "dns-hijack": ["any:53"],
+        },
         "profile": {
             "store-selected": True,
             "store-fake-ip": True,

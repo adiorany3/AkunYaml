@@ -9,6 +9,15 @@ tcp-concurrent: true
 keep-alive-interval: 15
 keep-alive-idle: 30
 disable-keep-alive: false
+tun:
+  enable: true
+  stack: gvisor
+  mtu: 1280
+  auto-route: true
+  auto-detect-interface: true
+  strict-route: true
+  dns-hijack:
+  - any:53
 profile:
   store-selected: true
   store-fake-ip: true

@@ -62,6 +62,15 @@ def check():
             assert not skipped
             assert set(proxies) <= {node.name for node in source_nodes}
         assert not any("failed-manual" in name or "subscription" in name for name in proxies)
+        assert config["tun"] == {
+            "enable": True,
+            "stack": "gvisor",
+            "mtu": 1280,
+            "auto-route": True,
+            "auto-detect-interface": True,
+            "strict-route": True,
+            "dns-hijack": ["any:53"],
+        }
         groups = {item["name"]: item for item in config["proxy-groups"]}
 
         def walk(name, path=()):
