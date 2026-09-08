@@ -29,6 +29,7 @@ def make_node(i: int, delay: int) -> core.ProxyNode:
         port=443,
         raw="",
         clash=clash,
+        tier="MANUAL",
         best_delay_ms=delay,
         bug_best_delay_ms=delay,
         score=delay,

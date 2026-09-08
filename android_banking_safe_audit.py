@@ -35,22 +35,21 @@ for domain in DOMAINS:
     if '+.' + domain not in skip:
         fail(f'{domain} belum masuk sniffer skip-domain')
 
-    rule = f'DOMAIN-SUFFIX,{domain},DIRECT'
+    rule = f'DOMAIN-SUFFIX,{domain},GLOBAL'
     if rule not in rules:
-        fail(f'Rule DIRECT {domain} tidak ditemukan')
+        fail(f'Rule GLOBAL {domain} tidak ditemukan')
     financial_index = rules.index(rule)
     for critical in CRITICAL:
         if critical not in rules or rules.index(critical) > financial_index:
             fail(f'{domain} DIRECT harus berada setelah critical threat rules')
 
     for marker in (
-        'DOMAIN-SUFFIX,shopee.co.id,GLOBAL',
         'RULE-SET,privacy-extra,REJECT',
         'RULE-SET,ads_domain,REJECT',
         'RULE-SET,tracker-domain,REJECT',
     ):
         if marker in rules and financial_index > rules.index(marker):
-            fail(f'{domain} DIRECT terlambat, berada setelah {marker}')
+            fail(f'{domain} GLOBAL terlambat, berada setelah {marker}')
 
     for configured_rule in rules:
         if domain in configured_rule.lower() and ',reject' in configured_rule.lower():
@@ -58,7 +57,7 @@ for domain in DOMAINS:
 
 print('[OK] Android Banking/QRIS Safe Mode')
 print(f'  protected sample : {len(DOMAINS)} domains')
-print('  route             : DIRECT')
+print('  route             : GLOBAL (manual-only Android policy)')
 print('  fake-ip           : bypass')
 print('  sniffer           : skipped')
 print('  DNS               : public DoH policy')
