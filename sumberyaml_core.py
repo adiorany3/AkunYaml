@@ -2679,6 +2679,14 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         defaults = defaults or ["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]
         return defaults
 
+    def category_pool(category: str, fallback: list[str]) -> list[str]:
+        labels = {category, "STREAMING" if category == "YOUTUBE" else category}
+        tagged = [
+            node.clash["name"] for node in nodes
+            if labels.intersection(str(getattr(node, "usage_groups", "")).split(","))
+        ]
+        return _dedupe_names(tagged) or selector(fallback)
+
     domain_provider = {
         "type": "http",
         "interval": 86400,
@@ -2878,12 +2886,12 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
         },
-        _category_health_group("SOCIAL-MEDIA", selector(["AUTO-FAST", "FALLBACK"]),
+        _category_health_group("SOCIAL-MEDIA", category_pool("SOCIAL-MEDIA", ["AUTO-FAST", "FALLBACK"]),
                                os.getenv("SOCIAL_TEST_URL", "https://www.gstatic.com/generate_204"), active_interval, fast_timeout),
         {
             "name": "YOUTUBE",
             "type": "fallback",
-            "proxies": selector(["AUTO-FAST", "FALLBACK"]),
+            "proxies": category_pool("YOUTUBE", ["AUTO-FAST", "FALLBACK"]),
             "url": streaming_test_url,
             "interval": 120,
             "lazy": True,
@@ -2891,9 +2899,9 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "expected-status": "200/204/301/302",
             "max-failed-times": 2,
         },
-        _category_health_group("EDUKASI", selector(["AUTO-FAST", "FALLBACK"]),
+        _category_health_group("EDUKASI", category_pool("EDUKASI", ["AUTO-FAST", "FALLBACK"]),
                                os.getenv("EDUKASI_TEST_URL", "https://www.gstatic.com/generate_204"), active_interval, fast_timeout),
-        _category_health_group("STREAMING", selector(["AUTO-FAST", "FALLBACK"]),
+        _category_health_group("STREAMING", category_pool("STREAMING", ["AUTO-FAST", "FALLBACK"]),
                                streaming_test_url, active_interval, fast_timeout),
         {
             "name": "PING-CHECK",

@@ -582,11 +582,16 @@ def _smart_select_nodes(nodes: list[Any], minimum_count: int) -> list[Any]:
     selected = list(ranked[: min(minimum_count, len(ranked))])
     selected_ids = {id(node) for node in selected}
     policies = (
-        ("BANK,VMESS-VIDEO", max(1, _env_int("VIDEO_NODE_MIN", 3)),
+        ("BANK", max(1, _env_int("BANK_NODE_MIN", 2)),
+         lambda node: str((getattr(node, "clash", {}) or {}).get("type", "")).lower() in {"vless", "trojan"}),
+        ("VMESS-VIDEO,YOUTUBE", max(1, _env_int("VIDEO_NODE_MIN", 3)),
          lambda node: str((getattr(node, "clash", {}) or {}).get("type", "")).lower() == "vmess"),
-        ("STREAMING", max(1, _env_int("STREAMING_NODE_MIN", 3)),
+        ("STREAMING,YOUTUBE,SOCIAL-MEDIA", max(1, _env_int("STREAMING_NODE_MIN", 3)),
          lambda node: node_network(node) == "ws"),
+        ("EDUKASI", max(1, _env_int("EDUKASI_NODE_MIN", 2)),
+         lambda node: node_network(node) in {"ws", "grpc", "http"}),
     )
+    # Category labels are hints, not hard exclusions; URL-test still chooses live latency winner.
     for groups, quota, matches in policies:
         matching = [node for node in ranked if matches(node)]
         for node in matching[:quota]:

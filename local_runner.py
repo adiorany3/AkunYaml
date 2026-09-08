@@ -1789,10 +1789,10 @@ def apply_responsiveness(path: Path) -> bool:
         compact = {
             "GLOBAL": (["WARM-UP", "AUTO-FAST", "ANDROID-COLD-BACKUP"] if is_android else ["AUTO-FAST", "FALLBACK"]),
             "PROXY": (["GLOBAL", "WARM-UP", "AUTO-FAST", "FALLBACK"] if is_android else ["GLOBAL", "AUTO-FAST", "FALLBACK"]),
-            "SOCIAL-MEDIA": ["AUTO-FAST", "FALLBACK"],
-            "YOUTUBE": ["AUTO-FAST", "FALLBACK"],
-            "EDUKASI": ["AUTO-FAST", "FALLBACK"],
-            "STREAMING": ["AUTO-FAST", "FALLBACK"],
+            "SOCIAL-MEDIA": ["SOCIAL-MEDIA", "AUTO-FAST", "FALLBACK"],
+            "YOUTUBE": ["YOUTUBE", "STREAMING-FAST", "AUTO-FAST", "FALLBACK"],
+            "EDUKASI": ["EDUKASI", "AUTO-FAST", "FALLBACK"],
+            "STREAMING": ["STREAMING", "STREAMING-FAST", "AUTO-FAST", "FALLBACK"],
             "CLEAN": ["AUTO-FAST", "FALLBACK"],
         }
         for g in groups:
