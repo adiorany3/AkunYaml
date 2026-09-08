@@ -1,12 +1,12 @@
 # Node Quality Report - Smart Stable
 
 ## Ringkasan
-- Total proxy di YAML: 7
-- WARM-UP harian: 3 node
-- WARM-UP-CF Cloudflare/Worker: 1 node
-- STREAMING-FAST: 3 node
-- AUTO-FAST: 3 node
-- FALLBACK: 7 referensi, manual backup: 4 node
+- Total proxy di YAML: 13
+- WARM-UP harian: 0 node
+- WARM-UP-CF Cloudflare/Worker: 0 node
+- STREAMING-FAST: 0 node
+- AUTO-FAST: 6 node
+- FALLBACK: 13 referensi, manual backup: 4 node
 
 ## Rekomendasi Pakai
 - Harian/browsing: pilih `WARM-UP` atau `AUTO-FAST`.
@@ -15,26 +15,16 @@
 - Router RAM kecil: pakai `openclash_lite.yaml`.
 
 ## Tier 1 - WARM-UP
-- AKUN-001-CLOUDFLARE-VLESS-WS-238MS
-- AKUN-002-UNKNOWN-VLESS-WS-251MS
-- AKUN-003-UNKNOWN-VLESS-WS-257MS
+- Tidak ada
 
 ## Tier 1B - WARM-UP-CF
-- AKUN-001-CLOUDFLARE-VLESS-WS-238MS
+- Tidak ada
 
 ## Streaming Pool
-- AKUN-001-CLOUDFLARE-VLESS-WS-238MS
-- AKUN-002-UNKNOWN-VLESS-WS-251MS
-- AKUN-003-UNKNOWN-VLESS-WS-257MS
+- Tidak ada
 
 ## Node Berisiko dari NekoBox/sing-box Test
-- AKUN-004-CLOUDFLARE-VLESS-WS-235MS: ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))
-- AKUN-001-CLOUDFLARE-VLESS-WS-225MS: ConnectionError: ('Connection aborted.', OSError(22, 'Invalid argument'))
-- AKUN-009-CLOUDFLARE-VLESS-WS-262MS: ConnectionError: ('Connection aborted.', OSError(22, 'Invalid argument'))
-- AKUN-007-CLOUDFLARE-VLESS-WS-241MS: ConnectionError: ('Connection aborted.', OSError(22, 'Invalid argument'))
-- AKUN-013-CLOUDFLARE-VLESS-WS-264MS: ConnectionError: ('Connection aborted.', OSError(22, 'Invalid argument'))
-- AKUN-003-UNKNOWN-VLESS-WS-227MS: ConnectionError: ('Connection aborted.', OSError(22, 'Invalid argument'))
-- AKUN-005-UNKNOWN-VLESS-WS-257MS: ConnectionError: ('Connection aborted.', OSError(22, 'Invalid argument'))
+- AKUN-003-CLOUDFLARE-VLESS-WS-108MS: ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)
 
 ## Catatan Smart Mode
 - Health-check cepat hanya untuk pool kecil, bukan semua node.
