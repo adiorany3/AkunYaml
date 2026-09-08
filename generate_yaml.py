@@ -1380,10 +1380,35 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
         if not (isinstance(g, dict) and g.get("name") in {"MANUAL", "MANUAL-WARMUP", "REDDIT"})
     ]
 
+    required_auto_names: list[str] = []
+    if not android:
+        manual_set = set(manual_names)
+        auto_vless_names = [
+            str(proxy.get("name"))
+            for proxy in proxies
+            if isinstance(proxy, dict)
+            and str(proxy.get("type") or "").lower() == "vless"
+            and str(proxy.get("name")) not in manual_set
+        ]
+        if len(auto_vless_names) < 2:
+            raise ValueError("OpenClash auto requires at least 2 automatic VLESS nodes")
+        required_auto_names = auto_vless_names[:2]
+        for group in groups:
+            if not isinstance(group, dict):
+                continue
+            refs = group.setdefault("proxies", [])
+            if not isinstance(refs, list):
+                refs = group["proxies"] = []
+            group["proxies"] = (
+                required_auto_names
+                + [name for name in refs if name not in required_auto_names and name not in manual_names]
+                + manual_names
+            )
+
     manual_group = {
         "name": "MANUAL",
         "type": "fallback",
-        "proxies": manual_names or ["AUTO-FAST"],
+        "proxies": [*required_auto_names, *manual_names] or ["AUTO-FAST"],
         "url": "https://www.gstatic.com/generate_204",
         "interval": 30,
         "lazy": False,
@@ -1391,7 +1416,19 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
         "expected-status": "200/204/301/302",
         "max-failed-times": 2,
     }
-    groups.append({"name": "REDDIT", "type": "select", "proxies": ["MANUAL"]})
+    groups.append({
+        "name": "REDDIT",
+        "type": "fallback" if not android else "select",
+        "proxies": [*required_auto_names, *manual_names, "MANUAL"] if not android else ["MANUAL"],
+        **({
+            "url": "https://www.gstatic.com/generate_204",
+            "interval": 30,
+            "lazy": False,
+            "timeout": 3000,
+            "expected-status": "200/204/301/302",
+            "max-failed-times": 2,
+        } if not android else {}),
+    })
 
     # Manual nodes remain outside the automatic quota. Smart mode keeps strict
     # automatic nodes first in FALLBACK, then appends manual nodes as late-stage
@@ -1403,15 +1440,14 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
         proxies_list = group.get("proxies")
         if not isinstance(proxies_list, list):
             continue
-        if name == "FALLBACK":
-            # Keep URL-tested automatic nodes first; manual nodes are late backup.
+        if not android:
+            # Every automatic group keeps both VLESS primaries, then all manual backups.
             for manual_name in manual_names:
                 _insert_once(proxies_list, manual_name)
-        elif name == "GLOBAL":
-            # GLOBAL starts with FALLBACK (fallback type)
+        if name == "GLOBAL":
+            # GLOBAL starts with FALLBACK (fallback type).
             _insert_once(proxies_list, "FALLBACK", 0)
         elif (not android) and name == "PROXY":
-            # Start PROXY with MANUAL first
             _insert_once(proxies_list, "MANUAL", 0)
 
     groups.append(manual_group)

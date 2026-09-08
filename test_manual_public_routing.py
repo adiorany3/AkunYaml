@@ -24,7 +24,24 @@ def check():
     automatic.name = automatic.clash["name"] = "subscription"
     automatic.tier = "PRIMARY"
     automatic.clash["uuid"] = "00000000-0000-4000-8000-000000000002"
-    mixed = [automatic, failed, manual]
+    automatic_two = copy.deepcopy(automatic)
+    automatic_two.name = automatic_two.clash["name"] = "subscription-two"
+    automatic_two.clash["uuid"] = "00000000-0000-4000-8000-000000000003"
+    mixed = [automatic, automatic_two, failed, manual]
+
+    router = yaml.safe_load(generator.add_manual_group_to_yaml_text(
+        yaml.safe_dump({
+            "proxies": [automatic.clash, automatic_two.clash],
+            "proxy-groups": [{"name": "AUTO", "type": "fallback", "proxies": [automatic.name]}],
+        }),
+        [manual],
+    ))
+    router_proxies = {item["name"]: item for item in router["proxies"]}
+    for group in router["proxy-groups"]:
+        refs = group["proxies"]
+        assert refs[:2] == [automatic.name, automatic_two.name]
+        assert manual.name in refs
+    assert router_proxies[manual.name]["type"] == "vless"
 
     with patch.object(generator, "_read_text_file", side_effect=lambda path: "" if "allowlist" in str(path) else "malware.example\n"):
         singbox = json.loads(generator._build_singbox_android_json(mixed))
