@@ -454,6 +454,10 @@ DESKTOP_APP_AD_DOMAINS = (
 APP_SAFE_EXACT_DOMAINS = tuple(dict.fromkeys(ANDROID_OEM_APP_AD_DOMAINS + DESKTOP_APP_AD_DOMAINS))
 APP_SAFE_SUFFIXES = tuple(dict.fromkeys(APP_SDK_AD_SUFFIXES))
 
+# Official Ookla hosts must bypass domain blocklists, but use active proxy nodes.
+SPEEDTEST_DOMAIN_SUFFIXES = ("speedtest.net", "ookla.com", "speedtestcustom.com")
+SPEEDTEST_NODE_RULES = tuple(f"DOMAIN-SUFFIX,{domain},GLOBAL" for domain in SPEEDTEST_DOMAIN_SUFFIXES)
+
 # V380 Pro uses av380.net for cloud traffic. Reject only known ad/telemetry
 # hosts first, then bypass broad third-party blocklists for remaining service
 # traffic. LAN camera/NVR access is already covered by LAN_DIRECT_RULES.
@@ -2180,10 +2184,12 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     cleaned = remaining_rules
 
     allowlist = set(load_allowlist(workdir))
-    allow_rules = [f"DOMAIN-SUFFIX,{domain},DIRECT" for domain in sorted(allowlist)]
+    speedtest_domains = set(SPEEDTEST_DOMAIN_SUFFIXES)
+    allow_rules = [f"DOMAIN-SUFFIX,{domain},DIRECT" for domain in sorted(allowlist - speedtest_domains)]
+    speedtest_rules = [rule for rule in SPEEDTEST_NODE_RULES if rule.split(",", 2)[1] in allowlist]
     compatibility_targets = {
         tuple(part.strip().lower() for part in rule.split(",")[:2])
-        for rule in (*allow_rules, *V380_SERVICE_RULES)
+        for rule in (*allow_rules, *speedtest_rules, *V380_SERVICE_RULES)
     }
     cleaned = [
         rule for rule in cleaned
@@ -2253,6 +2259,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         + list(V380_SERVICE_RULES)
         + list(CHINA_CCTV_AD_RULES)
         + list(allow_rules)
+        + speedtest_rules
         + ai_adblock_rules
         + youtube_compat_rules
         + youtube_ad_rules
