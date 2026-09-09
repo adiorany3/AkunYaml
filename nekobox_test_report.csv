@@ -1,11 +1,11 @@
 name,type,network,original_server,bug_sni,mihomo_status,url_test_ms,nekobox_test_ms,nekobox_status,nekobox_ready
-AKUN-002-TENCENT-VLESS-WS-113MS,vless,ws,43.133.110.81,faxf32gkfzoxqv.fx6hsv0.ccwu.cc,HTTP 204,349,563,HTTP 204,yes
-AKUN-001-CLOUDFLARE-VLESS-WS-113MS,vless,ws,172.64.52.97,faxf32gkfzoxqv.fx6hsv0.ccwu.cc,HTTP 204,356,440,HTTP 204,yes
-AKUN-008-CLOUDFLARE-VLESS-WS-114MS,vless,ws,172.64.156.60,powered-by-surena.configfarsi6982dd6e0355e.workers.dev,HTTP 204,358,408,HTTP 204,yes
-AKUN-007-UNKNOWN-VLESS-WS-106MS,vless,ws,104.18.42.163,fx3h2kf8xn.fx6hsv0.ccwu.cc,HTTP 204,360,394,HTTP 204,yes
-AKUN-004-CLOUDFLARE-VLESS-WS-106MS,vless,ws,104.21.33.59,web-socket.tgdaosheng.ggff.net,HTTP 204,375,6190,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
-AKUN-005-CLOUDFLARE-VLESS-WS-122MS,vless,ws,cf10.466688.xyz,mia10.pages.dev,HTTP 204,398,445,HTTP 204,yes
-AKUN-009-CLOUDFLARE-VLESS-WS-136MS,vless,ws,cf4.466688.xyz,mia6.pages.dev,HTTP 204,400,1418,HTTP 204,yes
-AKUN-046-CLOUDFLARE-VLESS-WS-677MS,vless,ws,vortex-c2d8a68d.vortex-f73ce904.workers.dev,vortex-c2d8a68d.vortex-f73ce904.workers.dev,HTTP 204,960,1287,HTTP 204,yes
-AKUN-006-CLOUDFLARE-VLESS-WS-102MS,vless,ws,188.114.97.6,fx3h2kf8xn.fx6hsv0.ccwu.cc,HTTP 204,1350,406,HTTP 204,yes
-AKUN-012-DE-VLESS-WS-626MS,vless,ws,fcs013.getdcz.me,fcs013.getdcz.me,HTTP 204,1355,1280,HTTP 204,yes
+AKUN-025-CLOUDFLARE-VLESS-WS-124MS,vless,ws,172.67.148.180,suMMer-fieLD-3c5b.fSdfSDDf.WoRKErs.dEv,HTTP 204,361,452,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-028-CLOUDFLARE-VLESS-WS-116MS,vless,ws,188.114.97.6,xwrivr.pages.dev,HTTP 204,370,416,HTTP 204,yes
+AKUN-020-CLOUDFLARE-VLESS-WS-134MS,vless,ws,188.114.97.6,dfsuporte.garena.com.ex33r.eu.cc,HTTP 204,378,452,HTTP 204,yes
+AKUN-029-CLOUDFLARE-VLESS-WS-144MS,vless,ws,188.114.97.6,xwrivr.pages.dev,HTTP 204,378,1439,HTTP 204,yes
+AKUN-003-CLOUDFLARE-VLESS-WS-128MS,vless,ws,chatgpt.com,powered-by-surena.user68f797c2f3e1b.workers.dev,HTTP 204,379,438,HTTP 204,yes
+AKUN-013-CLOUDFLARE-VLESS-WS-127MS,vless,ws,188.114.97.6,xwrivr.pages.dev,HTTP 204,379,418,HTTP 204,yes
+AKUN-019-ORG-VLESS-WS-145MS,vless,ws,cf-socks.caoyuwu.eu.org,cf-socks.caoyuwu.eu.org,HTTP 204,380,438,HTTP 204,yes
+AKUN-018-CLOUDFLARE-VLESS-WS-137MS,vless,ws,188.114.97.6,xwrivr.pages.dev,HTTP 204,380,448,HTTP 204,yes
+AKUN-016-CLOUDFLARE-VLESS-WS-127MS,vless,ws,188.114.97.6,xwrivr.pages.dev,HTTP 204,380,408,HTTP 204,yes
+AKUN-031-CLOUDFLARE-VLESS-WS-138MS,vless,ws,188.114.97.6,quiz.int.vidio.com.ex33r.eu.cc,HTTP 204,380,448,HTTP 204,yes
