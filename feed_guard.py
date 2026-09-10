@@ -142,6 +142,30 @@ def _float_env(name: str, default: float, minimum: float, maximum: float) -> flo
     except ValueError:
         value = default
     return max(minimum, min(maximum, value))
+def _diff_entry_sets(old_text: str, new_entries: list[str]) -> tuple[int, int]:
+    """Count added/removed entries between the previous LKG content and a new feed.
+
+    ponytail: counts only, no per-domain samples. Add sample lists to the report
+    if audit needs to inspect individual domain changes.
+    """
+    old_set = set(_parse_ipcidrs(old_text)) if old_text and _looks_like_ipcidr(old_text) else set(_parse_domains(old_text))
+    new_set = set(new_entries)
+    return len(new_set - old_set), len(old_set - new_set)
+
+
+def _looks_like_ipcidr(text: str) -> bool:
+    for line in text.splitlines()[:20]:
+        line = line.strip()
+        if not line or line.startswith(("#", "!", ";")):
+            continue
+        try:
+            ipaddress.ip_network(line.split()[0], strict=False)
+        except ValueError:
+            return False
+    return True
+
+
+
 
 
 def _feed_specs() -> list[FeedSpec]:
@@ -242,6 +266,10 @@ def refresh_security_feeds(workdir: Path, *, refresh: bool = True, log=print) ->
                         raise ValueError(f"suspicious growth: {old_count} -> {count}")
                 normalized = ("\n".join(entries) + "\n").encode("utf-8")
                 sha256 = hashlib.sha256(normalized).hexdigest()
+                added, removed = 0, 0
+                if good_path.exists():
+                    old_text = good_path.read_text(encoding="utf-8", errors="ignore")
+                    added, removed = _diff_entry_sets(old_text, entries)
                 _atomic_write(good_path, normalized)
                 metadata[spec.name] = {
                     "count": count,
@@ -249,6 +277,8 @@ def refresh_security_feeds(workdir: Path, *, refresh: bool = True, log=print) ->
                     "updated_unix": int(time.time()),
                     "kind": spec.kind,
                     "url": spec.url,
+                    "added": added,
+                    "removed": removed,
                 }
                 status = "updated"
             except Exception as exc:
@@ -260,6 +290,8 @@ def refresh_security_feeds(workdir: Path, *, refresh: bool = True, log=print) ->
             "count": count,
             "sha256": sha256,
             "detail": detail,
+            "added": int((metadata.get(spec.name) or {}).get("added") or 0),
+            "removed": int((metadata.get(spec.name) or {}).get("removed") or 0),
             "path": str(good_path.relative_to(workdir)) if good_path.exists() else "",
         }
         if detail:
@@ -313,14 +345,18 @@ def _write_report(workdir: Path, report: dict[str, dict[str, Any]]) -> None:
         "# Security Feed Guard Report",
         "",
         "A refresh is promoted only after format/count sanity checks. Suspicious updates keep the previous Last-Known-Good cache.",
+        "Added/Removed counts the domain diff against the previous known-good snapshot (0 on first download).",
         "",
-        "| Provider | Status | Entries | SHA-256 |",
-        "|---|---:|---:|---|",
+        "| Provider | Status | Entries | Added | Removed | SHA-256 |",
+        "|---|---:|---:|---:|---:|---|",
     ]
     for name in sorted(report):
         item = report[name]
         digest = str(item.get("sha256") or "")[:16]
-        lines.append(f"| `{name}` | {item.get('status','')} | {item.get('count',0)} | `{digest}` |")
+        lines.append(
+            f"| `{name}` | {item.get('status','')} | {item.get('count',0)} "
+            f"| {item.get('added', 0)} | {item.get('removed', 0)} | `{digest}` |"
+        )
     lines.append("")
     (workdir / "security_feed_report.md").write_text("\n".join(lines), encoding="utf-8")
 
