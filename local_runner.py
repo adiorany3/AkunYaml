@@ -473,7 +473,7 @@ V380_AD_RULES = (
     "DOMAIN,app-ad.av380.net,REJECT",
 )
 V380_SERVICE_RULES = (
-    "DOMAIN-SUFFIX,av380.net,DIRECT",
+    "DOMAIN-SUFFIX,av380.net,GLOBAL",
 )
 
 # Exact CCTV ad/telemetry hosts observed in local threat feed. Never block
@@ -2185,7 +2185,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
 
     allowlist = set(load_allowlist(workdir))
     speedtest_domains = set(SPEEDTEST_DOMAIN_SUFFIXES)
-    allow_rules = [f"DOMAIN-SUFFIX,{domain},DIRECT" for domain in sorted(allowlist - speedtest_domains)]
+    allow_rules = [f"DOMAIN-SUFFIX,{domain},GLOBAL" for domain in sorted(allowlist - speedtest_domains)]
     speedtest_rules = [rule for rule in SPEEDTEST_NODE_RULES if rule.split(",", 2)[1] in allowlist]
     compatibility_targets = {
         tuple(part.strip().lower() for part in rule.split(",")[:2])

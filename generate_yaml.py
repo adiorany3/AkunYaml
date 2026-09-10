@@ -1687,6 +1687,18 @@ def _enforce_no_selector_no_direct_yaml_text(yaml_text: str) -> str:
             if not refs:
                 refs = dedupe([x for x in defaults if x in group_names and x != name] + [x for x in proxy_names if x != name]) or ["REJECT"]
             group["proxies"] = refs
+
+    lan_prefixes = (
+        "DOMAIN-SUFFIX,local,", "DOMAIN-SUFFIX,lan,", "DOMAIN-SUFFIX,localhost,",
+        "IP-CIDR,127.0.0.0/8,", "IP-CIDR,10.0.0.0/8,", "IP-CIDR,172.16.0.0/12,",
+        "IP-CIDR,192.168.0.0/16,", "IP-CIDR,169.254.0.0/16,", "GEOIP,LAN,",
+    )
+    for index, rule in enumerate(config.get("rules", []) or []):
+        parts = str(rule).split(",")
+        policy_index = -2 if parts[-1].strip() == "no-resolve" else -1
+        if parts[policy_index].strip() in {"DIRECT", "PASS", "COMPATIBLE"} and not str(rule).startswith(lan_prefixes):
+            parts[policy_index] = "GLOBAL"
+            config["rules"][index] = ",".join(parts)
     return yaml.safe_dump(config, allow_unicode=True, sort_keys=False, width=140)
 
 

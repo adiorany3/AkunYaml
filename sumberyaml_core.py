@@ -130,6 +130,19 @@ def _enforce_no_selector_no_direct_config(config: dict[str, Any]) -> dict[str, A
             group.setdefault("max-failed-times", 2)
         if isinstance(group.get("proxies"), list):
             group["proxies"] = clean_refs(name, group.get("proxies"))
+
+    # Public traffic must use a node. Keep DIRECT only for LAN/private reachability.
+    lan_prefixes = (
+        "DOMAIN-SUFFIX,local,", "DOMAIN-SUFFIX,lan,", "DOMAIN-SUFFIX,localhost,",
+        "IP-CIDR,127.0.0.0/8,", "IP-CIDR,10.0.0.0/8,", "IP-CIDR,172.16.0.0/12,",
+        "IP-CIDR,192.168.0.0/16,", "IP-CIDR,169.254.0.0/16,", "GEOIP,LAN,",
+    )
+    for index, rule in enumerate(config.get("rules", []) or []):
+        parts = str(rule).split(",")
+        policy_index = -2 if parts[-1].strip() == "no-resolve" else -1
+        if parts[policy_index].strip() in {"DIRECT", "PASS", "COMPATIBLE"} and not str(rule).startswith(lan_prefixes):
+            parts[policy_index] = "GLOBAL"
+            config["rules"][index] = ",".join(parts)
     return config
 
 
