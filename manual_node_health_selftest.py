@@ -31,8 +31,11 @@ node = SimpleNamespace(
 config_text = _build_singbox_android_json([node])
 config = json.loads(config_text)
 groups = {item["tag"]: item for item in config["outbounds"]}
-for tag in ("proxy", "BANK", "SOCIAL", "VMESS-VIDEO"):
-    assert groups[tag]["default"] == "manual-vmess", groups[tag]
+# Global selector defaults to AUTO-FAST pool; categories follow the global selector.
+assert groups["proxy"]["default"] == "AUTO-FAST", groups["proxy"]
+assert groups["proxy"]["outbounds"] == ["AUTO-FAST", "manual-vmess"], groups["proxy"]
+for tag in ("BANK", "SOCIAL", "VMESS-VIDEO"):
+    assert groups[tag]["default"] == "proxy", groups[tag]
 _validate_singbox_json(config_text, os.getenv("SINGBOX_PATH", ".local_bin/sing-box"))
 print("PASS: manual VMess supplies sing-box selectors")
 
@@ -43,8 +46,9 @@ for protocol in ("vless", "trojan"):
         node.clash["password"] = "test-password"
     config_text = _build_singbox_android_json([node])
     groups = {item["tag"]: item for item in json.loads(config_text)["outbounds"]}
-    for tag in ("proxy", "BANK", "SOCIAL", "VMESS-VIDEO"):
-        assert groups[tag]["default"] == node.name, groups[tag]
+    assert groups["proxy"]["default"] == "AUTO-FAST", groups["proxy"]
+    for tag in ("BANK", "SOCIAL", "VMESS-VIDEO"):
+        assert groups[tag]["default"] == "proxy", groups[tag]
         assert groups[tag]["outbounds"], groups[tag]
         assert set(groups[tag]["outbounds"]) <= groups.keys(), groups[tag]
     _validate_singbox_json(config_text, os.getenv("SINGBOX_PATH", ".local_bin/sing-box"))
