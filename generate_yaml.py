@@ -830,6 +830,17 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         "adtrafficquality.google",
         "mobileads.google.com",
         "pagead.l.google.com",
+        # Static/dynamic ad delivery and device-maker telemetry.
+        "pagead2.googlesyndication.com",
+        "tpc.googlesyndication.com",
+        "googletagservices.com",
+        "google-analytics.com",
+        "app-measurement.com",
+        "metrics.samsung.com",
+        "diagmon-service.samsung.com",
+        "tracking.miui.com",
+        "data.mistat.intl.xiaomi.com",
+        "analytics.oneplus.cn",
     ]
     ad_blocklist_files = (
         "rule_providers/universal-adblock-safe.yaml",

@@ -15,6 +15,14 @@ reject_domains = {
 assert "casino-netflix.com" in reject_domains
 assert "netflix.com" not in reject_domains
 assert "ads.spotify.com" in reject_domains
+for domain in (
+    "pagead2.googlesyndication.com",
+    "googletagservices.com",
+    "metrics.samsung.com",
+    "tracking.miui.com",
+    "data.mistat.intl.xiaomi.com",
+):
+    assert domain in reject_domains, domain
 assert "googlevideo.com" not in reject_domains
 assert "youtube.com" not in reject_domains
 for domain in (

@@ -3,6 +3,18 @@ payload:
   - DOMAIN-SUFFIX,googlesyndication.com
   - DOMAIN-SUFFIX,googleadservices.com
   - DOMAIN-SUFFIX,adservice.google.com
+  # Static/dynamic ad delivery and device-maker telemetry.
+  - DOMAIN-SUFFIX,googletagservices.com
+  - DOMAIN-SUFFIX,google-analytics.com
+  - DOMAIN-SUFFIX,app-measurement.com
+  - DOMAIN-SUFFIX,adsrvr.org
+  - DOMAIN-SUFFIX,adform.net
+  - DOMAIN-SUFFIX,adnxs.com
+  - DOMAIN-SUFFIX,metrics.samsung.com
+  - DOMAIN-SUFFIX,diagmon-service.samsung.com
+  - DOMAIN-SUFFIX,tracking.miui.com
+  - DOMAIN-SUFFIX,data.mistat.intl.xiaomi.com
+  - DOMAIN-SUFFIX,analytics.oneplus.cn
   - DOMAIN-SUFFIX,adsystem.com
   - DOMAIN-SUFFIX,adnxs.com
   - DOMAIN-SUFFIX,criteo.com
