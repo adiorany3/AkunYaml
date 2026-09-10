@@ -1400,16 +1400,16 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
     required_auto_names: list[str] = []
     if not android:
         manual_set = set(manual_names)
-        auto_vless_names = [
+        auto_node_names = [
             str(proxy.get("name"))
             for proxy in proxies
             if isinstance(proxy, dict)
-            and str(proxy.get("type") or "").lower() == "vless"
+            and str(proxy.get("type") or "").lower() in {"vless", "vmess", "trojan"}
             and str(proxy.get("name")) not in manual_set
         ]
-        if len(auto_vless_names) < 2:
-            raise ValueError("OpenClash auto requires at least 2 automatic VLESS nodes")
-        required_auto_names = auto_vless_names[:2]
+        if len(auto_node_names) < 2:
+            raise ValueError("OpenClash auto requires at least 2 automatic VLESS/VMess/Trojan nodes")
+        required_auto_names = auto_node_names[:2]
         for group in groups:
             if not isinstance(group, dict):
                 continue

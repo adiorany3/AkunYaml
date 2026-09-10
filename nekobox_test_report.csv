@@ -1,11 +1,11 @@
 name,type,network,original_server,bug_sni,mihomo_status,url_test_ms,nekobox_test_ms,nekobox_status,nekobox_ready
-AKUN-048-CLOUDFLARE-VLESS-WS-168MS,vless,ws,172.64.150.66,gy-cffc2-node-31z7yxejlog9qfu0.lancelot.dpdns.org,HTTP 204,368,1613,HTTP 204,yes
-AKUN-009-CLOUDFLARE-VLESS-WS-119MS,vless,ws,172.67.217.240,web-socket.tgdaosheng.ggff.net,HTTP 204,379,6179,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
-AKUN-006-CLOUDFLARE-VLESS-WS-141MS,vless,ws,188.114.97.6,old-tooth-d793.447-02e.workers.dev,HTTP 204,390,6178,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
-AKUN-003-CLOUDFLARE-VLESS-WS-122MS,vless,ws,188.114.97.3,0LG3u92i0exN577l3Mc637Ycba3.SfgsfgSfGFSGSf-4630.wOrkeRS.dEv,HTTP 204,390,463,HTTP 204,yes
-AKUN-047-CLOUDFLARE-VLESS-WS-137MS,vless,ws,172.67.217.240,web-socket.tgdaosheng.ggff.net,HTTP 204,390,6179,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
-AKUN-002-NET-83-147-12-0-22-VLESS-WS-127MS,vless,ws,83.147.12.20,web-socket.tgdaosheng.ggff.net,HTTP 204,401,6175,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
-AKUN-013-CLOUDFLARE-VLESS-WS-143MS,vless,ws,cf4.466688.xyz,mia0.pages.dev,HTTP 204,403,474,HTTP 204,yes
-AKUN-014-CLOUDFLARE-VLESS-WS-123MS,vless,ws,104.17.212.228,mianfei-73q.pages.dev,HTTP 204,406,1427,HTTP 204,yes
-AKUN-049-CLOUDFLARE-VLESS-WS-156MS,vless,ws,104.18.38.47,mia1.pages.dev,HTTP 204,411,1457,HTTP 204,yes
-AKUN-004-DEV-VLESS-WS-132MS,vless,ws,hi.n2foriran.workers.dev,hi.n2foriran.workers.dev,HTTP 204,422,6189,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
+AKUN-004-CLOUDFLARE-VLESS-WS-98MS,vless,ws,172.67.217.240,fx3h2kf8xn.fx6hsv0.ccwu.cc,HTTP 204,321,538,HTTP 204,yes
+AKUN-002-CLOUDFLARE-VLESS-WS-112MS,vless,ws,172.64.150.28,web-socket.tgdaosheng.ggff.net,HTTP 204,352,6183,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
+AKUN-005-CLOUDFLARE-VLESS-WS-106MS,vless,ws,172.67.217.240,web-socket.tgdaosheng.ggff.net,HTTP 204,357,6177,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
+AKUN-003-CLOUDFLARE-VLESS-WS-97MS,vless,ws,104.18.42.163,fx3h2kf8xn.fx6hsv0.ccwu.cc,HTTP 204,358,385,HTTP 204,yes
+AKUN-009-CLOUDFLARE-VLESS-WS-105MS,vless,ws,172.67.77.77,mianfei-73q.pages.dev,HTTP 204,359,1390,HTTP 204,yes
+AKUN-006-CLOUDFLARE-VLESS-WS-117MS,vless,ws,172.67.217.240,web-socket.tgdaosheng.ggff.net,HTTP 204,362,6173,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
+AKUN-001-CLOUDFLARE-VLESS-WS-93MS,vless,ws,172.64.147.104,faxf32gkfzoxqv.fx6hsv0.ccwu.cc,HTTP 204,362,370,HTTP 204,yes
+AKUN-008-CLOUDFLARE-VLESS-WS-123MS,vless,ws,104.21.33.59,cfvvv-ev1.pages.dev,HTTP 204,363,387,HTTP 204,yes
+AKUN-010-CLOUDFLARE-VLESS-WS-130MS,vless,ws,104.17.58.217,fq.jp188.dpdns.org,HTTP 204,369,438,HTTP 204,yes
+AKUN-011-CLOUDFLARE-VLESS-WS-126MS,vless,ws,fq.jp188.dpdns.org,fq.jp188.dpdns.org,HTTP 204,390,439,HTTP 204,yes

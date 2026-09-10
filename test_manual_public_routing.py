@@ -21,12 +21,15 @@ def check():
     failed.name = failed.clash["name"] = "failed-manual"
     failed.tcp_reachable = False
     automatic = copy.deepcopy(manual)
-    automatic.name = automatic.clash["name"] = "subscription"
+    automatic.name = automatic.clash["name"] = "subscription-vmess"
     automatic.tier = "PRIMARY"
+    automatic.clash["type"] = automatic.type = "vmess"
     automatic.clash["uuid"] = "00000000-0000-4000-8000-000000000002"
     automatic_two = copy.deepcopy(automatic)
-    automatic_two.name = automatic_two.clash["name"] = "subscription-two"
-    automatic_two.clash["uuid"] = "00000000-0000-4000-8000-000000000003"
+    automatic_two.name = automatic_two.clash["name"] = "subscription-trojan"
+    automatic_two.clash["type"] = automatic_two.type = "trojan"
+    automatic_two.clash["password"] = "fixture-password"
+    automatic_two.clash.pop("uuid", None)
     mixed = [automatic, automatic_two, failed, manual]
 
     router = yaml.safe_load(generator.add_manual_group_to_yaml_text(
