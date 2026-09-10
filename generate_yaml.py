@@ -1416,16 +1416,17 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
             refs = group.setdefault("proxies", [])
             if not isinstance(refs, list):
                 refs = group["proxies"] = []
+            existing = [name for name in refs if name not in required_auto_names and name not in manual_names]
             group["proxies"] = (
-                required_auto_names
-                + [name for name in refs if name not in required_auto_names and name not in manual_names]
-                + manual_names
+                [*manual_names, *required_auto_names, *existing]
+                if group.get("name") == "FALLBACK"
+                else [*required_auto_names, *existing, *manual_names]
             )
 
     manual_group = {
         "name": "MANUAL",
         "type": "fallback",
-        "proxies": [*required_auto_names, *manual_names] or ["AUTO-FAST"],
+        "proxies": [*manual_names, *required_auto_names] or ["AUTO-FAST"],
         "url": "https://www.gstatic.com/generate_204",
         "interval": 30,
         "lazy": False,
@@ -1447,9 +1448,7 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
         } if not android else {}),
     })
 
-    # Manual nodes remain outside the automatic quota. Smart mode keeps strict
-    # automatic nodes first in FALLBACK, then appends manual nodes as late-stage
-    # backup. This prevents untested/manual nodes from delaying the first usable route.
+    # GLOBAL prioritizes FALLBACK; FALLBACK prioritizes manually supplied nodes.
     for group in groups:
         if not isinstance(group, dict):
             continue
@@ -1463,7 +1462,9 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
                 _insert_once(proxies_list, manual_name)
         if name == "GLOBAL":
             # GLOBAL starts with FALLBACK (fallback type).
-            _insert_once(proxies_list, "FALLBACK", 0)
+            if "FALLBACK" in proxies_list:
+                proxies_list.remove("FALLBACK")
+            proxies_list.insert(0, "FALLBACK")
         elif (not android) and name == "PROXY":
             _insert_once(proxies_list, "MANUAL", 0)
 

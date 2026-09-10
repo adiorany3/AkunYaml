@@ -32,15 +32,20 @@ def check():
     router = yaml.safe_load(generator.add_manual_group_to_yaml_text(
         yaml.safe_dump({
             "proxies": [automatic.clash, automatic_two.clash],
-            "proxy-groups": [{"name": "AUTO", "type": "fallback", "proxies": [automatic.name]}],
+            "proxy-groups": [
+                {"name": "GLOBAL", "type": "fallback", "proxies": ["AUTO", "FALLBACK"]},
+                {"name": "AUTO", "type": "fallback", "proxies": [automatic.name]},
+                {"name": "FALLBACK", "type": "fallback", "proxies": [automatic.name]},
+            ],
         }),
         [manual],
     ))
     router_proxies = {item["name"]: item for item in router["proxies"]}
-    for group in router["proxy-groups"]:
-        refs = group["proxies"]
-        assert refs[:2] == [automatic.name, automatic_two.name]
-        assert manual.name in refs
+    router_groups = {group["name"]: group for group in router["proxy-groups"]}
+    assert router_groups["GLOBAL"]["proxies"][0] == "FALLBACK"
+    assert router_groups["FALLBACK"]["proxies"][:3] == [manual.name, automatic.name, automatic_two.name]
+    assert router_groups["MANUAL"]["proxies"][:3] == [manual.name, automatic.name, automatic_two.name]
+    assert router_groups["AUTO"]["proxies"][:2] == [automatic.name, automatic_two.name]
     assert router_proxies[manual.name]["type"] == "vless"
 
     with patch.object(generator, "_read_text_file", side_effect=lambda path: "" if "allowlist" in str(path) else "malware.example\n"):
