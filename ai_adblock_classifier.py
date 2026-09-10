@@ -45,7 +45,7 @@ DOMAIN_RE = re.compile(
     re.IGNORECASE,
 )
 ALLOWED_LABELS = {"allow", "block", "review"}
-BLOCK_CATEGORIES = {"advertising", "tracking"}
+BLOCK_CATEGORIES = {"advertising", "tracking", "gambling", "predatory_lending", "scam"}
 STREAMING_MARKERS = {
     "disneyplus", "freewheel", "fwmrm", "hulu", "netflix", "paramountplus",
     "peacocktv", "roku", "spotify", "twitch", "youtube",
@@ -57,6 +57,21 @@ TELEMETRY_MARKERS = {
 CANDIDATE_FEEDS = (
     ".feed_cache/last_good/hagezi-pro-plus-mini.txt",
     ".feed_cache/last_good/popup-ads.txt",
+)
+DISCOVERY_FEEDS = CANDIDATE_FEEDS + (
+    ".feed_cache/last_good/ads_indonesia.txt",
+    ".feed_cache/last_good/gambling-mini.txt",
+    ".feed_cache/last_good/threat-fake-scam.txt",
+)
+DISCOVERY_MARKERS = {
+    "bet", "casino", "gacor", "gambling", "judi", "judol", "loan", "lottery",
+    "pinjaman", "pinjol", "poker", "scam", "slot", "sportsbook", "togel", "toto",
+}
+STRONG_DISCOVERY_MARKERS = {"judol", "pinjol", "togel", "gacor", "sportsbook", "casino", "gambling", "pinjaman"}
+EXISTING_BLOCKLISTS = (
+    "rule_providers/universal-adblock-safe.yaml",
+    "rule_providers/ads_indonesia_android.yaml",
+    ".feed_cache/last_good/gambling-mini.txt",
 )
 
 
@@ -80,6 +95,15 @@ def _has_label(domain: str, markers: set[str]) -> bool:
     return bool(set(re.split(r"[.-]", domain)) & markers)
 
 
+def _discovery_score(domain: str) -> int:
+    labels = re.split(r"[.-]", domain)
+    compact = "".join(labels)
+    score = sum(label in STRONG_DISCOVERY_MARKERS for label in labels) * 3
+    score += sum(label in DISCOVERY_MARKERS for label in labels)
+    score += sum(2 for marker in STRONG_DISCOVERY_MARKERS if marker in compact)
+    return score
+
+
 def _has_streaming_marker(domain: str) -> bool:
     labels = re.split(r"[.-]", domain)
     return any(
@@ -94,16 +118,27 @@ def is_allowlisted(domain: str, allowlist: set[str]) -> bool:
 
 
 def refresh_streaming_candidates(workdir: Path, *, log=print) -> list[str]:
-    """Rebuild exact streaming ad/telemetry candidates from refreshed LKG feeds."""
+    """Rebuild exact candidates from LKG feeds; AI decides final category."""
     allowlist = set(load_domains(workdir / "adblock_allowlist.txt"))
+    existing = {
+        domain for relative_path in EXISTING_BLOCKLISTS
+        for domain in load_domains(workdir / relative_path)
+    }
     discovered = {
         domain
         for relative_path in CANDIDATE_FEEDS
         for domain in load_domains(workdir / relative_path)
         if _has_streaming_marker(domain)
         and _has_label(domain, TELEMETRY_MARKERS)
-        and not is_allowlisted(domain, allowlist)
     }
+    discovered.update(
+        domain
+        for relative_path in DISCOVERY_FEEDS
+        for domain in load_domains(workdir / relative_path)
+        if _has_label(domain, DISCOVERY_MARKERS) or _discovery_score(domain) >= 2
+    )
+    discovered -= existing
+    discovered = {domain for domain in discovered if not is_allowlisted(domain, allowlist)}
     output = workdir / ".runtime_cache" / "ai_adblock_candidates.txt"
     output.parent.mkdir(parents=True, exist_ok=True)
     temporary = output.with_suffix(output.suffix + ".tmp")
@@ -165,8 +200,8 @@ def _classify_batch(base_url: str, model: str, api_key: str, domains: list[str],
         raise ValueError("AI_ADBLOCK_BASE_URL wajib HTTPS")
     prompt = (
         "Classify each domain for network-level ad blocking. Return only strict JSON with schema "
-        '{"results":[{"domain":"exact input","label":"allow|block|review","category":"advertising|tracking|service|unknown","confidence":0.0,"reason":"short reason"}]}. '
-        "Use block only for dedicated advertising or tracking hosts with clear evidence. Use allow for normal service/content/auth/payment/CDN domains. "
+        '{"results":[{"domain":"exact input","label":"allow|block|review","category":"advertising|tracking|gambling|predatory_lending|scam|service|unknown","confidence":0.0,"reason":"short reason"}]}. '
+        "Use block only for dedicated advertising, tracking, gambling, predatory lending, or scam hosts with clear evidence from multiple hostname signals. Distinguish casino/togel/judol/pinjol promotion from legitimate banking, loan, payment, news, and review sites. Use allow for normal service/content/auth/payment/CDN domains. "
         "Use review whenever uncertain. Preserve every input domain exactly once. Domains: "
         + json.dumps(domains, separators=(",", ":"))
     )

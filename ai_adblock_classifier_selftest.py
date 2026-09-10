@@ -7,7 +7,7 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-from ai_adblock_classifier import classify_candidates, is_allowlisted, parse_response
+from ai_adblock_classifier import _discovery_score, classify_candidates, is_allowlisted, parse_response
 
 
 def check(condition: bool, message: str) -> None:
@@ -35,6 +35,8 @@ def main() -> int:
         raise AssertionError("incomplete response accepted")
     check(True, "incomplete response rejected")
     check(is_allowlisted("telemetry.linkedin.com", {"linkedin.com"}), "parent allowlist protects subdomain")
+    check(_discovery_score("promo.juditogel88.example") >= 2, "compound gambling marker discovered")
+    check(_discovery_score("pinjaman-online.example") >= 3, "compound lending marker discovered")
 
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)

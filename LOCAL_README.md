@@ -61,6 +61,7 @@ Paket ini dikunci ke target di atas. Generator tidak lagi menganggap Mihomo terb
 - `openclash_target.py`: validator target.
 - `security_policy.py`: satu sumber katalog provider security dan urutan rule.
 - `feed_guard.py`: validasi feed, Last-Known-Good, dan snapshot YAML Android.
+- `ai_adblock_classifier.py`: penemuan kandidat iklan/judol/pinjol/scam dan klasifikasi AI konservatif.
 - `security_hardening_audit.py`: audit regresi hardening v3.8.
 - `validate_openclash_target.py`: validator CLI.
 - `apply_existing.py`: perbaiki YAML yang sudah ada dengan rollback otomatis jika validasi gagal.

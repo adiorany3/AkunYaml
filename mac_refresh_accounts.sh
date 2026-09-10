@@ -102,7 +102,10 @@ STALE_FALLBACK=0
 GENERATOR_LOG="$(mktemp -t akunyaml-generator.XXXXXX)"
 trap 'rm -f "$GENERATOR_LOG"' EXIT
 
-echo "[RUN] Mencari, mengetes, dan memilih akun baru..."
+echo "[AI] Memeriksa classifier iklan/judol/pinjol sebelum refresh..."
+"$PY" ai_adblock_classifier_selftest.py
+
+echo "[RUN] Mencari akun, memperbarui security feeds, menjalankan AI classifier, generate, dan memilih akun baru..."
 set +e
 "${ARGS[@]}" >"$GENERATOR_LOG" 2>&1
 GENERATOR_EXIT=$?

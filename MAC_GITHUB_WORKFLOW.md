@@ -32,8 +32,12 @@ Alurnya:
 4. Membangun Mihomo exact `e183c58` untuk Apple Silicon atau Intel Mac jika belum tersedia.
 5. Mengambil sumber akun dari `DEFAULT_LINKS` dan `subscription_links.txt`.
 6. Menguji kandidat.
-7. Generate empat YAML OpenClash.
-8. Memvalidasi hasil dengan exact core.
+7. Memperbarui security feeds dengan Last-Known-Good guard.
+8. Menemukan kandidat iklan/judol/pinjol/scam baru, mengklasifikasikan lewat AI, lalu memasukkan host confidence tinggi ke output.
+9. Generate empat YAML OpenClash.
+10. Memvalidasi hasil dengan exact core.
+
+AI berjalan otomatis dari `local_config.json` saat `mac_refresh_accounts.sh` dipanggil. Jika API AI gagal, pipeline fail-open: feed dan output known-good tetap dipakai.
 
 Output utama:
 
