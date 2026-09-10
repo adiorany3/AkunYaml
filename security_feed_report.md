@@ -4,13 +4,13 @@ A refresh is promoted only after format/count sanity checks. Suspicious updates 
 
 | Provider | Status | Entries | SHA-256 |
 |---|---:|---:|---|
-| `ads_indonesia` | cached | 154 | `01973614a1bcc66f` |
-| `gambling-mini` | cached | 58340 | `b024143a60a5c5d1` |
-| `hagezi-pro-plus-mini` | cached | 60351 | `6478a6ef0c2c7db0` |
-| `popup-ads` | cached | 49768 | `3313d3c70a7e0196` |
-| `threat-cryptominers` | cached | 297 | `0b2089ce6ce3a2bf` |
-| `threat-fake-scam` | cached | 16766 | `6980ac588f1d7a9d` |
-| `threat-malware` | cached | 493 | `ab6d5113215f87e4` |
-| `threat-phishing` | cached | 37999 | `c3e1b8ee09f811ef` |
-| `threat-tif-ip` | cached | 68554 | `db51f2e7df416982` |
-| `threat-tif-mini` | cached | 179904 | `c1e8fe0898c36098` |
+| `ads_indonesia` | updated | 154 | `01973614a1bcc66f` |
+| `gambling-mini` | updated | 62613 | `176a0ef67abe8a03` |
+| `hagezi-pro-plus-mini` | updated | 60126 | `49f1d36ea3785000` |
+| `popup-ads` | updated | 49524 | `d4386b20b3098c1f` |
+| `threat-cryptominers` | updated | 297 | `0b2089ce6ce3a2bf` |
+| `threat-fake-scam` | updated | 16738 | `30420de1566c2c24` |
+| `threat-malware` | updated | 486 | `551b685e8dc93f61` |
+| `threat-phishing` | updated | 38433 | `eb22a8abb0e873f4` |
+| `threat-tif-ip` | updated | 69608 | `07f1705d2e0a7d61` |
+| `threat-tif-mini` | updated | 177379 | `3c690eb4e82339c2` |
