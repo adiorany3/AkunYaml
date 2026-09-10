@@ -1417,11 +1417,7 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
             if not isinstance(refs, list):
                 refs = group["proxies"] = []
             existing = [name for name in refs if name not in required_auto_names and name not in manual_names]
-            group["proxies"] = (
-                [*manual_names, *required_auto_names, *existing]
-                if group.get("name") == "FALLBACK"
-                else [*required_auto_names, *existing, *manual_names]
-            )
+            group["proxies"] = [*manual_names, *required_auto_names, *existing]
 
     manual_group = {
         "name": "MANUAL",
@@ -1437,7 +1433,7 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
     groups.append({
         "name": "REDDIT",
         "type": "fallback" if not android else "select",
-        "proxies": [*required_auto_names, *manual_names, "MANUAL"] if not android else ["MANUAL"],
+        "proxies": [*manual_names, *required_auto_names, "MANUAL"] if not android else ["MANUAL"],
         **({
             "url": "https://www.gstatic.com/generate_204",
             "interval": 30,

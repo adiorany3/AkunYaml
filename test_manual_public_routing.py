@@ -38,6 +38,7 @@ def check():
             "proxy-groups": [
                 {"name": "GLOBAL", "type": "fallback", "proxies": ["AUTO", "FALLBACK"]},
                 {"name": "AUTO", "type": "fallback", "proxies": [automatic.name]},
+                {"name": "DEEP", "type": "fallback", "proxies": ["AUTO", automatic_two.name]},
                 {"name": "FALLBACK", "type": "fallback", "proxies": [automatic.name]},
             ],
         }),
@@ -48,7 +49,8 @@ def check():
     assert router_groups["GLOBAL"]["proxies"][0] == "FALLBACK"
     assert router_groups["FALLBACK"]["proxies"][:3] == [manual.name, automatic.name, automatic_two.name]
     assert router_groups["MANUAL"]["proxies"][:3] == [manual.name, automatic.name, automatic_two.name]
-    assert router_groups["AUTO"]["proxies"][:2] == [automatic.name, automatic_two.name]
+    assert router_groups["AUTO"]["proxies"][:3] == [manual.name, automatic.name, automatic_two.name]
+    assert router_groups["DEEP"]["proxies"][:3] == [manual.name, automatic.name, automatic_two.name]
     assert router_proxies[manual.name]["type"] == "vless"
 
     with patch.object(generator, "_read_text_file", side_effect=lambda path: "" if "allowlist" in str(path) else "malware.example\n"):

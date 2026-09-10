@@ -123,58 +123,24 @@ dns:
   use-hosts: true
   use-system-hosts: false
 proxies:
-- name: AKUN-001-CLOUDFLARE-VLESS-WS-98MS
+- name: AKUN-001-CLOUDFLARE-VLESS-WS-108MS
   type: vless
   server: 104.17.3.81
   port: 443
   uuid: 77777777-8a3e-6666-b6d1-a9c5f0e8b3a2
   udp: true
   tls: true
-  servername: fx3h2kf8xn.fx6hsv0.ccwu.cc
+  servername: faxf32gkfzoxqv.fx6hsv0.ccwu.cc
   network: ws
   client-fingerprint: unsafe
   skip-cert-verify: true
   ws-opts:
     path: /?ed=2560
     headers:
-      Host: fx3h2kf8xn.fx6hsv0.ccwu.cc
+      Host: faxf32gkfzoxqv.fx6hsv0.ccwu.cc
   alpn:
   - http/1.1
-- name: AKUN-002-CLOUDFLARE-VLESS-WS-97MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 77777777-8a3e-6666-b6d1-a9c5f0e8b3a2
-  udp: true
-  tls: true
-  servername: fx3h2kf8xn.fx6hsv0.ccwu.cc
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /
-    headers:
-      Host: fx3h2kf8xn.fx6hsv0.ccwu.cc
-  alpn:
-  - http/1.1
-- name: AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: 8666ab45-8e3d-4988-841b-2561d91e32d5
-  udp: true
-  tls: true
-  servername: mianfei-73q.pages.dev
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /proxyip=154.3.33.43
-    headers:
-      Host: mianfei-73q.pages.dev
-  alpn:
-  - http/1.1
-- name: AKUN-004-CLOUDFLARE-VLESS-WS-93MS
+- name: AKUN-002-CLOUDFLARE-VLESS-WS-98MS
   type: vless
   server: 104.17.3.81
   port: 443
@@ -191,7 +157,7 @@ proxies:
       Host: faxf32gkfzoxqv.fx6hsv0.ccwu.cc
   alpn:
   - http/1.1
-- name: AKUN-005-CLOUDFLARE-VLESS-WS-123MS
+- name: AKUN-003-CLOUDFLARE-VLESS-WS-122MS
   type: vless
   server: 104.17.3.81
   port: 443
@@ -200,7 +166,7 @@ proxies:
   tls: true
   servername: cfvvv-ev1.pages.dev
   network: ws
-  client-fingerprint: unsafe
+  client-fingerprint: chrome
   skip-cert-verify: true
   ws-opts:
     path: /
@@ -208,40 +174,57 @@ proxies:
       Host: cfvvv-ev1.pages.dev
   alpn:
   - http/1.1
-- name: AKUN-006-CLOUDFLARE-VLESS-WS-130MS
+- name: AKUN-004-CLOUDFLARE-VLESS-WS-112MS
   type: vless
   server: 104.17.3.81
   port: 443
-  uuid: 42c62a5a-cd31-4551-80ef-908732370287
+  uuid: 8666ab45-8e3d-4988-841b-2561d91e32d5
   udp: true
   tls: true
-  servername: fq.jp188.dpdns.org
+  servername: mianfei-73q.pages.dev
   network: ws
   client-fingerprint: chrome
   skip-cert-verify: true
   ws-opts:
-    path: /proxyip=154.17.22.207,69.63.210.157,134.195.211.13,172.236.245.153,209.146.115.209,64.186.224.194,149.28.94.52,107.151.188.57
+    path: /proxyip=154.3.33.43
     headers:
-      Host: fq.jp188.dpdns.org
+      Host: mianfei-73q.pages.dev
   alpn:
   - http/1.1
-- name: AKUN-007-CLOUDFLARE-VLESS-WS-126MS
+- name: AKUN-005-CLOUDFLARE-VLESS-WS-839MS
   type: vless
   server: 104.17.3.81
   port: 443
-  uuid: 42c62a5a-cd31-4551-80ef-908732370287
+  uuid: acc591a0-04ae-4676-996a-e6fe01b26ed2
   udp: true
   tls: true
-  servername: fq.jp188.dpdns.org
+  servername: aljha.typeshoes.online
   network: ws
   client-fingerprint: chrome
   skip-cert-verify: true
-  ws-opts:
-    path: /
-    headers:
-      Host: fq.jp188.dpdns.org
   alpn:
   - http/1.1
+  ws-opts:
+    path: /kdi
+    headers:
+      Host: aljha.typeshoes.online
+- name: AKUN-006-CLOUDFLARE-VLESS-WS-1174MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: 8be461cb-a0df-47cf-bc0d-4d9e6a22fa74
+  udp: true
+  tls: true
+  servername: ccs2g.pai50288.uk
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  alpn:
+  - http/1.1
+  ws-opts:
+    path: /pai50288
+    headers:
+      Host: ccs2g.pai50288.uk
 - name: MANUAL-VMess-WS-TLS-443-ikada543
   type: vmess
   server: 104.17.3.81
@@ -343,17 +326,16 @@ proxy-groups:
 - name: AI-OPENAI
   type: fallback
   proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-98MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-97MS
-  - AKUN-004-CLOUDFLARE-VLESS-WS-93MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-123MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-126MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-130MS
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
   - MANUAL-VLESS-WS-TLS-443-apt50atpprem
+  - AKUN-001-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-98MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-112MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-839MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-1174MS
   url: https://chatgpt.com/favicon.ico
   interval: 300
   lazy: true
@@ -363,17 +345,16 @@ proxy-groups:
 - name: AI-CLAUDE
   type: fallback
   proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-98MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-97MS
-  - AKUN-004-CLOUDFLARE-VLESS-WS-93MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-123MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-126MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-130MS
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
   - MANUAL-VLESS-WS-TLS-443-apt50atpprem
+  - AKUN-001-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-98MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-112MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-839MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-1174MS
   url: https://claude.ai/favicon.ico
   interval: 300
   lazy: true
@@ -383,17 +364,16 @@ proxy-groups:
 - name: AI-GEMINI
   type: fallback
   proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-98MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-97MS
-  - AKUN-004-CLOUDFLARE-VLESS-WS-93MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-123MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-126MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-130MS
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
   - MANUAL-VLESS-WS-TLS-443-apt50atpprem
+  - AKUN-001-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-98MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-112MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-839MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-1174MS
   url: https://gemini.google.com/favicon.ico
   interval: 300
   lazy: true
@@ -403,17 +383,16 @@ proxy-groups:
 - name: AI-OTHER
   type: fallback
   proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-98MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-97MS
-  - AKUN-004-CLOUDFLARE-VLESS-WS-93MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-123MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-126MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-130MS
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
   - MANUAL-VLESS-WS-TLS-443-apt50atpprem
+  - AKUN-001-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-98MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-112MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-839MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-1174MS
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -423,17 +402,14 @@ proxy-groups:
 - name: AI-STABLE
   type: fallback
   proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-98MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-97MS
-  - AKUN-004-CLOUDFLARE-VLESS-WS-93MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-123MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-126MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-130MS
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
   - MANUAL-VLESS-WS-TLS-443-apt50atpprem
+  - AKUN-001-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-98MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-112MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -443,17 +419,14 @@ proxy-groups:
 - name: AI-BACKUP
   type: fallback
   proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-98MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-97MS
-  - AKUN-004-CLOUDFLARE-VLESS-WS-93MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-123MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-126MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-130MS
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
   - MANUAL-VLESS-WS-TLS-443-apt50atpprem
+  - AKUN-001-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-98MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-839MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-1174MS
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -463,17 +436,14 @@ proxy-groups:
 - name: AI-MANUAL
   type: fallback
   proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-98MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-97MS
-  - AKUN-004-CLOUDFLARE-VLESS-WS-93MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-123MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-126MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-130MS
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
   - MANUAL-VLESS-WS-TLS-443-apt50atpprem
+  - AKUN-001-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-98MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-839MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-1174MS
   url: https://www.gstatic.com/generate_204
   interval: 600
   lazy: true
@@ -483,16 +453,16 @@ proxy-groups:
 - name: AI
   type: fallback
   proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-98MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-97MS
-  - AI-OPENAI
-  - AI-CLAUDE
-  - AI-GEMINI
-  - AI-OTHER
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
   - MANUAL-VLESS-WS-TLS-443-apt50atpprem
+  - AKUN-001-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-98MS
+  - AI-OPENAI
+  - AI-CLAUDE
+  - AI-GEMINI
+  - AI-OTHER
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -560,12 +530,12 @@ proxy-groups:
 - name: AUTO-FAST
   type: url-test
   proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-98MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-97MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-126MS
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
+  - AKUN-001-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-98MS
   url: https://www.gstatic.com/generate_204
   interval: 90
   tolerance: 150
@@ -580,13 +550,12 @@ proxy-groups:
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
   - MANUAL-VLESS-WS-TLS-443-apt50atpprem
-  - AKUN-001-CLOUDFLARE-VLESS-WS-98MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-97MS
-  - AKUN-004-CLOUDFLARE-VLESS-WS-93MS
-  - AKUN-003-CLOUDFLARE-VLESS-WS-105MS
-  - AKUN-005-CLOUDFLARE-VLESS-WS-123MS
-  - AKUN-007-CLOUDFLARE-VLESS-WS-126MS
-  - AKUN-006-CLOUDFLARE-VLESS-WS-130MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-98MS
+  - AKUN-004-CLOUDFLARE-VLESS-WS-112MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-122MS
+  - AKUN-005-CLOUDFLARE-VLESS-WS-839MS
+  - AKUN-006-CLOUDFLARE-VLESS-WS-1174MS
   url: https://www.gstatic.com/generate_204
   interval: 90
   lazy: true
@@ -596,12 +565,12 @@ proxy-groups:
 - name: REDDIT
   type: fallback
   proxies:
-  - AKUN-001-CLOUDFLARE-VLESS-WS-98MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-97MS
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
   - MANUAL-VLESS-WS-TLS-443-apt50atpprem
+  - AKUN-001-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-98MS
   - MANUAL
   url: https://www.gstatic.com/generate_204
   interval: 30
@@ -616,8 +585,8 @@ proxy-groups:
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
   - MANUAL-VLESS-WS-TLS-443-apt50atpprem
-  - AKUN-001-CLOUDFLARE-VLESS-WS-98MS
-  - AKUN-002-CLOUDFLARE-VLESS-WS-97MS
+  - AKUN-001-CLOUDFLARE-VLESS-WS-108MS
+  - AKUN-002-CLOUDFLARE-VLESS-WS-98MS
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -1064,7 +1033,9 @@ rules:
 - DOMAIN,48x.casino,REJECT
 - DOMAIN,4xcasino.ru,REJECT
 - DOMAIN,5-best-online-casinos.com,REJECT
+- DOMAIN,783.casino,REJECT
 - DOMAIN,adnetwork.bet,REJECT
+- DOMAIN,adpool.bet,REJECT
 - DOMAIN,ads.betmgm.bet.br,REJECT
 - DOMAIN,ads.brazino777.bet.br,REJECT
 - DOMAIN,ads.energycasinopartners.com,REJECT
@@ -1075,21 +1046,16 @@ rules:
 - DOMAIN,ads.twitch.tv,REJECT
 - DOMAIN,advertising.netflix.com,REJECT
 - DOMAIN,advertising.roku.com,REJECT
-- DOMAIN,aff.bateu.bet.br,REJECT
-- DOMAIN,aff.esportesdasorte.bet.br,REJECT
 - DOMAIN,aff.hiper.bet.br,REJECT
 - DOMAIN,aff.oleybet.bet.br,REJECT
 - DOMAIN,afiliados.esportiva.bet,REJECT
 - DOMAIN,alexander-casino-en-ligne.fr,REJECT
+- DOMAIN,alexanderscasino.fr,REJECT
 - DOMAIN,alfcasino1.com,REJECT
 - DOMAIN,allyspin-casino.fr,REJECT
 - DOMAIN,allyspincasino-online.de,REJECT
 - DOMAIN,amon-casino-fr.fr,REJECT
 - DOMAIN,anaktogel.com,REJECT
-- DOMAIN,aquawinscasino.fr,REJECT
-- DOMAIN,awcasino.com,REJECT
-- DOMAIN,banner.syairtogelx.com,REJECT
-- DOMAIN,bassbetcasino-online.de,REJECT
 - DOMAIN,beef-casino-aktionscode.de,REJECT
 - DOMAIN,beef-online-casino-de.de,REJECT
 - DOMAIN,bet-on-redcasino.fr,REJECT
@@ -1099,10 +1065,9 @@ rules:
 - DOMAIN,betssoncasino.fr,REJECT
 - DOMAIN,bettogel.shop,REJECT
 - DOMAIN,bokacasino.fr,REJECT
-- DOMAIN,brutal-casinos.fr,REJECT
 - DOMAIN,candy-casino-online.de,REJECT
 - DOMAIN,captaincookscasino-online.de,REJECT
-- DOMAIN,casino-ad-mediation.me2zengame.com,REJECT
+- DOMAIN,cashedcasinofrance.fr,REJECT
 - DOMAIN,casino-amonbet.fr,REJECT
 - DOMAIN,casino-blitz.fr,REJECT
 - DOMAIN,casino-dragonia-online.de,REJECT
@@ -1112,11 +1077,6 @@ rules:
 - DOMAIN,casino-infinity-online-de.xyz,REJECT
 - DOMAIN,casino-instant-online.de,REJECT
 - DOMAIN,casino-kinbet-online.de,REJECT
-- DOMAIN,casino-posido.fr,REJECT
-- DOMAIN,casino-sugar.fr,REJECT
-- DOMAIN,casino-trino-online.de,REJECT
-- DOMAIN,casino-winner.fr,REJECT
-- DOMAIN,casino-zilla.com,REJECT
 - DOMAIN,casino.betsson.com,REJECT
 - DOMAIN,casino1win.fr,REJECT
 - DOMAIN,casinobello1.fr,REJECT
@@ -1124,10 +1084,6 @@ rules:
 - DOMAIN,casinoboomsbet.fr,REJECT
 - DOMAIN,casinocasombie.fr,REJECT
 - DOMAIN,casinocrazytime.fr,REJECT
-- DOMAIN,casinojoy.fr,REJECT
-- DOMAIN,casinoliraspin.fr,REJECT
-- DOMAIN,casinolucki.fr,REJECT
-- DOMAIN,casinolucky8.fr,REJECT
 - DOMAIN,casinoly-france.fr,REJECT
 - DOMAIN,casinolyenligne.fr,REJECT
 - DOMAIN,casinomad.fr,REJECT
@@ -1135,19 +1091,14 @@ rules:
 - DOMAIN,casinomonsterwin.fr,REJECT
 - DOMAIN,casinomostbet.fr,REJECT
 - DOMAIN,casinonevadawin.fr,REJECT
-- DOMAIN,casinoninlay.fr,REJECT
 - DOMAIN,casinonixbet-fr.fr,REJECT
-- DOMAIN,casinorex.fr,REJECT
-- DOMAIN,casinorocket.org,REJECT
-- DOMAIN,casinoscoolzino.fr,REJECT
-- DOMAIN,casinosdragonia.fr,REJECT
-- DOMAIN,casinosevolve.fr,REJECT
 - DOMAIN,casinovacasinos.fr,REJECT
 - DOMAIN,casinovascasino.fr,REJECT
 - DOMAIN,casinovegashero.fr,REJECT
 - DOMAIN,cawinocasino.fr,REJECT
 - DOMAIN,cazeus-casino-fr.fr,REJECT
 - DOMAIN,celsius-casino.fr,REJECT
+- DOMAIN,circus-casino1.fr,REJECT
 - DOMAIN,circuscasinoenligne.fr,REJECT
 - DOMAIN,congtogel168.site,REJECT
 - DOMAIN,coolzinoscasino.fr,REJECT
@@ -1155,6 +1106,7 @@ rules:
 - DOMAIN,corgibetscasino.fr,REJECT
 - DOMAIN,crash-casinos.co.uk,REJECT
 - DOMAIN,crash-casinouk.co.uk,REJECT
+- DOMAIN,crazytower-casinoo.fr,REJECT
 - DOMAIN,curacaoonlinecasino.de,REJECT
 - DOMAIN,dachbet-casino-online.de,REJECT
 - DOMAIN,diproton-ads-prod-eu-central-1.hulu.com.akadns.net,REJECT
@@ -1166,11 +1118,9 @@ rules:
 - DOMAIN,drgn43.casino,REJECT
 - DOMAIN,dublinbet-casinos.fr,REJECT
 - DOMAIN,duospin-casino.fr,REJECT
-- DOMAIN,dzerkalo.casino,REJECT
 - DOMAIN,elitespin-casino.fr,REJECT
 - DOMAIN,euslotcasino.fr,REJECT
 - DOMAIN,evolvecasino.fr,REJECT
-- DOMAIN,f168com.bet,REJECT
 - DOMAIN,familytogel.fun,REJECT
 - DOMAIN,fanatics.bet,REJECT
 - DOMAIN,firixslotcasino.fr,REJECT
@@ -1179,6 +1129,7 @@ rules:
 - DOMAIN,fr-roobetcasino.fr,REJECT
 - DOMAIN,freespins.bet,REJECT
 - DOMAIN,fridayrollcasino-online.de,REJECT
+- DOMAIN,gacor314jepe.site,REJECT
 - DOMAIN,gamblingpp.ru,REJECT
 - DOMAIN,gamblingrootninety.com,REJECT
 - DOMAIN,gamix-casino.fr,REJECT
@@ -1195,8 +1146,6 @@ rules:
 - DOMAIN,instant-casinoinstant.fr,REJECT
 - DOMAIN,instantcasino-official.fr,REJECT
 - DOMAIN,instants-casino.fr,REJECT
-- DOMAIN,instasinocasinos.fr,REJECT
-- DOMAIN,instasinoscasino.fr,REJECT
 - DOMAIN,iwildcasinoonline.com,REJECT
 - DOMAIN,jokery-casino-online.de,REJECT
 - DOMAIN,jokerycasino-online.de,REJECT
@@ -1211,6 +1160,7 @@ rules:
 - DOMAIN,korucasino.fr,REJECT
 - DOMAIN,lazacasino.com,REJECT
 - DOMAIN,legzo-casino.net,REJECT
+- DOMAIN,leon-bet.xyz,REJECT
 - DOMAIN,locowin-bet.fr,REJECT
 - DOMAIN,locowincasinopromo.fr,REJECT
 - DOMAIN,lp.titancasino.com,REJECT
@@ -1230,14 +1180,13 @@ rules:
 - DOMAIN,mad-casinofr.fr,REJECT
 - DOMAIN,madcasino-online.fr,REJECT
 - DOMAIN,madcasinofr.fr,REJECT
+- DOMAIN,madcasinoo.fr,REJECT
 - DOMAIN,magicalspins-casino.fr,REJECT
 - DOMAIN,malinaacasinos.fr,REJECT
 - DOMAIN,marvelcasino-online.de,REJECT
 - DOMAIN,megawin-casinos.fr,REJECT
 - DOMAIN,millionzcasino1.fr,REJECT
-- DOMAIN,motorcasino.com,REJECT
 - DOMAIN,mrcash-casino.fr,REJECT
-- DOMAIN,mycasinoaccounts.com,REJECT
 - DOMAIN,mzansi-casino.fr,REJECT
 - DOMAIN,neospincasino.fr,REJECT
 - DOMAIN,neue-online-casinos-2026.de,REJECT
@@ -1249,7 +1198,9 @@ rules:
 - DOMAIN,olympes-casino.fr,REJECT
 - DOMAIN,online-casino-ohne-lizenz.de,REJECT
 - DOMAIN,onlinebonuscasino-de.de,REJECT
+- DOMAIN,onlinecasinoparis.com,REJECT
 - DOMAIN,onlinecasinos77laos.com,REJECT
+- DOMAIN,onlinecasinositeindia.com,REJECT
 - DOMAIN,onlinecasinoslasvegas.com,REJECT
 - DOMAIN,onlinecasinosohneverifizierung.de,REJECT
 - DOMAIN,orozino-casino.fr,REJECT
@@ -1276,6 +1227,8 @@ rules:
 - DOMAIN,scoredcasino-fr.fr,REJECT
 - DOMAIN,serve.prestigecasino.com,REJECT
 - DOMAIN,serve.williamhillcasino.com,REJECT
+- DOMAIN,sgtm.betmgm.bet.br,REJECT
+- DOMAIN,sgtm.betpontobet.bet.br,REJECT
 - DOMAIN,shanscasino1.ru,REJECT
 - DOMAIN,simsino-casino-fr.fr,REJECT
 - DOMAIN,simsinocasinofrance.fr,REJECT
@@ -1283,8 +1236,6 @@ rules:
 - DOMAIN,slotgacoru.com,REJECT
 - DOMAIN,slotlair-casino.fr,REJECT
 - DOMAIN,slotn-bet.fr,REJECT
-- DOMAIN,slotrushcasino.fr,REJECT
-- DOMAIN,slotshoppercasino.de,REJECT
 - DOMAIN,spinline-casino-online.de,REJECT
 - DOMAIN,spinsy-bet.fr,REJECT
 - DOMAIN,spinsycasinoenligne.fr,REJECT
@@ -1303,7 +1254,6 @@ rules:
 - DOMAIN,top-neue-online-casinos.de,REJECT
 - DOMAIN,toptrustedcasino.com,REJECT
 - DOMAIN,topwebcasino.com,REJECT
-- DOMAIN,tortuga-casinotortuga.fr,REJECT
 - DOMAIN,traditioncasino-online.de,REJECT
 - DOMAIN,ufabaccarat.bet,REJECT
 - DOMAIN,unibetcasino777.net,REJECT
@@ -1314,18 +1264,17 @@ rules:
 - DOMAIN,vinylcasinoenligne.fr,REJECT
 - DOMAIN,volna.casino,REJECT
 - DOMAIN,vulkanvegascasino.at,REJECT
-- DOMAIN,webcasinozone.com,REJECT
 - DOMAIN,wg87vip.bet,REJECT
 - DOMAIN,win-vegas-plus-casino.fr,REJECT
 - DOMAIN,win2daycasino.at,REJECT
 - DOMAIN,winmachance-casino.fr,REJECT
 - DOMAIN,winnerz-casino-online.de,REJECT
 - DOMAIN,winspincasino.fr,REJECT
-- DOMAIN,winwin.bet,REJECT
 - DOMAIN,winztercasinos.fr,REJECT
 - DOMAIN,www.entercasino.com,REJECT
 - DOMAIN,www.titancasino.com,REJECT
 - DOMAIN,x5bet.casino,REJECT
+- DOMAIN,zoome-casino.fr,REJECT
 - RULE-SET,threat-malware,REJECT
 - RULE-SET,threat-phishing,REJECT
 - RULE-SET,threat-cryptominers,REJECT
