@@ -2907,9 +2907,12 @@ def main() -> int:
 
     log("Menjalankan generate_yaml.py")
     result = subprocess.run([sys.executable, "generate_yaml.py"], cwd=workdir, env=env, check=False)
-    if result.returncode != 0:
+    adblock_only = result.returncode == 3
+    if result.returncode != 0 and not adblock_only:
         print(f"[ERROR] Pipeline generator gagal, exit={result.returncode}")
         return result.returncode
+    if adblock_only:
+        log("Kandidat node tidak memenuhi minimum; node lama dipertahankan, lanjut update adblock")
 
     output_files = (
         env.get("OUTPUT_YAML", OUTPUT_YAMLS[0]),
