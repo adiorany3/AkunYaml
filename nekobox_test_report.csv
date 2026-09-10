@@ -1,11 +1,11 @@
 name,type,network,original_server,bug_sni,mihomo_status,url_test_ms,nekobox_test_ms,nekobox_status,nekobox_ready
-AKUN-003-CLOUDFLARE-VLESS-WS-125MS,vless,ws,172.64.149.65,powered-by-surena.configfarsi695fcfe8a2e58.workers.dev,HTTP 204,340,599,HTTP 204,yes
-AKUN-005-CLOUDFLARE-VLESS-WS-129MS,vless,ws,chatgpt.com,powered-by-surena.user68f797c2f3e1b.workers.dev,HTTP 204,359,1453,HTTP 204,yes
-AKUN-001-CLOUDFLARE-VLESS-WS-125MS,vless,ws,188.114.97.6,xwrivr.pages.dev,HTTP 204,364,445,HTTP 204,yes
-AKUN-022-CLOUDFLARE-VLESS-WS-131MS,vless,ws,172.67.148.180,suMMer-fieLD-3c5b.fSdfSDDf.WoRKErs.dEv,HTTP 204,371,304,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-015-CLOUDFLARE-VLESS-WS-131MS,vless,ws,singapore.com,misaka.cndyw.ggff.net,HTTP 204,387,433,HTTP 204,yes
-AKUN-026-CLOUDFLARE-VLESS-WS-163MS,vless,ws,cloudinary.com,wallweb-9gw.pages.dev,HTTP 204,388,437,HTTP 204,yes
-AKUN-021-090227-VLESS-WS-144MS,vless,ws,cf.090227.xyz,vls.baiyi.cloudns.org,HTTP 204,389,446,HTTP 204,yes
-AKUN-029-CLOUDFLARE-VLESS-WS-136MS,vless,ws,172.67.217.240,web-socket.tgdaosheng.ggff.net,HTTP 204,389,6191,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
-AKUN-006-NOTION-WEB-VLESS-WS-131MS,vless,ws,208.103.161.5,dry-butterfly-8eb9.tmpgnacio83.workers.dev,HTTP 204,390,6191,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
-AKUN-028-BIGCOMMERCE-VLESS-WS-143MS,vless,ws,63.141.128.22,MiSty-tooth-78cA.FoboGAH414-e7B.WoRKERs.DEv,HTTP 204,391,439,HTTP 204,yes
+AKUN-012-CLOUDFLARE-VLESS-WS-110MS,vless,ws,188.114.97.6,fx3l5i2wdfxln0.fx6hsv0.ccwu.cc,HTTP 204,330,558,HTTP 204,yes
+AKUN-002-NET-83-147-12-0-22-VLESS-WS-112MS,vless,ws,83.147.12.20,web-socket.tgdaosheng.ggff.net,HTTP 204,332,6173,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
+AKUN-013-CLOUDFLARE-VLESS-WS-121MS,vless,ws,188.114.97.3,0LG3u92i0exN577l3Mc637Ycba3.SfgsfgSfGFSGSf-4630.wOrkeRS.dEv,HTTP 204,341,425,HTTP 204,yes
+AKUN-016-CLOUDFLARE-VLESS-WS-164MS,vless,ws,fq.jp188.dpdns.org,fq.jp188.dpdns.org,HTTP 204,349,440,HTTP 204,yes
+AKUN-008-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-128MS,vless,ws,o.server2peekconfig.workers.dev,O.sErvER2pEekCOnfIg.wORKeRs.dEV,HTTP 204,350,274,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-006-CLOUDFLARE-VLESS-WS-127MS,vless,ws,104.21.33.59,web-socket.tgdaosheng.ggff.net,HTTP 204,351,6171,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
+AKUN-004-CLOUDFLARE-VLESS-WS-116MS,vless,ws,104.21.33.59,web-socket.tgdaosheng.ggff.net,HTTP 204,362,6168,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
+AKUN-014-DEV-VLESS-WS-138MS,vless,ws,fpoixf69hqt3e6d4urtb.mamadneizeh.workers.dev,FpoiXF69hQT3E6d4URTB.MamADNEIZeH.WorKers.DEV,HTTP 204,363,1412,HTTP 204,yes
+AKUN-003-CLOUDFLARE-VLESS-WS-110MS,vless,ws,188.114.97.6,dark-leaf-93a1.440-02e.workers.dev,HTTP 204,367,6170,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
+AKUN-015-UNKNOWN-VLESS-WS-123MS,vless,ws,162.159.152.205,vless2-8vx.pages.dev,HTTP 204,371,459,HTTP 204,yes

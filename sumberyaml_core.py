@@ -3084,6 +3084,12 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         "DOMAIN-SUFFIX,api.x.com,REDDIT",
         "DOMAIN-SUFFIX,t.co,REDDIT",
 
+        # VoIP resmi: jangan biarkan ad/tracker block memutus panggilan.
+        "DOMAIN-SUFFIX,whatsapp.com,SOCIAL-MEDIA",
+        "DOMAIN-SUFFIX,whatsapp.net,SOCIAL-MEDIA",
+        "DOMAIN-SUFFIX,wa.me,SOCIAL-MEDIA",
+        "DOMAIN-SUFFIX,whatsapp.org,SOCIAL-MEDIA",
+
         # Sosial media.
         "RULE-SET,telegram_domain,SOCIAL-MEDIA",
         "RULE-SET,tiktok_domain,SOCIAL-MEDIA",
