@@ -170,6 +170,8 @@ if [[ ! -x "$SINGBOX" ]]; then
   echo "[ERROR] sing-box binary tidak ditemukan. Set SINGBOX_PATH atau instal sing-box."
   exit 7
 fi
+SINGBOX_VERSION="$($PY -c 'from openclash_target import assert_target_singbox; import sys; print(assert_target_singbox(sys.argv[1]))' "$SINGBOX")"
+echo "[SINGBOX] ${SINGBOX_VERSION%%$'\n'*}"
 "$SINGBOX" check -c singbox_android.json
 
 if [[ "$STALE_FALLBACK" -eq 1 ]]; then

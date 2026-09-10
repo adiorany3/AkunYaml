@@ -5,6 +5,7 @@ Target paket ini:
 - OpenClash: `v0.47.156`
 - Mihomo Meta: `alpha-ge183c58`
 - Mihomo revision: `e183c58`
+- sing-box: `1.14.0`
 - OpenWrt core path: `/etc/openclash/core/clash_meta`
 
 Paket ini dikunci ke target di atas. Generator tidak lagi menganggap Mihomo terbaru sebagai validator yang setara.

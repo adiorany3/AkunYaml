@@ -27,6 +27,7 @@ from openclash_target import (
     MIHOMO_TARGET_LABEL,
     atomic_write_text,
     assert_target_mihomo,
+    assert_target_singbox,
     validate_generated_text_with_core,
 )
 
@@ -2232,10 +2233,16 @@ def main() -> int:
     for node in manual_nodes:
         node.tier = "MANUAL"
     singbox_android_text = _build_singbox_android_json(singbox_manual_nodes)
-    _validate_singbox_json(
-        singbox_android_text,
-        os.getenv("SINGBOX_PATH", "./sing-box").strip() or "./sing-box",
-    )
+    singbox_path = os.getenv("SINGBOX_PATH", "./sing-box").strip() or "./sing-box"
+    try:
+        singbox_version = assert_target_singbox(
+            singbox_path,
+            strict=_env_bool("REQUIRE_EXACT_SINGBOX_CORE", True),
+        )
+    except RuntimeError as exc:
+        raise SystemExit(f"[ERROR] {exc}") from exc
+    print(f"[INFO] sing-box validator: {singbox_version.splitlines()[0]}")
+    _validate_singbox_json(singbox_android_text, singbox_path)
 
     # Fail closed before writing anything when combined output misses minimum.
     # Manual nodes count because they are mandatory input and remain outside auto quota.

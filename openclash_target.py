@@ -16,7 +16,36 @@ import yaml
 OPENCLASH_TARGET_VERSION = "v0.47.156"
 MIHOMO_TARGET_REVISION = "e183c58"
 MIHOMO_TARGET_LABEL = "alpha-ge183c58"
+SINGBOX_TARGET_VERSION = "1.14.0"
 DEFAULT_ROUTER_CORE = "/etc/openclash/core/clash_meta"
+
+
+def singbox_version_text(core_path: str | Path) -> str:
+    try:
+        proc = subprocess.run(
+            [str(core_path), "version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise RuntimeError(f"gagal menjalankan sing-box {core_path}: {exc}") from exc
+    output = (proc.stdout or "").strip()
+    if proc.returncode != 0:
+        raise RuntimeError(f"gagal membaca versi sing-box {core_path}: {output or f'exit={proc.returncode}'}")
+    return output
+
+
+def assert_target_singbox(core_path: str | Path, *, strict: bool = True) -> str:
+    core = Path(core_path).expanduser()
+    if not core.is_file():
+        raise RuntimeError(f"sing-box binary tidak ditemukan: {core}")
+    version = singbox_version_text(core)
+    if strict and not re.search(rf"sing-box version {re.escape(SINGBOX_TARGET_VERSION)}(?:\s|$)", version):
+        raise RuntimeError(f"sing-box target {SINGBOX_TARGET_VERSION} diperlukan, terdeteksi: {version}")
+    return version
 
 BUILTIN_POLICIES = {
     "DIRECT",
