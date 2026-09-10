@@ -3969,7 +3969,7 @@ def process_sources(
                     )
 
                 next_index = start_index + len(batch)
-                if bool(early_stop_good_nodes) and len(good_candidates) >= final_target:
+                if bool(early_stop_good_nodes) and len(good_candidates) >= max(final_target, reserve_pool_nodes):
                     # Mark the rest as intentionally untested so the report explains why
                     # generation finished quickly instead of testing all candidates.
                     remaining = testable[next_index:]
