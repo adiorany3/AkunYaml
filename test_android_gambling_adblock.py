@@ -23,9 +23,13 @@ for domain in (
     "data.mistat.intl.xiaomi.com",
 ):
     assert domain in reject_domains, domain
-assert "googlevideo.com" not in reject_domains
-assert "youtube.com" not in reject_domains
 for domain in (
+    "googlevideo.com",
+    "youtube.com",
+    "samsung.com",
+    "mi.com",
+    "oneplus.com",
+    "accounts.google.com",
     "livetech.shopee.co.id",
     "sg-live.slatic.net",
     "business-api.tiktok.com",
@@ -45,8 +49,8 @@ node = SimpleNamespace(
 generated = json.loads(_build_singbox_android_json([node]))
 rules = generated["route"]["rules"]
 proxy_outbound = next(outbound for outbound in generated["outbounds"] if outbound.get("tag") == "proxy")
-assert proxy_outbound["default"] == "self-check"
-assert proxy_outbound["outbounds"][0] == "self-check"
+assert proxy_outbound["default"] == "AUTO-FAST"
+assert proxy_outbound["outbounds"] == ["AUTO-FAST", "self-check"]
 payment_rule_index = next(
     index
     for index, rule in enumerate(rules)
