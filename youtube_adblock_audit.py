@@ -209,8 +209,11 @@ def main() -> int:
         elif "||ads.youtube.com^$domain=youtube.com" not in text:
             failed = True
             print("[ERROR] browser filter ads.youtube.com belum ada")
+        elif "||youtube.com/pagead/*$image,media,xhr,domain=youtube.com" not in text:
+            failed = True
+            print("[ERROR] filter media iklan image/video/audio YouTube belum ada")
         else:
-            print("[OK] Browser filter menjaga playback dan menambah ads.youtube.com")
+            print("[OK] Browser filter menjaga playback dan memblokir iklan image/video/audio")
     else:
         print("[WARN] youtube_browser_filters.txt tidak ditemukan")
 

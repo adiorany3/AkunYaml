@@ -690,8 +690,8 @@ YOUTUBE_BROWSER_FILTERS_ENHANCED = """\
 ||pagead.l.google.com^$domain=youtube.com
 ||ads.youtube.com^$domain=youtube.com
 ||youtube.com/api/stats/ads^$xhr,domain=youtube.com
-||youtube.com/pagead/*$xhr,domain=youtube.com
-||youtube.com/pagead/parallelad^$xhr,domain=youtube.com
+||youtube.com/pagead/*$image,media,xhr,domain=youtube.com
+||youtube.com/pagead/parallelad^$image,media,xhr,domain=youtube.com
 ||youtube.com/ptracking^$xhr,domain=youtube.com
 
 ! Conservative in-page pruning for browser blockers that support uBO scriptlets.

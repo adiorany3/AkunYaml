@@ -1,5 +1,19 @@
 ! Optional browser/content-blocker companion for streaming v3.2
-! Exact hosts only.
+! Exact ad hosts only. Shared CDN suffixes stay unblocked for normal playback.
 ||video-akpcw.spotifycdn.com^
 ||805ba.v.fwmrm.net^
 ||tvm-mtv-freewheel.akamaized.net^
+||adeventtracker.spotify.com^
+||ads.spotify.com^
+||ads-fa.spotify.com^
+||ads-ak.spotify.com^
+||adserver.spotify.com^
+||adstudio.spotify.com^
+||ad-analytics.spotify.com^
+||aet.spotify.com^
+||analytics.spotify.com^
+||bloodhound.spotify.com^
+||crashdump.spotify.com^
+||pixel.spotify.com^
+||pixel-static.spotify.com^
+||pixels.spotify.com^

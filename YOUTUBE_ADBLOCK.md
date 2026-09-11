@@ -94,9 +94,9 @@ Provider yang overlap seperti `hagezi-pro-mini`, `popup-ads`, `turtlecute-covera
 
 ## Browser filter
 
-`youtube_browser_filters.txt` menambahkan cosmetic filters untuk slot/promoted UI, request `api/stats/ads`, `pagead`, `ptracking`, exact `ads.youtube.com`, serta pruning konservatif `adPlacements`, `adSlots`, dan `playerAds`.
+`youtube_browser_filters.txt` menambahkan cosmetic filters untuk slot/promoted UI, request `api/stats/ads`, `ptracking`, exact `ads.youtube.com`, serta pruning konservatif `adPlacements`, `adSlots`, dan `playerAds`. Request `pagead` diblokir untuk tipe `image`, `media` (video/audio), dan `xhr`.
 
-File tersebut tidak memblokir `googlevideo.com` maupun `static.doubleclick.net`.
+File tersebut memblokir request iklan `image`, `media` (video/audio), dan `xhr` pada endpoint `pagead`; tidak memblokir `googlevideo.com` maupun `static.doubleclick.net`.
 
 DNS-level blocking tetap `off` secara default karena DNS tidak melihat path request dan tidak bisa membedakan iklan dari playback ketika keduanya berbagi host.
 

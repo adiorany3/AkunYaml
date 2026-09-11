@@ -4,10 +4,7 @@
 Menambah pemblokiran iklan streaming secara konservatif tanpa memblokir namespace CDN utama yang juga membawa audio/video normal.
 
 ## Default child-safe
-Exact host yang diblokir:
-- `video-akpcw.spotifycdn.com`
-- `805ba.v.fwmrm.net`
-- `tvm-mtv-freewheel.akamaized.net`
+Exact host media iklan yang diblokir mencakup `video-akpcw.spotifycdn.com`, `805ba.v.fwmrm.net`, dan `tvm-mtv-freewheel.akamaized.net`. Endpoint iklan/measurement Spotify spesifik juga diblokir, termasuk `ads.spotify.com`, `adserver.spotify.com`, `adeventtracker.spotify.com`, dan host pixel terkait.
 
 Router memakai `streaming-ad-safe` sebagai inline domain provider. Android memakai exact `DOMAIN,...,REJECT` agar kompatibel dengan core YAML lama. Tidak ada HTTP provider baru sehingga tidak ada fetch runtime tambahan.
 
