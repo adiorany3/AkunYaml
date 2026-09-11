@@ -10,8 +10,6 @@ Security:
 Privacy:
 - ads_indonesia_android.yaml
 
-Policy:
-- whitelist-common.yaml has higher priority than block rules.
 
 Maintenance:
 - Update interval recommended: 86400 seconds
