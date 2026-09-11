@@ -230,7 +230,8 @@ def refresh_security_feeds(workdir: Path, *, refresh: bool = True, log=print) ->
         workers = min(6, len(refresh_specs))
         with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
             future_map = {executor.submit(_fetch, spec.url): spec for spec in refresh_specs}
-            for future, spec in ((f, future_map[f]) for f in future_map):
+            for future in concurrent.futures.as_completed(future_map):
+                spec = future_map[future]
                 try:
                     fetched[spec.name] = future.result()
                 except Exception as exc:
