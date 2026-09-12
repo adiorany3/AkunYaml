@@ -4,7 +4,13 @@ from pathlib import Path
 from unittest.mock import patch
 
 from openclash_target import atomic_write_text
-from local_runner import yaml_edit_transaction, _yaml_store_config, _YAML_TX_CACHE, _YAML_TX_DIRTY
+from local_runner import (
+    _YAML_TX_CACHE,
+    _YAML_TX_DIRTY,
+    _restore_output_snapshot,
+    _yaml_store_config,
+    yaml_edit_transaction,
+)
 
 with tempfile.TemporaryDirectory() as tmp:
     path = Path(tmp) / "config.yaml"
@@ -31,6 +37,14 @@ with tempfile.TemporaryDirectory() as tmp:
         pass
     assert path.read_text() == "new: true\n"
     assert not _YAML_TX_CACHE and not _YAML_TX_DIRTY
+    second = Path(tmp) / "second.yaml"
+    second.write_text("old: second\n", encoding="utf-8")
+    snapshot = {item: item.read_text(encoding="utf-8") for item in (path, second)}
+    path.write_text("invalid: true\n", encoding="utf-8")
+    second.write_text("invalid: second\n", encoding="utf-8")
+    _restore_output_snapshot(snapshot)
+    assert path.read_text() == "new: true\n"
+    assert second.read_text() == "old: second\n"
     fresh = Path(tmp) / "new.yaml"
     atomic_write_text(fresh, "new: true\n")
     assert fresh.stat().st_mode & 0o777 == 0o600

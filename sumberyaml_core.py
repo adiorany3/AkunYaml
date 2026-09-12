@@ -3866,14 +3866,23 @@ def process_sources(
     fetch_logs: list[tuple[str, str]] = []
     raw_uris: list[tuple[str, str]] = []
 
-    if links:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=min(worker_count, len(links))) as executor:
-            futures = [executor.submit(fetch_url_cached, url, int(fetch_timeout)) for url in links]
-            for future in futures:
-                url, text, status = future.result()
+    subscription_links = [link for link in links if not URI_RE.fullmatch(link)]
+    if subscription_links:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=min(worker_count, len(subscription_links))) as executor:
+            futures = {
+                url: executor.submit(fetch_url_cached, url, int(fetch_timeout))
+                for url in subscription_links
+            }
+            for link in links:
+                if URI_RE.fullmatch(link):
+                    raw_uris.append((link, "seed"))
+                    continue
+                url, text, status = futures[link].result()
                 fetch_logs.append((url, status))
                 if text:
                     raw_uris.extend((uri, url) for uri in extract_uris(text))
+    else:
+        raw_uris.extend((link, "seed") for link in links)
 
     # This remains for backward compatibility, but the GitHub Action passes manual_text=""
     # so manual nodes stay outside strict filtering and outside the 10 auto-node quota.

@@ -2711,6 +2711,11 @@ def optimize_outputs(
     # cannot reliably distinguish from normal video traffic by domain alone.
     write_youtube_filters(workdir, youtube_mode, youtube_filter_file)
 
+def _restore_output_snapshot(snapshot: dict[Path, str]) -> None:
+    for path, content in snapshot.items():
+        atomic_write_text(path, content)
+
+
 def validate_yaml(workdir: Path, mihomo: Path, files: Iterable[str]) -> bool:
     ok = True
     strict = os.environ.get("REQUIRE_EXACT_MIHOMO_CORE", "true").strip().lower() not in {"0", "false", "no", "off"}
@@ -2953,15 +2958,30 @@ def main() -> int:
         REFERENCE_PROFILE_URL,
     )
 
-    optimize_outputs(
-        workdir,
-        output_files,
-        profile,
-        interval,
-        dns_mode,
-        youtube_mode,
-        youtube_filter_file,
-    )
+    output_snapshot = {
+        path: path.read_text(encoding="utf-8")
+        for name in output_files
+        if (path := workdir / name).exists()
+    }
+    try:
+        optimize_outputs(
+            workdir,
+            output_files,
+            profile,
+            interval,
+            dns_mode,
+            youtube_mode,
+            youtube_filter_file,
+        )
+        valid = validate_yaml(workdir, mihomo, output_files)
+    except Exception:
+        _restore_output_snapshot(output_snapshot)
+        raise
+    if not valid:
+        _restore_output_snapshot(output_snapshot)
+        print("\n[ERROR] Ada YAML yang gagal validasi. Output sebelum optimasi dipulihkan.")
+        print("Gunakan error tepat di atas untuk diagnosis.")
+        return 2
 
     log("Menjalankan test iklan terbaru")
     ad_audit = subprocess.run(
@@ -2972,11 +2992,6 @@ def main() -> int:
     )
     if ad_audit.returncode != 0:
         log(f"Test iklan gagal-open, exit={ad_audit.returncode}")
-
-    if not validate_yaml(workdir, mihomo, output_files):
-        print("\n[ERROR] Ada YAML yang gagal validasi.")
-        print("Gunakan error tepat di atas untuk diagnosis.")
-        return 2
 
     print("\n[OK] Semua output yang tersedia lolos validasi Mihomo.")
     for name in (

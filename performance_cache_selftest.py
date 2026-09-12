@@ -120,11 +120,43 @@ def test_multi_host_budget() -> None:
         core.TARGET_SERVERS, core.TARGET_SERVER, core.BUG_MODE, core.BUG_MAX_VARIANTS_PER_NODE, core.BUG_TOTAL_VARIANTS_CAP, core.BUG_MIN_BASE_NODES = old
 
 
+def test_saved_candidate_sources() -> None:
+    from unittest.mock import patch
+
+    seed = "vless://00000000-0000-0000-0000-000000000001@seed.example:443#seed"
+    remote = "trojan://password@remote.example:443#remote"
+    url = "https://example.test/sub"
+    with (
+        patch.object(core, "fetch_url_cached", return_value=(url, seed + "\n" + remote, "ok")) as fetch,
+        patch.object(core, "parse_uri", return_value=None) as parse,
+        patch.object(core, "_finalize_selected_nodes", return_value=[]),
+    ):
+        for sources, expected in (
+            (f"{seed}\n{url}\n{seed}", [(seed, "seed"), (remote, url)]),
+            (f"{url}\n{seed}", [(seed, url), (remote, url)]),
+            (seed, [(seed, "seed")]),
+        ):
+            fetch.reset_mock()
+            parse.reset_mock()
+            core.process_sources(
+                sources, "", fetch_timeout=1, tcp_timeout=1, max_workers=1,
+                max_nodes=1, fast_target_ms=100, fill_delay_ms=200,
+                min_output_nodes=1, attempts=1, require_successes=1,
+                require_original=False,
+            )
+            assert [call.args for call in parse.call_args_list] == expected
+            if url in sources:
+                fetch.assert_called_once_with(url, 1)
+            else:
+                fetch.assert_not_called()
+
+
 def main() -> int:
+    test_saved_candidate_sources()
     test_subscription_cache()
     test_provider_cache()
     test_multi_host_budget()
-    print("[OK] subscription cache + provider cache + multi-host budget selftest")
+    print("[OK] saved candidates + subscription cache + provider cache + multi-host budget selftest")
     return 0
 
 

@@ -2197,6 +2197,17 @@ def main() -> int:
     alive_nodes = _smart_select_nodes(tested_nodes, max_nodes)
     unique_names(alive_nodes)
     print(f"[INFO] NekoBox/sing-box test otomatis: {nekobox_reason}")
+    # Fail closed before builders: Android has no safe automatic/DIRECT fallback.
+    # Manual nodes count because they are mandatory input and outside auto quota.
+    total_output_nodes = len(alive_nodes) + len(manual_nodes)
+    if not manual_nodes or total_output_nodes < min_output_nodes:
+        print(
+            f"[ERROR] Node manual lolos: {len(manual_nodes)}; "
+            f"total output: {total_output_nodes}/{min_output_nodes}; "
+            "output lama dipertahankan."
+        )
+        return 3
+
     print(f"[INFO] Smart selection: {len(alive_nodes)} node untuk baseline, BANK/VMESS-VIDEO, dan STREAMING")
 
     yaml_text = build_openclash_yaml(
@@ -2264,16 +2275,6 @@ def main() -> int:
         raise SystemExit(f"[ERROR] {exc}") from exc
     print(f"[INFO] sing-box validator: {singbox_version.splitlines()[0]}")
     _validate_singbox_json(singbox_android_text, singbox_path)
-
-    # Fail closed before writing anything when combined output misses minimum.
-    # Manual nodes count because they are mandatory input and remain outside auto quota.
-    total_output_nodes = len(alive_nodes) + len(manual_nodes)
-    if total_output_nodes < min_output_nodes:
-        print(
-            f"[ERROR] Total node output hanya {total_output_nodes}/{min_output_nodes}; "
-            "output lama dipertahankan."
-        )
-        return 3
 
     # Final structural cleanup. This must happen after every group mutation.
     yaml_text = _prune_missing_proxy_group_refs_yaml_text(yaml_text)
