@@ -122,6 +122,8 @@ dns:
   prefer-h3: false
   use-hosts: true
   use-system-hosts: false
+proxies: []
+proxy-groups: []
 rules:
 - DOMAIN,googleads.g.doubleclick.net,REJECT
 - DOMAIN,ad.doubleclick.net,REJECT
@@ -471,37 +473,55 @@ rules:
 - RULE-SET,tracker-domain,REJECT
 - MATCH,DIRECT
 rule-providers:
-  ads_indonesia:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/ads_indonesia.mrs
-  ads_domain:
+  threat-malware:
     type: http
     behavior: domain
-    path: ./rule_providers/ads_domain.mrs
-    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs
-    interval: 43200
     format: mrs
-  anti-ad:
+    path: ./rule_providers/compiled/threat-malware.mrs
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/rule_providers/compiled/threat-malware.mrs
+    interval: 43200
+  threat-phishing:
     type: http
     behavior: domain
-    path: ./rule_providers/anti-ad-clash.yaml
-    url: https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-clash.yaml
+    format: mrs
+    path: ./rule_providers/compiled/threat-phishing.mrs
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/rule_providers/compiled/threat-phishing.mrs
     interval: 43200
-    format: yaml
-  tracker-domain:
+  threat-cryptominers:
     type: http
     behavior: domain
-    path: ./rule_providers/tracker.mrs
-    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tracker.mrs
-    interval: 43200
     format: mrs
+    path: ./rule_providers/compiled/threat-cryptominers.mrs
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/rule_providers/compiled/threat-cryptominers.mrs
+    interval: 43200
+  threat-fake-scam:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/threat-fake-scam.mrs
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/rule_providers/compiled/threat-fake-scam.mrs
+    interval: 43200
   threat-tif-mini:
-    type: file
+    type: http
     behavior: domain
     format: mrs
     path: ./rule_providers/compiled/threat-tif-mini.mrs
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/rule_providers/compiled/threat-tif-mini.mrs
+    interval: 43200
+  gambling-mini:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/gambling-mini.mrs
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/rule_providers/compiled/gambling-mini.mrs
+    interval: 43200
+  gambling-regex:
+    type: http
+    behavior: classical
+    format: yaml
+    path: ./rule_providers/security-gambling.yaml
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/rule_providers/security-gambling.yaml
+    interval: 43200
   adult-category:
     type: http
     behavior: domain
@@ -509,51 +529,27 @@ rule-providers:
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-porn.mrs
     interval: 43200
     format: mrs
-  gambling-mini:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/gambling-mini.mrs
-  gambling-regex:
-    type: file
-    behavior: classical
-    format: yaml
-    path: ./rule_providers/security-gambling.yaml
   adult-local:
-    type: file
+    type: http
     behavior: classical
     format: yaml
     path: ./rule_providers/security-adult.yaml
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/rule_providers/security-adult.yaml
+    interval: 43200
   pinjol-local:
-    type: file
+    type: http
     behavior: classical
     format: yaml
     path: ./rule_providers/security-pinjol.yaml
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/rule_providers/security-pinjol.yaml
+    interval: 43200
   popup-ads:
-    type: file
+    type: http
     behavior: domain
     format: mrs
     path: ./rule_providers/compiled/popup-ads.mrs
-  threat-malware:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-malware.mrs
-  threat-phishing:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-phishing.mrs
-  threat-cryptominers:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-cryptominers.mrs
-  threat-fake-scam:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-fake-scam.mrs
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/rule_providers/compiled/popup-ads.mrs
+    interval: 43200
   app-ad-safe:
     type: inline
     behavior: domain
@@ -634,3 +630,31 @@ rule-providers:
     - .amazon-adsystem.com
     - .mopub.com
     - .adjoe.io
+  ads_indonesia:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/ads_indonesia.mrs
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/rule_providers/compiled/ads_indonesia.mrs
+    interval: 43200
+  ads_domain:
+    type: http
+    behavior: domain
+    path: ./rule_providers/ads_domain.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs
+    interval: 43200
+    format: mrs
+  anti-ad:
+    type: http
+    behavior: domain
+    path: ./rule_providers/anti-ad-clash.yaml
+    url: https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-clash.yaml
+    interval: 43200
+    format: yaml
+  tracker-domain:
+    type: http
+    behavior: domain
+    path: ./rule_providers/tracker.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tracker.mrs
+    interval: 43200
+    format: mrs
