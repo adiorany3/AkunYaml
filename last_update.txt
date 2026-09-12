@@ -1,4 +1,4 @@
-Last update: 2026-09-11 05:52:23 UTC
+Last update: 2026-09-12 00:50:11 UTC
 Mode: smart group/usage selection + Mihomo URL test + NekoBox/sing-box test
 OpenClash YAML: openclash_auto.yaml
 Android YAML: openclash_android.yaml
@@ -10,8 +10,8 @@ Node quality report: node_quality_report.md
 Automatic YAML nodes after smart selection: 7
 Automatic NekoBox-tested candidates: 7
 Automatic strict pool before URL test: 60
-Automatic Mihomo URL-test checked: 35
-Automatic Mihomo URL-test result: URL test passed 30/35 tested
+Automatic Mihomo URL-test checked: 42
+Automatic Mihomo URL-test result: URL test passed 30/42 tested
 Automatic NekoBox/sing-box checked: 10
 Automatic NekoBox/sing-box result: NekoBox/sing-box passed 7/10 tested
 Manual Mihomo URL-test checked: 4
@@ -19,9 +19,9 @@ Manual Mihomo URL-test result: URL test passed 4/4 tested
 Manual group nodes: 4
 Akun txt automatic: 7
 Akun txt manual: 4
-Parsed subscription nodes: 42957
-Fetched links: 62
-Skipped raw URI: 175723
+Parsed subscription nodes: 42627
+Fetched links: 81
+Skipped raw URI: 173400
 Skipped manual URI: 0
 Manual server normalized: 0 link
 Manual nodes source file: manual_nodes.txt
