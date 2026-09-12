@@ -39,12 +39,12 @@ OUTPUTS=(openclash_auto.yaml openclash_android.yaml singbox_android.json opencla
 for file in "${OUTPUTS[@]}"; do printf 'fixture\n' > "$file"; done
 
 check() {
-  local expected="$1" message="$2" result
-  printf '%s\n' "$message" > "$GENERATOR_LOG"
+  local expected="$1" generator_exit="$2" result
+  : > "$GENERATOR_LOG"
   set +e
   (
     set -e
-    GENERATOR_EXIT=23
+    GENERATOR_EXIT="$generator_exit"
     STALE_FALLBACK=0
     eval "$GATE"
     [[ "$STALE_FALLBACK" -eq 1 ]]
@@ -52,20 +52,18 @@ check() {
   result=$?
   set -e
   if [[ "$result" -ne "$expected" ]]; then
-    printf 'FAIL: expected %s, got %s: %s\n' "$expected" "$result" "$message"
+    printf 'FAIL: expected %s, got %s: generator exit %s\n' "$expected" "$result" "$generator_exit"
     exit 1
   fi
 }
 
-MESSAGE='[ERROR] Total node output hanya 1/3; output lama dipertahankan.'
-check 0 "$MESSAGE"
-check 23 '[ERROR] Total node output hanya 1/3'
-check 23 '[ERROR] unrelated failure; output lama dipertahankan.'
+check 0 3
+check 23 23
 for file in "${OUTPUTS[@]}"; do
   : > "$file"
-  check 23 "$MESSAGE"
+  check 3 3
   rm "$file"
-  check 23 "$MESSAGE"
+  check 3 3
   printf 'fixture\n' > "$file"
 done
-printf 'PASS: fallback gate, preservation marker, unrelated errors, missing/empty outputs\n'
+printf 'PASS: fallback exit-code contract, unrelated errors, missing/empty outputs\n'

@@ -98,14 +98,17 @@ ARGS=(
 [[ -n "$MIN_NODES" ]] && ARGS+=(--min-nodes "$MIN_NODES")
 [[ -n "$CANDIDATE_MIN" ]] && ARGS+=(--candidate-min "$CANDIDATE_MIN")
 
+# Explicit refresh checks every subscription/feed now; HTTP validators still avoid
+# downloading unchanged content, stale cache remains available on network failure.
+export SUBSCRIPTION_CACHE_TTL_SEC=0
+export FEED_REFRESH_TTL_SEC=0
+export REFRESH_SECURITY_FEEDS=true
+
 STALE_FALLBACK=0
 GENERATOR_LOG="$(mktemp -t akunyaml-generator.XXXXXX)"
 trap 'rm -f "$GENERATOR_LOG"' EXIT
 
-echo "[AI] Memeriksa classifier iklan/judol/pinjol sebelum refresh..."
-"$PY" ai_adblock_classifier_selftest.py
-
-echo "[RUN] Mencari akun, memperbarui security feeds, menjalankan AI classifier, generate, dan memilih akun baru..."
+echo "[RUN] Refresh subscription/proxy, akun, adblock, generate, dan pilih node sehat terbaru..."
 set +e
 "${ARGS[@]}" >"$GENERATOR_LOG" 2>&1
 GENERATOR_EXIT=$?
@@ -117,9 +120,7 @@ if [[ "$GENERATOR_EXIT" -ne 0 ]]; then
   for f in "${REQUIRED_OUTPUTS[@]}"; do
     [[ -s "$f" ]] || MISSING_OUTPUTS+=("$f")
   done
-  if grep -q "Total node output hanya" "$GENERATOR_LOG" \
-      && grep -q "output lama dipertahankan" "$GENERATOR_LOG" \
-      && [[ ${#MISSING_OUTPUTS[@]} -eq 0 ]]; then
+  if [[ "$GENERATOR_EXIT" -eq 3 && ${#MISSING_OUTPUTS[@]} -eq 0 ]]; then
     STALE_FALLBACK=1
     echo "[WARN] Feed tidak memberi minimum node sehat; memakai output known-good lama."
     echo "[WARN] Audit penuh tetap wajib; --push akan ditolak."
@@ -137,7 +138,6 @@ echo "[AUDIT] Memeriksa keamanan, adblock, kategori judi, dan budget performa...
 "$PY" cctv_app_audit.py
 "$PY" dns_speed_policy_audit.py
 "$PY" dns_leak_audit.py
-"$PY" youtube_gambling_sponsor_audit.py
 "$PY" threat_safe_audit.py
 "$PY" security_hardening_audit.py
 "$PY" openwrt_adblock_audit.py

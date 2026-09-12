@@ -14,6 +14,7 @@ from typing import Any
 from urllib.parse import quote, urlparse, urlunparse
 
 import base64
+import hashlib
 import json
 import yaml
 import requests
@@ -92,7 +93,7 @@ def _merge_saved_candidate_seed(links_text: str, fresh_dir: str | Path) -> str:
     saved_links = _load_saved_candidate_pool(fresh_dir)
     merged = []
     seen: set[str] = set()
-    for uri in [*saved_links, *base_links]:
+    for uri in [*base_links, *saved_links]:
         key = uri.strip().strip(',\'"')
         if not key or key in seen:
             continue
@@ -1374,6 +1375,36 @@ def _insert_once(values: list[str], item: str, index: int | None = None) -> None
         values.insert(index, item)
 
 
+def _proxy_content_key(node: Any) -> str:
+    clash = {key: value for key, value in node.clash.items() if key != "name"}
+    return json.dumps(clash, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
+def _resolve_proxy_name_collisions(nodes: list[Any], reserved: list[Any] | None = None) -> list[Any]:
+    used = {str(node.clash.get("name") or node.name): _proxy_content_key(node) for node in (reserved or [])}
+    result: list[Any] = []
+    for node in nodes:
+        name = str(node.clash.get("name") or node.name)
+        content = _proxy_content_key(node)
+        if used.get(name) == content:
+            continue
+        if name in used:
+            suffix = "-" + hashlib.sha256(content.encode()).hexdigest()[:8]
+            name = (name[: 64 - len(suffix)] + suffix).strip("-._")
+            counter = 2
+            while name in used and used[name] != content:
+                extra = f"-{counter}"
+                name = (name[: 64 - len(extra)] + extra).strip("-._")
+                counter += 1
+            if used.get(name) == content:
+                continue
+            node.name = name
+            node.clash["name"] = name
+        used[name] = content
+        result.append(node)
+    return result
+
+
 def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], *, android: bool = False) -> dict[str, Any]:
     if not manual_nodes:
         return config
@@ -2097,8 +2128,6 @@ def main() -> int:
         manual_server_changes = 0
     else:
         manual_text, manual_server_changes = normalize_manual_nodes_text(manual_text)
-        if manual_text:
-            Path(manual_file).write_text(manual_text, encoding="utf-8")
     manual_nodes, manual_skipped = parse_manual_nodes_unscreened(manual_text)
     # Preserve all parsed manual nodes for sing-box before OpenClash health filters.
     singbox_manual_nodes = list(manual_nodes)
@@ -2209,6 +2238,7 @@ def main() -> int:
         )
         return 3
 
+    alive_nodes = _resolve_proxy_name_collisions(alive_nodes, reserved=manual_nodes)
     print(f"[INFO] Smart selection: {len(alive_nodes)} node untuk baseline, BANK/VMESS-VIDEO, dan STREAMING")
 
     yaml_text = build_openclash_yaml(
@@ -2241,7 +2271,7 @@ def main() -> int:
     node_quality_text = _build_node_quality_report(yaml_text, urltest_rows, nekobox_rows)
 
     fresh_pool_count = max(max_nodes, _env_int("FRESH_POOL_NODES", _env_int("NEKOBOX_POOL_NODES", max(25, max_nodes * 3))))
-    fresh_nodes = mihomo_pass_nodes[:fresh_pool_count]
+    fresh_nodes = _resolve_proxy_name_collisions(mihomo_pass_nodes, reserved=manual_nodes)[:fresh_pool_count]
     fresh_yaml_text = build_openclash_yaml(
         fresh_nodes,
         interval=max(_env_int("URLTEST_INTERVAL", 30), 30),

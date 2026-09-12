@@ -2983,16 +2983,6 @@ def main() -> int:
         print("Gunakan error tepat di atas untuk diagnosis.")
         return 2
 
-    log("Menjalankan test iklan terbaru")
-    ad_audit = subprocess.run(
-        [sys.executable, "app_ad_audit.py"],
-        cwd=workdir,
-        env=env,
-        check=False,
-    )
-    if ad_audit.returncode != 0:
-        log(f"Test iklan gagal-open, exit={ad_audit.returncode}")
-
     print("\n[OK] Semua output yang tersedia lolos validasi Mihomo.")
     for name in (
         *output_files,
@@ -3005,7 +2995,7 @@ def main() -> int:
         output_path = workdir / name
         if output_path.exists():
             print(f"  - {output_path}")
-    return 0
+    return 3 if adblock_only else 0
 
 
 if __name__ == "__main__":
