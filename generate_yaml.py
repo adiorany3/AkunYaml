@@ -845,6 +845,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     ad_blocklist_files = (
         "rule_providers/universal-adblock-safe.yaml",
         "rule_providers/ads_indonesia_android.yaml",
+        "rule_providers/popup-ads_android.yaml",
         ".feed_cache/last_good/hagezi-pro-plus-mini.txt",
         ".feed_cache/last_good/popup-ads.txt",
         ".feed_cache/last_good/gambling-mini.txt",

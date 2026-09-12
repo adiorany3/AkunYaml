@@ -206,6 +206,7 @@ if [[ "$DO_PUSH" -eq 1 ]]; then
   FILES=(
     openclash_auto.yaml
     openclash_android.yaml
+    rule_providers/popup-ads_android.yaml
     openclash_lite.yaml
     openclash_fresh_pool.yaml
     singbox_android.json

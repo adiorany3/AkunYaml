@@ -179,11 +179,11 @@ ANDROID_BASE_PROVIDERS: dict[str, dict[str, Any]] = {
         "behavior": "domain",
         "path": "./rule_providers/ads_indonesia_android.yaml",
     },
-    "popup-ads": {
-        "type": "file",
-        "behavior": "domain",
-        "path": "./rule_providers/popup-ads_android.yaml",
-    },
+    "popup-ads": _http_domain(
+        "./rule_providers/popup-ads_android.yaml",
+        "https://raw.githubusercontent.com/adiorany3/AkunYaml/HEAD/rule_providers/popup-ads_android.yaml",
+        fmt="yaml",
+    ),
     "ads_domain": _http_domain(
         "./rule_providers/ads_domain.yaml",
         "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/category-ads-all.yaml",
