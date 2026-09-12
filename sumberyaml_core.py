@@ -2687,6 +2687,10 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
     ai_other_test_url = os.getenv("AI_OTHER_TEST_URL", "https://www.gstatic.com/generate_204").strip() or "https://www.gstatic.com/generate_204"
     ai_interval = _env_int_range("AI_HEALTH_INTERVAL", 300, 60, 1800)
     ai_timeout = _env_int_range("AI_HEALTH_TIMEOUT_MS", max(5000, base_timeout), 2000, 15000)
+    global_interval = _env_int_range("GLOBAL_HEALTH_INTERVAL", 300, 60, 1200)
+    generic_timeout = _env_int_range("GENERIC_HEALTH_TIMEOUT_MS", 5000, 2500, 15000)
+    generic_max_failed_times = _env_int_range("GENERIC_MAX_FAILED_TIMES", 3, 2, 6)
+
 
     def selector(defaults: list[str] | None = None) -> list[str]:
         defaults = defaults or ["WARM-UP", "WARM-UP-CF", "AUTO-FAST", "FALLBACK"]
@@ -2872,9 +2876,14 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
     proxy_groups: list[dict[str, Any]] = [
         {
             "name": "GLOBAL",
-            "type": "select",
-            # General traffic shares four healthy exits; explicit sensitive rules still win first.
+            "type": "fallback",
             "proxies": ["FALLBACK", "AUTO-FAST"],
+            "url": test_url,
+            "interval": global_interval,
+            "lazy": True,
+            "timeout": generic_timeout,
+            "expected-status": "200/204/301/302",
+            "max-failed-times": generic_max_failed_times,
         },
         {
             "name": "PROXY",
