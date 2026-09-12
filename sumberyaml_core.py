@@ -3422,10 +3422,11 @@ def build_openclash_android_yaml(
     ai_other_test_url = os.getenv("AI_OTHER_TEST_URL", "https://www.gstatic.com/generate_204").strip() or "https://www.gstatic.com/generate_204"
     ai_interval = _env_int_range("AI_HEALTH_INTERVAL", 300, 60, 1800)
     ai_timeout = _env_int_range("AI_HEALTH_TIMEOUT_MS", max(5000, base_timeout), 2000, 15000)
-    security_profile = os.getenv("ADBLOCK_PROFILE", "balanced").strip().lower() or "balanced"
+    # Android defaults app-safe and excludes OpenWrt regional policy.
+    security_profile = os.getenv("ANDROID_ADBLOCK_PROFILE", "app-safe").strip().lower() or "app-safe"
     if security_profile not in {"off", "balanced", "strict", "child-safe", "app-safe", "threat-safe"}:
-        security_profile = "balanced"
-    indonesia_ads_enabled = os.getenv("INDONESIA_ADBLOCK", "true").strip().lower() not in {"0", "false", "no", "off"}
+        security_profile = "app-safe"
+    indonesia_ads_enabled = os.getenv("ANDROID_INDONESIA_ADBLOCK", "false").strip().lower() not in {"0", "false", "no", "off"}
     security_interval = _env_int_range("ADBLOCK_PROVIDER_INTERVAL", 43200, 3600, 604800)
     android_snapshot_exists = os.path.isfile(os.path.join("rule_providers", "ads_indonesia_android.yaml"))
     android_security_providers = shared_security_provider_catalog(
