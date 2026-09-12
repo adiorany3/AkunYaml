@@ -6,12 +6,12 @@ Added/Removed counts the domain diff against the previous known-good snapshot (0
 | Provider | Status | Entries | Added | Removed | SHA-256 |
 |---|---:|---:|---:|---:|---|
 | `ads_indonesia` | updated | 154 | 0 | 0 | `01973614a1bcc66f` |
-| `gambling-mini` | updated | 60032 | 0 | 0 | `a59637f0fda3e96e` |
-| `hagezi-pro-plus-mini` | updated | 60378 | 0 | 0 | `cac9177f1f243a48` |
-| `popup-ads` | updated | 49294 | 0 | 0 | `d27dd6fc0e4bcb85` |
+| `gambling-mini` | updated | 67362 | 10857 | 3527 | `697d2cbcab5c2d83` |
+| `hagezi-pro-plus-mini` | updated | 60381 | 1155 | 1152 | `d14b8503cf6cd36c` |
+| `popup-ads` | updated | 48882 | 5 | 417 | `6ced454ba949daaa` |
 | `threat-cryptominers` | updated | 297 | 0 | 0 | `0b2089ce6ce3a2bf` |
-| `threat-fake-scam` | updated | 16687 | 0 | 0 | `7f9e3aac685bf555` |
-| `threat-malware` | updated | 490 | 0 | 0 | `45f13e7c380944ed` |
-| `threat-phishing` | updated | 38551 | 0 | 0 | `8c6c78dbc4910710` |
-| `threat-tif-ip` | updated | 68500 | 0 | 0 | `e204340fd024e397` |
-| `threat-tif-mini` | updated | 176800 | 0 | 0 | `f52e60a177e8d26c` |
+| `threat-fake-scam` | updated | 16690 | 46 | 43 | `7fd94ce28805d9e3` |
+| `threat-malware` | updated | 481 | 14 | 23 | `1d8631af575e195f` |
+| `threat-phishing` | updated | 38537 | 195 | 209 | `fbdc0698d3e51f97` |
+| `threat-tif-ip` | updated | 67208 | 10442 | 11734 | `7e1a2ffcf6cd07c6` |
+| `threat-tif-mini` | updated | 176987 | 2513 | 2326 | `dbc64bb5bc37f6ea` |

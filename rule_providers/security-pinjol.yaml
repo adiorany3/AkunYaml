@@ -1,4 +1,14 @@
 payload:
-  # Hindari keyword loan/credit: cocok juga dengan layanan keuangan sah.
+  # Nama aplikasi pinjol berisiko; provider dipasang sebagai RULE-SET,pinjol-local,REJECT.
   - DOMAIN-KEYWORD,pinjol
   - DOMAIN-KEYWORD,danacepat
+  - DOMAIN-KEYWORD,adakami
+  - DOMAIN-KEYWORD,easycash
+  - DOMAIN-KEYWORD,tunaiku
+  - DOMAIN-KEYWORD,kredione
+  - DOMAIN-KEYWORD,finplus
+  - DOMAIN-KEYWORD,cairin
+  - DOMAIN-KEYWORD,arthaniaga
+  - DOMAIN-KEYWORD,akulaku
+  - DOMAIN-KEYWORD,atome
+  - DOMAIN-KEYWORD,indosaku
