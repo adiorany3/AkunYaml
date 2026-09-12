@@ -2,3 +2,9 @@ payload:
   - DOMAIN-SUFFIX,pornhub.com
   - DOMAIN-SUFFIX,xvideos.com
   - DOMAIN-SUFFIX,xnxx.com
+  # Game dewasa dengan label domain eksplisit; keyword game umum tidak diblokir.
+  - DOMAIN-KEYWORD,adultgame
+  - DOMAIN-KEYWORD,adult-game
+  - DOMAIN-KEYWORD,sexgame
+  - DOMAIN-KEYWORD,hentai
+  - DOMAIN-KEYWORD,eroge
