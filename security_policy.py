@@ -179,6 +179,11 @@ ANDROID_BASE_PROVIDERS: dict[str, dict[str, Any]] = {
         "behavior": "domain",
         "path": "./rule_providers/ads_indonesia_android.yaml",
     },
+    "popup-ads": {
+        "type": "file",
+        "behavior": "domain",
+        "path": "./rule_providers/popup-ads_android.yaml",
+    },
     "ads_domain": _http_domain(
         "./rule_providers/ads_domain.yaml",
         "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/category-ads-all.yaml",
@@ -331,6 +336,7 @@ def provider_reject_rules(
         if indonesia_ads and android_snapshot_exists:
             rules.append("RULE-SET,ads_indonesia,REJECT")
         rules.extend([
+            "RULE-SET,popup-ads,REJECT",
             "RULE-SET,ads_domain,REJECT",
             "RULE-SET,anti-ad,REJECT",
             "RULE-SET,tracker-domain,REJECT",

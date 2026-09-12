@@ -52,7 +52,13 @@ def audit(path: Path) -> list[str]:
     if not rules or rules[-1] != "MATCH,GLOBAL":
         errors.append("rule terakhir harus MATCH,GLOBAL")
 
+    groups = {str(group.get("name")): group for group in data.get("proxy-groups", []) if isinstance(group, dict)}
+    global_group = groups.get("GLOBAL") or {}
+    if global_group.get("type") != "fallback" or global_group.get("proxies") != ["FALLBACK", "AUTO-FAST"]:
+        errors.append("GLOBAL harus fallback berurutan FALLBACK, AUTO-FAST")
+
     required = {
+        "popup-ads",
         "ads_domain",
         "tracker-domain",
         "threat-malware",

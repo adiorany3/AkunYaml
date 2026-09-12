@@ -1791,7 +1791,7 @@ def apply_responsiveness(path: Path) -> bool:
     if isinstance(groups, list):
         group_names = {str(g.get("name")) for g in groups if isinstance(g, dict) and g.get("name")}
         compact = {
-            "GLOBAL": (["WARM-UP", "AUTO-FAST", "ANDROID-COLD-BACKUP"] if is_android else ["AUTO-FAST", "FALLBACK"]),
+            "GLOBAL": (["FALLBACK", "AUTO-FAST"] if is_android else ["AUTO-FAST", "FALLBACK"]),
             "PROXY": (["GLOBAL", "WARM-UP", "AUTO-FAST", "FALLBACK"] if is_android else ["GLOBAL", "AUTO-FAST", "FALLBACK"]),
             "SOCIAL-MEDIA": ["SOCIAL-MEDIA", "AUTO-FAST", "FALLBACK"],
             "YOUTUBE": ["YOUTUBE", "STREAMING-FAST", "AUTO-FAST", "FALLBACK"],

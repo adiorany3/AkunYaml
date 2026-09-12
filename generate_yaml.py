@@ -854,6 +854,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         ".feed_cache/last_good/threat-phishing.txt",
         ".feed_cache/last_good/threat-fake-scam.txt",
         ".feed_cache/last_good/threat-cryptominers.txt",
+        ".feed_cache/last_good/threat-tif-mini.txt",
     )
     allowlisted_domains = {
         line.strip().lower().rstrip(".")

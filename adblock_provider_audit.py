@@ -90,7 +90,7 @@ def audit(path: Path, network: bool, timeout: float) -> list[str]:
         pth = str(provider.get("path") or "")
         is_local_mrs = provider_type == "file" and str(provider.get("format") or "").lower() == "mrs"
         is_local_gambling_regex = name == "gambling-regex" and provider_type == "file" and str(provider.get("format") or "").lower() == "yaml"
-        android_snapshot_names = {"ads_indonesia", "threat-fake-scam"}
+        android_snapshot_names = {"ads_indonesia", "popup-ads", "threat-fake-scam"}
         is_android_snapshot = (
             path.name == "openclash_android.yaml"
             and name in android_snapshot_names

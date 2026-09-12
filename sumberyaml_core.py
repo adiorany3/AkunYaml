@@ -3439,13 +3439,7 @@ def build_openclash_android_yaml(
         android_snapshot_exists=android_snapshot_exists,
     )
 
-    android_has_cold_backup = any(
-        isinstance(group, dict) and group.get("name") == "ANDROID-COLD-BACKUP"
-        for group in android_host_fallback_groups
-    )
-    android_global_proxies = ["WARM-UP", "AUTO-FAST"]
-    if android_has_cold_backup:
-        android_global_proxies.append("ANDROID-COLD-BACKUP")
+    android_global_proxies = ["FALLBACK", "AUTO-FAST"]
 
     proxy_groups: list[dict[str, Any]] = [
         {

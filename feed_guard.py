@@ -302,6 +302,7 @@ def refresh_security_feeds(workdir: Path, *, refresh: bool = True, log=print) ->
 
     _atomic_write(metadata_path, (json.dumps(metadata, indent=2, sort_keys=True) + "\n").encode("utf-8"))
     _write_android_domain_snapshot(workdir, report, "ads_indonesia", "ads_indonesia_android.yaml", log=log)
+    _write_android_domain_snapshot(workdir, report, "popup-ads", "popup-ads_android.yaml", log=log)
     _write_android_domain_snapshot(workdir, report, "threat-fake-scam", "threat-fake-scam_android.yaml", log=log)
     _write_report(workdir, report)
 

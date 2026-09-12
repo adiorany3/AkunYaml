@@ -110,7 +110,7 @@ def main() -> int:
         global_group = by_name.get("GLOBAL")
         if not global_group or global_group.get("type") != "fallback":
             raise AssertionError("GLOBAL must be a shallow fallback")
-        if global_group.get("proxies") != ["WARM-UP", "AUTO-FAST", "ANDROID-COLD-BACKUP"]:
+        if global_group.get("proxies") != ["FALLBACK", "AUTO-FAST"]:
             raise AssertionError(f"GLOBAL topology is not shallow/ordered: {global_group.get('proxies')}")
         if global_group.get("lazy") is not True or int(global_group.get("interval") or 0) < 180:
             raise AssertionError("GLOBAL fallback must be lazy and low-frequency")
