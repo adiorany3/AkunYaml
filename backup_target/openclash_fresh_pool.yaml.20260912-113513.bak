@@ -111,8 +111,10 @@ dns:
     - https://1.1.1.1/dns-query
     - https://dns.google/dns-query
   fallback:
-  - https://family.dns.bebasid.com/dns-query
-  - tls://family.dns.bebasid.com:853
+  - https://family.cloudflare-dns.com/dns-query
+  - tls://family.cloudflare-dns.com:853
+  - https://dns.quad9.net/dns-query
+  - tls://dns.quad9.net:853
   fallback-lazy-query: false
   fallback-filter:
     geoip: true
@@ -1251,11 +1253,6 @@ rule-providers:
     - .amazon-adsystem.com
     - .mopub.com
     - .adjoe.io
-  threat-tif-ip:
-    type: file
-    behavior: ipcidr
-    format: mrs
-    path: ./rule_providers/compiled/threat-tif-ip.mrs
 rules:
 - DOMAIN-SUFFIX,local,DIRECT
 - DOMAIN-SUFFIX,lan,DIRECT
@@ -1423,7 +1420,6 @@ rules:
 - RULE-SET,pinjol-local,REJECT
 - RULE-SET,hagezi-pro-plus-mini,REJECT
 - RULE-SET,popup-ads,REJECT
-- RULE-SET,threat-tif-ip,REJECT,no-resolve
 - DOMAIN,805ba.v.fwmrm.net,REJECT
 - DOMAIN,tvm-mtv-freewheel.akamaized.net,REJECT
 - DOMAIN,adeventtracker.spotify.com,REJECT

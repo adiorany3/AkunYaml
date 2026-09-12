@@ -111,8 +111,10 @@ dns:
     - https://1.1.1.1/dns-query
     - https://dns.google/dns-query
   fallback:
-  - https://family.dns.bebasid.com/dns-query
-  - tls://family.dns.bebasid.com:853
+  - https://family.cloudflare-dns.com/dns-query
+  - tls://family.cloudflare-dns.com:853
+  - https://dns.quad9.net/dns-query
+  - tls://dns.quad9.net:853
   fallback-lazy-query: false
   fallback-filter:
     geoip: true
@@ -479,10 +481,6 @@ rules:
 - DOMAIN-SUFFIX,speedtest.net,GLOBAL
 - DOMAIN-SUFFIX,ookla.com,GLOBAL
 - DOMAIN-SUFFIX,speedtestcustom.com,GLOBAL
-- RULE-SET,threat-malware,REJECT
-- RULE-SET,threat-phishing,REJECT
-- RULE-SET,threat-cryptominers,REJECT
-- RULE-SET,threat-fake-scam,REJECT
 - RULE-SET,threat-tif-mini,REJECT
 - RULE-SET,gambling-mini,REJECT
 - RULE-SET,gambling-regex,REJECT
@@ -708,23 +706,3 @@ rule-providers:
     path: ./rule_providers/youtube.mrs
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs
     interval: 43200
-  threat-malware:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-malware.mrs
-  threat-phishing:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-phishing.mrs
-  threat-cryptominers:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-cryptominers.mrs
-  threat-fake-scam:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/threat-fake-scam.mrs

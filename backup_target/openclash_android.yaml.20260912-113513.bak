@@ -713,8 +713,10 @@ dns:
   use-hosts: true
   use-system-hosts: false
   fallback:
-  - https://family.dns.bebasid.com/dns-query
-  - tls://family.dns.bebasid.com:853
+  - https://family.cloudflare-dns.com/dns-query
+  - tls://family.cloudflare-dns.com:853
+  - https://dns.quad9.net/dns-query
+  - tls://dns.quad9.net:853
   fallback-lazy-query: false
 proxies:
 - name: MANUAL-VMess-WS-TLS-443-ikada543
@@ -918,7 +920,7 @@ proxy-groups:
   interval: 300
   tolerance: 100
   lazy: true
-  timeout: 5000
+  timeout: 6000
   expected-status: 200/204/301/302
   max-failed-times: 2
 - name: WARM-UP
@@ -987,7 +989,7 @@ proxy-groups:
   url: https://www.gstatic.com/generate_204
   interval: 180
   lazy: true
-  timeout: 5000
+  timeout: 6000
   expected-status: 200/204/301/302
   max-failed-times: 3
 - name: REDDIT

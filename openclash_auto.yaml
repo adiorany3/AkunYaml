@@ -78,13 +78,11 @@ dns:
   - https://1.1.1.1/dns-query
   - https://9.9.9.9/dns-query
   nameserver:
-  - https://1.1.1.1/dns-query
-  - https://dns.google/dns-query
+  - https://family.dns.bebasid.com/dns-query
+  - tls://family.dns.bebasid.com:853
   fallback:
-  - https://family.cloudflare-dns.com/dns-query
-  - tls://family.cloudflare-dns.com:853
-  - https://dns.quad9.net/dns-query
-  - tls://dns.quad9.net:853
+  - https://family.dns.bebasid.com/dns-query
+  - tls://family.dns.bebasid.com:853
   fallback-filter:
     geoip: true
     geoip-code: ID
@@ -781,6 +779,11 @@ rule-providers:
     behavior: domain
     format: mrs
     path: ./rule_providers/compiled/hagezi-pro-plus-mini.mrs
+  threat-tif-ip:
+    type: file
+    behavior: ipcidr
+    format: mrs
+    path: ./rule_providers/compiled/threat-tif-ip.mrs
   app-ad-safe:
     type: inline
     behavior: domain
@@ -1050,6 +1053,7 @@ rules:
 - RULE-SET,pinjol-local,REJECT
 - RULE-SET,hagezi-pro-plus-mini,REJECT
 - RULE-SET,popup-ads,REJECT
+- RULE-SET,threat-tif-ip,REJECT,no-resolve
 - DOMAIN,805ba.v.fwmrm.net,REJECT
 - DOMAIN,tvm-mtv-freewheel.akamaized.net,REJECT
 - DOMAIN,adeventtracker.spotify.com,REJECT
