@@ -1208,6 +1208,23 @@ rules:
 - DOMAIN,crashdump.spotify.com,REJECT
 - DOMAIN,pixel-static.spotify.com,REJECT
 - DOMAIN,pixels.spotify.com,REJECT
+# Netflix ad/measurement control-plane
+- DOMAIN,advertising.netflix.com,REJECT
+- DOMAIN,beacon.netflix.com,REJECT
+- DOMAIN,ichnaea.netflix.com,REJECT
+# Hulu/Disney ad endpoints
+- DOMAIN,diproton-ads-prod-eu-central-1.hulu.com.akadns.net,REJECT
+- DOMAIN,diproton-ads-prod-eu-west-1.hulu.com.akadns.net,REJECT
+- DOMAIN,diproton-ads-prod-us-east-1.hulu.com.akadns.net,REJECT
+- DOMAIN,diproton-ads-prod-us-east-2.hulu.com.akadns.net,REJECT
+- DOMAIN,diproton-ads-prod-us-west-2.hulu.com.akadns.net,REJECT
+# Twitch ad/measurement
+- DOMAIN,ads.twitch.tv,REJECT
+- DOMAIN,analytics.m7g.twitch.tv,REJECT
+- DOMAIN,spade.twitch.tv,REJECT
+# Roku ad endpoints
+- DOMAIN,ads.roku.com,REJECT
+- DOMAIN,advertising.roku.com,REJECT
 - DOMAIN-SUFFIX,popads.net,REJECT
 - DOMAIN-SUFFIX,popcash.net,REJECT
 - DOMAIN-SUFFIX,propellerads.com,REJECT

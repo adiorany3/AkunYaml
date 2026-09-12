@@ -22,6 +22,23 @@ DOMAINS={
     "pixel.spotify.com",
     "pixel-static.spotify.com",
     "pixels.spotify.com",
+    # Netflix ad/measurement endpoints (control-plane only, not playback CDN)
+    "advertising.netflix.com",
+    "beacon.netflix.com",
+    "ichnaea.netflix.com",
+    # Hulu/Disney ad endpoints
+    "diproton-ads-prod-eu-central-1.hulu.com.akadns.net",
+    "diproton-ads-prod-eu-west-1.hulu.com.akadns.net",
+    "diproton-ads-prod-us-east-1.hulu.com.akadns.net",
+    "diproton-ads-prod-us-east-2.hulu.com.akadns.net",
+    "diproton-ads-prod-us-west-2.hulu.com.akadns.net",
+    # Twitch ad/measurement
+    "ads.twitch.tv",
+    "analytics.m7g.twitch.tv",
+    "spade.twitch.tv",
+    # Roku ad endpoints
+    "ads.roku.com",
+    "advertising.roku.com",
 }
 FILES=["openclash_auto.yaml","openclash_android.yaml","openclash_lite.yaml","openclash_fresh_pool.yaml"]
 

@@ -314,6 +314,23 @@ STREAMING_SAFE_AD_DOMAINS = (
     "pixel.spotify.com",
     "pixel-static.spotify.com",
     "pixels.spotify.com",
+    # Netflix ad/measurement control-plane
+    "advertising.netflix.com",
+    "beacon.netflix.com",
+    "ichnaea.netflix.com",
+    # Hulu/Disney ad endpoints
+    "diproton-ads-prod-eu-central-1.hulu.com.akadns.net",
+    "diproton-ads-prod-eu-west-1.hulu.com.akadns.net",
+    "diproton-ads-prod-us-east-1.hulu.com.akadns.net",
+    "diproton-ads-prod-us-east-2.hulu.com.akadns.net",
+    "diproton-ads-prod-us-west-2.hulu.com.akadns.net",
+    # Twitch ad/measurement
+    "ads.twitch.tv",
+    "analytics.m7g.twitch.tv",
+    "spade.twitch.tv",
+    # Roku ad endpoints
+    "ads.roku.com",
+    "advertising.roku.com",
 )
 
 # Small local fallback for intrusive popunders and mobile/game ad SDKs.

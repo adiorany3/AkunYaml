@@ -17,3 +17,16 @@
 ||pixel.spotify.com^
 ||pixel-static.spotify.com^
 ||pixels.spotify.com^
+! Netflix ad/measurement
+||advertising.netflix.com^
+||beacon.netflix.com^
+||ichnaea.netflix.com^
+! Hulu/Disney ad endpoints
+||diproton-ads-prod-*.hulu.com.akadns.net^
+! Twitch ad/measurement
+||ads.twitch.tv^
+||analytics.m7g.twitch.tv^
+||spade.twitch.tv^
+! Roku ad endpoints
+||ads.roku.com^
+||advertising.roku.com^
