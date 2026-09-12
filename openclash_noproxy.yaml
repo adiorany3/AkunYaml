@@ -1,0 +1,636 @@
+mixed-port: 7890
+redir-port: 7892
+tproxy-port: 7895
+allow-lan: true
+bind-address: '*'
+lan-allowed-ips:
+- 127.0.0.0/8
+- 10.0.0.0/8
+- 172.16.0.0/12
+- 192.168.0.0/16
+mode: rule
+log-level: warning
+ipv6: false
+unified-delay: true
+tcp-concurrent: true
+find-process-mode: 'off'
+keep-alive-interval: 15
+keep-alive-idle: 30
+disable-keep-alive: false
+external-controller: 127.0.0.1:9090
+secret: reyre
+profile:
+  store-selected: true
+  store-fake-ip: true
+sniffer:
+  enable: true
+  sniff:
+    TLS:
+      ports:
+      - 443
+      - 8443
+    HTTP:
+      ports:
+      - 80
+      - 8080-8880
+      override-destination: true
+    QUIC:
+      ports:
+      - 443
+      - 8443
+  force-domain:
+  - +.v2ex.com
+  skip-domain:
+  - +.lan
+  - +.local
+dns:
+  enable: true
+  ipv6: false
+  listen: 0.0.0.0:7874
+  respect-rules: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+  - +.lan
+  - +.local
+  - localhost.ptlogin2.qq.com
+  - dns.msftncsi.com
+  - www.msftconnecttest.com
+  - connectivitycheck.gstatic.com
+  - connect.rom.miui.com
+  - time.*.com
+  - ntp.*.com
+  - +.pool.ntp.org
+  - router.asus.com
+  - tplinkwifi.net
+  - tendawifi.com
+  - +.bca.co.id
+  - +.bni.co.id
+  - +.bri.co.id
+  - +.mandiri.co.id
+  - +.stun.*.*
+  - +.stun.*.*.*
+  - +.stun.*.*.*.*
+  - +.stun.*.*.*.*.*
+  - '*.n.n.srv.nintendo.net'
+  - xbox.*.*.microsoft.com
+  - '*.*.xboxlive.com'
+  cache-algorithm: arc
+  default-nameserver:
+  - https://1.1.1.1/dns-query
+  - https://9.9.9.9/dns-query
+  nameserver:
+  - https://family.dns.bebasid.com/dns-query
+  - tls://family.dns.bebasid.com:853
+  proxy-server-nameserver:
+  - https://1.1.1.1/dns-query
+  - https://dns.google/dns-query
+  - https://dns.quad9.net/dns-query
+  - https://9.9.9.9/dns-query
+  - https://94.140.14.14/dns-query
+  nameserver-policy:
+    +.openai.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.chatgpt.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.chatgpt.site:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.anthropic.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.claude.ai:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.claude.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.gemini.google.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+  fallback:
+  - https://family.dns.bebasid.com/dns-query
+  - tls://family.dns.bebasid.com:853
+  fallback-lazy-query: false
+  fallback-filter:
+    geoip: true
+    geoip-code: ID
+    ipcidr:
+    - 240.0.0.0/4
+  prefer-h3: false
+  use-hosts: true
+  use-system-hosts: false
+rules:
+- DOMAIN,googleads.g.doubleclick.net,REJECT
+- DOMAIN,ad.doubleclick.net,REJECT
+- DOMAIN,pubads.g.doubleclick.net,REJECT
+- DOMAIN,securepubads.g.doubleclick.net,REJECT
+- DOMAIN,pagead2.googlesyndication.com,REJECT
+- DOMAIN,tpc.googlesyndication.com,REJECT
+- DOMAIN,www.googleadservices.com,REJECT
+- DOMAIN,imasdk.googleapis.com,REJECT
+- DOMAIN,ads.youtube.com,REJECT
+- DOMAIN-SUFFIX,2mdn.net,REJECT
+- DOMAIN-SUFFIX,googlesyndication.com,REJECT
+- DOMAIN-SUFFIX,googleadservices.com,REJECT
+- DOMAIN,adtrafficquality.google,REJECT
+- DOMAIN-SUFFIX,googleadapis.com,REJECT
+- DOMAIN,mobileads.google.com,REJECT
+- DOMAIN,pagead.l.google.com,REJECT
+- DOMAIN,adservice.google.com,REJECT
+- DOMAIN,stats.g.doubleclick.net,REJECT
+- DOMAIN,m.doubleclick.net,REJECT
+- DOMAIN,mediavisor.doubleclick.net,REJECT
+- DOMAIN,adstatistics.av380.net,REJECT
+- DOMAIN,logs.av380.net,REJECT
+- DOMAIN,ad.av380.net,REJECT
+- DOMAIN,ads.av380.net,REJECT
+- DOMAIN,advert.av380.net,REJECT
+- DOMAIN,advertising.av380.net,REJECT
+- DOMAIN,promotion.av380.net,REJECT
+- DOMAIN,promotions.av380.net,REJECT
+- DOMAIN,app-ad.av380.net,REJECT
+- DOMAIN,veepai-device-log.eye4.cn,REJECT
+- DOMAIN,eulog.ezvizlife.com,REJECT
+- DOMAIN,log.ezvizlife.com,REJECT
+- DOMAIN,salog.ezvizlife.com,REJECT
+- DOMAIN,sgplog.ezvizlife.com,REJECT
+- DOMAIN,uslog.ezvizlife.com,REJECT
+- DOMAIN,rum-apis.reolink.com,REJECT
+- DOMAIN,sentry.tuyaus.com,REJECT
+- DOMAIN,promotion-en.xmeye.net,REJECT
+- DOMAIN,000333casino.com,REJECT
+- DOMAIN,1joycasino.club,REJECT
+- DOMAIN,20betcasinoonline.com,REJECT
+- DOMAIN,21casino-online.de,REJECT
+- DOMAIN,400bonuscasino.com,REJECT
+- DOMAIN,5-best-online-casinos.com,REJECT
+- DOMAIN,adnetwork.bet,REJECT
+- DOMAIN,adpool.bet,REJECT
+- DOMAIN,ads.betmgm.bet.br,REJECT
+- DOMAIN,ads.brazino777.bet.br,REJECT
+- DOMAIN,ads.energycasinopartners.com,REJECT
+- DOMAIN,ads.gogocasino.com,REJECT
+- DOMAIN,ads.grosvenorcasinos.com,REJECT
+- DOMAIN,ads.roku.com,REJECT
+- DOMAIN,ads.spotify.com,REJECT
+- DOMAIN,ads.twitch.tv,REJECT
+- DOMAIN,ads.versus.bet.br,REJECT
+- DOMAIN,adv.casinopays.com,REJECT
+- DOMAIN,advertising.netflix.com,REJECT
+- DOMAIN,advertising.roku.com,REJECT
+- DOMAIN,aff.bateu.bet.br,REJECT
+- DOMAIN,aff.esportesdasorte.bet.br,REJECT
+- DOMAIN,aff.hiper.bet.br,REJECT
+- DOMAIN,aff.oleybet.bet.br,REJECT
+- DOMAIN,afiliados.esportiva.bet,REJECT
+- DOMAIN,alexander-casino-en-ligne.fr,REJECT
+- DOMAIN,allyspin-casino.fr,REJECT
+- DOMAIN,allyspincasino-online.de,REJECT
+- DOMAIN,amon-casino-fr.fr,REJECT
+- DOMAIN,anaktogel.com,REJECT
+- DOMAIN,analytics-api.crowncoinscasino.com,REJECT
+- DOMAIN,aquawinscasino.fr,REJECT
+- DOMAIN,banner.syairtogelx.com,REJECT
+- DOMAIN,bassbetcasino-online.de,REJECT
+- DOMAIN,beef-casino-aktionscode.de,REJECT
+- DOMAIN,beef-online-casino-de.de,REJECT
+- DOMAIN,bet-on-redcasino.fr,REJECT
+- DOMAIN,betify-casino-bonus-fr.fr,REJECT
+- DOMAIN,betify-casino-en-ligne.fr,REJECT
+- DOMAIN,betify-casino-poker-fr.fr,REJECT
+- DOMAIN,betssoncasino.fr,REJECT
+- DOMAIN,bettogel.shop,REJECT
+- DOMAIN,bokacasino.fr,REJECT
+- DOMAIN,btccasinoexpert.com,REJECT
+- DOMAIN,candy-casino-online.de,REJECT
+- DOMAIN,captaincookscasino-online.de,REJECT
+- DOMAIN,casino-ad-mediation.me2zengame.com,REJECT
+- DOMAIN,casino-amonbet.fr,REJECT
+- DOMAIN,casino-blitz.fr,REJECT
+- DOMAIN,casino-dragonia-online.de,REJECT
+- DOMAIN,casino-friday-roll.fr,REJECT
+- DOMAIN,casino-fridayroll.fr,REJECT
+- DOMAIN,casino-igobet.fr,REJECT
+- DOMAIN,casino-infinity-online-de.xyz,REJECT
+- DOMAIN,casino-instant-online.de,REJECT
+- DOMAIN,casino-kinbet-online.de,REJECT
+- DOMAIN,casino.betsson.com,REJECT
+- DOMAIN,casino1win.fr,REJECT
+- DOMAIN,casinobonusdeals.io,REJECT
+- DOMAIN,casinoboomsbet.fr,REJECT
+- DOMAIN,casinocrazytime.fr,REJECT
+- DOMAIN,casinohacksforyou.com,REJECT
+- DOMAIN,casinohermesvip.fr,REJECT
+- DOMAIN,casinoinfinity-official.fr,REJECT
+- DOMAIN,casinojoy.fr,REJECT
+- DOMAIN,casinoliraspin.fr,REJECT
+- DOMAIN,casinolucky8.fr,REJECT
+- DOMAIN,casinolyenligne.fr,REJECT
+- DOMAIN,casinomostbet.fr,REJECT
+- DOMAIN,casinovacasinos.fr,REJECT
+- DOMAIN,casinovascasino.fr,REJECT
+- DOMAIN,casinovegashero.fr,REJECT
+- DOMAIN,cawinocasino.fr,REJECT
+- DOMAIN,cazeus-casino-fr.fr,REJECT
+- DOMAIN,celsius-casino.fr,REJECT
+- DOMAIN,celsiuscasino-connexion.fr,REJECT
+- DOMAIN,circus-casino1.fr,REJECT
+- DOMAIN,circuscasinoenligne.fr,REJECT
+- DOMAIN,congtogel168.site,REJECT
+- DOMAIN,coolzinoscasino.fr,REJECT
+- DOMAIN,corgibetcasinos.fr,REJECT
+- DOMAIN,corgibetscasino.fr,REJECT
+- DOMAIN,crash-casinos.co.uk,REJECT
+- DOMAIN,crash-casinouk.co.uk,REJECT
+- DOMAIN,dachbet-casino-online.de,REJECT
+- DOMAIN,diproton-ads-prod-eu-central-1.hulu.com.akadns.net,REJECT
+- DOMAIN,diproton-ads-prod-eu-west-1.hulu.com.akadns.net,REJECT
+- DOMAIN,diproton-ads-prod-us-east-1.hulu.com.akadns.net,REJECT
+- DOMAIN,diproton-ads-prod-us-east-2.hulu.com.akadns.net,REJECT
+- DOMAIN,diproton-ads-prod-us-west-2.hulu.com.akadns.net,REJECT
+- DOMAIN,dragonia-casino-online.com,REJECT
+- DOMAIN,dublinbet-casinos.fr,REJECT
+- DOMAIN,duospin-casino.fr,REJECT
+- DOMAIN,elitespin-casino.fr,REJECT
+- DOMAIN,euslotcasino.fr,REJECT
+- DOMAIN,familytogel.fun,REJECT
+- DOMAIN,fanatics.bet,REJECT
+- DOMAIN,firixslotcasino.fr,REJECT
+- DOMAIN,fontancasino-online.de,REJECT
+- DOMAIN,forbetcasino.pl,REJECT
+- DOMAIN,fr-roobetcasino.fr,REJECT
+- DOMAIN,freespins.bet,REJECT
+- DOMAIN,fridayrollcasino-online.de,REJECT
+- DOMAIN,gamix-casino.fr,REJECT
+- DOMAIN,gg-bet.de,REJECT
+- DOMAIN,ggbetcasino.de,REJECT
+- DOMAIN,gioocasino.fr,REJECT
+- DOMAIN,goldenpandacasino-online.de,REJECT
+- DOMAIN,h25casinoonline.org,REJECT
+- DOMAIN,happyhugocasinos.fr,REJECT
+- DOMAIN,happyhugoscasino.fr,REJECT
+- DOMAIN,hitnspin-casino.fr,REJECT
+- DOMAIN,hitnspincasino.fr,REJECT
+- DOMAIN,hugo-bets-casino.fr,REJECT
+- DOMAIN,ile-de-casinos.fr,REJECT
+- DOMAIN,instant-casinoinstant.fr,REJECT
+- DOMAIN,iwildcasinoonline.com,REJECT
+- DOMAIN,jokery-casino-online.de,REJECT
+- DOMAIN,jokerycasino-online.de,REJECT
+- DOMAIN,jouermafiacasino.fr,REJECT
+- DOMAIN,jpfevercasino.fr,REJECT
+- DOMAIN,julius-casino-onlinefr.fr,REJECT
+- DOMAIN,juliuscasino-bonus.fr,REJECT
+- DOMAIN,juliuscasino-officiel.fr,REJECT
+- DOMAIN,juliuscasinofrance.fr,REJECT
+- DOMAIN,kingbillycasino-online.de,REJECT
+- DOMAIN,korucasino.fr,REJECT
+- DOMAIN,lazacasino.com,REJECT
+- DOMAIN,legzo-casino.net,REJECT
+- DOMAIN,locowincasinopromo.fr,REJECT
+- DOMAIN,lp.titancasino.com,REJECT
+- DOMAIN,lto.esportesdasorte.bet.br,REJECT
+- DOMAIN,lto.lottu.bet.br,REJECT
+- DOMAIN,lto.ona.bet.br,REJECT
+- DOMAIN,lucky-bet.site,REJECT
+- DOMAIN,lucky8-casino-france.fr,REJECT
+- DOMAIN,lucky8casino-france.fr,REJECT
+- DOMAIN,luckystart-casino.fr,REJECT
+- DOMAIN,luckywave-casino-fr.fr,REJECT
+- DOMAIN,lukkicasino.fr,REJECT
+- DOMAIN,mad-casino-enligne.fr,REJECT
+- DOMAIN,mad-casinofr.fr,REJECT
+- DOMAIN,madcasino-online.fr,REJECT
+- DOMAIN,madcasinofr.fr,REJECT
+- DOMAIN,madcasinoo.fr,REJECT
+- DOMAIN,magicalspins-casino.fr,REJECT
+- DOMAIN,malinaacasinos.fr,REJECT
+- DOMAIN,marvelcasino-online.de,REJECT
+- DOMAIN,megawin-casinos.fr,REJECT
+- DOMAIN,millionzcasino1.fr,REJECT
+- DOMAIN,motorcasino.com,REJECT
+- DOMAIN,mrcash-casino.fr,REJECT
+- DOMAIN,mzansi-casino.fr,REJECT
+- DOMAIN,neospincasino.fr,REJECT
+- DOMAIN,neue-online-casinos-2026.de,REJECT
+- DOMAIN,nine-casinosfr.fr,REJECT
+- DOMAIN,nixbet-casino-fr.fr,REJECT
+- DOMAIN,nixbet-casino.fr,REJECT
+- DOMAIN,ohacasino.fr,REJECT
+- DOMAIN,olybetcasino.fr,REJECT
+- DOMAIN,olympes-casino.fr,REJECT
+- DOMAIN,online-casino-ohne-lizenz.de,REJECT
+- DOMAIN,online-casino.webpark.pl,REJECT
+- DOMAIN,onlinebonuscasino-de.de,REJECT
+- DOMAIN,onlinecasinoparis.com,REJECT
+- DOMAIN,onlinecasinos77laos.com,REJECT
+- DOMAIN,onlinecasinositeindia.com,REJECT
+- DOMAIN,onlinecasinoslasvegas.com,REJECT
+- DOMAIN,onlinecasinosohneverifizierung.de,REJECT
+- DOMAIN,orozino-casino.fr,REJECT
+- DOMAIN,oscar-spincasino.fr,REJECT
+- DOMAIN,pixel.spotify.com,REJECT
+- DOMAIN,pixel.web.roku.com,REJECT
+- DOMAIN,playmojocasino.fr,REJECT
+- DOMAIN,plinkocasinoenligne.fr,REJECT
+- DOMAIN,poker-bet.com,REJECT
+- DOMAIN,poker.bet365.com,REJECT
+- DOMAIN,polisitogel.hair,REJECT
+- DOMAIN,prediksitogeljitu.in,REJECT
+- DOMAIN,premiercasino.fr,REJECT
+- DOMAIN,revolutioncasino-online.de,REJECT
+- DOMAIN,richardcasino-online.de,REJECT
+- DOMAIN,ritzocasino.fr,REJECT
+- DOMAIN,robycasino-france.fr,REJECT
+- DOMAIN,rocketplayonlinecasino.net,REJECT
+- DOMAIN,rockstarscasino.fr,REJECT
+- DOMAIN,rockyspinscasino.fr,REJECT
+- DOMAIN,roo-casino.fr,REJECT
+- DOMAIN,roobet-casino.fr,REJECT
+- DOMAIN,scoredcasino-fr.fr,REJECT
+- DOMAIN,serve.williamhillcasino.com,REJECT
+- DOMAIN,sgtm.betmgm.bet.br,REJECT
+- DOMAIN,sgtm.betpontobet.bet.br,REJECT
+- DOMAIN,shanscasino1.ru,REJECT
+- DOMAIN,simsino-casino-fr.fr,REJECT
+- DOMAIN,simsinocasinofrance.fr,REJECT
+- DOMAIN,slot-n-bet.fr,REJECT
+- DOMAIN,slotlair-casino.fr,REJECT
+- DOMAIN,slotn-bet.fr,REJECT
+- DOMAIN,slotrushcasino.fr,REJECT
+- DOMAIN,slotshoppercasino.de,REJECT
+- DOMAIN,smetrics.casino.org,REJECT
+- DOMAIN,spinline-casino-online.de,REJECT
+- DOMAIN,spinsy-bet.fr,REJECT
+- DOMAIN,spinsycasinoenligne.fr,REJECT
+- DOMAIN,spirit-casino.fr,REJECT
+- DOMAIN,sst.betesporte.bet.br,REJECT
+- DOMAIN,sst.betvip.bet.br,REJECT
+- DOMAIN,sst.sortenabet.bet.br,REJECT
+- DOMAIN,sst.vaidebet.bet.br,REJECT
+- DOMAIN,sst.zeroum.bet,REJECT
+- DOMAIN,stape.betpontobet.bet.br,REJECT
+- DOMAIN,stape.pix.bet.br,REJECT
+- DOMAIN,stardacasinoonline.de,REJECT
+- DOMAIN,sumbawatogel.xyz,REJECT
+- DOMAIN,the-crash-casino.co.uk,REJECT
+- DOMAIN,togelsydneypools.org,REJECT
+- DOMAIN,together-casinos.fr,REJECT
+- DOMAIN,top-neue-online-casinos.de,REJECT
+- DOMAIN,toptrustedcasino.com,REJECT
+- DOMAIN,topwebcasino.com,REJECT
+- DOMAIN,tortuga-casinotortuga.fr,REJECT
+- DOMAIN,touchcasinos.fr,REJECT
+- DOMAIN,traditioncasino-online.de,REJECT
+- DOMAIN,ufabaccarat.bet,REJECT
+- DOMAIN,unibetcasino777.net,REJECT
+- DOMAIN,unibetcasinomt.xyz,REJECT
+- DOMAIN,v-casino.xyz,REJECT
+- DOMAIN,vegas-plus-casinos.fr,REJECT
+- DOMAIN,verdecasino-offers.com,REJECT
+- DOMAIN,villentoonlinecasino.org,REJECT
+- DOMAIN,vinylcasinoenligne.fr,REJECT
+- DOMAIN,volna.casino,REJECT
+- DOMAIN,vulkanvegascasino.at,REJECT
+- DOMAIN,webcasinozone.com,REJECT
+- DOMAIN,wg87vip.bet,REJECT
+- DOMAIN,win-vegas-plus-casino.fr,REJECT
+- DOMAIN,win2daycasino.at,REJECT
+- DOMAIN,winmachance-casino.fr,REJECT
+- DOMAIN,winnerz-casino-online.de,REJECT
+- DOMAIN,winspincasino.fr,REJECT
+- DOMAIN,winwin.bet,REJECT
+- DOMAIN,winztercasinos.fr,REJECT
+- DOMAIN,www.entercasino.com,REJECT
+- DOMAIN,www.titancasino.com,REJECT
+- DOMAIN,x5bet.casino,REJECT
+- DOMAIN,zoome-casino.fr,REJECT
+- RULE-SET,threat-malware,REJECT
+- RULE-SET,threat-phishing,REJECT
+- RULE-SET,threat-cryptominers,REJECT
+- RULE-SET,threat-fake-scam,REJECT
+- RULE-SET,threat-tif-mini,REJECT
+- RULE-SET,gambling-mini,REJECT
+- RULE-SET,gambling-regex,REJECT
+- RULE-SET,adult-category,REJECT
+- RULE-SET,adult-local,REJECT
+- RULE-SET,pinjol-local,REJECT
+- RULE-SET,popup-ads,REJECT
+- DOMAIN,805ba.v.fwmrm.net,REJECT
+- DOMAIN,tvm-mtv-freewheel.akamaized.net,REJECT
+- DOMAIN,adeventtracker.spotify.com,REJECT
+- DOMAIN,ads-fa.spotify.com,REJECT
+- DOMAIN,ads-ak.spotify.com,REJECT
+- DOMAIN,adserver.spotify.com,REJECT
+- DOMAIN,adstudio.spotify.com,REJECT
+- DOMAIN,ad-analytics.spotify.com,REJECT
+- DOMAIN,aet.spotify.com,REJECT
+- DOMAIN,analytics.spotify.com,REJECT
+- DOMAIN,bloodhound.spotify.com,REJECT
+- DOMAIN,crashdump.spotify.com,REJECT
+- DOMAIN,pixel-static.spotify.com,REJECT
+- DOMAIN,pixels.spotify.com,REJECT
+- DOMAIN-SUFFIX,popads.net,REJECT
+- DOMAIN-SUFFIX,popcash.net,REJECT
+- DOMAIN-SUFFIX,propellerads.com,REJECT
+- DOMAIN-SUFFIX,adsterra.com,REJECT
+- DOMAIN-SUFFIX,onclickalgo.com,REJECT
+- DOMAIN-SUFFIX,onclickperformance.com,REJECT
+- DOMAIN-SUFFIX,hilltopads.net,REJECT
+- DOMAIN-SUFFIX,richads.com,REJECT
+- DOMAIN-SUFFIX,clickadu.com,REJECT
+- DOMAIN-SUFFIX,adcash.com,REJECT
+- DOMAIN-SUFFIX,applovin.com,REJECT
+- DOMAIN-SUFFIX,applvn.com,REJECT
+- DOMAIN-SUFFIX,unityads.unity3d.com,REJECT
+- DOMAIN-SUFFIX,supersonicads.com,REJECT
+- DOMAIN-SUFFIX,ironsrc.com,REJECT
+- DOMAIN-SUFFIX,vungle.com,REJECT
+- DOMAIN-SUFFIX,vunglecloud.com,REJECT
+- DOMAIN-SUFFIX,chartboost.com,REJECT
+- DOMAIN-SUFFIX,inmobi.com,REJECT
+- DOMAIN-SUFFIX,adcolony.com,REJECT
+- DOMAIN-SUFFIX,mintegral.com,REJECT
+- DOMAIN-SUFFIX,mtgglobals.com,REJECT
+- DOMAIN-SUFFIX,rayjump.com,REJECT
+- DOMAIN-SUFFIX,pangle.io,REJECT
+- DOMAIN-SUFFIX,pangleglobal.com,REJECT
+- DOMAIN-SUFFIX,tapjoy.com,REJECT
+- DOMAIN-SUFFIX,tapjoyads.com,REJECT
+- DOMAIN-SUFFIX,startappservice.com,REJECT
+- DOMAIN-SUFFIX,startapp.com,REJECT
+- DOMAIN-SUFFIX,fyber.com,REJECT
+- DOMAIN-SUFFIX,inner-active.mobi,REJECT
+- RULE-SET,app-ad-safe,REJECT
+- RULE-SET,ads_indonesia,REJECT
+- RULE-SET,ads_domain,REJECT
+- RULE-SET,anti-ad,REJECT
+- RULE-SET,tracker-domain,REJECT
+- MATCH,DIRECT
+rule-providers:
+  ads_indonesia:
+    type: file
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/ads_indonesia.mrs
+  ads_domain:
+    type: http
+    behavior: domain
+    path: ./rule_providers/ads_domain.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs
+    interval: 43200
+    format: mrs
+  anti-ad:
+    type: http
+    behavior: domain
+    path: ./rule_providers/anti-ad-clash.yaml
+    url: https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-clash.yaml
+    interval: 43200
+    format: yaml
+  tracker-domain:
+    type: http
+    behavior: domain
+    path: ./rule_providers/tracker.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tracker.mrs
+    interval: 43200
+    format: mrs
+  threat-tif-mini:
+    type: file
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/threat-tif-mini.mrs
+  adult-category:
+    type: http
+    behavior: domain
+    path: ./rule_providers/adult-category.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-porn.mrs
+    interval: 43200
+    format: mrs
+  gambling-mini:
+    type: file
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/gambling-mini.mrs
+  gambling-regex:
+    type: file
+    behavior: classical
+    format: yaml
+    path: ./rule_providers/security-gambling.yaml
+  adult-local:
+    type: file
+    behavior: classical
+    format: yaml
+    path: ./rule_providers/security-adult.yaml
+  pinjol-local:
+    type: file
+    behavior: classical
+    format: yaml
+    path: ./rule_providers/security-pinjol.yaml
+  popup-ads:
+    type: file
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/popup-ads.mrs
+  threat-malware:
+    type: file
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/threat-malware.mrs
+  threat-phishing:
+    type: file
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/threat-phishing.mrs
+  threat-cryptominers:
+    type: file
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/threat-cryptominers.mrs
+  threat-fake-scam:
+    type: file
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/threat-fake-scam.mrs
+  app-ad-safe:
+    type: inline
+    behavior: domain
+    payload:
+    - adv.sec.intl.miui.com
+    - adv.l7.34.sec.miui.com
+    - adv.sec.miui.com
+    - ad.miui.com
+    - api.ads.xiaomi.com
+    - ad.eu.xiaomi.com
+    - ad.quickapp.hybrid.xiaomi.com
+    - ad.india.xiaomi.com
+    - ad.intl.xiaomi.com
+    - xadx.file.market.xiaomi.com
+    - wtradv.market.xiaomi.com
+    - ad.cdn.pandora.xiaomi.com
+    - ads.heytapmobi.com
+    - ads.heytapmobile.com
+    - ads-bdapi-my.heytapmobile.com
+    - ads-bdapi-ph.heytapmobile.com
+    - ads-bdapi-th.heytapmobile.com
+    - ads-bdapi-vn.heytapmobile.com
+    - ad-growth-in.heytapmobile.com
+    - ad-growth-ru.heytapmobile.com
+    - ad-growth-sg.heytapmobile.com
+    - adx-ads-fr.heytapmobile.com
+    - adx-ads-ru.heytapmobile.com
+    - bdapi-ads-sg.heytapmobile.com
+    - cldata-ads-fr.heytapmobile.com
+    - cldata-ads-ru.heytapmobile.com
+    - sms-ads-in.heytapmobile.com
+    - sms-ads-ru.heytapmobile.com
+    - stgdata-ads-fr.heytapmobile.com
+    - ads.oppomobile.com
+    - adsfs.oppomobile.com
+    - ads.bing.com
+    - adserver.bing.com
+    - outlookads.live.com
+    - ads.microsoft.com
+    - adsdk.microsoft.com
+    - advertising.microsoft.com
+    - bingads.microsoft.com
+    - msadsscale.microsoft.com
+    - ads.eu.msn.com
+    - rmads.eu.msn.com
+    - ads.jp.msn.com
+    - advertising.jp.msn.com
+    - ad.msn.com
+    - adevents.msn.com
+    - ads.msn.com
+    - ads1.msn.com
+    - mobileads.msn.com
+    - rads.msn.com
+    - rmads.msn.com
+    - srtb.msn.com
+    - prod.editor.ads.trafficmanager.net
+    - ads-msn-com-profile.trafficmanager.net
+    - adsdk.trafficmanager.net
+    - dsp-ad-cache-tm.trafficmanager.net
+    - ssp-prod-eastus-nonmutt.trafficmanager.net
+    - msads.net
+    - advertising.apple.com
+    - advp.apple.com
+    - api-adservices.apple.com
+    - iad.apple.com
+    - iadcontent.apple.com
+    - iadmoo.apple.com
+    - iadsdk.apple.com
+    - iadworkbench.apple.com
+    - searchads.apple.com
+    - .smaato.com
+    - .smaato.net
+    - .ogury.com
+    - .ogury.co
+    - .pubnative.net
+    - .hyprmx.com
+    - .mobilefuse.com
+    - .amazon-adsystem.com
+    - .mopub.com
+    - .adjoe.io
