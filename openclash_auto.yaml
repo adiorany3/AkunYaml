@@ -320,8 +320,8 @@ proxy-groups:
 - name: GLOBAL
   type: fallback
   proxies:
-  - AUTO-FAST
   - FALLBACK
+  - AUTO-FAST
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true

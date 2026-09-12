@@ -2874,7 +2874,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "name": "GLOBAL",
             "type": "select",
             # General traffic shares four healthy exits; explicit sensitive rules still win first.
-            "proxies": ["AUTO-FAST", "FALLBACK"],
+            "proxies": ["FALLBACK", "AUTO-FAST"],
         },
         {
             "name": "PROXY",
