@@ -209436,8 +209436,31 @@
         ]
       },
       {
+        "domain_suffix": [
+          "challenges.cloudflare.com",
+          "hcaptcha.com",
+          "licdn.com",
+          "linkedin.cn",
+          "linkedin.com",
+          "lnkd.in",
+          "ookla.com",
+          "recaptcha.net",
+          "speedtest.net",
+          "speedtestcustom.com"
+        ],
+        "action": "route",
+        "outbound": "proxy"
+      },
+      {
         "network": "udp",
         "port": 443,
+        "action": "reject"
+      },
+      {
+        "rule_set": [
+          "ads-domain",
+          "tracker-domain"
+        ],
         "action": "reject"
       },
       {
@@ -381234,6 +381257,22 @@
           "zzzzz.casino"
         ],
         "action": "reject"
+      }
+    ],
+    "rule_set": [
+      {
+        "type": "remote",
+        "tag": "ads-domain",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/category-ads-all.srs",
+        "update_interval": "12h"
+      },
+      {
+        "type": "remote",
+        "tag": "tracker-domain",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/tracker.srs",
+        "update_interval": "12h"
       }
     ],
     "final": "proxy",

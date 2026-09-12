@@ -863,6 +863,22 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         for line in _read_text_file("adblock_allowlist.txt").splitlines()
         if line.strip() and not line.lstrip().startswith("#")
     }
+    remote_ad_rule_sets = [
+        {
+            "type": "remote",
+            "tag": "ads-domain",
+            "format": "binary",
+            "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/category-ads-all.srs",
+            "update_interval": "12h",
+        },
+        {
+            "type": "remote",
+            "tag": "tracker-domain",
+            "format": "binary",
+            "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/tracker.srs",
+            "update_interval": "12h",
+        },
+    ]
     marketplace_exact = list(marketplace_exact_domains())
     marketplace_suffix = list(marketplace_suffix_domains())
 
@@ -958,10 +974,20 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         route_rules.append({"domain_suffix": payment_suffix, "action": "route", "outbound": "proxy"})
     if marketplace_exact or marketplace_suffix:
         route_rules.append(marketplace_route_rule)
+    if allowlisted_domains:
+        route_rules.append({
+            "domain_suffix": sorted(allowlisted_domains),
+            "action": "route",
+            "outbound": "proxy",
+        })
     route_rules.extend([
         # Cloudflare WebSocket nodes carry TCP reliably, not QUIC. Rejecting
         # UDP/443 makes other Android apps immediately retry HTTPS over TCP.
         {"network": "udp", "port": 443, "action": "reject"},
+        {
+            "rule_set": [rule_set["tag"] for rule_set in remote_ad_rule_sets],
+            "action": "reject",
+        },
         {
             "domain": list(dict.fromkeys(streaming_ad_domains + ai_blocked_domains)),
             "action": "reject",
@@ -1017,6 +1043,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         ],
         "route": {
             "rules": route_rules,
+            "rule_set": remote_ad_rule_sets,
             "final": "proxy",
             "auto_detect_interface": True,
             "default_domain_resolver": "local",

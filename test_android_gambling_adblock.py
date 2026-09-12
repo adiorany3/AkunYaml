@@ -82,6 +82,13 @@ assert "spaylater.co.id" in rules[payment_rule_index]["domain_suffix"]
 marketplace_rule = rules[marketplace_rule_index]
 assert "business-api.tiktok.com" in marketplace_rule["domain"]
 assert "tiktok.com" not in marketplace_rule["domain_suffix"]
+remote_ad_index = next(index for index, rule in enumerate(rules) if "rule_set" in rule)
+allowlist_index = next(
+    index for index, rule in enumerate(rules)
+    if rule.get("outbound") == "proxy" and "linkedin.com" in rule.get("domain_suffix", [])
+)
+assert marketplace_rule_index < allowlist_index < remote_ad_index
+assert rules[remote_ad_index] == {"rule_set": ["ads-domain", "tracker-domain"], "action": "reject"}
 generated_reject_domains = {
     domain
     for rule in rules

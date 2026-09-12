@@ -34,6 +34,12 @@ def check(nodes, expected):
     for tag in ("BANK", "SOCIAL", "VMESS-VIDEO"):
         group = next(item for item in config["outbounds"] if item["tag"] == tag)
         assert group == {"type": "selector", "tag": tag, "outbounds": ["proxy"], "default": "proxy"}, group
+    remote_rule_sets = config["route"]["rule_set"]
+    assert {item["tag"] for item in remote_rule_sets} == {"ads-domain", "tracker-domain"}
+    assert all(item["type"] == "remote" and item["format"] == "binary" for item in remote_rule_sets)
+    assert all(item["url"].endswith(".srs") and item["update_interval"] == "12h" for item in remote_rule_sets)
+    remote_reject = next(rule for rule in config["route"]["rules"] if "rule_set" in rule)
+    assert remote_reject == {"rule_set": ["ads-domain", "tracker-domain"], "action": "reject"}
     _validate_singbox_json(json.dumps(config), os.getenv("SINGBOX_PATH", ".local_bin/sing-box"))
     return config
 
