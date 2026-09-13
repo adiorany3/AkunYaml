@@ -2877,7 +2877,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         {
             "name": "GLOBAL",
             "type": "fallback",
-            "proxies": ["FALLBACK", "AUTO-FAST"],
+            "proxies": ["LOAD-BALANCE", "FALLBACK", "AUTO-FAST"],
             "url": test_url,
             "interval": global_interval,
             "lazy": True,
@@ -3018,7 +3018,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
     ]
     # OpenWrt uses one shared latency probe; category groups reuse it.
     if _env_bool_value("CONSOLIDATE_ROUTER_PROBES", True):
-        retired_probe_groups = {"PING-CHECK", "WARM-UP", "WARM-UP-CF", "STREAMING-FAST", "LOAD-BALANCE"}
+        retired_probe_groups = {"PING-CHECK", "WARM-UP", "WARM-UP-CF", "STREAMING-FAST"}
         proxy_groups = [g for g in proxy_groups if g.get("name") not in retired_probe_groups]
 
     rules = [

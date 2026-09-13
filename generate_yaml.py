@@ -1471,7 +1471,7 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
             raise ValueError("OpenClash auto requires at least 2 automatic VLESS/VMess/Trojan nodes")
         required_auto_names = auto_node_names[:2]
         for group in groups:
-            if not isinstance(group, dict):
+            if not isinstance(group, dict) or group.get("name") == "LOAD-BALANCE":
                 continue
             refs = group.setdefault("proxies", [])
             if not isinstance(refs, list):
@@ -1482,7 +1482,7 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
     manual_group = {
         "name": "MANUAL",
         "type": "fallback",
-        "proxies": [*manual_names, *required_auto_names] or ["AUTO-FAST"],
+        "proxies": manual_names,
         "url": "https://www.gstatic.com/generate_204",
         "interval": 30,
         "lazy": False,
@@ -1492,19 +1492,11 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
     }
     groups.append({
         "name": "REDDIT",
-        "type": "fallback" if not android else "select",
-        "proxies": [*manual_names, *required_auto_names, "MANUAL"] if not android else ["MANUAL"],
-        **({
-            "url": "https://www.gstatic.com/generate_204",
-            "interval": 30,
-            "lazy": False,
-            "timeout": 3000,
-            "expected-status": "200/204/301/302",
-            "max-failed-times": 2,
-        } if not android else {}),
+        "type": "select",
+        "proxies": ["MANUAL"],
     })
 
-    # GLOBAL prioritizes FALLBACK; FALLBACK prioritizes manually supplied nodes.
+    # GLOBAL prioritizes load balancing; MANUAL remains explicit manual fallback.
     for group in groups:
         if not isinstance(group, dict):
             continue
@@ -1512,15 +1504,14 @@ def add_manual_group_to_config(config: dict[str, Any], manual_nodes: list[Any], 
         proxies_list = group.get("proxies")
         if not isinstance(proxies_list, list):
             continue
-        if not android:
-            # Every automatic group keeps both VLESS primaries, then all manual backups.
+        if not android and name not in {"LOAD-BALANCE", "REDDIT"}:
             for manual_name in manual_names:
                 _insert_once(proxies_list, manual_name)
         if name == "GLOBAL":
-            # GLOBAL starts with FALLBACK (fallback type).
-            if "FALLBACK" in proxies_list:
-                proxies_list.remove("FALLBACK")
-            proxies_list.insert(0, "FALLBACK")
+            preferred = "FALLBACK" if android else "LOAD-BALANCE"
+            if preferred in proxies_list:
+                proxies_list.remove(preferred)
+            proxies_list.insert(0, preferred)
         elif (not android) and name == "PROXY":
             _insert_once(proxies_list, "MANUAL", 0)
 

@@ -1,11 +1,11 @@
 name,type,network,original_server,bug_sni,mihomo_status,url_test_ms,nekobox_test_ms,nekobox_status,nekobox_ready
-AKUN-019-UNKNOWN-VLESS-WS-88MS,vless,ws,208.103.161.5,dry-butterfly-8eb9.tmpgnacio83.workers.dev,HTTP 204,373,542,HTTP 204,yes
-AKUN-023-CLOUDFLARE-VLESS-WS-89MS,vless,ws,cf-vless-4cf55824.aimall.fr,cf-vless-4cf55824.aimall.fr,HTTP 204,549,673,HTTP 204,yes
-AKUN-029-GOV-VLESS-WS-92MS,vless,ws,www.zsu.gov.ua,misaka.cndyw.ggff.net,HTTP 204,560,664,HTTP 204,yes
-AKUN-002-CLOUDFLARE-VLESS-WS-87MS,vless,ws,172.67.217.240,fx3h2kf8xn.fx6hsv0.ccwu.cc,HTTP 204,594,649,HTTP 204,yes
-AKUN-021-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-90MS,vless,ws,mybb.com,rAyAn-007.nAsTaRaN.DpDnS.OrG,HTTP 204,595,666,HTTP 204,yes
-AKUN-004-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-81MS,vless,ws,chatgpt.com,powered-by-surena.user68f797c2f3e1b.workers.dev,HTTP 204,617,675,HTTP 204,yes
-AKUN-018-RS-RAPIDSEEDBOX-20190717-VLESS-WS-82MS,vless,ws,45.130.125.126,BItter-CreDIT-61b8.b76EbA0aBb.wORkerS.dEv,HTTP 204,619,658,HTTP 204,yes
-AKUN-015-CLOUDFLARE-VLESS-WS-88MS,vless,ws,172.67.161.136,bpb-PanEl-4e2C.SAkWra939.wORKErS.DEV,HTTP 204,624,257,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-020-CLOUDFLARE-VLESS-WS-82MS,vless,ws,yx.zhourf2006.dpdns.org,yx.zhourf2006.dpdns.org,HTTP 204,626,666,HTTP 204,yes
-AKUN-031-BIGCOMMERCE-VLESS-WS-102MS,vless,ws,63.141.128.22,MiSty-tooth-78cA.FoboGAH414-e7B.WoRKERs.DEv,HTTP 204,628,656,HTTP 204,yes
+AKUN-002-DEV-VLESS-WS-83MS,vless,ws,hi.n2foriran.workers.dev,hi.n2foriran.workers.dev,HTTP 204,349,6333,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
+AKUN-018-UNKNOWN-VLESS-WS-87MS,vless,ws,208.103.161.5,dry-butterfly-8eb9.tmpgnacio83.workers.dev,HTTP 204,361,6171,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
+AKUN-009-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-89MS,vless,ws,cf-socks.caoyuwu.eu.org,cf-socks.caoyuwu.eu.org,HTTP 204,550,643,HTTP 204,yes
+AKUN-012-CLOUDFLARE-VLESS-WS-93MS,vless,ws,172.67.217.240,fx3h2kf8xn.fx6hsv0.ccwu.cc,HTTP 204,604,634,HTTP 204,yes
+AKUN-007-CLOUDFLARE-VLESS-WS-88MS,vless,ws,188.114.97.6,quiet-snowflake-e1dd.374-ac3.workers.dev,HTTP 204,631,6167,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
+AKUN-005-CLOUDFLARE-VLESS-WS-86MS,vless,ws,172.64.156.60,powered-by-surena.configfarsi6982dd6e0355e.workers.dev,HTTP 204,633,673,HTTP 204,yes
+AKUN-008-TENCENT-VLESS-WS-90MS,vless,ws,43.133.110.81,faxf32gkfzoxqv.fx6hsv0.ccwu.cc,HTTP 204,635,569,HTTP 204,yes
+AKUN-004-CLOUDFLARE-VLESS-WS-89MS,vless,ws,104.18.42.163,fx3h2kf8xn.fx6hsv0.ccwu.cc,HTTP 204,637,657,HTTP 204,yes
+AKUN-016-CLOUDFLARE-VLESS-WS-97MS,vless,ws,104.21.33.59,cfvvv-ev1.pages.dev,HTTP 204,639,705,HTTP 204,yes
+AKUN-001-CLOUDFLARE-VLESS-WS-84MS,vless,ws,172.64.52.173,faxf32gkfzoxqv.fx6hsv0.ccwu.cc,HTTP 204,642,665,HTTP 204,yes

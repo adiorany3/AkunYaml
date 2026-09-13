@@ -42,10 +42,10 @@ failed = False
 for filename in FILES:
     config = yaml.safe_load((ROOT / filename).read_text(encoding="utf-8")) or {}
     rules = [str(rule) for rule in config.get("rules", []) or []]
-    policy = "GLOBAL" if filename == "openclash_android.yaml" else "DIRECT"
-    service_rule = f"DOMAIN-SUFFIX,av380.net,{policy}"
+    lan_policy = "GLOBAL" if filename == "openclash_android.yaml" else "DIRECT"
+    service_rule = "DOMAIN-SUFFIX,av380.net,GLOBAL"
     lan_rules = tuple(
-        f"IP-CIDR,{cidr},{policy},no-resolve"
+        f"IP-CIDR,{cidr},{lan_policy},no-resolve"
         for cidr in ("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16")
     )
     required = (*AD_RULES, service_rule, *lan_rules)
@@ -58,6 +58,6 @@ for filename in FILES:
         failed = True
         print(f"[FAIL] {filename}: missing={missing}, v380-ad-before-service={order_ok}, broad-vendor-rejects={broad_vendor_rejects}")
     else:
-        print(f"[OK] {filename}: V380 Pro ad hosts rejected first; service/LAN use {policy}")
+        print(f"[OK] {filename}: V380 Pro ad hosts rejected first; service uses GLOBAL, LAN uses {lan_policy}")
 
 raise SystemExit(1 if failed else 0)
