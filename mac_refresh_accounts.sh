@@ -136,6 +136,7 @@ fi
 echo "[AUDIT] Memeriksa keamanan, adblock, kategori judi, dan budget performa..."
 "$PY" ads_audit.py
 "$PY" cctv_app_audit.py
+"$PY" child_safe_search_audit.py
 "$PY" dns_speed_policy_audit.py
 "$PY" dns_leak_audit.py
 "$PY" threat_safe_audit.py

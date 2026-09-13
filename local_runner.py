@@ -285,6 +285,17 @@ CHILD_SAFE_DNS = (
     "tls://family.dns.bebasid.com:853",
 )
 
+# After `CHILD_SAFE_DNS`, add:
+CHILD_SAFE_HOSTS = {
+    "www.google.com": "forcesafesearch.google.com",
+    "www.google.co.id": "forcesafesearch.google.com",
+    "www.youtube.com": "restrictmoderate.youtube.com",
+    "m.youtube.com": "restrictmoderate.youtube.com",
+    "youtubei.googleapis.com": "restrictmoderate.youtube.com",
+    "youtube.googleapis.com": "restrictmoderate.youtube.com",
+    "www.youtube-nocookie.com": "restrictmoderate.youtube.com",
+}
+
 # Small benchmark-coverage list. It is refreshed at generation time and stored
 # inline so Mihomo does not need another runtime HTTP provider. One compatibility
 # host is intentionally excluded to preserve YouTube playback reliability.
@@ -2456,6 +2467,12 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
             and str(os.environ.get("THREAT_SAFE_FAMILY_DNS", "true")).strip().lower() in {"1", "true", "yes", "y", "on", "aktif"}
         )
         if family_dns_enabled:
+            hosts = config.setdefault("hosts", {})
+            if isinstance(hosts, dict):
+                for domain, target in CHILD_SAFE_HOSTS.items():
+                    if hosts.get(domain) != target:
+                        hosts[domain] = target
+                        changed = True
             family_dns = list(CHILD_SAFE_DNS)
             if dns.get("nameserver") != family_dns:
                 dns["nameserver"] = list(family_dns)

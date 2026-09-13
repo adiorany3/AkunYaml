@@ -1,65 +1,65 @@
 name,type,network,original_server,bug_sni,handshake_ms,ws_upgrade_ms,url_test_ms,url_test_status,url_test_success
-AKUN-001-CLOUDFLARE-VLESS-WS-84MS,vless,ws,172.64.52.173,faxf32gkfzoxqv.fx6hsv0.ccwu.cc,84,84,642,HTTP 204,yes
-AKUN-002-DEV-VLESS-WS-83MS,vless,ws,hi.n2foriran.workers.dev,hi.n2foriran.workers.dev,83,83,349,HTTP 204,yes
-AKUN-003-CLOUDFLARE-VLESS-WS-84MS,vless,ws,104.17.159.93,mianfei-73q.pages.dev,84,84,652,HTTP 204,yes
-AKUN-004-CLOUDFLARE-VLESS-WS-89MS,vless,ws,104.18.42.163,fx3h2kf8xn.fx6hsv0.ccwu.cc,89,89,637,HTTP 204,yes
-AKUN-005-CLOUDFLARE-VLESS-WS-86MS,vless,ws,172.64.156.60,powered-by-surena.configfarsi6982dd6e0355e.workers.dev,86,86,633,HTTP 204,yes
-AKUN-006-CLOUDFLARE-VLESS-WS-95MS,vless,ws,104.19.50.229,fq.jp188.dpdns.org,95,95,676,HTTP 204,yes
-AKUN-007-CLOUDFLARE-VLESS-WS-88MS,vless,ws,188.114.97.6,quiet-snowflake-e1dd.374-ac3.workers.dev,88,88,631,HTTP 204,yes
-AKUN-008-TENCENT-VLESS-WS-90MS,vless,ws,43.133.110.81,faxf32gkfzoxqv.fx6hsv0.ccwu.cc,90,90,635,HTTP 204,yes
-AKUN-009-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-89MS,vless,ws,cf-socks.caoyuwu.eu.org,cf-socks.caoyuwu.eu.org,89,89,550,HTTP 204,yes
-AKUN-010-CLOUDFLARE-VLESS-WS-87MS,vless,ws,188.114.97.6,fq.jp188.dpdns.org,87,87,687,HTTP 204,yes
-AKUN-011-CLOUDFLARE-VLESS-WS-94MS,vless,ws,a5zkmje0uqbs.spider-cbad94d2.workers.dev,a5zkmje0uqbs.spider-cbad94d2.workers.dev,94,94,450,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-012-CLOUDFLARE-VLESS-WS-93MS,vless,ws,172.67.217.240,fx3h2kf8xn.fx6hsv0.ccwu.cc,93,93,604,HTTP 204,yes
-AKUN-013-CLOUDFLARE-VLESS-WS-87MS,vless,ws,188.114.97.6,8.o.8.e.t.g.7.w.8.n.e.1.l.e.us.art-us.kdns.fr,87,87,4644,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=4.5)",no
-AKUN-014-UNKNOWN-VLESS-WS-90MS,vless,ws,65.20.85.14,www.zyjdwz.cc.cd,90,90,294,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-015-PAGES-VLESS-WS-90MS,vless,ws,8848t.pages.dev,8848t.pages.dev,90,90,651,HTTP 204,yes
-AKUN-016-CLOUDFLARE-VLESS-WS-97MS,vless,ws,104.21.33.59,cfvvv-ev1.pages.dev,97,97,639,HTTP 204,yes
-AKUN-017-CLOUDFLARE-VLESS-WS-95MS,vless,ws,188.114.96.37,TeLegrAm.FREEPErSiANland1.woRKERS.DEv,95,95,252,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-018-UNKNOWN-VLESS-WS-87MS,vless,ws,208.103.161.5,dry-butterfly-8eb9.tmpgnacio83.workers.dev,87,87,361,HTTP 204,yes
-AKUN-019-UK-GB-DCL-01-20191003-VLESS-WS-154MS,vless,ws,91.193.58.141,jamph131-1228.pages.dev,154,154,709,HTTP 204,yes
-AKUN-020-UNKNOWN-VLESS-WS-337MS,vless,ws,172.67.156.147,jp3.yohototo.top,337,337,2017,HTTP 204,yes
-AKUN-021-MRCLOUDI-VLESS-WS-470MS,vless,ws,c-2.mrcloudi.ir,jsv-p-de1.donick.ir,470,470,698,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-022-FREIFUNKFRANKEN-VLESS-WS-580MS,vless,ws,81.95.4.189,bab-6.site,580,580,1743,HTTP 204,yes
-AKUN-023-ONRENDER-VLESS-WS-649MS,vless,ws,hollowcon6.onrender.com,hollowcon6.onrender.com,649,649,4648,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=4.5)",no
-AKUN-024-CLOUDFLARE-VLESS-WS-823MS,vless,ws,www.speedtest.net,mahanrealiteam.mahkhan.ir,823,823,1183,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-025-CLOUDFLARE-VLESS-WS-829MS,vless,ws,172.67.153.78,2-M19.sOUth-aFrica-lINk.CCWu.Cc,829,829,2688,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-026-UNKNOWN-VLESS-WS-868MS,vless,ws,172.67.134.13,2-m13-StATiC-csS.XcV.CcwU.Cc,868,868,1268,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-027-UNKNOWN-VLESS-WS-868MS,vless,ws,104.21.12.3,0-m19.MexIco-poRT.cCWu.Cc,868,868,1318,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-028-UNKNOWN-VLESS-WS-860MS,vless,ws,104.21.75.9,8.x-m19.kDnS.fr,860,860,1379,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-029-CLOUDFLARE-VLESS-WS-857MS,vless,ws,172.67.132.194,1-m13.AyutTHAYa-8.kDnS.FR,857,857,4649,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=4.5)",no
-AKUN-030-CLOUDFLARE-VLESS-WS-876MS,vless,ws,172.67.133.136,4-m13.1332aFdC-0737-4BB1-8cA8-EE4f0cd20BC6.KDnS.FR,876,876,1315,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-031-CLOUDFLARE-VLESS-WS-852MS,vless,ws,172.67.182.133,3-M13.0DCb525D-9Bf8-452C-A465-5546541729D1.kDnS.FR,852,852,1272,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-032-UNKNOWN-VLESS-WS-885MS,vless,ws,172.67.140.160,5-stAtic-ImG-m13.xDC.ccWu.cC,885,885,1351,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-033-CLOUDFLARE-VLESS-WS-867MS,vless,ws,104.21.92.49,8-M19.OmAN-LInK.KdNS.FR,867,867,1343,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-034-UNKNOWN-VLESS-WS-882MS,vless,ws,104.21.14.84,ASsETS-CdN-M13-3.taIpei108.dPDNs.OrG,882,882,1328,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-035-CLOUDFLARE-VLESS-WS-855MS,vless,ws,104.21.5.156,5-M13.1332afdc-0737-4BB1-8CA8-EE4F0cd20Bc6.KdNs.FR,855,855,1335,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-036-UNKNOWN-VLESS-WS-843MS,vless,ws,172.67.166.62,0.x-M19.kDnS.fr,843,843,1595,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-037-CLOUDFLARE-VLESS-WS-856MS,vless,ws,172.67.186.138,6-m19.OMaN-Link.KdnS.fR,856,856,1476,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-038-UNKNOWN-VLESS-WS-866MS,vless,ws,172.67.136.91,9-m19.alBAnIa.ccwU.cC,866,866,1243,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-039-UNKNOWN-VLESS-WS-860MS,vless,ws,172.67.179.82,1-m20.be434a1f-0c04-40c9-a43a-87cc7d7da502.kdns.fr,860,860,2954,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-040-UNKNOWN-VLESS-WS-874MS,vless,ws,104.21.51.163,5-m13.0dcb525d-9BF8-452c-A465-5546541729D1.kDNS.fr,874,874,1945,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-041-CLOUDFLARE-VLESS-WS-835MS,vless,ws,104.21.64.209,8-m13.0ee25773-D3d3-479d-A8ff-3F51D1d20031.KDNs.FR,835,835,2522,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-042-CLOUDFLARE-VLESS-WS-901MS,vless,ws,172.64.152.23,s2p.open-ml.ir,901,901,3215,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-043-SPEEDORAA-VLESS-WS-851MS,vless,ws,pass.speedoraa.ir,pas.speedoraa.ir,851,851,1326,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-044-UNKNOWN-VLESS-WS-876MS,vless,ws,104.21.53.73,2-M19.SOuTh-aFRica-LINE.cCWu.cC,876,876,2970,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-045-CLOUDFLARE-VLESS-WS-867MS,vless,ws,104.21.58.93,4-M13.aYUTtHAya-XX.kDnS.fR,867,867,4661,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=4.5)",no
-AKUN-046-UNKNOWN-VLESS-WS-864MS,vless,ws,104.21.83.140,0-m16.ChIANG-maI2032.kdNS.fr,864,864,2013,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-047-UNKNOWN-VLESS-WS-854MS,vless,ws,172.67.169.99,8-m16.PHuKEt2035.KdnS.fr,854,854,1285,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-048-UNKNOWN-VLESS-WS-900MS,vless,ws,172.67.140.160,4-stAtIc-img-m13.xDc.cCWu.Cc,900,900,1339,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-049-UNKNOWN-VLESS-WS-889MS,vless,ws,104.21.51.163,4-M13.0Dcb525d-9Bf8-452C-a465-5546541729d1.kdns.fr,889,889,4647,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=4.5)",no
-AKUN-050-CLOUDFLARE-VLESS-WS-924MS,vless,ws,www.canva.com,shop.lilium-rozh.ir,924,924,1331,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-051-CLOUDFLARE-VLESS-WS-852MS,vless,ws,104.21.56.104,2-M19.AlbANia.KDnS.fR,852,852,1304,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-052-CLOUDFLARE-VLESS-WS-835MS,vless,ws,172.67.212.14,4-m19.SoUTh-aFRiCA-OnlInE.cCWU.cC,835,835,1537,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-053-CLOUDFLARE-VLESS-WS-863MS,vless,ws,104.21.41.153,6-M13.aYUtthaYa-X.kDns.FR,863,863,1307,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-054-UNKNOWN-VLESS-WS-843MS,vless,ws,172.67.155.252,3-M13.0eE25773-D3d3-479d-A8ff-3f51d1d20031.kdNS.FR,843,843,1355,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-055-PAI50288-VLESS-WS-1127MS,vless,ws,ccs2g.pai50288.uk,ccs2g.pai50288.uk,1127,1127,4649,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=4.5)",no
-AKUN-056-UNKNOWN-VLESS-WS-852MS,vless,ws,104.21.91.76,7-M19.South-aFRIca-onliNE.CCwu.cC,852,852,1275,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-057-UNKNOWN-VLESS-WS-925MS,vless,ws,104.21.16.74,0-m13.378Bb7Ff-11cf-4daD-b89E-72538aC75e29.Kdns.fr,925,925,1332,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-058-CLOUDFLARE-VLESS-WS-863MS,vless,ws,104.21.80.194,9-M19.sOUTH-AFRIcA-LINK.CCWu.cC,863,863,1365,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-059-UNKNOWN-VLESS-WS-937MS,vless,ws,172.67.176.60,3-M19.SoUtH-afRIcA.CCwu.Cc,937,937,1394,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-AKUN-060-TW-CLOUD-VLESS-WS-1038MS,vless,ws,tw1.apruxdomain.website,tw1.apruxdomain.website,1038,1038,2051,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
-MANUAL-VMess-WS-TLS-443-ikada543,vmess,ws,104.17.3.81,fbcdn.sbs,143,143,422,HTTP 204,yes
-MANUAL-VMess-WS-TLS-443-singa08,vmess,ws,104.17.3.81,midtrans.cyou,196,196,552,HTTP 204,yes
-MANUAL-VMess-WS-TLS-443-akuku8,vmess,ws,104.17.3.81,fbcdn.sbs,149,149,438,HTTP 204,yes
-MANUAL-VLESS-WS-TLS-443-apt50atpprem,vless,ws,104.17.3.81,atharva.web.id,144,144,532,HTTP 204,yes
+AKUN-001-UNKNOWN-VLESS-WS-81MS,vless,ws,104.17.181.195,mianfei-73q.pages.dev,81,81,645,HTTP 204,yes
+AKUN-002-CLOUDFLARE-VLESS-WS-81MS,vless,ws,172.64.147.104,faxf32gkfzoxqv.fx6hsv0.ccwu.cc,81,81,637,HTTP 204,yes
+AKUN-003-UNKNOWN-VLESS-WS-83MS,vless,ws,104.21.33.59,faxf32gkfzoxqv.fx6hsv0.ccwu.cc,83,83,644,HTTP 204,yes
+AKUN-004-CLOUDFLARE-VLESS-WS-85MS,vless,ws,172.67.206.231,hi.n2foriran.workers.dev,85,85,355,HTTP 204,yes
+AKUN-005-CLOUDFLARE-VLESS-WS-83MS,vless,ws,188.114.97.6,fx3h2kf8xn.fx6hsv0.ccwu.cc,83,83,642,HTTP 204,yes
+AKUN-006-TENCENT-VLESS-WS-89MS,vless,ws,43.133.110.81,faxf32gkfzoxqv.fx6hsv0.ccwu.cc,89,89,696,HTTP 204,yes
+AKUN-007-DEV-VLESS-WS-94MS,vless,ws,o.server2peekconfig.workers.dev,O.sErvER2pEekCOnfIg.wORKeRs.dEV,94,94,542,HTTP 204,yes
+AKUN-008-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-90MS,vless,ws,cf-socks.caoyuwu.eu.org,cf-socks.caoyuwu.eu.org,90,90,714,HTTP 204,yes
+AKUN-009-CLOUDFLARE-VLESS-WS-89MS,vless,ws,104.21.91.57,fq.jp188.dpdns.org,89,89,731,HTTP 204,yes
+AKUN-010-CLOUDFLARE-VLESS-WS-92MS,vless,ws,104.19.49.155,fq.jp188.dpdns.org,92,92,787,HTTP 204,yes
+AKUN-011-CLOUDFLARE-VLESS-WS-103MS,vless,ws,a5zkmje0uqbs.spider-cbad94d2.workers.dev,a5zkmje0uqbs.spider-cbad94d2.workers.dev,103,103,438,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-012-PAGES-VLESS-WS-122MS,vless,ws,8848t.pages.dev,8848t.pages.dev,122,122,714,HTTP 204,yes
+AKUN-013-CLOUDFLARE-VLESS-WS-90MS,vless,ws,188.114.96.37,TeLegrAm.FREEPErSiANland1.woRKERS.DEv,90,90,277,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-014-CLOUDFLARE-VLESS-WS-104MS,vless,ws,104.21.33.59,cfvvv-ev1.pages.dev,104,104,824,HTTP 204,yes
+AKUN-015-UNKNOWN-VLESS-WS-112MS,vless,ws,65.20.85.14,www.zyjdwz.cc.cd,112,112,302,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-016-UK-GB-DCL-01-20191003-VLESS-WS-146MS,vless,ws,91.193.58.117,jamph131-1228.pages.dev,146,146,739,HTTP 204,yes
+AKUN-017-MRCLOUDI-VLESS-WS-467MS,vless,ws,c-2.mrcloudi.ir,jsv-p-de1.donick.ir,467,467,695,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-018-UNKNOWN-VLESS-WS-188MS,vless,ws,172.67.156.147,jp3.yohototo.top,188,188,1257,HTTP 204,yes
+AKUN-019-ONRENDER-VLESS-WS-616MS,vless,ws,hollowcon6.onrender.com,hollowcon6.onrender.com,616,616,4647,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=4.5)",no
+AKUN-020-FREIFUNKFRANKEN-VLESS-WS-715MS,vless,ws,81.95.4.189,bab-6.site,715,715,4646,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=4.5)",no
+AKUN-021-CLOUDFLARE-VLESS-WS-826MS,vless,ws,www.canva.com,shop.lilium-rozh.ir,826,826,1203,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-022-CLOUDFLARE-VLESS-WS-864MS,vless,ws,104.21.67.181,7-m20.be434a1f-0c04-40c9-a43a-87cc7d7da502.kdns.fr,864,864,1946,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-023-CLOUDFLARE-VLESS-WS-854MS,vless,ws,104.21.41.153,1-m13.aYuttHAYA-X.kDnS.FR,854,854,1292,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-024-UNKNOWN-VLESS-WS-865MS,vless,ws,172.67.155.252,3-M13.0eE25773-D3d3-479d-A8ff-3f51d1d20031.kdNS.FR,865,865,1433,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-025-UNKNOWN-VLESS-WS-862MS,vless,ws,172.67.134.13,2-m13-StATiC-csS.XcV.CcwU.Cc,862,862,1445,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-026-SPEEDORAA-VLESS-WS-813MS,vless,ws,pass.speedoraa.ir,pas.speedoraa.ir,813,813,1256,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-027-UNKNOWN-VLESS-WS-841MS,vless,ws,104.21.51.163,4-M13.0Dcb525d-9Bf8-452C-a465-5546541729d1.kdns.fr,841,841,1353,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-028-CLOUDFLARE-VLESS-WS-844MS,vless,ws,172.67.148.254,6-m20.d3579eb3-e5cb-497b-82f8-c353614250e0.kdns.fr,844,844,2431,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-029-UNKNOWN-VLESS-WS-860MS,vless,ws,104.21.62.234,6-M19.SUDan-paRk.cCWU.cc,860,860,4639,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=4.5)",no
+AKUN-030-CLOUDFLARE-VLESS-WS-874MS,vless,ws,104.21.53.114,4-m20.20260721-b3fa-439e-b14e-6e2ee3f22b8c.ccwu.cc,874,874,1407,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-031-UNKNOWN-VLESS-WS-876MS,vless,ws,104.21.51.163,5-m13.0dcb525d-9BF8-452c-A465-5546541729D1.kDNS.fr,876,876,1280,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-032-CLOUDFLARE-VLESS-WS-866MS,vless,ws,104.21.64.209,8-m13.0ee25773-D3d3-479d-A8ff-3F51D1d20031.KDNs.FR,866,866,1256,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-033-UNKNOWN-VLESS-WS-850MS,vless,ws,104.21.53.73,2-M19.SOuTh-aFRica-LINE.cCWu.cC,850,850,1847,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-034-CLOUDFLARE-VLESS-WS-881MS,vless,ws,104.21.39.137,5-M19.ikL.Ccwu.cc,881,881,2698,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-035-CLOUDFLARE-VLESS-WS-873MS,vless,ws,104.21.29.124,9-m20.d3579eb3-e5cb-497b-82f8-c353614250e0.kdns.fr,873,873,4648,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=4.5)",no
+AKUN-036-UNKNOWN-VLESS-WS-859MS,vless,ws,104.21.51.163,1-M13.0dCb525D-9bf8-452C-a465-5546541729d1.KdnS.fR,859,859,4649,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=4.5)",no
+AKUN-037-UNKNOWN-VLESS-WS-904MS,vless,ws,104.21.8.136,6-m20.c79324d6-7c42-4d44-be57-c3e1debe6c59.kdns.fr,904,904,2059,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-038-UNKNOWN-VLESS-WS-881MS,vless,ws,172.67.140.160,4-stAtIc-img-m13.xDc.cCWu.Cc,881,881,1638,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-039-UNKNOWN-VLESS-WS-852MS,vless,ws,104.21.32.105,1-m20.c3d5336a-3310-48b7-8505-ec90b7a7df24.kdns.fr,852,852,1283,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-040-UNKNOWN-VLESS-WS-850MS,vless,ws,104.21.46.51,4-m20.d3b454d2-cba8-4b62-8d16-189d13194e3a.kdns.fr,850,850,1605,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-041-CLOUDFLARE-VLESS-WS-876MS,vless,ws,172.67.133.136,4-m13.1332aFdC-0737-4BB1-8cA8-EE4f0cd20BC6.KDnS.FR,876,876,2311,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-042-CLOUDFLARE-VLESS-WS-879MS,vless,ws,104.21.5.103,1-m19.LoP.CCWu.CC,879,879,1329,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-043-CLOUDFLARE-VLESS-WS-883MS,vless,ws,104.21.6.42,5-m20.b8b57933-52ee-4a3d-9ef1-be3e98e94f9b.kdns.fr,883,883,1466,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-044-UNKNOWN-VLESS-WS-869MS,vless,ws,172.67.179.82,1-m20.be434a1f-0c04-40c9-a43a-87cc7d7da502.kdns.fr,869,869,1415,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-045-UNKNOWN-VLESS-WS-863MS,vless,ws,104.21.47.191,8-m19.nORTH-kOReA-fLOw.kdNS.FR,863,863,1449,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-046-UNKNOWN-VLESS-WS-850MS,vless,ws,104.21.69.218,5-m20.cd6b506e-5a88-4c5d-9e11-906f39613c04.kdns.fr,850,850,1328,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-047-UNKNOWN-VLESS-WS-877MS,vless,ws,104.21.90.161,3-M19.pERu-line.CCWu.cC,877,877,1403,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-048-CLOUDFLARE-VLESS-WS-908MS,vless,ws,172.67.154.17,s2p.open-ml.ir,908,908,1364,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-049-CLOUDFLARE-VLESS-WS-857MS,vless,ws,104.21.86.133,6-M13.ayutThaYa-9.kdNS.FR,857,857,1411,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-050-CLOUDFLARE-VLESS-WS-904MS,vless,ws,172.67.131.46,2-m13.0943e131-87F4-4b7f-Bc60-9d984Cc0aDA2.KDNs.fR,904,904,1385,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-051-UNKNOWN-VLESS-WS-859MS,vless,ws,172.67.198.236,1-m20.c8e0fc76-a6e4-4464-86b7-703a4f338c3a.kdns.fr,859,859,4395,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-052-CLOUDFLARE-VLESS-WS-915MS,vless,ws,172.67.182.133,3-M13.0DCb525D-9Bf8-452C-A465-5546541729D1.kDnS.FR,915,915,1308,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-053-CLOUDFLARE-VLESS-WS-843MS,vless,ws,104.21.5.156,5-M13.1332afdc-0737-4BB1-8CA8-EE4F0cd20Bc6.KdNs.FR,843,843,1330,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-054-CLOUDFLARE-VLESS-WS-880MS,vless,ws,172.67.195.150,9-m20.dbfb5a2a-81c7-481a-b0cc-0f51aa86cc51.kdns.fr,880,880,1639,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-055-CLOUDFLARE-VLESS-WS-886MS,vless,ws,172.67.185.142,7-m20.c3d5336a-3310-48b7-8505-ec90b7a7df24.kdns.fr,886,886,1423,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-056-UNKNOWN-VLESS-WS-850MS,vless,ws,104.21.14.84,ASsETS-CdN-M13-3.taIpei108.dPDNs.OrG,850,850,1293,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-057-CLOUDFLARE-VLESS-WS-887MS,vless,ws,104.21.88.158,M13-OnLINE.TaiPeI102.DPDns.Org,887,887,1309,"SSLError: HTTPSConnectionPool(host='www.gstatic.com', port=443): Max retries exceeded with url: /generate_204 (Caused by SSLError(",no
+AKUN-058-PAI50288-VLESS-WS-1155MS,vless,ws,ccs2g.pai50288.uk,ccs2g.pai50288.uk,1155,1155,4649,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=4.5)",no
+AKUN-059-CLOUDFLARE-VLESS-WS-883MS,vless,ws,172.67.223.194,aSSETS-DISTRibuTIon-m13-3.tAiwAN1912.Qzz.io,883,883,4638,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=4.5)",no
+AKUN-060-CLOUDFLARE-VLESS-WS-702MS,vless,ws,188.114.97.6,a.cwvps.eu.org,702,702,4211,HTTP 204,yes
+MANUAL-VMess-WS-TLS-443-ikada543,vmess,ws,104.17.3.81,fbcdn.sbs,142,142,449,HTTP 204,yes
+MANUAL-VMess-WS-TLS-443-singa08,vmess,ws,104.17.3.81,midtrans.cyou,191,191,637,HTTP 204,yes
+MANUAL-VMess-WS-TLS-443-akuku8,vmess,ws,104.17.3.81,fbcdn.sbs,142,142,481,HTTP 204,yes
+MANUAL-VLESS-WS-TLS-443-apt50atpprem,vless,ws,104.17.3.81,atharva.web.id,148,148,507,HTTP 204,yes
