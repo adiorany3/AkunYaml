@@ -5,13 +5,13 @@ Added/Removed counts the domain diff against the previous known-good snapshot (0
 
 | Provider | Status | Entries | Added | Removed | SHA-256 |
 |---|---:|---:|---:|---:|---|
-| `ads_indonesia` | cached | 154 | 0 | 0 | `01973614a1bcc66f` |
-| `gambling-mini` | cached | 67362 | 0 | 0 | `697d2cbcab5c2d83` |
-| `hagezi-pro-plus-mini` | cached | 60381 | 0 | 0 | `d14b8503cf6cd36c` |
-| `popup-ads` | cached | 48882 | 0 | 0 | `6ced454ba949daaa` |
-| `threat-cryptominers` | cached | 297 | 0 | 0 | `0b2089ce6ce3a2bf` |
-| `threat-fake-scam` | cached | 16690 | 0 | 0 | `7fd94ce28805d9e3` |
-| `threat-malware` | cached | 481 | 0 | 0 | `1d8631af575e195f` |
-| `threat-phishing` | cached | 38537 | 0 | 0 | `fbdc0698d3e51f97` |
-| `threat-tif-ip` | cached | 67208 | 0 | 0 | `7e1a2ffcf6cd07c6` |
-| `threat-tif-mini` | cached | 176987 | 0 | 0 | `dbc64bb5bc37f6ea` |
+| `ads_indonesia` | updated | 154 | 0 | 0 | `01973614a1bcc66f` |
+| `gambling-mini` | updated | 67183 | 3317 | 3496 | `5917234277561bde` |
+| `hagezi-pro-plus-mini` | updated | 60327 | 1095 | 1149 | `a8f490e0c4033c39` |
+| `popup-ads` | updated | 48806 | 4 | 80 | `85ddf1a3626abf5a` |
+| `threat-cryptominers` | updated | 296 | 0 | 1 | `9fe832d795938cd4` |
+| `threat-fake-scam` | updated | 16708 | 33 | 15 | `285908453e0f7f79` |
+| `threat-malware` | updated | 471 | 10 | 20 | `8b7d156da194e517` |
+| `threat-phishing` | updated | 38670 | 328 | 195 | `dc29f629aafd23ca` |
+| `threat-tif-ip` | updated | 65736 | 10493 | 11965 | `3509fe314da8911e` |
+| `threat-tif-mini` | updated | 177407 | 2105 | 1685 | `8ed1bbac8424d529` |
