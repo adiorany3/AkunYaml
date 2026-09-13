@@ -1,11 +1,11 @@
 name,type,network,original_server,bug_sni,mihomo_status,url_test_ms,nekobox_test_ms,nekobox_status,nekobox_ready
-AKUN-024-CLOUDFLARE-VLESS-WS-100MS,vless,ws,104.21.70.21,5dktcuajb2a1jxix7csnrmeucg.mahrademami.workers.dev,HTTP 204,299,558,HTTP 204,yes
-AKUN-023-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-105MS,vless,ws,mybb.com,rAyAn-007.nAsTaRaN.DpDnS.OrG,HTTP 204,320,366,HTTP 204,yes
-AKUN-005-CLOUDFLARE-VLESS-WS-91MS,vless,ws,o.server5peekconfig.workers.dev,O.seRVer5peEKCOnFIG.WOrKers.dEV,HTTP 204,326,351,HTTP 204,yes
-AKUN-008-CLOUDFLARE-VLESS-WS-98MS,vless,ws,cf-vless-4cf55824.aimall.fr,cf-vless-4cf55824.aimall.fr,HTTP 204,332,379,HTTP 204,yes
-AKUN-027-UNKNOWN-VLESS-WS-103MS,vless,ws,208.103.161.5,dry-butterfly-8eb9.tmpgnacio83.workers.dev,HTTP 204,337,6181,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
-AKUN-014-CLOUDFLARE-VLESS-WS-102MS,vless,ws,172.64.149.192,powered-by-surena.configfarsi695fd42d43c58.workers.dev,HTTP 204,339,380,HTTP 204,yes
-AKUN-030-RETZOR-VLESS-WS-97MS,vless,ws,103.119.18.30,mianfei-73q.pages.dev,HTTP 204,339,367,HTTP 204,yes
-AKUN-026-RS-RAPIDSEEDBOX-20190717-VLESS-WS-97MS,vless,ws,45.130.125.126,BItter-CreDIT-61b8.b76EbA0aBb.wORkerS.dEv,HTTP 204,369,376,HTTP 204,yes
-AKUN-001-UNKNOWN-VLESS-WS-100MS,vless,ws,104.16.151.21,faxf32gkfzoxqv.fx6hsv0.ccwu.cc,HTTP 204,516,640,HTTP 204,yes
-AKUN-010-CLOUDFLARE-VLESS-WS-99MS,vless,ws,188.114.97.3,0LG3u92i0exN577l3Mc637Ycba3.SfgsfgSfGFSGSf-4630.wOrkeRS.dEv,HTTP 204,524,587,HTTP 204,yes
+AKUN-019-UNKNOWN-VLESS-WS-88MS,vless,ws,208.103.161.5,dry-butterfly-8eb9.tmpgnacio83.workers.dev,HTTP 204,373,542,HTTP 204,yes
+AKUN-023-CLOUDFLARE-VLESS-WS-89MS,vless,ws,cf-vless-4cf55824.aimall.fr,cf-vless-4cf55824.aimall.fr,HTTP 204,549,673,HTTP 204,yes
+AKUN-029-GOV-VLESS-WS-92MS,vless,ws,www.zsu.gov.ua,misaka.cndyw.ggff.net,HTTP 204,560,664,HTTP 204,yes
+AKUN-002-CLOUDFLARE-VLESS-WS-87MS,vless,ws,172.67.217.240,fx3h2kf8xn.fx6hsv0.ccwu.cc,HTTP 204,594,649,HTTP 204,yes
+AKUN-021-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-90MS,vless,ws,mybb.com,rAyAn-007.nAsTaRaN.DpDnS.OrG,HTTP 204,595,666,HTTP 204,yes
+AKUN-004-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-81MS,vless,ws,chatgpt.com,powered-by-surena.user68f797c2f3e1b.workers.dev,HTTP 204,617,675,HTTP 204,yes
+AKUN-018-RS-RAPIDSEEDBOX-20190717-VLESS-WS-82MS,vless,ws,45.130.125.126,BItter-CreDIT-61b8.b76EbA0aBb.wORkerS.dEv,HTTP 204,619,658,HTTP 204,yes
+AKUN-015-CLOUDFLARE-VLESS-WS-88MS,vless,ws,172.67.161.136,bpb-PanEl-4e2C.SAkWra939.wORKErS.DEV,HTTP 204,624,257,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-020-CLOUDFLARE-VLESS-WS-82MS,vless,ws,yx.zhourf2006.dpdns.org,yx.zhourf2006.dpdns.org,HTTP 204,626,666,HTTP 204,yes
+AKUN-031-BIGCOMMERCE-VLESS-WS-102MS,vless,ws,63.141.128.22,MiSty-tooth-78cA.FoboGAH414-e7B.WoRKERs.DEv,HTTP 204,628,656,HTTP 204,yes
