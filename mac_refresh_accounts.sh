@@ -180,6 +180,7 @@ if [[ "$STALE_FALLBACK" -eq 1 ]]; then
 else
   printf '\n[OK] Refresh akun selesai.\n'
 fi
+printf '[INFO] Blocklist iklan berhasil diperbarui.\n'
 printf '     OpenClash utama: %s/openclash_auto.yaml\n' "$ROOT"
 printf '     sing-box Android: %s/singbox_android.json\n' "$ROOT"
 printf '     Akun URI       : %s/akun.txt\n' "$ROOT"
