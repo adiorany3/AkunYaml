@@ -1,29 +1,28 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 
-# Install dependencies (skip if already satisfied)
-python -m pip install --upgrade pip
-pip install -r requirements.txt
+ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+cd "$ROOT"
 
-# Lint (disabled)
-pip install ruff
-# ruff check . (disabled)
+command -v python3 >/dev/null 2>&1 || {
+  echo "[ERROR] python3 tidak tersedia." >&2
+  exit 2
+}
 
-# Type check (disabled)
-pip install mypy
-# mypy . (disabled)
+case "${1:-}" in
+  -h|--help) exec ./mac_refresh_accounts.sh "$@" ;;
+esac
 
-# Run tests
-pip install pytest
-pytest -q
+./mac_refresh_accounts.sh "$@"
 
-# Run ads audit HTML report
-python ads_audit.py --html-report audit_report.html || true
-# Open HTML report
-open audit_report.html || true
+PY="$ROOT/.venv/bin/python"
+[ -x "$PY" ] || PY=python3
+"$PY" -m pytest -q
+"$PY" ads_audit.py --html-report audit_report.html
 
-# Stop execution after successful update
-exit 0
+if command -v open >/dev/null 2>&1 && [ -f audit_report.html ]; then
+  open audit_report.html
+fi
 
 # Refresh proxy accounts (unreachable now)
 if [[ -f ./mac_refresh_accounts.sh ]]; then

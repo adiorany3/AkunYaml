@@ -69,12 +69,23 @@ def audit_netflix(root: Path) -> bool:
             continue
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         rules = {str(rule) for rule in data.get("rules", []) or []}
-        # Determine broad‑block rules. If BROAD_MEDIA_BLOCKS is empty (default),
-        # treat any rule that mentions a Netflix playback domain as a broad block.
-        if BROAD_MEDIA_BLOCKS:
-            broad = sorted(BROAD_MEDIA_BLOCKS & rules)
-        else:
-            broad = sorted({r for r in rules if any(d in r for d in NETFLIX_PLAYBACK)})
+        # Only reject rules targeting Netflix playback domains are unsafe.
+        broad = set(BROAD_MEDIA_BLOCKS & rules)
+        for rule in rules:
+            parts = [part.strip() for part in rule.split(",")]
+            if len(parts) < 3 or parts[2] not in {"REJECT", "REJECT-DROP"}:
+                continue
+            kind, domain = parts[:2]
+            domain = domain.lower().rstrip(".")
+            if kind == "DOMAIN" and domain in NETFLIX_PLAYBACK:
+                broad.add(rule)
+            elif kind == "DOMAIN-SUFFIX" and any(
+                d == domain or d.endswith("." + domain) for d in NETFLIX_PLAYBACK
+            ):
+                broad.add(rule)
+            elif kind == "DOMAIN-KEYWORD" and any(domain in d for d in NETFLIX_PLAYBACK):
+                broad.add(rule)
+        broad = sorted(broad)
         if broad:
             failed = True
             logger.error(f"[FAIL] Netflix playback safety: {name}")
@@ -116,7 +127,12 @@ def main() -> int:
         logger.addHandler(file_handler)
     root = Path(__file__).resolve().parent
     failed = audit_netflix(root)
-    results: list[dict[str, object]] = []
+    results: list[dict[str, object]] = [{
+        "label": "Netflix playback safety",
+        "script": "ads_audit.py",
+        "status": "fail" if failed else "pass",
+        "exit_code": int(failed),
+    }]
     for label, script, *script_args in AUDITS:
         command = [sys.executable, script, *script_args]
         if args.network and label == "provider":
