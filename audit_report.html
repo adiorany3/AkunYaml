@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Audit Report</title>
+    <style>
+        body {font-family: Arial, sans-serif; margin: 20px;}
+        table {border-collapse: collapse; width: 100%;}
+        th, td {border: 1px solid #ddd; padding: 8px; text-align: left;}
+        th {background-color: #f2f2f2;}
+        .pass {color: green;}
+        .fail {color: red;}
+        .timeout {color: orange;}
+    </style>
+</head>
+<body>
+    <h1>Audit Report</h1>
+    <p>Status: <span class="fail">FAIL</span></p>
+    <table>
+        <tr><th>Label</th><th>Script</th><th>Status</th><th>Exit Code</th></tr>
+        
+        <tr>
+            <td>provider</td>
+            <td>adblock_provider_audit.py</td>
+            <td class="pass">Pass</td>
+            <td>0</td>
+        </tr>
+        
+        <tr>
+            <td>YouTube</td>
+            <td>youtube_adblock_audit.py</td>
+            <td class="pass">Pass</td>
+            <td>0</td>
+        </tr>
+        
+        <tr>
+            <td>apps</td>
+            <td>app_ad_audit.py</td>
+            <td class="pass">Pass</td>
+            <td>0</td>
+        </tr>
+        
+        <tr>
+            <td>streaming</td>
+            <td>streaming_ad_audit.py</td>
+            <td class="pass">Pass</td>
+            <td>0</td>
+        </tr>
+        
+        <tr>
+            <td>popup/game</td>
+            <td>popup_game_ad_audit.py</td>
+            <td class="pass">Pass</td>
+            <td>0</td>
+        </tr>
+        
+        <tr>
+            <td>YouTube gambling sponsor</td>
+            <td>youtube_gambling_sponsor_audit.py</td>
+            <td class="pass">Pass</td>
+            <td>0</td>
+        </tr>
+        
+    </table>
+</body>
+</html>

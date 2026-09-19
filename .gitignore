@@ -13,3 +13,4 @@ __pycache__/
 # Feed cache is reproducible from feed_guard.py; keep tracked LKG files explicit.
 .feed_cache/*.json
 .feed_cache/*.tmp
+config.yaml

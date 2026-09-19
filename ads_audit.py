@@ -187,6 +187,10 @@ def main() -> int:
         html_path.parent.mkdir(parents=True, exist_ok=True)
         html_path.write_text(html_content, encoding="utf-8")
         logger.info(f"[OK] HTML report written to {html_path}")
+    # Print concise summary table to console
+    logger.info("\nAudit Summary:\nLabel\tScript\tStatus\tExitCode")
+    for r in results:
+        logger.info(f"{r.get('label','')}\t{r.get('script','')}\t{r.get('status','')}\t{r.get('exit_code','')}" )
     if failed:
         logger.error(f"[FAIL] Ads audit selesai dengan error: {failed} failures")
     else:

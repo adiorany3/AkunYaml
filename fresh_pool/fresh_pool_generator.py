@@ -22,6 +22,8 @@ from typing import List, Tuple
 
 import aiohttp
 
+from datetime import datetime, timezone
+
 # ---------------------------------------------------------------------------
 # Configuration (can be overridden via environment variables if needed)
 # ---------------------------------------------------------------------------
