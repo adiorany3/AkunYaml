@@ -179,6 +179,11 @@ ANDROID_BASE_PROVIDERS: dict[str, dict[str, Any]] = {
         "behavior": "domain",
         "path": "./rule_providers/ads_indonesia_android.yaml",
     },
+    "universal-adblock-safe": {
+        "type": "file",
+        "behavior": "domain",
+        "path": "./rule_providers/universal-adblock-safe.yaml",
+    },
     "popup-ads": _http_domain(
         "./rule_providers/popup-ads_android.yaml",
         "https://raw.githubusercontent.com/adiorany3/AkunYaml/HEAD/rule_providers/popup-ads_android.yaml",

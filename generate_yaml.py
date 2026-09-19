@@ -842,6 +842,14 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         "tracking.miui.com",
         "data.mistat.intl.xiaomi.com",
         "analytics.oneplus.cn",
+        "adinplay.com",
+        "gameads.io",
+        "gameanalytics.com",
+        "gamemonetize.com",
+        "game-advertising-online.com",
+        "playwire.com",
+        "poki-gdn.com",
+        "html5games.com",
     ]
     ad_blocklist_files = (
         "rule_providers/universal-adblock-safe.yaml",
