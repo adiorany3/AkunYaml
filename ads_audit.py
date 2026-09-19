@@ -187,7 +187,10 @@ def main() -> int:
         html_path.parent.mkdir(parents=True, exist_ok=True)
         html_path.write_text(html_content, encoding="utf-8")
         logger.info(f"[OK] HTML report written to {html_path}")
-    logger.error("[FAIL] Ads audit selesai dengan error") if failed else logger.info("[OK] Ads audit lengkap selesai")
+    if failed:
+        logger.error(f"[FAIL] Ads audit selesai dengan error: {failed} failures")
+    else:
+        logger.info("[OK] Ads audit lengkap selesai")
     return int(failed)
 
 
