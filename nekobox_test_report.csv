@@ -1,11 +1,11 @@
 name,type,network,original_server,bug_sni,mihomo_status,url_test_ms,nekobox_test_ms,nekobox_status,nekobox_ready
-AKUN-007-CLOUDFLARE-VLESS-WS-132MS,vless,ws,172.67.148.180,suMMer-fieLD-3c5b.fSdfSDDf.WoRKErs.dEv,HTTP 204,374,601,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-025-CLOUDFLARE-VLESS-WS-290MS,vless,ws,104.21.60.109,cfvvv-ev1.pages.dev,HTTP 204,378,484,HTTP 204,yes
-AKUN-023-CLOUDFLARE-VLESS-WS-191MS,vless,ws,172.67.217.240,fx3h2kf8xn.fx6hsv0.ccwu.cc,HTTP 204,378,430,HTTP 204,yes
-AKUN-021-CLOUDFLARE-VLESS-WS-194MS,vless,ws,104.16.151.21,faxf32gkfzoxqv.fx6hsv0.ccwu.cc,HTTP 204,387,423,HTTP 204,yes
-AKUN-028-UNKNOWN-VLESS-WS-163MS,vless,ws,104.21.70.21,damp-dawn-3a96.alvlirm123.workers.dev,HTTP 204,387,484,HTTP 204,yes
-AKUN-022-CLOUDFLARE-VLESS-WS-190MS,vless,ws,190.93.245.176,auto-749388.rohawmk.workers.dev,HTTP 204,390,431,HTTP 204,yes
-AKUN-020-DEV-VLESS-WS-189MS,vless,ws,patient-moon-c61f.ggfsa55.workers.dev,patient-moon-c61f.ggfsa55.workers.dev,HTTP 204,396,441,HTTP 204,yes
-AKUN-009-NET-147-90-26-0-24-VLESS-WS-164MS,vless,ws,147.90.26.37,cdn8848.776676.xyz,HTTP 204,397,470,HTTP 204,yes
-AKUN-006-DEV-VLESS-WS-154MS,vless,ws,lhns3ww2-cxq-gj1vvobkepig4nopkc.hqu4v38hi9iftcp6mzfmx-3bmx.workers.dev,lHNs3ww2-CXQ-Gj1vvOBkEPIg4noPkc.hqu4v38Hi9iFtcp6mZfMX-3bmx.WoRKeRS.dEV,HTTP 204,402,493,HTTP 204,yes
-AKUN-030-UNKNOWN-VLESS-WS-282MS,vless,ws,195.26.229.32,xi.tbv.ccwu.cc,HTTP 204,404,432,HTTP 204,yes
+AKUN-003-CLOUDFLARE-VLESS-WS-138MS,vless,ws,172.67.148.180,suMMer-fieLD-3c5b.fSdfSDDf.WoRKErs.dEv,HTTP 204,470,461,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-006-CLOUDFLARE-VLESS-WS-129MS,vless,ws,188.114.97.3,0LG3u92i0exN577l3Mc637Ycba3.SfgsfgSfGFSGSf-4630.wOrkeRS.dEv,HTTP 204,479,579,HTTP 204,yes
+AKUN-020-CLOUDFLARE-VLESS-WS-133MS,vless,ws,188.114.97.6,fx3h2kf8xn.fx6hsv0.ccwu.cc,HTTP 204,490,569,HTTP 204,yes
+AKUN-028-MEDIUM-VLESS-WS-124MS,vless,ws,medium.com,rAyAn-007.mAxImA.DpDnS.OrG,HTTP 204,495,584,HTTP 204,yes
+AKUN-019-UNKNOWN-VLESS-WS-211MS,vless,ws,195.26.229.32,xi.tbv.ccwu.cc,HTTP 204,503,549,HTTP 204,yes
+AKUN-024-CLOUDFLARE-VLESS-WS-181MS,vless,ws,188.114.97.6,fx3h2kf8xn.fx6hsv0.ccwu.cc,HTTP 204,508,560,HTTP 204,yes
+AKUN-012-CLOUDFLARE-VLESS-WS-133MS,vless,ws,172.67.203.158,12ygbae0k3gn0z0f.mehrshadhaddadi8.workers.dev,HTTP 204,515,586,HTTP 204,yes
+AKUN-015-CLOUDFLARE-VLESS-WS-135MS,vless,ws,188.114.97.6,vip.868068.xyz,HTTP 204,522,564,HTTP 204,yes
+AKUN-027-CLOUDFLARE-VLESS-WS-209MS,vless,ws,104.21.70.228,cfvvv-ev1.pages.dev,HTTP 204,525,573,HTTP 204,yes
+AKUN-010-ZUOAI-VLESS-WS-179MS,vless,ws,cy2.zuoai.cf,xi.tbv.ccwu.cc,HTTP 204,529,558,HTTP 204,yes

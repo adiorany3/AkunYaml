@@ -5,7 +5,7 @@
 - WARM-UP harian: 0 node
 - WARM-UP-CF Cloudflare/Worker: 0 node
 - STREAMING-FAST: 0 node
-- AUTO-FAST: 13 node
+- AUTO-FAST: 7 node
 - FALLBACK: 13 referensi, manual backup: 4 node
 
 ## Rekomendasi Pakai
@@ -24,7 +24,7 @@
 - Tidak ada
 
 ## Node Berisiko dari NekoBox/sing-box Test
-- AKUN-007-CLOUDFLARE-VLESS-WS-132MS: ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))
+- AKUN-003-CLOUDFLARE-VLESS-WS-138MS: ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))
 
 ## Catatan Smart Mode
 - Health-check cepat hanya untuk pool kecil, bukan semua node.
