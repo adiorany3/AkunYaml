@@ -1,0 +1,26 @@
+# Sample configuration for ad audit
+# You can override any of the defaults below.
+
+files:
+  - openclash_auto.yaml
+  - openclash_android.yaml
+  - openclash_lite.yaml
+  - openclash_fresh_pool.yaml
+
+netflix_playback:
+  - netflix.com
+  - netflix.net
+  - nflxvideo.net
+  - nflximg.net
+  - nflxso.net
+  - nflxext.com
+
+broad_media_blocks: []
+
+audits:
+  - [provider, adblock_provider_audit.py]
+  - [YouTube, youtube_adblock_audit.py, --mode, enhanced, --dedup, lean]
+  - [apps, app_ad_audit.py]
+  - [streaming, streaming_ad_audit.py]
+  - [popup/game, popup_game_ad_audit.py]
+  - [YouTube gambling sponsor, youtube_gambling_sponsor_audit.py]
