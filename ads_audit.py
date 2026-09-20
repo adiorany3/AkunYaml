@@ -68,7 +68,23 @@ def audit_netflix(root: Path) -> bool:
             logger.info(f"[SKIP] Netflix: {name} tidak ditemukan")
             continue
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-        rules = {str(rule) for rule in data.get("rules", []) or []}
+        raw_rules = data.get("rules", []) or []
+        normalized_rules = []
+        for index, rule in enumerate(raw_rules):
+            if isinstance(rule, list):
+                normalized_rules.append(",".join(str(part).strip() for part in rule))
+            else:
+                normalized_rules.append(str(rule).strip())
+        # YAML treats an unquoted comma-separated fixture as scalar items.
+        if len(normalized_rules) % 3 == 0 and all(
+            normalized_rules[index] in {"DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD"}
+            for index in range(0, len(normalized_rules), 3)
+        ):
+            normalized_rules = [
+                ",".join(normalized_rules[index:index + 3])
+                for index in range(0, len(normalized_rules), 3)
+            ]
+        rules = set(normalized_rules)
         # Only reject rules targeting Netflix playback domains are unsafe.
         broad = set(BROAD_MEDIA_BLOCKS & rules)
         for rule in rules:
