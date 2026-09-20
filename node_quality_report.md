@@ -5,7 +5,7 @@
 - WARM-UP harian: 0 node
 - WARM-UP-CF Cloudflare/Worker: 0 node
 - STREAMING-FAST: 0 node
-- AUTO-FAST: 8 node
+- AUTO-FAST: 7 node
 - FALLBACK: 14 referensi, manual backup: 4 node
 
 ## Rekomendasi Pakai

@@ -1,58 +1,55 @@
 from __future__ import annotations
 
+import base64
+import hashlib
+import json
 import os
 import re
 import socket
 import subprocess
 import tempfile
 import time
-from contextlib import suppress
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timezone
+from contextlib import suppress
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-from urllib.parse import quote, urlparse, urlunparse
+from urllib.parse import urlparse, urlunparse
 
-import base64
-import hashlib
-import json
-import yaml
 import requests
+import yaml
 
-from android_banking_policy import all_bank_suffix_domains
+from android_banking_policy import all_bank_suffix_domains, payment_suffix_domains
 from android_banking_policy import exact_domains as banking_exact_domains
-from android_banking_policy import payment_suffix_domains
 from android_marketplace_policy import exact_domains as marketplace_exact_domains
 from android_marketplace_policy import suffix_domains as marketplace_suffix_domains
 from openclash_target import (
     MIHOMO_TARGET_LABEL,
-    atomic_write_text,
     assert_target_mihomo,
     assert_target_singbox,
+    atomic_write_text,
     validate_generated_text_with_core,
 )
-
 from sumberyaml_core import (
     ALT_TEST_URL,
+    BUG_MODE,
     DEFAULT_LINKS,
+    ONLY_PORT,
     TARGET_SERVER,
     TARGET_SERVERS,
-    BUG_MODE,
-    ONLY_PORT,
     b64decode_text,
     build_akun_txt,
     build_csv,
     build_openclash_android_yaml,
     build_openclash_yaml,
     check_node_bug_compat,
-    extract_uris,
     expand_multi_host_variants,
+    extract_uris,
     looks_like_ip,
     node_network,
     normalize_name,
     parse_uri,
     process_sources,
-    provider_label_from_original_server,
     safe_proxy_name,
     unique_names,
 )
@@ -340,12 +337,12 @@ def _mihomo_openclash_compatibility_filter(
 
             if failed_for_individual:
                 with ThreadPoolExecutor(max_workers=min(workers, len(failed_for_individual))) as executor:
-                    future_map = {
+                    individual_futures = {
                         executor.submit(run_batch, [item]): item
                         for item in failed_for_individual
                     }
-                    for future in as_completed(future_map):
-                        item = future_map[future]
+                    for future in as_completed(individual_futures):
+                        item = individual_futures[future]
                         ok, reason = future.result()
                         if ok:
                             mark_pass([item], "mihomo individual config test ok")
@@ -357,8 +354,6 @@ def _mihomo_openclash_compatibility_filter(
         row = result_rows[index]
         rows.append(row)
         ok = row["compatible"] == "yes"
-        setattr(node, "openclash_compatible", ok)
-        setattr(node, "openclash_compat_status", row["reason"])
         if ok:
             passed.append(node)
         else:
@@ -611,10 +606,12 @@ def _smart_select_nodes(nodes: list[Any], minimum_count: int) -> list[Any]:
 
 
 def _ws_opts(node: Any) -> tuple[str, str]:
-    clash = getattr(node, "clash", {}) or {}
-    ws_opts = clash.get("ws-opts") if isinstance(clash.get("ws-opts"), dict) else {}
+    clash: dict[str, Any] = getattr(node, "clash", None) or {}
+    raw_ws = clash.get("ws-opts")
+    ws_opts: dict[str, Any] = raw_ws if isinstance(raw_ws, dict) else {}
     path = str(ws_opts.get("path") or "/") or "/"
-    headers = ws_opts.get("headers") if isinstance(ws_opts.get("headers"), dict) else {}
+    raw_headers = ws_opts.get("headers")
+    headers: dict[str, Any] = raw_headers if isinstance(raw_headers, dict) else {}
     host = str(headers.get("Host") or getattr(node, "bug_sni", "") or clash.get("servername") or clash.get("sni") or "").strip()
     return path, host
 
@@ -756,7 +753,6 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         item[0] not in verified_tags,
         _as_int(getattr(item[1], "url_test_ms", None), 999999) if item[0] in verified_tags else 999999,
     ))][:probe_limit]
-    probe_default = probe_tags[0]
     # Global manual selector keeps explicit node choice; AUTO-FAST is its low-cost default.
     category_candidates = ["proxy"]
     urltest_outbound = {
@@ -1017,10 +1013,6 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     ])
     if blocked_domains:
         route_rules.append({"domain_suffix": blocked_domains, "action": "reject"})
-    vmess_tags = [
-        tag for tag, node in tagged_nodes
-        if str((getattr(node, "clash", {}) or {}).get("type", "")).lower() == "vmess"
-    ]
     # Category selectors share global selector; no duplicate probe pools.
     bank_outbound = {"type": "selector", "tag": "BANK", "outbounds": category_candidates, "default": "proxy"}
     video_outbound = {"type": "selector", "tag": "VMESS-VIDEO", "outbounds": category_candidates, "default": "proxy"}
@@ -1584,7 +1576,6 @@ def _domain_from_manual_line(line: str) -> tuple[str, str] | None:
     if not text:
         return None
 
-    upper = text.upper()
     if "," in text:
         parts = [p.strip() for p in text.split(",") if p.strip()]
         if len(parts) >= 2:
@@ -1668,16 +1659,10 @@ def _inject_manual_unblock_rules(rules: list[str], target: str = "MANUAL") -> li
         text = str(rule)
         if (
             ",DIRECT" in text
-            or text.startswith("GEOIP,LAN,")
-            or text.startswith("IP-CIDR,127.")
-            or text.startswith("IP-CIDR,10.")
-            or text.startswith("IP-CIDR,172.16.")
-            or text.startswith("IP-CIDR,192.168.")
-            or text.startswith("IP-CIDR,169.254.")
+            or text.startswith(("GEOIP,LAN,", "IP-CIDR,127.", "IP-CIDR,10.", "IP-CIDR,172.16.", "IP-CIDR,192.168.", "IP-CIDR,169.254."))
         ):
             insert_at = idx + 1
-            continue
-        break
+            break
     return out[:insert_at] + manual_rules + out[insert_at:]
 
 def _delay_from_name(name: str) -> int:
@@ -1936,7 +1921,7 @@ def _prune_missing_proxy_group_refs_yaml_text(yaml_text: str) -> str:
             # Keep the generated YAML structurally valid even if every old
             # reference was removed. Health groups cannot be left empty.
             if proxy_names:
-                cleaned = [sorted(proxy_names)[0]]
+                cleaned = [min(proxy_names)]
             elif gtype == "select":
                 cleaned = ["DIRECT"]
             else:
@@ -2112,7 +2097,7 @@ def _build_fresh_pool_json(fresh_nodes: list[Any], strict_nodes: list[Any], urlt
         }
 
     payload = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "fresh_count": len(fresh_nodes),
         "strict_count": len(strict_nodes),
         "fresh": [item(n) for n in fresh_nodes],
@@ -2388,7 +2373,7 @@ def main() -> int:
     Path(output_nekobox_report).write_text(_build_nekobox_report_csv(nekobox_rows), encoding="utf-8")
     Path(output_openclash_compat_report).write_text(_build_openclash_compat_report_csv(auto_compat_rows + manual_compat_rows), encoding="utf-8")
 
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    now = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
     summary = (
         f"Last update: {now}\n"
         f"Mode: smart group/usage selection + Mihomo URL test + NekoBox/sing-box test\n"
