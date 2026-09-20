@@ -1865,10 +1865,10 @@ def apply_responsiveness(path: Path) -> bool:
                     "AI": os.environ.get("AI_OTHER_TEST_URL", "https://www.gstatic.com/generate_204"),
                 }
                 g["url"] = str(ai_urls.get(name) or "https://www.gstatic.com/generate_204").strip()
-                base_ai_interval = max(60, min(int(os.environ.get("AI_HEALTH_INTERVAL", "300") or 300), 1800))
+                base_ai_interval = perf_int("AI_HEALTH_INTERVAL", 300, 60, 1800)
                 g["interval"] = max(base_ai_interval, 600) if name == "AI-MANUAL" else base_ai_interval
                 g["lazy"] = True
-                g["timeout"] = max(2000, min(int(os.environ.get("AI_HEALTH_TIMEOUT_MS", "5000") or 5000), 15000))
+                g["timeout"] = perf_int("AI_HEALTH_TIMEOUT_MS", 5000, 2000, 15000)
                 g["max-failed-times"] = perf_int("GENERIC_MAX_FAILED_TIMES", 3, 2, 6)
             elif name == "WARM-UP":
                 if isinstance(g.get("proxies"), list):
@@ -2879,9 +2879,9 @@ def main() -> int:
 
     env = build_environment(args, workdir, mihomo, singbox)
 
-    # apply_security() and feed_guard run in this process, while generate_yaml.py
-    # receives `env` as a subprocess environment. Mirror security settings here
-    # so both generation paths evaluate the exact same policy.
+    # Security feeds and YAML optimizers run here; generate_yaml.py receives
+    # `env` as a subprocess environment. Mirror security/performance settings
+    # so generation and post-processing evaluate the same policy.
     security_env_keys = (
         "ADBLOCK_PROFILE", "ADBLOCK_PROVIDER_INTERVAL", "INDONESIA_ADBLOCK",
         "THREAT_IP_BLOCKING", "SECURITY_FEED_GUARD", "REFRESH_SECURITY_FEEDS",
@@ -2909,6 +2909,9 @@ def main() -> int:
         "FALLBACK_INTERVAL", "FALLBACK_LAZY", "BALANCE_INTERVAL", "LOAD_BALANCE_LAZY",
         "LOAD_BALANCE_STRATEGY", "LOAD_BALANCE_NODE_LIMIT", "CONSOLIDATE_ROUTER_PROBES", "KEEP_ALIVE_INTERVAL", "KEEP_ALIVE_IDLE",
         "AI_SERVICE_NODE_LIMIT",
+        "GLOBAL_HEALTH_INTERVAL", "GENERIC_FALLBACK_INTERVAL", "GENERIC_HEALTH_TIMEOUT_MS", "GENERIC_MAX_FAILED_TIMES",
+        "AI_HEALTH_INTERVAL", "AI_HEALTH_TIMEOUT_MS", "AI_TEST_URL", "AI_OPENAI_TEST_URL",
+        "AI_CLAUDE_TEST_URL", "AI_GEMINI_TEST_URL", "AI_OTHER_TEST_URL",
     )
     for key in security_env_keys:
         if key in env:

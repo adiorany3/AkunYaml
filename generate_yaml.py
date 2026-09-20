@@ -751,7 +751,11 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
         and str(getattr(node, "url_test_status", "")).startswith("HTTP ")
     }
     probe_limit = max(1, _env_int("SINGBOX_URLTEST_NODE_LIMIT", 6))
-    probe_tags = sorted(tags, key=lambda tag: tag not in verified_tags)[:probe_limit]
+    # ponytail: rank by refresh URL-test latency; live urltest handles device-path differences.
+    probe_tags = [tag for tag, node in sorted(tagged_nodes, key=lambda item: (
+        item[0] not in verified_tags,
+        _as_int(getattr(item[1], "url_test_ms", None), 999999) if item[0] in verified_tags else 999999,
+    ))][:probe_limit]
     probe_default = probe_tags[0]
     # Global manual selector keeps explicit node choice; AUTO-FAST is its low-cost default.
     category_candidates = ["proxy"]
