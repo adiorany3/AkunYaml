@@ -1032,7 +1032,10 @@ def extract_binary(archive: Path, binary_name: str, output: Path) -> None:
             members = [m for m in tf.getmembers() if m.isfile() and Path(m.name).name.lower() == binary_name.lower()]
             if not members:
                 raise RuntimeError(f"{binary_name} tidak ada dalam {archive.name}")
-            src = tf.extractfile(members[0])
+            member = members[0]
+            if Path(member.name).is_absolute() or ".." in Path(member.name).parts:
+                raise RuntimeError(f"Path archive tidak aman: {member.name}")
+            src = tf.extractfile(member)
             if src is None:
                 raise RuntimeError("Gagal extract")
             with output.open("wb") as dst:
@@ -1042,7 +1045,10 @@ def extract_binary(archive: Path, binary_name: str, output: Path) -> None:
             names = [name for name in zf.namelist() if Path(name).name.lower() == binary_name.lower()]
             if not names:
                 raise RuntimeError(f"{binary_name} tidak ada dalam {archive.name}")
-            with zf.open(names[0]) as src, output.open("wb") as dst:
+            name = names[0]
+            if Path(name).is_absolute() or ".." in Path(name).parts:
+                raise RuntimeError(f"Path archive tidak aman: {name}")
+            with zf.open(name) as src, output.open("wb") as dst:
                 shutil.copyfileobj(src, dst)
     elif archive.name.endswith(".gz"):
         with gzip.open(archive, "rb") as src, output.open("wb") as dst:

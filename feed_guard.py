@@ -51,7 +51,7 @@ def _ssl_context() -> ssl.SSLContext:
     try:
         import certifi  # type: ignore
         context.load_verify_locations(cafile=certifi.where())
-    except Exception:
+    except (ImportError, OSError):
         pass
     return context
 
@@ -118,7 +118,7 @@ def _load_meta(path: Path) -> dict[str, Any]:
     try:
         obj = json.loads(path.read_text(encoding="utf-8"))
         return obj if isinstance(obj, dict) else {}
-    except Exception:
+    except (OSError, UnicodeError, json.JSONDecodeError):
         return {}
 
 

@@ -1794,15 +1794,15 @@ def _rdap_provider(ip: str) -> str:
             timeout=5,
             headers={"User-Agent": USER_AGENT},
         )
-        if response.ok:
-            data = response.json()
-            provider = _map_provider(_extract_text_values(data))
-            if not provider:
-                # Fallback to a short RDAP name/handle when it is already readable.
-                candidate = str(data.get("name") or data.get("handle") or "").strip()
-                candidate = re.sub(r"[^A-Za-z0-9]+", "-", candidate).strip("-").upper()
-                if candidate and not re.fullmatch(r"NET-?\d+|IPV4|RIPE|APNIC|ARIN|LACNIC|AFRINIC", candidate):
-                    provider = candidate[:24]
+        response.raise_for_status()
+        data = response.json()
+        provider = _map_provider(_extract_text_values(data))
+        if not provider:
+            # Fallback to a short RDAP name/handle when it is already readable.
+            candidate = str(data.get("name") or data.get("handle") or "").strip()
+            candidate = re.sub(r"[^A-Za-z0-9]+", "-", candidate).strip("-").upper()
+            if candidate and not re.fullmatch(r"NET-?\d+|IPV4|RIPE|APNIC|ARIN|LACNIC|AFRINIC", candidate):
+                provider = candidate[:24]
     except Exception:
         provider = ""
     global _PROVIDER_CACHE_DIRTY
