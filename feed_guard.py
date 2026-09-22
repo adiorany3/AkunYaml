@@ -253,8 +253,21 @@ def refresh_security_feeds(workdir: Path, *, refresh: bool = True, log=print) ->
                 if isinstance(raw_or_error, Exception):
                     raise raw_or_error
                 raw = raw_or_error
+                max_bytes = int(os.environ.get("FEED_MAX_BYTES", str(25 * 1024 * 1024)))
+                if len(raw) > max_bytes:
+                    raise ValueError(f"feed too large: {len(raw)} > {max_bytes} bytes")
                 text = raw.decode("utf-8", errors="replace")
+                probe = text.lstrip().lower()
+                if probe.startswith(("<!doctype html", "<html", "<head", "<body")):
+                    raise ValueError("upstream returned HTML instead of a feed")
                 entries = _parse_ipcidrs(text) if spec.kind == "ipcidr" else _parse_domains(text)
+                if not entries:
+                    raise ValueError("feed contains no valid entries")
+
+                # Reject common proxy/CDN error pages that happen to contain text.
+                if any(marker in probe[:2000] for marker in ("access denied", "rate limit exceeded", "service unavailable")):
+                    raise ValueError("upstream returned an error page")
+
                 count = len(entries)
                 if count < spec.min_entries:
                     raise ValueError(f"valid entries too small: {count} < {spec.min_entries}")

@@ -779,6 +779,23 @@ proxies:
       Host: fbcdn.sbs
   alpn:
   - http/1.1
+- name: MANUAL-VLESS-WS-TLS-443-apt50atpprem
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: c13ff27e-268a-4c69-a464-d8a625fd01b3
+  udp: true
+  tls: true
+  servername: atharva.web.id
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /effective-steps-to-cloud-computing/buy-vless-ws-pm-telegram-at-synricha
+    headers:
+      Host: atharva.web.id
+  alpn:
+  - http/1.1
 proxy-groups:
 - name: GLOBAL
   type: fallback
@@ -797,6 +814,7 @@ proxy-groups:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://chatgpt.com/favicon.ico
   interval: 300
   lazy: true
@@ -809,6 +827,7 @@ proxy-groups:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://claude.ai/favicon.ico
   interval: 300
   lazy: true
@@ -821,6 +840,7 @@ proxy-groups:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://gemini.google.com/favicon.ico
   interval: 300
   lazy: true
@@ -833,6 +853,7 @@ proxy-groups:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -845,6 +866,7 @@ proxy-groups:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -857,6 +879,7 @@ proxy-groups:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -869,6 +892,7 @@ proxy-groups:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 600
   lazy: true
@@ -894,6 +918,7 @@ proxy-groups:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 180
   tolerance: 100
@@ -907,6 +932,7 @@ proxy-groups:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 60
   tolerance: 150
@@ -920,6 +946,7 @@ proxy-groups:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://cp.cloudflare.com
   interval: 90
   tolerance: 150
@@ -933,6 +960,7 @@ proxy-groups:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://cp.cloudflare.com
   interval: 180
   tolerance: 150
@@ -946,6 +974,7 @@ proxy-groups:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 180
   tolerance: 150
@@ -959,6 +988,7 @@ proxy-groups:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 180
   lazy: true
@@ -981,6 +1011,7 @@ proxy-groups:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
+  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
