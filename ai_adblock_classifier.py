@@ -265,9 +265,14 @@ def classify_candidates(
 
     accepted: set[str] = set()
     review: list[dict[str, Any]] = []
+    started = time.monotonic()
+    total_batches = (len(candidates) + batch_size - 1) // batch_size
+    completed = 0
+    log(f"AI adblock mulai: {len(candidates)} kandidat, {total_batches} batch, model={model}")
     try:
         for start in range(0, len(candidates), batch_size):
             batch = candidates[start:start + batch_size]
+            log(f"AI adblock batch {start // batch_size + 1}/{total_batches}: menunggu API ({len(batch)} domain)")
             for item in _classify_batch(base_url, model, api_key, batch, timeout):
                 if (
                     item["label"] == "block"
@@ -278,8 +283,10 @@ def classify_candidates(
                     accepted.add(item["domain"])
                 else:
                     review.append(item)
+            completed += len(batch)
+            log(f"AI adblock progres: {completed}/{len(candidates)} ({completed / len(candidates):.0%}), {time.monotonic() - started:.1f}s")
     except (OSError, ValueError, json.JSONDecodeError, urllib.error.URLError) as exc:
-        log(f"AI adblock fail-open: {type(exc).__name__}: {exc}")
+        log(f"AI adblock fail-open setelah {completed}/{len(candidates)} kandidat: {type(exc).__name__}: {exc}")
         return {"status": "failed-open", "reason": str(exc), "count": len(candidates)}
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -292,7 +299,7 @@ def classify_candidates(
     report = {"status": "updated", "model": model, "candidates": len(candidates), "blocked": sorted(accepted), "review": review}
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    log(f"AI adblock: {len(accepted)} exact host diterima, {len(review)} allow/review")
+    log(f"AI adblock selesai: {completed}/{len(candidates)}, {len(accepted)} exact host diterima, {len(review)} allow/review; laporan={report_path}")
     return report
 
 

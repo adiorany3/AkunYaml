@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# This script uses Bash arrays and PIPESTATUS, including when invoked via zsh.
+if [ -z "${BASH_VERSION:-}" ]; then
+    exec /bin/bash "$0" "$@"
+fi
 set -euo pipefail
 
 cd "$(dirname "$0")"
@@ -106,14 +110,21 @@ export REFRESH_SECURITY_FEEDS=true
 
 STALE_FALLBACK=0
 GENERATOR_LOG="$(mktemp -t akunyaml-generator.XXXXXX)"
-trap 'rm -f "$GENERATOR_LOG"' EXIT
+trap 'RUN_EXIT=$?; printf "\n[STATUS] Refresh berakhir: exit=%s; log generator: %s\n" "$RUN_EXIT" "$GENERATOR_LOG"' EXIT
 
 echo "[RUN] Refresh subscription/proxy, akun, adblock, generate, dan pilih node sehat terbaru..."
+echo "[INFO] Log langsung: $GENERATOR_LOG"
+echo "[INFO] Batch AI ditampilkan saat berjalan; selesai AI belum berarti audit/validasi selesai."
 set +e
-"${ARGS[@]}" >"$GENERATOR_LOG" 2>&1
-GENERATOR_EXIT=$?
+PYTHONUNBUFFERED=1 "${ARGS[@]}" 2>&1 | tee "$GENERATOR_LOG"
+PIPELINE_STATUS=("${PIPESTATUS[@]}")
+GENERATOR_EXIT=${PIPELINE_STATUS[0]}
 set -e
-cat "$GENERATOR_LOG"
+if [[ ${PIPELINE_STATUS[1]} -ne 0 ]]; then
+    echo "[ERROR] Gagal menulis log generator."
+    exit "${PIPELINE_STATUS[1]}"
+fi
+echo "[RUN] Generator berakhir: exit=$GENERATOR_EXIT"
 
 # Keep the standalone no-proxy profile aligned with refreshed manual nodes.
 if [[ -s openclash_auto.yaml && -s openclash_noproxy.yaml ]]; then

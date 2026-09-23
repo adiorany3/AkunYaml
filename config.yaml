@@ -12,6 +12,7 @@ files:
 # Anthropic API configuration (replace with your own values)
 ANTHROPIC_BASE_URL: "http://127.0.0.1:20128/v1"
 ANTHROPIC_AUTH_TOKEN: "sk-95b4491cfc89a629-h5ol4y-77ce990c"
+ANTHROPIC_MODEL: "Gabungan"
 # Proxy health check settings
 PROXY_HEALTH_CHECK_ENABLED: true
 PROXY_HEALTH_TIMEOUT: 5  # seconds

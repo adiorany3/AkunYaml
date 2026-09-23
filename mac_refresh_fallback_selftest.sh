@@ -6,6 +6,19 @@ TEST_DIR="$(mktemp -d)"
 trap 'rm -rf "$TEST_DIR"' EXIT
 cd "$TEST_DIR"
 
+# Exercise streaming without network/setup operations.
+STREAM="$(awk '/^set \+e$/{copy=1} copy{print} copy && /^echo "\[RUN\] Generator berakhir/{exit}' "$ROOT/mac_refresh_accounts.sh")"
+[[ -n "$STREAM" ]]
+GENERATOR_LOG="$TEST_DIR/stream.log"
+for expected in 0 3 23; do
+    ARGS=(bash -c 'echo "progress unbuffered=$PYTHONUNBUFFERED"; exit "$1"' _ "$expected")
+    eval "$STREAM"
+    [[ "$GENERATOR_EXIT" -eq "$expected" ]]
+    grep -q 'progress unbuffered=1' "$GENERATOR_LOG"
+done
+printf 'PASS: live log, unbuffered environment, generator exit codes\n'
+
+
 # Bootstrap imports before runner startup; stub Python to avoid package/network changes.
 BOOTSTRAP="$(awk '/^if ! "\$PY" -c/{copy=1} copy{print} copy && /^fi$/{exit}' "$ROOT/mac_refresh_accounts.sh")"
 [[ -n "$BOOTSTRAP" ]]
