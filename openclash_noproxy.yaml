@@ -122,8 +122,52 @@ dns:
   prefer-h3: false
   use-hosts: true
   use-system-hosts: false
-proxies: []
-proxy-groups: []
+proxies:
+- name: MANUAL-VMess-WS-TLS-443-ikada543
+  type: vmess
+  server: 104.17.3.81
+  port: 443
+  uuid: 07b0b1d3-0f2a-4d95-895a-c31be0f6a784
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: fbcdn.sbs
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /modern-analyze-to-machine-learning/buy-vmess-ws-pm-telegram-at-synricha
+    headers:
+      Host: fbcdn.sbs
+  alpn:
+  - http/1.1
+- name: MANUAL-VMess-WS-TLS-443-singa08
+  type: vmess
+  server: 104.17.3.81
+  port: 443
+  uuid: 66827e09-9743-47d4-952c-d9c90f31fe48
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: midtrans.cyou
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /essential-achieve-to-growth-hacking/buy-vmess-ws-pm-telegram-at-synricha
+    headers:
+      Host: midtrans.cyou
+  alpn:
+  - http/1.1
+proxy-groups:
+- name: MANUAL
+  type: select
+  proxies:
+  - DIRECT
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-singa08
 rules:
 - DOMAIN,googleads.g.doubleclick.net,REJECT
 - DOMAIN,ad.doubleclick.net,REJECT
@@ -471,7 +515,7 @@ rules:
 - RULE-SET,ads_domain,REJECT
 - RULE-SET,anti-ad,REJECT
 - RULE-SET,tracker-domain,REJECT
-- MATCH,DIRECT
+- MATCH,MANUAL
 rule-providers:
   threat-malware:
     type: http

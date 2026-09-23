@@ -114,6 +114,41 @@ set +e
 GENERATOR_EXIT=$?
 set -e
 cat "$GENERATOR_LOG"
+
+# Keep the standalone no-proxy profile aligned with refreshed manual nodes.
+if [[ -s openclash_auto.yaml && -s openclash_noproxy.yaml ]]; then
+  "$PY" - <<'PY'
+from pathlib import Path
+import yaml
+
+auto_path = Path("openclash_auto.yaml")
+noproxy_path = Path("openclash_noproxy.yaml")
+auto = yaml.safe_load(auto_path.read_text()) or {}
+noproxy = yaml.safe_load(noproxy_path.read_text()) or {}
+manual_types = {"vmess", "vless", "trojan", "ss", "socks5", "http"}
+manual = [
+    proxy for proxy in auto.get("proxies", [])
+    if isinstance(proxy, dict)
+    and str(proxy.get("name", "")).startswith("MANUAL-")
+    and str(proxy.get("type", "")).lower() in manual_types
+]
+if manual:
+    existing = [proxy for proxy in noproxy.get("proxies", []) if isinstance(proxy, dict)]
+    refreshed_names = {proxy["name"] for proxy in manual}
+    noproxy["proxies"] = [proxy for proxy in existing if proxy.get("name") not in refreshed_names] + manual
+    groups = noproxy.setdefault("proxy-groups", [])
+    group = next((item for item in groups if item.get("name") == "MANUAL"), None)
+    if group is None:
+        group = {"name": "MANUAL", "type": "select", "proxies": []}
+        groups.insert(0, group)
+    group["type"] = "select"
+    group["proxies"] = ["DIRECT", *[proxy["name"] for proxy in manual]]
+    noproxy_path.write_text(yaml.safe_dump(noproxy, sort_keys=False, allow_unicode=True))
+    print(f"[SYNC] {noproxy_path}: {len(manual)} manual node(s)")
+else:
+    print("[SYNC] Tidak ada node MANUAL-* baru; noproxy dipertahankan.")
+PY
+fi
 if [[ "$GENERATOR_EXIT" -ne 0 ]]; then
   REQUIRED_OUTPUTS=(openclash_auto.yaml openclash_android.yaml singbox_android.json openclash_lite.yaml openclash_fresh_pool.yaml akun.txt)
   MISSING_OUTPUTS=()
