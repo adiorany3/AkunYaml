@@ -196,8 +196,8 @@ def _read_api_key(path: Path | None) -> str:
 
 def _classify_batch(base_url: str, model: str, api_key: str, domains: list[str], timeout: float) -> list[dict[str, Any]]:
     endpoint = base_url.rstrip("/") + "/chat/completions"
-    if not endpoint.startswith("https://"):
-        raise ValueError("AI_ADBLOCK_BASE_URL wajib HTTPS")
+    if not (endpoint.startswith("https://") or endpoint.startswith("http://127.0.0.1:") or endpoint.startswith("http://localhost:")):
+        raise ValueError("AI_ADBLOCK_BASE_URL wajib HTTPS, kecuali localhost")
     prompt = (
         "Classify each domain for network-level ad blocking. Return only strict JSON with schema "
         '{"results":[{"domain":"exact input","label":"allow|block|review","category":"advertising|tracking|gambling|predatory_lending|scam|service|unknown","confidence":0.0,"reason":"short reason"}]}. '
