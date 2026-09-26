@@ -139,7 +139,7 @@ DEFAULT_ENV = {
     "FEED_MAX_GROWTH_RATIO": "4.0",
     "AI_ADBLOCK_ENABLED": "false",
     "AI_ADBLOCK_BASE_URL": "http://127.0.0.1:20128/v1",
-    "AI_ADBLOCK_MODEL": "KunciAI",
+    "AI_ADBLOCK_MODEL": "Gabungan",
     "AI_ADBLOCK_API_KEY_FILE": ".secrets/ai_adblock.key",
     "AI_ADBLOCK_BATCH_SIZE": "5",
     "AI_ADBLOCK_MIN_CONFIDENCE": "0.98",
