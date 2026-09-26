@@ -1,38 +1,38 @@
 {
   "ads_indonesia": {
-    "added": 0,
-    "count": 151,
+    "added": 3,
+    "count": 154,
     "kind": "domain",
     "removed": 0,
-    "sha256": "84b6e3f5424d81ae8043ac0ec7422298bd0ef61f8afcf74edfafce476629c284",
-    "updated_unix": 1790289555,
+    "sha256": "5a0014c0424b67a1bfc86538e9747f4d19d13a5d4314f4210981584bde4fb19e",
+    "updated_unix": 1790385636,
     "url": "https://raw.githubusercontent.com/ABPindo/indonesianadblockrules/master/subscriptions/domain.txt"
   },
   "gambling-mini": {
-    "added": 18750,
-    "count": 143184,
+    "added": 11557,
+    "count": 143812,
     "kind": "domain",
-    "removed": 12873,
-    "sha256": "d6ac4eef471586a110fc3e36711a0d72b8262fb9c128111e4b9d163a70d9b186",
-    "updated_unix": 1790289556,
+    "removed": 10929,
+    "sha256": "c500a9fddcc412681190d966e215fbdc876fb51c4053c65dd7f1dcc18f46e1ae",
+    "updated_unix": 1790385637,
     "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/gambling.mini-onlydomains.txt"
   },
   "hagezi-pro-plus-mini": {
-    "added": 14485,
-    "count": 69716,
+    "added": 4155,
+    "count": 69377,
     "kind": "domain",
-    "removed": 8975,
-    "sha256": "14f60f77f85961b8fd0b7c21e2b26c773eb57e87519d6dad6f3a0d50e756847f",
-    "updated_unix": 1790289555,
+    "removed": 4494,
+    "sha256": "faa97460d3d25560a3cf5220deca8e4d489cdd6af8b1535355dbef513e7e9b22",
+    "updated_unix": 1790385637,
     "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.plus.mini-onlydomains.txt"
   },
   "popup-ads": {
-    "added": 11,
-    "count": 50605,
+    "added": 9,
+    "count": 50522,
     "kind": "domain",
-    "removed": 70,
-    "sha256": "3341a52a790032f9865555f118e6b6631ad2854f9fc103c6b402c9bdfea7c304",
-    "updated_unix": 1790289555,
+    "removed": 92,
+    "sha256": "495d0aebaab00f6fb99feda2ecfba24fe0e71083589bf8fa8e486fc3dc5a33cc",
+    "updated_unix": 1790385637,
     "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/popupads-onlydomains.txt"
   },
   "threat-cryptominers": {
@@ -41,16 +41,16 @@
     "kind": "domain",
     "removed": 0,
     "sha256": "9fe832d795938cd4637d9d47104beec00a57e5c9d8f1ec50c830ce59ebed8811",
-    "updated_unix": 1790289556,
+    "updated_unix": 1790385637,
     "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/cryptominers.txt"
   },
   "threat-fake-scam": {
-    "added": 45,
-    "count": 17336,
+    "added": 27,
+    "count": 17357,
     "kind": "domain",
-    "removed": 1,
-    "sha256": "8d881e8d939d61afdf373e78412695357c77270bd589ff3cd098c310e33fe113",
-    "updated_unix": 1790289556,
+    "removed": 6,
+    "sha256": "e4531db2f459d7c6a2d90fa5b486e740fea04069ed73012f225e849c91ef8aa4",
+    "updated_unix": 1790385637,
     "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/fake-onlydomains.txt"
   },
   "threat-malware": {
@@ -59,7 +59,7 @@
     "kind": "domain",
     "removed": 0,
     "sha256": "c1530a4b608624a562f81d46f655da5510106dd85b637d807f32a45d79fcb5ae",
-    "updated_unix": 1790289556,
+    "updated_unix": 1790385637,
     "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/malware.txt"
   },
   "threat-phishing": {
@@ -68,25 +68,25 @@
     "kind": "domain",
     "removed": 0,
     "sha256": "0c01fd2b4bff6becbdcc738740a4680227750b97de127cff47847cdbd980d1ba",
-    "updated_unix": 1790289556,
+    "updated_unix": 1790385637,
     "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/phishing.txt"
   },
   "threat-tif-ip": {
-    "added": 12750,
-    "count": 79175,
+    "added": 7646,
+    "count": 72307,
     "kind": "ipcidr",
-    "removed": 9233,
-    "sha256": "2a4d62294f5c021a406d49316ee789bbec7116eebc2599933a78a016be2bbc9a",
-    "updated_unix": 1790289556,
+    "removed": 14514,
+    "sha256": "5572cde4a50de51c63ef8ae1a0502dd7e73ecaabe7007b98a6a6310a030e24b4",
+    "updated_unix": 1790385638,
     "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/ips/tif.txt"
   },
   "threat-tif-mini": {
-    "added": 10532,
-    "count": 191476,
+    "added": 10114,
+    "count": 200366,
     "kind": "domain",
-    "removed": 1957,
-    "sha256": "1cf9ebcdb7b797f1a937eb5a8b9c3e42f24e3b867d95cdecc55a6089a03309c3",
-    "updated_unix": 1790289555,
+    "removed": 1224,
+    "sha256": "892e45ff19cdd927c6185925202c0f1b16a880d6f4782210bb6c9f23601dfaf5",
+    "updated_unix": 1790385637,
     "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.mini-onlydomains.txt"
   }
 }

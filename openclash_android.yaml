@@ -741,25 +741,6 @@ proxies:
       Host: fbcdn.sbs
   alpn:
   - http/1.1
-- name: MANUAL-VMess-WS-TLS-443-singa08
-  type: vmess
-  server: 104.17.3.81
-  port: 443
-  uuid: 66827e09-9743-47d4-952c-d9c90f31fe48
-  alterId: 0
-  cipher: auto
-  udp: true
-  tls: true
-  servername: midtrans.cyou
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /essential-achieve-to-growth-hacking/buy-vmess-ws-pm-telegram-at-synricha
-    headers:
-      Host: midtrans.cyou
-  alpn:
-  - http/1.1
 - name: MANUAL-VMess-WS-TLS-443-akuku8
   type: vmess
   server: 104.17.3.81
@@ -779,23 +760,6 @@ proxies:
       Host: fbcdn.sbs
   alpn:
   - http/1.1
-- name: MANUAL-VLESS-WS-TLS-443-apt50atpprem
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: c13ff27e-268a-4c69-a464-d8a625fd01b3
-  udp: true
-  tls: true
-  servername: atharva.web.id
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /effective-steps-to-cloud-computing/buy-vless-ws-pm-telegram-at-synricha
-    headers:
-      Host: atharva.web.id
-  alpn:
-  - http/1.1
 proxy-groups:
 - name: GLOBAL
   type: fallback
@@ -812,9 +776,7 @@ proxy-groups:
   type: fallback
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
-  - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://chatgpt.com/favicon.ico
   interval: 300
   lazy: true
@@ -825,9 +787,7 @@ proxy-groups:
   type: fallback
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
-  - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://claude.ai/favicon.ico
   interval: 300
   lazy: true
@@ -838,9 +798,7 @@ proxy-groups:
   type: fallback
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
-  - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://gemini.google.com/favicon.ico
   interval: 300
   lazy: true
@@ -851,9 +809,7 @@ proxy-groups:
   type: fallback
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
-  - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -864,9 +820,7 @@ proxy-groups:
   type: fallback
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
-  - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -877,9 +831,7 @@ proxy-groups:
   type: fallback
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
-  - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -890,9 +842,7 @@ proxy-groups:
   type: fallback
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
-  - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 600
   lazy: true
@@ -916,9 +866,7 @@ proxy-groups:
   type: url-test
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
-  - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 180
   tolerance: 100
@@ -930,9 +878,7 @@ proxy-groups:
   type: url-test
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
-  - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 60
   tolerance: 150
@@ -944,9 +890,7 @@ proxy-groups:
   type: url-test
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
-  - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://cp.cloudflare.com
   interval: 90
   tolerance: 150
@@ -958,9 +902,7 @@ proxy-groups:
   type: url-test
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
-  - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://cp.cloudflare.com
   interval: 180
   tolerance: 150
@@ -972,9 +914,7 @@ proxy-groups:
   type: url-test
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
-  - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 180
   tolerance: 150
@@ -986,9 +926,7 @@ proxy-groups:
   type: fallback
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
-  - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 180
   lazy: true
@@ -1009,9 +947,7 @@ proxy-groups:
   type: fallback
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
-  - MANUAL-VMess-WS-TLS-443-singa08
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -1248,38 +1184,28 @@ rules:
 - DOMAIN-SUFFIX,speedtest.net,GLOBAL
 - DOMAIN-SUFFIX,ookla.com,GLOBAL
 - DOMAIN-SUFFIX,speedtestcustom.com,GLOBAL
-- DOMAIN,ad.galera.bet.br,REJECT
-- DOMAIN,ads.roku.com,REJECT
+- DOMAIN,ads.betmgm.bet.br,REJECT
+- DOMAIN,ads.brazino777.bet.br,REJECT
+- DOMAIN,ads.spotify.com,REJECT
+- DOMAIN,ads.twitch.tv,REJECT
 - DOMAIN,aff.esportesdasorte.bet.br,REJECT
 - DOMAIN,aff.oleybet.bet.br,REJECT
 - DOMAIN,afiliados.esportiva.bet,REJECT
-- DOMAIN,bankonbetcasinobonus.fr,REJECT
-- DOMAIN,betblastcasinos.fr,REJECT
-- DOMAIN,betciocasino.fr,REJECT
-- DOMAIN,betclic-casino.fr,REJECT
-- DOMAIN,beteum-casino.fr,REJECT
-- DOMAIN,betfair-casino.fr,REJECT
-- DOMAIN,betibet-casino.fr,REJECT
-- DOMAIN,betibetcasino.fr,REJECT
 - DOMAIN,betify-casino-bonus-fr.fr,REJECT
-- DOMAIN,betify-casino-club-fr.fr,REJECT
-- DOMAIN,betify-casino-en-ligne.fr,REJECT
-- DOMAIN,betify-casino-online-fr.fr,REJECT
-- DOMAIN,betify-casino-poker-fr.fr,REJECT
-- DOMAIN,betify-casino-poker-france.fr,REJECT
+- DOMAIN,casino-ad-mediation.me2zengame.com,REJECT
 - DOMAIN,casino.betsson.com,REJECT
-- DOMAIN,diproton-ads-prod-eu-central-1.hulu.com.akadns.net,REJECT
 - DOMAIN,diproton-ads-prod-eu-west-1.hulu.com.akadns.net,REJECT
 - DOMAIN,diproton-ads-prod-us-east-1.hulu.com.akadns.net,REJECT
 - DOMAIN,diproton-ads-prod-us-east-2.hulu.com.akadns.net,REJECT
 - DOMAIN,diproton-ads-prod-us-west-2.hulu.com.akadns.net,REJECT
+- DOMAIN,locowincasinopromo.fr,REJECT
 - DOMAIN,lto.esportesdasorte.bet.br,REJECT
-- DOMAIN,lto.ona.bet.br,REJECT
+- DOMAIN,neue-online-casinos-2026.de,REJECT
 - DOMAIN,sgtm.betmgm.bet.br,REJECT
+- DOMAIN,sst.apostaganha.bet.br,REJECT
 - DOMAIN,sst.betesporte.bet.br,REJECT
-- DOMAIN,sst.vaidebet.bet.br,REJECT
 - DOMAIN,svenskaspelsportandcasino.data.adobedc.net,REJECT
-- DOMAIN,ufabaccarat.bet,REJECT
+- DOMAIN,unibetcasino777.net,REJECT
 - RULE-SET,threat-malware,REJECT
 - RULE-SET,threat-phishing,REJECT
 - RULE-SET,threat-cryptominers,REJECT
@@ -1535,7 +1461,6 @@ rules:
 - DOMAIN,805ba.v.fwmrm.net,REJECT
 - DOMAIN,tvm-mtv-freewheel.akamaized.net,REJECT
 - DOMAIN,adeventtracker.spotify.com,REJECT
-- DOMAIN,ads.spotify.com,REJECT
 - DOMAIN,ads-fa.spotify.com,REJECT
 - DOMAIN,ads-ak.spotify.com,REJECT
 - DOMAIN,adserver.spotify.com,REJECT
@@ -1551,9 +1476,10 @@ rules:
 - DOMAIN,advertising.netflix.com,REJECT
 - DOMAIN,beacon.netflix.com,REJECT
 - DOMAIN,ichnaea.netflix.com,REJECT
-- DOMAIN,ads.twitch.tv,REJECT
+- DOMAIN,diproton-ads-prod-eu-central-1.hulu.com.akadns.net,REJECT
 - DOMAIN,analytics.m7g.twitch.tv,REJECT
 - DOMAIN,spade.twitch.tv,REJECT
+- DOMAIN,ads.roku.com,REJECT
 - DOMAIN,advertising.roku.com,REJECT
 - DOMAIN-SUFFIX,popads.net,REJECT
 - DOMAIN-SUFFIX,popcash.net,REJECT
@@ -1673,12 +1599,6 @@ rules:
 - DOMAIN-SUFFIX,api.twitter.com,REDDIT
 - DOMAIN-SUFFIX,api.x.com,REDDIT
 - DOMAIN-SUFFIX,t.co,REDDIT
-- DOMAIN,ads.energycasinopartners.com,REJECT
-- DOMAIN,ads.gogocasino.com,REJECT
-- DOMAIN,ads.grosvenorcasinos.com,REJECT
-- DOMAIN,poker.bet365.com,REJECT
-- DOMAIN,sst.sortenabet.bet.br,REJECT
-- DOMAIN,www.entercasino.com,REJECT
 - MATCH,GLOBAL
 find-process-mode: 'off'
 hosts:

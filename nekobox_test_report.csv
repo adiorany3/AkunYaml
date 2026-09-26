@@ -1,11 +1,11 @@
 name,type,network,original_server,bug_sni,mihomo_status,url_test_ms,nekobox_test_ms,nekobox_status,nekobox_ready
-AKUN-007-CY-ANNETEN-19971112-VLESS-WS-114MS,vless,ws,cy2.zuoai.cf,xi.tbv.ccwu.cc,HTTP 204,349,545,HTTP 204,yes
-AKUN-025-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-133MS,vless,ws,mybb.com,rAyAn-007.nAsTaRaN.DpDnS.OrG,HTTP 204,361,411,HTTP 204,yes
-AKUN-006-CLOUDFLARE-VLESS-WS-123MS,vless,ws,188.114.97.6,l0n0qgkdttu061g57fhqzbet333s4t.ade-1004.workers.dev,HTTP 204,368,1432,HTTP 204,yes
-AKUN-002-AEZA-NETWORK-VLESS-WS-121MS,vless,ws,109.120.138.192,shuma.ccwu.cc,HTTP 204,369,417,HTTP 204,yes
-AKUN-010-CLOUDFLARE-VLESS-WS-126MS,vless,ws,172.67.174.249,ezaccess-project-9138d4.5f6on.workers.dev,HTTP 204,370,413,HTTP 204,yes
-AKUN-024-RS-RAPIDSEEDBOX-20190717-VLESS-WS-138MS,vless,ws,45.130.125.126,BItter-CreDIT-61b8.b76EbA0aBb.wORkerS.dEv,HTTP 204,370,451,HTTP 204,yes
-AKUN-027-UNKNOWN-VLESS-WS-138MS,vless,ws,208.103.161.5,dry-butterfly-8eb9.tmpgnacio83.workers.dev,HTTP 204,372,6181,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
-AKUN-003-UNKNOWN-VLESS-WS-110MS,vless,ws,45.131.5.241,xi.tbv.ccwu.cc,HTTP 204,379,406,HTTP 204,yes
-AKUN-022-MEDIUM-VLESS-WS-137MS,vless,ws,medium.com,rAyAn-007.mAxImA.DpDnS.OrG,HTTP 204,380,413,HTTP 204,yes
-AKUN-030-UNKNOWN-VLESS-WS-131MS,vless,ws,188.114.98.0,tn1r.eu.cc,HTTP 204,380,1408,HTTP 204,yes
+AKUN-007-BIGCOMMERCE-VLESS-WS-105MS,vless,ws,63.141.128.22,MiSty-tooth-78cA.FoboGAH414-e7B.WoRKERs.DEv,HTTP 204,337,575,HTTP 204,yes
+AKUN-026-CLOUDFLARE-VLESS-WS-100MS,vless,ws,188.114.97.6,dfsuporte.garena.com.ex33r.eu.cc,HTTP 204,343,444,HTTP 204,yes
+AKUN-003-AIMALL-VLESS-WS-97MS,vless,ws,cf-vless-4cf55824.aimall.fr,cf-vless-4cf55824.aimall.fr,HTTP 204,345,413,HTTP 204,yes
+AKUN-005-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-95MS,vless,ws,5xgovtcyqgoh5tedrlj6sg--sn9pbh.mahsapodcst.workers.dev,5xgovtCYqgoh5tEDRLJ6Sg--sn9PbH.mAHsApOdCSt.WOrKers.deV,HTTP 204,345,418,HTTP 204,yes
+AKUN-009-CLOUDFLARE-VLESS-WS-95MS,vless,ws,188.114.97.6,icy-hall-8013.386-58c.workers.dev,HTTP 204,345,6186,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
+AKUN-004-RS-RAPIDSEEDBOX-20190717-VLESS-WS-103MS,vless,ws,45.130.125.126,BItter-CreDIT-61b8.b76EbA0aBb.wORkerS.dEv,HTTP 204,348,449,HTTP 204,yes
+AKUN-025-CLOUDFLARE-VLESS-WS-98MS,vless,ws,www.speedtest.net,CfOI-2FX16g3-8rY2kdXmCJ.WJeSv2ILA3rXbUhpC2NSugRAchGaWK.WOrkeRs.DEV,HTTP 204,348,399,HTTP 204,yes
+AKUN-017-MEDIUM-VLESS-WS-90MS,vless,ws,medium.com,rAyAn-007.mAxImA.DpDnS.OrG,HTTP 204,350,429,HTTP 204,yes
+AKUN-028-UNKNOWN-VLESS-WS-92MS,vless,ws,172.64.153.213,powered-by-surena.configfarsi695fce27aa549.workers.dev,HTTP 204,351,5182,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-023-UNKNOWN-VLESS-WS-100MS,vless,ws,104.21.31.137,59fssIBE-SDDrRs3qW83QQZz0H1NT-o.q7qwsxItB6BYi5nMTa4naAlz.woRkErs.deV,HTTP 204,353,405,HTTP 204,yes
