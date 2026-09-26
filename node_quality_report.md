@@ -1,12 +1,12 @@
 # Node Quality Report - Smart Stable
 
 ## Ringkasan
-- Total proxy di YAML: 10
+- Total proxy di YAML: 13
 - WARM-UP harian: 0 node
 - WARM-UP-CF Cloudflare/Worker: 0 node
 - STREAMING-FAST: 0 node
-- AUTO-FAST: 5 node
-- FALLBACK: 10 referensi, manual backup: 2 node
+- AUTO-FAST: 6 node
+- FALLBACK: 13 referensi, manual backup: 3 node
 
 ## Rekomendasi Pakai
 - Harian/browsing: pilih `WARM-UP` atau `AUTO-FAST`.
@@ -24,8 +24,7 @@
 - Tidak ada
 
 ## Node Berisiko dari NekoBox/sing-box Test
-- AKUN-009-CLOUDFLARE-VLESS-WS-95MS: ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)
-- AKUN-028-UNKNOWN-VLESS-WS-92MS: ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))
+- Tidak ada yang gagal pada laporan terakhir
 
 ## Catatan Smart Mode
 - Health-check cepat hanya untuk pool kecil, bukan semua node.

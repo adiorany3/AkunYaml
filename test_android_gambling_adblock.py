@@ -12,7 +12,13 @@ reject_domains = {
     if rule.get("action") == "reject"
     for domain in rule.get("domain_suffix", []) + rule.get("domain", [])
 }
-assert "casino-netflix.com" in reject_domains
+# Feed membership changes upstream; verify current cached gambling entries.
+gambling_domains = {
+    line.strip().lower().rstrip(".")
+    for line in (Path(__file__).parent / ".feed_cache/last_good/gambling-mini.txt").read_text(encoding="utf-8").splitlines()
+    if line.strip() and not line.lstrip().startswith("#")
+}
+assert gambling_domains & reject_domains, "No cached gambling domains exported"
 assert "netflix.com" not in reject_domains
 assert "ads.spotify.com" in reject_domains
 for domain in (

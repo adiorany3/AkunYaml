@@ -712,7 +712,7 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     proxy_outbounds: list[dict[str, Any]] = []
     tagged_nodes: list[tuple[str, Any]] = []
     tags: list[str] = []
-    used_tags = {"proxy", "automatic", "SOCIAL", "BANK", "VMESS-VIDEO", "direct", "block"}
+    used_tags = {"proxy", "automatic", "AUTO-FAST", "SOCIAL", "BANK", "VMESS-VIDEO", "direct", "block"}
     allowed_protocols = {"vless", "vmess", "trojan"}
     for index, node in enumerate(nodes, start=1):
         if str(getattr(node, "tier", "")).upper() != "MANUAL":
