@@ -1667,6 +1667,13 @@ def apply_reference_profile(
             cleaned.append(rule)
         merged["rules"] = cleaned
 
+    # Reference profile predates the no-DIRECT invariant and still carries public
+    # bypass rules. Re-apply the generator invariant so this last merge step
+    # cannot leak DIRECT on public traffic.
+    from sumberyaml_core import _enforce_no_selector_no_direct_config
+
+    merged = _enforce_no_selector_no_direct_config(merged)
+
     _yaml_store_config(path, merged)
     return True
 
