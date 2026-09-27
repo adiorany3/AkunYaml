@@ -1,11 +1,11 @@
 name,type,network,original_server,bug_sni,mihomo_status,url_test_ms,nekobox_test_ms,nekobox_status,nekobox_ready
-AKUN-025-AXIOMED-VLESS-WS-130MS,vless,ws,ade.axiomed.ir,4tRidhN78VTo4-YTfh2zEk04bZafczH.adE-1020.WoRkerS.DEV,HTTP 204,349,459,HTTP 204,yes
-AKUN-007-UNKNOWN-VLESS-WS-125MS,vless,ws,104.21.61.141,fReeWORLd.aliAicODe47649.woRKers.Dev,HTTP 204,372,463,HTTP 204,yes
-AKUN-013-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-122MS,vless,ws,chatgpt.com,powered-by-surena.user68f797c2f3e1b.workers.dev,HTTP 204,388,490,HTTP 204,yes
-AKUN-008-CLOUDFLARE-VLESS-WS-127MS,vless,ws,172.64.149.54,lATE-LaB-d6A2.CIwodA8715.WoRKerS.DeV,HTTP 204,390,302,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
-AKUN-017-UNKNOWN-VLESS-WS-110MS,vless,ws,104.21.31.137,59fssIBE-SDDrRs3qW83QQZz0H1NT-o.q7qwsxItB6BYi5nMTa4naAlz.woRkErs.deV,HTTP 204,391,484,HTTP 204,yes
-AKUN-020-CLOUDFLARE-VLESS-WS-134MS,vless,ws,188.114.98.0,tn1r.eu.cc,HTTP 204,392,450,HTTP 204,yes
-AKUN-021-CLOUDFLARE-VLESS-WS-145MS,vless,ws,172.67.173.89,s0p42f8wwpdde5tf7m4l6l.ab1x-sn9o4y3n7ondkrd.workers.dev,HTTP 204,393,452,HTTP 204,yes
-AKUN-014-CLOUDFLARE-VLESS-WS-130MS,vless,ws,188.114.97.6,icy-hall-8013.386-58c.workers.dev,HTTP 204,400,6180,"ReadTimeout: HTTPSConnectionPool(host='www.gstatic.com', port=443): Read timed out. (read timeout=6.0)",no
-AKUN-030-CLOUDFLARE-VLESS-WS-110MS,vless,ws,172.64.149.192,powered-by-surena.configfarsi695fd42d43c58.workers.dev,HTTP 204,406,439,HTTP 204,yes
-AKUN-012-CLOUDFLARE-VLESS-WS-113MS,vless,ws,188.114.97.3,mxp6jvjacystdp-s4f.kjnnv3i410u6mq-itd.workers.dev,HTTP 204,409,477,HTTP 204,yes
+AKUN-012-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-98MS,vless,ws,www.speedtest.net,bPB-4dc4958B.hXjkcgHcHv.woRkeRs.deV,HTTP 204,344,453,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-028-CLOUDFLARE-VLESS-WS-124MS,vless,ws,172.67.173.89,s0p42f8wwpdde5tf7m4l6l.ab1x-sn9o4y3n7ondkrd.workers.dev,HTTP 204,354,431,HTTP 204,yes
+AKUN-002-UNKNOWN-VLESS-WS-98MS,vless,ws,172.64.147.91,powered-by-surena.configfarsi695fce27aa549.workers.dev,HTTP 204,368,412,HTTP 204,yes
+AKUN-027-CLOUDFLARE-VLESS-WS-100MS,vless,ws,172.64.149.54,lATE-LaB-d6A2.CIwodA8715.WoRKerS.DeV,HTTP 204,369,277,"ConnectionError: ('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))",no
+AKUN-007-CLOUDFLARE-VLESS-WS-99MS,vless,ws,188.114.97.3,mxp6jvjacystdp-s4f.kjnnv3i410u6mq-itd.workers.dev,HTTP 204,372,411,HTTP 204,yes
+AKUN-009-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-106MS,vless,ws,5xgovtcyqgoh5tedrlj6sg--sn9pbh.mahsapodcst.workers.dev,5xgovtCYqgoh5tEDRLJ6Sg--sn9PbH.mAHsApOdCSt.WOrKers.deV,HTTP 204,379,407,HTTP 204,yes
+AKUN-023-UNKNOWN-VLESS-WS-103MS,vless,ws,104.21.61.141,fReeWORLd.aliAicODe47649.woRKers.Dev,HTTP 204,380,508,HTTP 204,yes
+AKUN-006-DIGITALOCEAN-VLESS-WS-97MS,vless,ws,164.90.217.130,white-forest-2c01.alvlirm222.workers.dev,HTTP 204,383,433,HTTP 204,yes
+AKUN-017-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-114MS,vless,ws,wgrcqwtkfyqujs43.ghydgdbdbddvv.workers.dev,wgrcqwtkfyqujs43.ghydgdbdbddvv.workers.dev,HTTP 204,384,463,HTTP 204,yes
+AKUN-003-MD-ITFRUIT-185153198-202-VLESS-WS-104MS,vless,ws,185.153.198.86,free.cndyw.ggff.net,HTTP 204,390,428,HTTP 204,yes

@@ -760,23 +760,6 @@ proxies:
       Host: fbcdn.sbs
   alpn:
   - http/1.1
-- name: MANUAL-VLESS-WS-TLS-443-apt50atpprem
-  type: vless
-  server: 104.17.3.81
-  port: 443
-  uuid: c13ff27e-268a-4c69-a464-d8a625fd01b3
-  udp: true
-  tls: true
-  servername: atharva.web.id
-  network: ws
-  client-fingerprint: chrome
-  skip-cert-verify: true
-  ws-opts:
-    path: /effective-steps-to-cloud-computing/buy-vless-ws-pm-telegram-at-synricha
-    headers:
-      Host: atharva.web.id
-  alpn:
-  - http/1.1
 proxy-groups:
 - name: GLOBAL
   type: fallback
@@ -794,7 +777,6 @@ proxy-groups:
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://chatgpt.com/favicon.ico
   interval: 300
   lazy: true
@@ -806,7 +788,6 @@ proxy-groups:
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://claude.ai/favicon.ico
   interval: 300
   lazy: true
@@ -818,7 +799,6 @@ proxy-groups:
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://gemini.google.com/favicon.ico
   interval: 300
   lazy: true
@@ -830,7 +810,6 @@ proxy-groups:
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -842,7 +821,6 @@ proxy-groups:
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -854,7 +832,6 @@ proxy-groups:
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -866,7 +843,6 @@ proxy-groups:
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 600
   lazy: true
@@ -891,7 +867,6 @@ proxy-groups:
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 180
   tolerance: 100
@@ -904,7 +879,6 @@ proxy-groups:
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 60
   tolerance: 150
@@ -917,7 +891,6 @@ proxy-groups:
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://cp.cloudflare.com
   interval: 90
   tolerance: 150
@@ -930,7 +903,6 @@ proxy-groups:
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://cp.cloudflare.com
   interval: 180
   tolerance: 150
@@ -943,7 +915,6 @@ proxy-groups:
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 180
   tolerance: 150
@@ -956,7 +927,6 @@ proxy-groups:
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 180
   lazy: true
@@ -978,7 +948,6 @@ proxy-groups:
   proxies:
   - MANUAL-VMess-WS-TLS-443-ikada543
   - MANUAL-VMess-WS-TLS-443-akuku8
-  - MANUAL-VLESS-WS-TLS-443-apt50atpprem
   url: https://www.gstatic.com/generate_204
   interval: 300
   lazy: true
@@ -1219,10 +1188,30 @@ rules:
 - DOMAIN,ads.brazino777.bet.br,REJECT
 - DOMAIN,aff.esportesdasorte.bet.br,REJECT
 - DOMAIN,aff.oleybet.bet.br,REJECT
+- DOMAIN,bassbet-casino-fr.fr,REJECT
+- DOMAIN,bassbetcasino-fr.fr,REJECT
+- DOMAIN,bassbetcasino-online.de,REJECT
 - DOMAIN,betify-casino-bonus-fr.fr,REJECT
 - DOMAIN,betify-casino-en-ligne.fr,REJECT
-- DOMAIN,betify-casino-poker-fr.fr,REJECT
-- DOMAIN,betify-casino-poker-france.fr,REJECT
+- DOMAIN,betssoncasino.fr,REJECT
+- DOMAIN,bettogel.shop,REJECT
+- DOMAIN,bettyspin-casino.fr,REJECT
+- DOMAIN,bettyspincasino.fr,REJECT
+- DOMAIN,betycasino.fr,REJECT
+- DOMAIN,bigclash-casino-fr.fr,REJECT
+- DOMAIN,bigclashcasino1.fr,REJECT
+- DOMAIN,billionaire-spincasino.fr,REJECT
+- DOMAIN,bingo-casino.fr,REJECT
+- DOMAIN,bingoal-casino.fr,REJECT
+- DOMAIN,bingobongacasino.fr,REJECT
+- DOMAIN,binobet-casino.fr,REJECT
+- DOMAIN,bitkingz-casino.fr,REJECT
+- DOMAIN,bitkingzcasino.fr,REJECT
+- DOMAIN,blacklabel-casino.fr,REJECT
+- DOMAIN,blitzcasino-fr.fr,REJECT
+- DOMAIN,blockbetcasino.fr,REJECT
+- DOMAIN,blockchain-casino.fr,REJECT
+- DOMAIN,blockchaincasino.fr,REJECT
 - DOMAIN,casino-ad-mediation.me2zengame.com,REJECT
 - DOMAIN,casino.betsson.com,REJECT
 - DOMAIN,diproton-ads-prod-eu-central-1.hulu.com.akadns.net,REJECT
@@ -1230,13 +1219,17 @@ rules:
 - DOMAIN,diproton-ads-prod-us-east-1.hulu.com.akadns.net,REJECT
 - DOMAIN,diproton-ads-prod-us-east-2.hulu.com.akadns.net,REJECT
 - DOMAIN,diproton-ads-prod-us-west-2.hulu.com.akadns.net,REJECT
+- DOMAIN,fanatics.bet,REJECT
+- DOMAIN,locowincasinopromo.fr,REJECT
 - DOMAIN,lto.esportesdasorte.bet.br,REJECT
-- DOMAIN,partypoker-casino.fr,REJECT
+- DOMAIN,onlinecasinosohneverifizierung.de,REJECT
+- DOMAIN,sgtm.betmgm.bet.br,REJECT
+- DOMAIN,sportunacasinobet.fr,REJECT
 - DOMAIN,sst.apostaganha.bet.br,REJECT
 - DOMAIN,sst.betesporte.bet.br,REJECT
 - DOMAIN,svenskaspelsportandcasino.data.adobedc.net,REJECT
 - DOMAIN,ufabaccarat.bet,REJECT
-- DOMAIN,vegasslotcasino.fr,REJECT
+- DOMAIN,unibetcasino777.net,REJECT
 - RULE-SET,threat-malware,REJECT
 - RULE-SET,threat-phishing,REJECT
 - RULE-SET,threat-cryptominers,REJECT
