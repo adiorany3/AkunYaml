@@ -1,6 +1,6 @@
 {
   "generator": "independent-local",
-  "built_at": "2026-11-06T09:25:20.952047+00:00",
+  "built_at": "2026-11-06T09:37:48.619865+00:00",
   "mode": "offline",
   "rules": 11986,
   "providers": 20,
@@ -131,6 +131,11 @@
       "fetched_at": "2026-11-06T09:18:36.358287+00:00",
       "sha256": "3ee319dbe8a1520436354b8954e2981aedb9e56389776a5691d97465baede36f"
     }
+  ],
+  "manual_game_domains": [
+    "games.co.id",
+    "easy-games.io",
+    "coolgamesfree.org"
   ],
   "policy_sha256": "3131cead88d2423a120cc1a94cfca829461fbe9a0b0cf15138a7bbba25fea2af",
   "note": "Baseline khusus lokal + feed independen; tidak ada unduhan HerYaml, API AI, atau proxy."

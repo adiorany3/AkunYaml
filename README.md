@@ -48,6 +48,31 @@ mengirim riwayat browsing ke luar. Belum ada scheduler/auto-push/auto-deploy.
 URLhaus/ThreatFox berautentikasi belum diintegrasikan. Blokir domain tidak
 menggantikan patch, segmentasi LAN, firewall, dan endpoint protection.
 
+## Tambah banyak game dan impor log lokal
+
+Edit `/Users/macbookpro/Documents/GitHub/AkunYaml/gameblock_policy/manual_domains.txt`:
+satu domain atau URL HTTP/HTTPS per baris. Daftar ini adalah persetujuan blokir
+seluruh subdomain; tidak perlu mengedit YAML besar. Duplikat dihapus saat build.
+Kemudian jalankan `bash /Users/macbookpro/Documents/GitHub/AkunYaml/update_all.sh --offline`
+(atau tanpa `--offline` untuk refresh feed). Daftar manual melengkapi feed kategori
+game, bukan menggantikannya. Entri salah membatalkan build agar kesalahan terlihat.
+
+Untuk menemukan kandidat dari ekspor koneksi OpenClash/Mihomo lokal:
+
+```bash
+/Users/macbookpro/Documents/GitHub/AkunYaml/.venv/bin/python /Users/macbookpro/Documents/GitHub/AkunYaml/game_domain_policy.py /path/absolut/connections.json
+```
+
+Mendukung snapshot JSON `connections[].metadata.host`, JSONL dengan `metadata.host`,
+dan log teks tujuan `--> host:port`. Batas input 20 MiB. Laporan privat ada di
+`.runtime_cache/game_candidates.json`, bukan di GitHub/output. Tidak menyimpan
+IP perangkat atau isi baris log. Tidak ada upload atau panggilan AI.
+Kemunculan host bukan bukti game: tinjau kandidat, lalu salin hanya domain game
+yang disetujui ke `manual_domains.txt`. Domain CDN/login/payment bersama jangan
+diblokir sembarangan. `allow_domains.txt` mengecualikan kandidat dari review dan
+menolak konflik daftar manual; **tidak membuat aturan DIRECT** atau mengalahkan
+feed keamanan. Belum membaca log router otomatis dan belum mendukung semua format.
+
 ## Hasil
 
 ### Impor OpenClash OpenWrt melalui URL

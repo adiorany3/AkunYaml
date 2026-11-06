@@ -14,6 +14,7 @@ import yaml
 
 from build_support import PROFILE, fetch, publish, validate
 from feed_guard import _parse_domains
+from game_domain_policy import apply_policy
 
 
 def materialize(content, fmt, destination, core):
@@ -76,6 +77,7 @@ def update(root, refresh=False):
             stage = Path(temp) / "release"
             shutil.copytree(policy / "baseline", stage)
             config = yaml.safe_load((stage / PROFILE).read_text())
+            manual_domains = apply_policy(config, root)
             old_report = json.loads((cache / "build_report.json").read_text()) if (cache / "build_report.json").exists() else {}
             old_assets = {a["name"]: a for a in old_report.get("assets", [])}
 
@@ -119,6 +121,7 @@ def update(root, refresh=False):
             report = {"generator": "independent-local", "built_at": datetime.now(UTC).isoformat(),
                       "mode": "refresh" if refresh else "offline", "rules": len(config["rules"]),
                       "providers": len(config["rule-providers"]), "assets": assets,
+                      "manual_game_domains": manual_domains,
                       "policy_sha256": hashlib.sha256((policy / "baseline" / PROFILE).read_bytes()).hexdigest(),
                       "note": "Baseline khusus lokal + feed independen; tidak ada unduhan HerYaml, API AI, atau proxy."}
             (stage / "build_report.json").write_text(json.dumps(report, indent=2) + "\n")
