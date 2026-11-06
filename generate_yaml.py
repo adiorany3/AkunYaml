@@ -2170,7 +2170,7 @@ def main() -> int:
     print("[INFO] Generate YAML OpenClash otomatis")
     print(f"[INFO] Baseline otomatis: {max_nodes} node, minimum total: {min_output_nodes} node")
     print(f"[INFO] Links subscription: {len([x for x in links_text.splitlines() if x.strip()])}")
-    print(f"[INFO] Manual nodes TCPing/compat passed: {len(manual_nodes)}; skipped: {len(manual_skipped)}")
+    print(f"[INFO] Manual nodes TCPing/compat passed: {len(manual_nodes)}")
     if multi_host_active:
         print(f"[INFO] Multi-host aktif ({BUG_MODE}): {len(TARGET_SERVERS)} target; manual source dipertahankan")
     else:

@@ -17,3 +17,5 @@ README.md 79eb96a01a19a3e81ccac786b64eb0ccea9700bc13a0d4df0379bc534f4f8ec2
 AI response bug fix: Extra data log addressed by accepting one JSON object with optional Markdown fence/plain trailing prose; reject additional structured data and duplicate keys, preserve full schema/exact-domain validation. Invalid-format/schema batch retries once then fail-open. Mock regression suite now full pytest 58 passed; new test lint/py_compile/diff check passed. Existing classifier lint issues remain (shebang, timeout alias, broad catch/type conventions); no live API calls. Cannot determine outer API versus inner model formatting from log alone.
 ai_adblock_classifier.py 577ca9eadbeff7a93009eb2786663197cbe42c6d62cd0412fe45f0ae82e7e1be
 tests/test_ai_response_format.py 356733516b8f1d1197c809156428135a1fa473ec7640cff6311b6f68f6683b6a
+
+Manual log cleanup at commit c7f73d9dab7c8c6f80d787ccebe8e13023e8bdd1: removed skipped counter only from generate_yaml main manual TCPing/compat summary. Health filters and diagnostic reports unchanged. Regression test executes local print AST; full pytest 59 passed, targeted lint/test/diff check passed. Provider cache changes preserved.
