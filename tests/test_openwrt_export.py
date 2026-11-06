@@ -1,6 +1,6 @@
 import pytest
 
-from openwrt_export import subscription_profile
+from openwrt_export import manual_gameblock, subscription_profile
 
 
 def test_subscription_replaces_local_provider(tmp_path):
@@ -41,3 +41,21 @@ def test_existing_account_group_not_replaced(tmp_path):
         {"name": "PROXY", "type": "select", "proxies": ["account"]}
     ]}
     assert subscription_profile(config, tmp_path, tmp_path) == config
+
+
+def test_heryaml_manual_layout():
+    source = {"rules": ["DOMAIN,bad.example,REJECT", "DOMAIN,pay.example,DIRECT", "MATCH,DIRECT"]}
+    accounts = [{"name": "LOCAL-ACCOUNT", "type": "vless"}]
+    result = manual_gameblock(source, accounts)
+    assert result["proxy-groups"] == [{"name": "MANUAL", "type": "select", "proxies": ["DIRECT", "LOCAL-ACCOUNT"]}]
+    assert result["proxies"] == accounts
+    assert result["rules"][:-1] == source["rules"][:-1]
+    assert result["rules"][-1] == "MATCH,MANUAL"
+    assert result["profile"]["store-selected"] is False
+    assert source["rules"][-1] == "MATCH,DIRECT"
+
+
+@pytest.mark.parametrize("accounts", [[], [{"name": "DIRECT"}], [{"name": "same"}, {"name": "same"}]])
+def test_manual_layout_rejects_bad_account_names(accounts):
+    with pytest.raises(ValueError):
+        manual_gameblock({"rules": ["MATCH,DIRECT"]}, accounts)

@@ -9,6 +9,23 @@ import yaml
 RAW_BASE = "https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/"
 
 
+def manual_gameblock(config, accounts):
+    """HerYaml layout: DIRECT first, optional real accounts, MATCH to MANUAL."""
+    result = copy.deepcopy(config)
+    names = [item.get("name") for item in accounts]
+    if not names or any(not isinstance(name, str) or not name or name in {"DIRECT", "REJECT", "MANUAL"} for name in names) or len(set(names)) != len(names):
+        raise ValueError("Akun MANUAL kosong, duplikat, atau memakai nama reserved")
+    rules = result.get("rules", [])
+    if not rules or rules[-1] != "MATCH,DIRECT":
+        raise ValueError("Baseline gameblock harus berakhir MATCH,DIRECT")
+    result["proxies"] = copy.deepcopy(accounts)
+    result["proxy-groups"] = [{"name": "MANUAL", "type": "select", "proxies": ["DIRECT", *names]}]
+    rules[-1] = "MATCH,MANUAL"
+    # Avoid restoring an old proxy selection after an updated profile import.
+    result.setdefault("profile", {})["store-selected"] = False
+    return result
+
+
 def subscription_profile(config, source_folder, stage):
     result = copy.deepcopy(config)
     # OpenClash's import/UI checks expect a selectable group even for direct-only
@@ -39,6 +56,12 @@ def subscription_profile(config, source_folder, stage):
 
 
 def export(stage):
+    accounts = yaml.safe_load((stage / "openclash/proxy/openclash_auto.yaml").read_text()).get("proxies", [])
+    if not accounts:
+        raise ValueError("Tidak ada akun untuk proxy-provider OpenClash")
+    gameblock = stage / "openclash/gameblock/openclash_noproxy_gameblock.yaml"
+    config = manual_gameblock(yaml.safe_load(gameblock.read_text()), accounts)
+    gameblock.write_text(yaml.safe_dump(config, sort_keys=False, allow_unicode=True))
     destination = stage / "openclash/subscription"
     destination.mkdir()
     profiles = []
@@ -52,9 +75,6 @@ def export(stage):
             raise ValueError("Nama subscription duplikat")
         target.write_text(yaml.safe_dump(result, sort_keys=False, allow_unicode=True))
         profiles.append({"file": target.name, "url": RAW_BASE + "openclash/subscription/" + target.name})
-    accounts = yaml.safe_load((stage / "openclash/proxy/openclash_auto.yaml").read_text()).get("proxies", [])
-    if not accounts:
-        raise ValueError("Tidak ada akun untuk proxy-provider OpenClash")
     (stage / "akun/openclash_proxy_provider.yaml").write_text(yaml.safe_dump({"proxies": accounts}, sort_keys=False, allow_unicode=True))
     (destination / "urls.json").write_text(json.dumps(profiles, indent=2) + "\n")
     return profiles

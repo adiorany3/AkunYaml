@@ -116,6 +116,7 @@ def collect(root, mode):
             "HASIL UTAMA AKUNYAML\n"
             "akun/: daftar akun hasil generator (rahasia).\n"
             "openclash/proxy|direct|gameblock/: profil OpenWrt; salin provider bersama YAML.\n"
+            "Gameblock OpenClash: DIRECT default, akun lokal opsional melalui grup MANUAL.\n"
             "openclash/subscription/: impor URL Raw YAML; provider lokal diunduh via HTTPS setelah seluruh output di-push.\n"
             "akun/openclash_proxy_provider.yaml: hanya akun, untuk proxy-provider; bukan konfigurasi lengkap.\n"
             "sing-box/: Android proxy dan direct/adblock; BELUM ada gameblock.\n"

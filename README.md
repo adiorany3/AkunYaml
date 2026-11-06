@@ -69,9 +69,11 @@ Untuk noproxy/gameblock, gunakan varian `subscription`, bukan folder `gameblock`
 https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/subscription/openclash_noproxy_gameblock.yaml
 ```
 
-Varian subscription direct-only menyertakan `proxies: []` dan grup
-`DIRECT-ONLY` berisi `DIRECT` untuk kompatibilitas pemeriksa impor/UI OpenClash.
-Tidak ada akun proxy palsu; aturan blokir dan rute akhir DIRECT tidak berubah.
+Gameblock OpenClash mengikuti struktur HerYaml: akun dari generator lokal,
+grup `MANUAL` bertipe `select` berisi `DIRECT` sebagai pilihan pertama lalu akun,
+dan `MATCH,MANUAL`. Default tetap direct, akun opsional dipilih secara manual.
+`store-selected` dimatikan agar pilihan proxy lama tidak pulih saat impor baru.
+Varian direct/adblock biasa tetap memakai `DIRECT-ONLY` tanpa akun.
 Jika versi OpenClash masih menolak daftar akun kosong, kirim error lengkap;
 jangan menambahkan akun dummy yang berpotensi mengganggu routing.
 Target lokal proyek: OpenClash v0.47.156 + Mihomo alpha-ge183c58. Versi perangkat
@@ -93,7 +95,7 @@ Lokasi utama: `/Users/macbookpro/Documents/GitHub/AkunYaml/output/`
 | `akun/` | Daftar akun hasil generator |
 | `openclash/proxy/` | Auto, Android, lite, fresh pool |
 | `openclash/direct/` | Adblock tanpa proxy |
-| `openclash/gameblock/` | Adblock + blokir game tanpa proxy |
+| `openclash/gameblock/` | Adblock + blokir game, DIRECT default + akun MANUAL opsional |
 | `sing-box/` | Android berakun dan direct/adblock |
 | `mihomo-mac/proxy/`, `direct/`, `gameblock/` | Profil Mihomo untuk Mac |
 

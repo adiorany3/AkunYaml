@@ -1,6 +1,7 @@
 HASIL UTAMA AKUNYAML
 akun/: daftar akun hasil generator (rahasia).
 openclash/proxy|direct|gameblock/: profil OpenWrt; salin provider bersama YAML.
+Gameblock OpenClash: DIRECT default, akun lokal opsional melalui grup MANUAL.
 openclash/subscription/: impor URL Raw YAML; provider lokal diunduh via HTTPS setelah seluruh output di-push.
 akun/openclash_proxy_provider.yaml: hanya akun, untuk proxy-provider; bukan konfigurasi lengkap.
 sing-box/: Android proxy dan direct/adblock; BELUM ada gameblock.
