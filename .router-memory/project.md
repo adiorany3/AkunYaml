@@ -1,5 +1,7 @@
 # Project context
 
+Latest change: games.co.id suffix REJECT already existed; moved to first baseline rule to prioritize all subdomains. Added three regression cases. Full pytest 80 passed; offline unified build/core validation completed successfully. Generated subscription contains the rule. No router test, commit, or push. A still-accessible site may indicate old profile, mode bypass, or existing browser connection. Two long verification commands had shell capture failures; do not assume they succeeded.
+
 AkunYaml main, inspected commit 2e2cc5de82be43bdaeef48197952f944c0d690bd. Worktree initially clean. User reports unable to import accounts into OpenClash OpenWrt; exact router error/version unavailable. Found concrete packaging issue: existing YAML uses local file providers not downloaded when importing raw YAML alone.
 
 Added openwrt_export.py to unified packaging after adaptive overlay, before all-core validation. Generates six complete output/openclash/subscription/*.yaml variants: file rule providers become HTTPS providers referencing published output companion assets. Distinct cache names, safe local path checks, missing dependencies abort. Existing external HTTP/inline providers retained. URLs currently fixed to adiorany3/AkunYaml main; all generated outputs must be committed/pushed for URLs to exist. Existing local/manual deployment profiles untouched.

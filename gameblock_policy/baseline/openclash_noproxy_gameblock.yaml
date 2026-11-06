@@ -373,6 +373,7 @@ dns:
   use-hosts: true
   use-system-hosts: false
 rules:
+- DOMAIN-SUFFIX,games.co.id,REJECT
 - DOMAIN-SUFFIX,reddit.com,DIRECT
 - DOMAIN-SUFFIX,redditmedia.com,DIRECT
 - DOMAIN-SUFFIX,redditstatic.com,DIRECT
@@ -1252,7 +1253,6 @@ rules:
 - DOMAIN-SUFFIX,zylom.com,REJECT
 - DOMAIN-SUFFIX,spilgames.com,REJECT
 - DOMAIN-SUFFIX,gamezhero.com,REJECT
-- DOMAIN-SUFFIX,games.co.id,REJECT
 - DOMAIN-SUFFIX,game.co.id,REJECT
 - DOMAIN-SUFFIX,mainkan.com,REJECT
 - DOMAIN-SUFFIX,gameloft.com,REJECT
