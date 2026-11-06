@@ -26,6 +26,42 @@ def test_duplicate_json_keys_rejected():
         classifier.parse_response('{"results": [], "results": []}', [])
 
 
+@pytest.mark.parametrize("wrapped", [True, False])
+def test_disjoint_json_records_supported(wrapped):
+    records = [payload("one.example"), payload("two.example")]
+    content = "\n".join(json.dumps(r if wrapped else r["results"][0]) for r in records)
+    result = classifier.parse_response(content, ["one.example", "two.example"])
+    assert len(result) == 2
+
+
+def test_conflicting_records_rejected():
+    content = json.dumps(payload()) + "\n" + json.dumps(payload())
+    with pytest.raises(ValueError):
+        classifier.parse_response(content, ["ads.example"])
+
+
+def test_single_bare_record_supported():
+    assert len(classifier.parse_response(json.dumps(payload()["results"][0]), ["ads.example"])) == 1
+
+
+def test_persistent_batch_error_falls_back_to_single_hosts(tmp_path, monkeypatch):
+    (tmp_path / "adblock_ai_candidates.txt").write_text("one.example\ntwo.example\n")
+    monkeypatch.setenv("AI_ADBLOCK_API_KEY", "test")
+    calls = []
+
+    def batch(base_url, model, key, domains, timeout):
+        calls.append(list(domains))
+        if len(domains) > 1:
+            raise ValueError("ambiguous batch")
+        return payload(domains[0])["results"]
+
+    monkeypatch.setattr(classifier, "_classify_batch", batch)
+    result = classifier.classify_candidates(tmp_path, base_url="https://example.invalid", model="test", key_file=None, log=lambda *_: None)
+    assert result["status"] == "updated"
+    assert len(calls) == 4
+    assert result["blocked"] == []
+
+
 def test_retry_invalid_batch(tmp_path, monkeypatch):
     (tmp_path / "adblock_ai_candidates.txt").write_text("ads.example\n")
     monkeypatch.setenv("AI_ADBLOCK_API_KEY", "test")

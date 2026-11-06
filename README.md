@@ -130,6 +130,12 @@ setiap device. Manifest mencatat waktu sumber, bukan jaminan akun masih aktif.
 
 ## Pengujian
 
+Jika runner mengembalikan `exit 3`, node baru tidak memenuhi syarat minimum.
+Update terpadu kini melanjutkan pembaruan keamanan memakai akun/profil lama,
+tetap memvalidasi seluruh hasil, dan mencatat `account_refresh: retained-old`
+di manifest. Ini bukan keberhasilan refresh akun. Profil lama hilang/tidak valid
+atau kegagalan tahap lain tetap membatalkan publikasi.
+
 ```bash
 cd /Users/macbookpro/Documents/GitHub/AkunYaml
 .venv/bin/python -m pytest tests -q

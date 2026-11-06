@@ -73,3 +73,31 @@ def test_invalid_singbox_aborts_validation(tmp_path, monkeypatch):
     monkeypatch.setattr(unified_update.subprocess, "run", lambda *args, **kwargs: SimpleNamespace(returncode=1, stdout="", stderr="invalid"))
     with pytest.raises(RuntimeError, match="Sing-box"):
         validate_bundle(tmp_path, tmp_path)
+
+
+@pytest.mark.parametrize("stage,code,expected,mode", [
+    ("local_runner.py", 3, 0, "security-refresh-retained-accounts"),
+    ("local_runner.py", 2, 2, None),
+    ("local_update.py", 3, 3, None),
+])
+def test_runner_partial_only_allows_security_update(tmp_path, monkeypatch, stage, code, expected, mode):
+    from types import SimpleNamespace
+
+    import unified_update
+    monkeypatch.setattr(unified_update, "__file__", str(tmp_path / "unified_update.py"))
+    monkeypatch.setattr("sys.argv", ["unified_update.py"])
+    monkeypatch.setattr(unified_update, "refresh_adaptive_guard", lambda root: None)
+    calls, published = [], []
+
+    def run(command, **kwargs):
+        name = command[1].split("/")[-1]
+        calls.append(name)
+        return SimpleNamespace(returncode=code if name == stage else 0)
+
+    monkeypatch.setattr(unified_update.subprocess, "run", run)
+    monkeypatch.setattr(unified_update, "collect", lambda root, status: published.append(status) or root / "output")
+    assert unified_update.main() == expected
+    assert published == ([mode] if mode else [])
+    if mode:
+        assert calls == ["local_runner.py", "local_update.py", "independent_gameblock.py"]
+    assert not (tmp_path / ".runtime_cache/unified_update.lock").exists()

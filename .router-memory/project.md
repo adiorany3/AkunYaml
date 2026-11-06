@@ -19,3 +19,11 @@ ai_adblock_classifier.py 577ca9eadbeff7a93009eb2786663197cbe42c6d62cd0412fe45f0a
 tests/test_ai_response_format.py 356733516b8f1d1197c809156428135a1fa473ec7640cff6311b6f68f6683b6a
 
 Manual log cleanup at commit c7f73d9dab7c8c6f80d787ccebe8e13023e8bdd1: removed skipped counter only from generate_yaml main manual TCPing/compat summary. Health filters and diagnostic reports unchanged. Regression test executes local print AST; full pytest 59 passed, targeted lint/test/diff check passed. Provider cache changes preserved.
+
+Runner exit-3 handling fixed: generate_yaml returns 3 when manual/total node minimum fails and preserves old profiles; local_runner still optimizes/validates existing outputs then returns 3. Unified update now continues only for local_runner exit 3, runs remaining security stages and packaging validation, mode security-refresh-retained-accounts/account_refresh retained-old. Other stages/code errors still abort. Missing/bad old profiles rejected by subsequent build/core checks. Full pytest 62 passed, targeted Ruff/diff check passed; mocked orchestration verifies fallback vs fatal, no live account refresh run.
+unified_update.py f6803f245881bb8b0b483ad31237d88ce49b2780be074d41d4fcf8eb2a25189a
+tests/test_unified_update.py 1a57a2206806bd4ed6dcb6e825d38f6b1912e165d666544fbfea1e125b572072
+
+Recurring ambiguous AI response fix at commit eb25be22db39206b225aec98da924cc459508bbe: parser now accepts disjoint concatenated JSON results objects or bare classification records, plus single bare record; full schema and exact expected domain set/duplicates enforced. Empty/malformed/additional conflicting structured documents rejected. After two invalid batch responses, multi-domain batch falls back to one request per domain; invalid single response still aborts fail-open. This may add API calls/latency; no external API invoked in testing. Full pytest 67 passed; test lint, py_compile, diff check passed. Current runtime subscription modifications preserved. Exact live raw response still unavailable; no guarantee arbitrary model formatting accepted.
+ai_adblock_classifier.py b77b4b989d6d250a7b891bdaccdbb3ce95e9b989dc83c5c90701ef466384af28
+tests/test_ai_response_format.py bb7b0116b991c87158c2e537ac7e27b8dc78bdcdaa119268b94cad8aef894044

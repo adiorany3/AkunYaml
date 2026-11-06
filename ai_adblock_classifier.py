@@ -153,7 +153,7 @@ def refresh_streaming_candidates(workdir: Path, *, log=print) -> list[str]:
 
 
 def _response_object(content: str) -> Any:
-    """Accept one JSON object, optionally fenced or followed by plain prose."""
+    """Decode complete JSON records; never select one of conflicting answers."""
     text = content.strip().lstrip("\ufeff").strip()
     if text.startswith("```"):
         match = re.fullmatch(r"```(?:json)?\s*\n(.*?)\n```\s*", text, re.DOTALL | re.IGNORECASE)
@@ -169,19 +169,42 @@ def _response_object(content: str) -> Any:
             result[key] = value
         return result
 
+    decoder = json.JSONDecoder(object_pairs_hook=unique_keys)
     try:
-        data, end = json.JSONDecoder(object_pairs_hook=unique_keys).raw_decode(text)
+        data, end = decoder.raw_decode(text)
     except json.JSONDecodeError:
         raise ValueError("Response bukan JSON object yang lengkap") from None
     trailing = text[end:].strip()
+    records = [data]
+    while trailing.startswith("{"):
+        try:
+            record, end = decoder.raw_decode(trailing)
+        except json.JSONDecodeError:
+            raise ValueError("JSON record tambahan tidak lengkap") from None
+        records.append(record)
+        trailing = trailing[end:].strip()
     # Never choose between conflicting JSON documents or arrays.
     if any(char in trailing for char in '{}[]`'):
         raise ValueError("Response memuat data tambahan ambigu")
+    if len(records) > 1:
+        items = []
+        for record in records:
+            if not isinstance(record, dict):
+                raise ValueError("JSON record harus object")
+            if set(record) == {"results"} and isinstance(record["results"], list) and record["results"]:
+                items.extend(record["results"])
+            elif set(record) == {"domain", "label", "category", "confidence", "reason"}:
+                items.append(record)
+            else:
+                raise ValueError("Schema JSON record tambahan tidak valid")
+        return {"results": items}
     return data
 
 
 def parse_response(content: str, expected: list[str]) -> list[dict[str, Any]]:
     data = _response_object(content)
+    if isinstance(data, dict) and set(data) == {"domain", "label", "category", "confidence", "reason"}:
+        data = {"results": [data]}
     if not isinstance(data, dict) or set(data) != {"results"} or not isinstance(data["results"], list):
         raise ValueError("response harus object dengan satu field results")
     results: list[dict[str, Any]] = []
@@ -323,7 +346,13 @@ def classify_candidates(
                     break
                 except ValueError:
                     if attempt:
-                        raise
+                        if len(batch) == 1:
+                            raise
+                        log("AI adblock: batch masih tidak valid; fallback per domain (satu panggilan/domain)")
+                        items = []
+                        for domain in batch:
+                            items.extend(_classify_batch(base_url, model, api_key, [domain], timeout))
+                        break
                     log("AI adblock: format/schema batch tidak valid; mencoba ulang sekali")
             for item in items:
                 if (

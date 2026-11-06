@@ -104,6 +104,7 @@ def collect(root, mode):
                         item.unlink()
         report = {
             "mode": mode, "packaged_at": datetime.now(UTC).isoformat(),
+            "account_refresh": "retained-old" if mode == "security-refresh-retained-accounts" else ("completed" if mode == "online-refresh" else "not-requested"),
             "adaptive_guard": adaptive_status,
             "warning": "Offline hanya snapshot; waktu packaging bukan bukti akun aktif. Sing-box gameblock belum tersedia.",
             "sources": [{"path": str(p.relative_to(root)), "modified_at": datetime.fromtimestamp(p.stat().st_mtime, UTC).isoformat(), "sha256": hashlib.sha256(p.read_bytes()).hexdigest()} for p in sources],
@@ -150,13 +151,20 @@ def main():
                 commands.append([sys.executable, str(root / "local_runner.py"), "--workdir", str(root), "--config", str(root / "local_config.json"), "--no-install-deps"])
         commands.append([sys.executable, str(root / "local_update.py")])
         commands.append([sys.executable, str(root / "independent_gameblock.py")] + ([] if args.offline else ["--refresh"]))
+        retained_accounts = False
         for command in commands:
             print(f"[RUN] {Path(command[1]).name}", flush=True)
             result = subprocess.run(command, cwd=root, check=False)
+            if result.returncode == 3 and Path(command[1]).name == "local_runner.py":
+                retained_accounts = True
+                print("[WARN] Akun baru tidak memenuhi syarat; lanjut update keamanan memakai profil/akun lama. Semua profil tetap wajib lolos validasi.")
+                continue
             if result.returncode:
                 print(f"[ERROR] Tahap gagal/parsial (exit {result.returncode}); output terpadu lama tidak diganti.")
                 return result.returncode
         mode = 'offline-snapshot' if args.offline else ('security-refresh' if args.security_only else 'online-refresh')
+        if retained_accounts:
+            mode = "security-refresh-retained-accounts"
         print(f"[OK] Semua hasil: {collect(root, mode)}")
         return 0
     except (OSError, ValueError, RuntimeError, yaml.YAMLError, subprocess.SubprocessError) as exc:
