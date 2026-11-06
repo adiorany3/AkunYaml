@@ -13124,3 +13124,9 @@ rule-providers:
     path: ./rule_provider/akunyaml-eedfaf2ef302.mrs
     url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/gameblock/rule_providers/live/games-category.mrs
     interval: 43200
+proxies: []
+proxy-groups:
+- name: DIRECT-ONLY
+  type: select
+  proxies:
+  - DIRECT

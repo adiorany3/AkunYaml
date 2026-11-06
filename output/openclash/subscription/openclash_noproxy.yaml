@@ -1228,3 +1228,9 @@ hosts:
   youtubei.googleapis.com: restrictmoderate.youtube.com
   youtube.googleapis.com: restrictmoderate.youtube.com
   www.youtube-nocookie.com: restrictmoderate.youtube.com
+proxies: []
+proxy-groups:
+- name: DIRECT-ONLY
+  type: select
+  proxies:
+  - DIRECT

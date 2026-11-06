@@ -63,6 +63,17 @@ https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/subsc
 
 Pada OpenClash, tambahkan URL itu sebagai subscription konfigurasi, unduh,
 pilih profil, dan gunakan core **Meta/Mihomo**, bukan core Clash lama.
+Untuk noproxy/gameblock, gunakan varian `subscription`, bukan folder `gameblock`:
+
+```text
+https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/subscription/openclash_noproxy_gameblock.yaml
+```
+
+Varian subscription direct-only menyertakan `proxies: []` dan grup
+`DIRECT-ONLY` berisi `DIRECT` untuk kompatibilitas pemeriksa impor/UI OpenClash.
+Tidak ada akun proxy palsu; aturan blokir dan rute akhir DIRECT tidak berubah.
+Jika versi OpenClash masih menolak daftar akun kosong, kirim error lengkap;
+jangan menambahkan akun dummy yang berpotensi mengganggu routing.
 Target lokal proyek: OpenClash v0.47.156 + Mihomo alpha-ge183c58. Versi perangkat
 lain perlu diperiksa jika ada error. Provider MRS memerlukan dukungan core yang
 sesuai; router harus dapat mengakses GitHub Raw. Repository privat tidak dapat

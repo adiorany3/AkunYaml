@@ -11,6 +11,15 @@ RAW_BASE = "https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/"
 
 def subscription_profile(config, source_folder, stage):
     result = copy.deepcopy(config)
+    # OpenClash's import/UI checks expect a selectable group even for direct-only
+    # profiles. Keep the source genuinely proxy-free: DIRECT is a built-in route,
+    # not a fabricated proxy account. Routing/blocking rules remain unchanged.
+    if not result.get("proxies") and not result.get("proxy-providers"):
+        result.setdefault("proxies", [])
+        if not result.get("proxy-groups"):
+            result["proxy-groups"] = [
+                {"name": "DIRECT-ONLY", "type": "select", "proxies": ["DIRECT"]}
+            ]
     for provider in result.get("rule-providers", {}).values():
         if provider.get("type") != "file":
             continue
