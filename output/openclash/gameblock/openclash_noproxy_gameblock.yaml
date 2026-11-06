@@ -927,6 +927,8 @@ rules:
 - DOMAIN,zumvu.net,REJECT
 - DOMAIN,zycdjz.com,REJECT
 - DOMAIN-SUFFIX,games.co.id,REJECT
+- DOMAIN-SUFFIX,easy-games.io,REJECT
+- DOMAIN-SUFFIX,coolgamesfree.org,REJECT
 - DOMAIN-SUFFIX,reddit.com,DIRECT
 - DOMAIN-SUFFIX,redditmedia.com,DIRECT
 - DOMAIN-SUFFIX,redditstatic.com,DIRECT

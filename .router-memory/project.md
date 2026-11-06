@@ -1,5 +1,9 @@
 # Project context
 
+Latest: added coolgamesfree.org suffix REJECT as third priority baseline rule, covers root/www/all subdomains. Preserved easy-games.io changes. Full pytest 90 passed; targeted Ruff/diff clean. Offline unified build and all core validation succeeded, generated subscription rule verified. No commit/push/device test performed.
+
+Latest task at commit b89006328ed7186ba25bd3a312d60839aa599a35: added DOMAIN-SUFFIX,easy-games.io,REJECT as second baseline rule after games.co.id, covering all subdomains. Existing Poki/CrazyGames/Y8/Friv coverage verified by regression tests; active games-category feed retained. Full pytest 87 passed; targeted Ruff/diff clean. Actual offline unified build succeeded; grep verified easy-games rule in all four generated gameblock profiles (including ignored mihomo-mac output). No live feed refresh, device test, commit or push. Other online games not exhaustively enumerated; no keyword-wide blocking.
+
 Latest change: games.co.id suffix REJECT already existed; moved to first baseline rule to prioritize all subdomains. Added three regression cases. Full pytest 80 passed; offline unified build/core validation completed successfully. Generated subscription contains the rule. No router test, commit, or push. A still-accessible site may indicate old profile, mode bypass, or existing browser connection. Two long verification commands had shell capture failures; do not assume they succeeded.
 
 AkunYaml main, inspected commit 2e2cc5de82be43bdaeef48197952f944c0d690bd. Worktree initially clean. User reports unable to import accounts into OpenClash OpenWrt; exact router error/version unavailable. Found concrete packaging issue: existing YAML uses local file providers not downloaded when importing raw YAML alone.
