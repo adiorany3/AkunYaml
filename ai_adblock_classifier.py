@@ -152,8 +152,36 @@ def refresh_streaming_candidates(workdir: Path, *, log=print) -> list[str]:
     return sorted(discovered)
 
 
+def _response_object(content: str) -> Any:
+    """Accept one JSON object, optionally fenced or followed by plain prose."""
+    text = content.strip().lstrip("\ufeff").strip()
+    if text.startswith("```"):
+        match = re.fullmatch(r"```(?:json)?\s*\n(.*?)\n```\s*", text, re.DOTALL | re.IGNORECASE)
+        if not match:
+            raise ValueError("Pembungkus JSON response tidak valid")
+        text = match.group(1).strip()
+
+    def unique_keys(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("Field JSON response duplikat")
+            result[key] = value
+        return result
+
+    try:
+        data, end = json.JSONDecoder(object_pairs_hook=unique_keys).raw_decode(text)
+    except json.JSONDecodeError:
+        raise ValueError("Response bukan JSON object yang lengkap") from None
+    trailing = text[end:].strip()
+    # Never choose between conflicting JSON documents or arrays.
+    if any(char in trailing for char in '{}[]`'):
+        raise ValueError("Response memuat data tambahan ambigu")
+    return data
+
+
 def parse_response(content: str, expected: list[str]) -> list[dict[str, Any]]:
-    data = json.loads(content)
+    data = _response_object(content)
     if not isinstance(data, dict) or set(data) != {"results"} or not isinstance(data["results"], list):
         raise ValueError("response harus object dengan satu field results")
     results: list[dict[str, Any]] = []
@@ -289,7 +317,15 @@ def classify_candidates(
         for start in range(0, len(candidates), batch_size):
             batch = candidates[start:start + batch_size]
             log(f"AI adblock batch {start // batch_size + 1}/{total_batches}: menunggu API ({len(batch)} domain)")
-            for item in _classify_batch(base_url, model, api_key, batch, timeout):
+            for attempt in range(2):
+                try:
+                    items = _classify_batch(base_url, model, api_key, batch, timeout)
+                    break
+                except ValueError:
+                    if attempt:
+                        raise
+                    log("AI adblock: format/schema batch tidak valid; mencoba ulang sekali")
+            for item in items:
                 if (
                     item["label"] == "block"
                     and item["category"] in BLOCK_CATEGORIES

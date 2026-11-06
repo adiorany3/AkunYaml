@@ -13,6 +13,8 @@ from pathlib import Path
 
 import yaml
 
+from adaptive_guard import apply as apply_adaptive_guard
+from adaptive_guard import refresh as refresh_adaptive_guard
 from build_support import publish
 
 
@@ -89,6 +91,7 @@ def collect(root, mode):
                 json.loads(source.read_text())
             shutil.copy2(source, destination)
             sources.append(source)
+        adaptive_status = apply_adaptive_guard(stage, root)
         profiles = validate_bundle(stage, root)
         # Validators may download caches; retain only declared profiles/providers.
         for directory in {config.parent for config in profiles}:
@@ -101,6 +104,7 @@ def collect(root, mode):
                         item.unlink()
         report = {
             "mode": mode, "packaged_at": datetime.now(UTC).isoformat(),
+            "adaptive_guard": adaptive_status,
             "warning": "Offline hanya snapshot; waktu packaging bukan bukti akun aktif. Sing-box gameblock belum tersedia.",
             "sources": [{"path": str(p.relative_to(root)), "modified_at": datetime.fromtimestamp(p.stat().st_mtime, UTC).isoformat(), "sha256": hashlib.sha256(p.read_bytes()).hexdigest()} for p in sources],
         }
@@ -126,6 +130,7 @@ def collect(root, mode):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--offline", action="store_true", help="Build dari sumber/cache tanpa refresh; validator Mihomo bisa membutuhkan database lokal")
+    parser.add_argument("--security-only", action="store_true", help="Perbarui analisis keamanan/feed tanpa refresh akun atau API AI")
     args = parser.parse_args()
     root = Path(__file__).resolve().parent
     lock = root / ".runtime_cache/unified_update.lock"
@@ -139,7 +144,10 @@ def main():
     try:
         commands = []
         if not args.offline:
-            commands.append([sys.executable, str(root / "local_runner.py"), "--workdir", str(root), "--config", str(root / "local_config.json"), "--no-install-deps"])
+            print("[RUN] Korelasi adblock/malware lintas-publisher", flush=True)
+            refresh_adaptive_guard(root)
+            if not args.security_only:
+                commands.append([sys.executable, str(root / "local_runner.py"), "--workdir", str(root), "--config", str(root / "local_config.json"), "--no-install-deps"])
         commands.append([sys.executable, str(root / "local_update.py")])
         commands.append([sys.executable, str(root / "independent_gameblock.py")] + ([] if args.offline else ["--refresh"]))
         for command in commands:
@@ -148,7 +156,8 @@ def main():
             if result.returncode:
                 print(f"[ERROR] Tahap gagal/parsial (exit {result.returncode}); output terpadu lama tidak diganti.")
                 return result.returncode
-        print(f"[OK] Semua hasil: {collect(root, 'offline-snapshot' if args.offline else 'online-refresh')}")
+        mode = 'offline-snapshot' if args.offline else ('security-refresh' if args.security_only else 'online-refresh')
+        print(f"[OK] Semua hasil: {collect(root, mode)}")
         return 0
     except (OSError, ValueError, RuntimeError, yaml.YAMLError, subprocess.SubprocessError) as exc:
         print(f"[ERROR] {exc}; output terpadu lama dipertahankan.")

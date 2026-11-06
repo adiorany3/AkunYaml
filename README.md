@@ -23,6 +23,31 @@ dari `PYTHON`. Tidak ada instalasi pip, Git pull/push, atau scheduler otomatis.
 Runner online dapat mengunduh core dan memakai AI jika diaktifkan.
 Jangan menjalankan beberapa refresh bersamaan.
 
+## Analisis adaptif adblock/malware
+
+Update online kini mengorelasikan daftar langsung dari publisher berbeda.
+Host yang muncul pada minimal dua publisher dalam kategori yang sama masuk
+overlay blokir exact-host. Ini bukan pembuktian independen: publisher bisa
+memakai sumber dasar yang sama. Allowlist dan pengecualian DIRECT di baseline
+dipertahankan; satu sumber/tebakan AI tidak cukup untuk auto-block overlay.
+
+```bash
+bash /Users/macbookpro/Documents/GitHub/AkunYaml/update_all.sh --security-only
+```
+
+Perintah itu memperbarui analisis dan feed keamanan tanpa refresh akun/API AI.
+Hasil diterapkan sebelum validasi ke semua profil di `output/`, termasuk
+Sing-box. Laporan ada di `output/security/`. Bukti overlay berlaku 24 jam:
+build offline setelah kedaluwarsa tidak memasukkannya. Profil yang sudah
+terpasang di device tidak dapat mencabut aturan sendiri: deploy hasil baru.
+Aturan feed/baseline biasa tetap berlaku terpisah dari overlay adaptif.
+
+Ini tahap awal korelasi feed, **bukan mesin penelusuran berita atau deteksi
+zero-day mandiri**. Tidak mengeksekusi sampel malware, memindai target, atau
+mengirim riwayat browsing ke luar. Belum ada scheduler/auto-push/auto-deploy.
+URLhaus/ThreatFox berautentikasi belum diintegrasikan. Blokir domain tidak
+menggantikan patch, segmentasi LAN, firewall, dan endpoint protection.
+
 ## Hasil
 
 Lokasi utama: `/Users/macbookpro/Documents/GitHub/AkunYaml/output/`
