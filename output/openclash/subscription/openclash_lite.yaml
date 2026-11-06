@@ -1,0 +1,1348 @@
+mixed-port: 7890
+redir-port: 7892
+tproxy-port: 7895
+allow-lan: true
+bind-address: '*'
+lan-allowed-ips:
+- 127.0.0.0/8
+- 10.0.0.0/8
+- 172.16.0.0/12
+- 192.168.0.0/16
+mode: rule
+log-level: warning
+ipv6: false
+unified-delay: true
+tcp-concurrent: true
+find-process-mode: 'off'
+keep-alive-interval: 15
+keep-alive-idle: 30
+disable-keep-alive: false
+external-controller: 127.0.0.1:9090
+secret: reyre
+profile:
+  store-selected: true
+  store-fake-ip: true
+sniffer:
+  enable: true
+  sniff:
+    TLS:
+      ports:
+      - 443
+      - 8443
+    HTTP:
+      ports:
+      - 80
+      - 8080-8880
+      override-destination: true
+    QUIC:
+      ports:
+      - 443
+      - 8443
+  force-domain:
+  - +.v2ex.com
+  skip-domain:
+  - +.lan
+  - +.local
+dns:
+  enable: true
+  ipv6: false
+  listen: 0.0.0.0:7874
+  respect-rules: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+  - +.lan
+  - +.local
+  - localhost.ptlogin2.qq.com
+  - dns.msftncsi.com
+  - www.msftconnecttest.com
+  - connectivitycheck.gstatic.com
+  - connect.rom.miui.com
+  - time.*.com
+  - ntp.*.com
+  - +.pool.ntp.org
+  - router.asus.com
+  - tplinkwifi.net
+  - tendawifi.com
+  - +.bca.co.id
+  - +.bni.co.id
+  - +.bri.co.id
+  - +.mandiri.co.id
+  - +.stun.*.*
+  - +.stun.*.*.*
+  - +.stun.*.*.*.*
+  - +.stun.*.*.*.*.*
+  - '*.n.n.srv.nintendo.net'
+  - xbox.*.*.microsoft.com
+  - '*.*.xboxlive.com'
+  cache-algorithm: arc
+  default-nameserver:
+  - https://1.1.1.1/dns-query
+  - https://9.9.9.9/dns-query
+  nameserver:
+  - https://family.dns.bebasid.com/dns-query
+  - tls://family.dns.bebasid.com:853
+  proxy-server-nameserver:
+  - https://1.1.1.1/dns-query
+  - https://dns.google/dns-query
+  - https://dns.quad9.net/dns-query
+  - https://9.9.9.9/dns-query
+  - https://94.140.14.14/dns-query
+  nameserver-policy:
+    +.openai.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.chatgpt.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.chatgpt.site:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.anthropic.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.claude.ai:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.claude.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.gemini.google.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+  fallback:
+  - https://family.dns.bebasid.com/dns-query
+  - tls://family.dns.bebasid.com:853
+  fallback-lazy-query: false
+  fallback-filter:
+    geoip: true
+    geoip-code: ID
+    ipcidr:
+    - 240.0.0.0/4
+  prefer-h3: false
+  use-hosts: true
+  use-system-hosts: false
+proxies:
+- name: AKUN-001-CLOUDFLARE-VLESS-WS-124MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: ffa431ab-a59b-4092-a418-905fcb1e4d5f
+  udp: true
+  tls: true
+  servername: s0p42f8wwpdde5tf7m4l6l.ab1x-sn9o4y3n7ondkrd.workers.dev
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  alpn:
+  - http/1.1
+  ws-opts:
+    path: /vl/rYScQPG1EEjxXdswdMEU2b3rM4?ed=2560
+    headers:
+      Host: s0p42f8wwpdde5tf7m4l6l.ab1x-sn9o4y3n7ondkrd.workers.dev
+- name: AKUN-002-UNKNOWN-VLESS-WS-98MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: 5dc15e15-f285-4a9d-959b-0e4fbdd77b63
+  udp: true
+  tls: true
+  servername: powered-by-surena.configfarsi695fce27aa549.workers.dev
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /?ed
+    headers:
+      Host: powered-by-surena.configfarsi695fce27aa549.workers.dev
+  alpn:
+  - http/1.1
+- name: AKUN-003-CLOUDFLARE-VLESS-WS-99MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: c5db14f6-2a21-401c-8160-a8093ff4ffd3
+  udp: true
+  tls: true
+  servername: mxp6jvjacystdp-s4f.kjnnv3i410u6mq-itd.workers.dev
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  alpn:
+  - http/1.1
+  ws-opts:
+    path: /vl/14m2B3TtxW5N85ews
+    headers:
+      Host: mxp6jvjacystdp-s4f.kjnnv3i410u6mq-itd.workers.dev
+- name: AKUN-004-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-106MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: a4ec0cdd-a71d-4093-b8e1-aa9bfbcd75eb
+  udp: true
+  tls: true
+  servername: 5xgovtCYqgoh5tEDRLJ6Sg--sn9PbH.mAHsApOdCSt.WOrKers.deV
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  alpn:
+  - http/1.1
+  ws-opts:
+    path: /vl/P7l2zlifeGb5UNmfWMkoVakVd
+    headers:
+      Host: 5xgovtCYqgoh5tEDRLJ6Sg--sn9PbH.mAHsApOdCSt.WOrKers.deV
+- name: AKUN-005-UNKNOWN-VLESS-WS-103MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: f85183cf-af02-4656-b1e9-3a61dced201f
+  udp: true
+  tls: true
+  servername: fReeWORLd.aliAicODe47649.woRKers.Dev
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  alpn:
+  - http/1.1
+  ws-opts:
+    path: /vl/a6yBMrki2p7ptrchleFfb?ed=2560
+    headers:
+      Host: freeworld.aliaicode47649.workers.dev
+- name: AKUN-006-DIGITALOCEAN-VLESS-WS-97MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: 8525fe74-67e6-4a55-8a26-95f227bd1384
+  udp: true
+  tls: true
+  servername: white-forest-2c01.alvlirm222.workers.dev
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /
+    headers:
+      Host: white-forest-2c01.alvlirm222.workers.dev
+  alpn:
+  - http/1.1
+- name: AKUN-007-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-114MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: 07821f66-cdb7-4c70-9de6-e230cffac470
+  udp: true
+  tls: true
+  servername: wgrcqwtkfyqujs43.ghydgdbdbddvv.workers.dev
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  alpn:
+  - http/1.1
+  ws-opts:
+    path: /vl/Li1khIHH3DNItJyzraemsPBQvu?ed=2560
+    headers:
+      Host: wgrcqwtkfyqujs43.ghydgdbdbddvv.workers.dev
+- name: AKUN-008-MD-ITFRUIT-185153198-202-VLESS-WS-104MS
+  type: vless
+  server: 104.17.3.81
+  port: 443
+  uuid: 04c808e2-0b59-47b0-a54b-32fc7ef1c902
+  udp: true
+  tls: true
+  servername: free.cndyw.ggff.net
+  network: ws
+  client-fingerprint: random
+  skip-cert-verify: true
+  ws-opts:
+    path: /pyip=bpb.yousef.isegaro.com
+    headers:
+      Host: free.cndyw.ggff.net
+  alpn:
+  - http/1.1
+- name: MANUAL-VMess-WS-TLS-443-ikada543
+  type: vmess
+  server: 104.17.3.81
+  port: 443
+  uuid: 07b0b1d3-0f2a-4d95-895a-c31be0f6a784
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: fbcdn.sbs
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /modern-analyze-to-machine-learning/buy-vmess-ws-pm-telegram-at-synricha
+    headers:
+      Host: fbcdn.sbs
+  alpn:
+  - http/1.1
+- name: MANUAL-VMess-WS-TLS-443-akuku8
+  type: vmess
+  server: 104.17.3.81
+  port: 443
+  uuid: 4ee97185-f0ea-4842-b116-aaa1832665cc
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: fbcdn.sbs
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /beginner-understand-to-growth-hacking/buy-vmess-ws-pm-telegram-at-synricha
+    headers:
+      Host: fbcdn.sbs
+  alpn:
+  - http/1.1
+proxy-groups:
+- name: GLOBAL
+  type: fallback
+  proxies:
+  - FALLBACK
+  - AUTO-FAST
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 3
+- name: PROXY
+  type: fallback
+  proxies:
+  - GLOBAL
+  - AUTO-FAST
+  - FALLBACK
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 3
+- name: AUTO-FAST
+  type: url-test
+  proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  - AKUN-001-CLOUDFLARE-VLESS-WS-124MS
+  - AKUN-002-UNKNOWN-VLESS-WS-98MS
+  - AKUN-008-MD-ITFRUIT-185153198-202-VLESS-WS-104MS
+  - AKUN-004-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-106MS
+  url: https://www.gstatic.com/generate_204
+  interval: 180
+  tolerance: 150
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+- name: FALLBACK
+  type: fallback
+  proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  - AKUN-001-CLOUDFLARE-VLESS-WS-124MS
+  - AKUN-002-UNKNOWN-VLESS-WS-98MS
+  - AKUN-006-DIGITALOCEAN-VLESS-WS-97MS
+  - AKUN-003-CLOUDFLARE-VLESS-WS-99MS
+  - AKUN-005-UNKNOWN-VLESS-WS-103MS
+  - AKUN-008-MD-ITFRUIT-185153198-202-VLESS-WS-104MS
+  - AKUN-004-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-106MS
+  - AKUN-007-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-114MS
+  url: https://www.gstatic.com/generate_204
+  interval: 180
+  lazy: true
+  timeout: 6000
+  expected-status: 200/204/301/302
+  max-failed-times: 3
+- name: MANUAL
+  type: fallback
+  proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+- name: REDDIT
+  type: fallback
+  proxies:
+  - MANUAL
+  url: https://www.gstatic.com/generate_204
+  interval: 60
+  lazy: true
+  timeout: 2500
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+- name: YOUTUBE
+  type: fallback
+  proxies:
+  - AUTO-FAST
+  - FALLBACK
+  url: https://www.gstatic.com/generate_204
+  interval: 120
+  lazy: true
+  timeout: 3000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+rules:
+- DOMAIN,123.ywxww.net,REJECT
+- DOMAIN,1717.1000uc.com,REJECT
+- DOMAIN,26usdm.oss-cn-beijing.aliyuncs.com,REJECT
+- DOMAIN,2goelectricity.cloud,REJECT
+- DOMAIN,3.zhzy999.net,REJECT
+- DOMAIN,3.zhzy999.net3.zhzy999.net,REJECT
+- DOMAIN,4eclient.com,REJECT
+- DOMAIN,6sim.vip,REJECT
+- DOMAIN,9eb10b7a3d04a.com,REJECT
+- DOMAIN,acc.jiangsujiaxue.com,REJECT
+- DOMAIN,acms.saleseos.com,REJECT
+- DOMAIN,ad-loupe.com,REJECT
+- DOMAIN,adcentral.com.mx,REJECT
+- DOMAIN,addesigner.com,REJECT
+- DOMAIN,adeumssp.com,REJECT
+- DOMAIN,admarketplace.net,REJECT
+- DOMAIN,admin.byte.in.ua,REJECT
+- DOMAIN,adreach.co,REJECT
+- DOMAIN,ads.indosatooredoo.com,REJECT
+- DOMAIN,ads.mssb.cloud,REJECT
+- DOMAIN,ads.telkomsel.com,REJECT
+- DOMAIN,adsbingo.com,REJECT
+- DOMAIN,adsimg.kompas.com,REJECT
+- DOMAIN,adskom.com,REJECT
+- DOMAIN,adslop.com,REJECT
+- DOMAIN,adstarsmedia.co.id,REJECT
+- DOMAIN,aetherius.live,REJECT
+- DOMAIN,afbcashidr.com,REJECT
+- DOMAIN,aftelecom.com.br,REJECT
+- DOMAIN,aidlifempowerment.com,REJECT
+- DOMAIN,alarmline.com.br,REJECT
+- DOMAIN,alaseeldates.com,REJECT
+- DOMAIN,alineeleuterio.com.br,REJECT
+- DOMAIN,allegro.wicreset.pl,REJECT
+- DOMAIN,allendostmen.com,REJECT
+- DOMAIN,alternativas.ru,REJECT
+- DOMAIN,ampclicks.com,REJECT
+- DOMAIN,app.appzcvb.com,REJECT
+- DOMAIN,archivehub.com.ng,REJECT
+- DOMAIN,ardguisser.com,REJECT
+- DOMAIN,areyouready.co.za,REJECT
+- DOMAIN,artalivedesign.com,REJECT
+- DOMAIN,astenterprises.com.pk,REJECT
+- DOMAIN,atasapka.com.tr,REJECT
+- DOMAIN,atgroup-link.id,REJECT
+- DOMAIN,attach.66rpg.com,REJECT
+- DOMAIN,auntieschaikhana.co.uk,REJECT
+- DOMAIN,automobile-bk.de,REJECT
+- DOMAIN,avidhosting.uk,REJECT
+- DOMAIN,awarenessexhibition.com,REJECT
+- DOMAIN,backupso.com,REJECT
+- DOMAIN,bamautzky.de,REJECT
+- DOMAIN,bandizip.dev,REJECT
+- DOMAIN,baolongwes.oss-ap-southeast-1.aliyuncs.com,REJECT
+- DOMAIN,baritoneclient.net,REJECT
+- DOMAIN,benshamcentre.co.uk,REJECT
+- DOMAIN,beoauto.alexion.rs,REJECT
+- DOMAIN,berangkasilmu.com,REJECT
+- DOMAIN,bergurukecina.fun,REJECT
+- DOMAIN,best.obs.cn-sz1.ctyun.cn,REJECT
+- DOMAIN,bitbrowse.oss-cn-hongkong.aliyuncs.com,REJECT
+- DOMAIN,blankeyeo.com,REJECT
+- DOMAIN,blessdayservices.org,REJECT
+- DOMAIN,blogs.sokun.jp,REJECT
+- DOMAIN,bloom-88.com,REJECT
+- DOMAIN,bmdcompany.com,REJECT
+- DOMAIN,bnet-api.playm8ru.win,REJECT
+- DOMAIN,bnet.playm8ru.win,REJECT
+- DOMAIN,boitim.oss-eu-west-2.aliyuncs.com,REJECT
+- DOMAIN,bondeddarkenedswerve.com,REJECT
+- DOMAIN,book.rollingvideogames.com,REJECT
+- DOMAIN,brand.ad,REJECT
+- DOMAIN,bratusferramentas.grupomoltz.com.br,REJECT
+- DOMAIN,briannacorporation.com,REJECT
+- DOMAIN,bridge73.com,REJECT
+- DOMAIN,bridgeroad.maverickpreviews.com,REJECT
+- DOMAIN,bserail.com,REJECT
+- DOMAIN,bumcoinc.site,REJECT
+- DOMAIN,bundle.kpzip.com,REJECT
+- DOMAIN,bvmatqnam.com.vn,REJECT
+- DOMAIN,c-stat.eu,REJECT
+- DOMAIN,cambodiatouristservice.com,REJECT
+- DOMAIN,casapepepuertosherry.es,REJECT
+- DOMAIN,cat.dashabi.in,REJECT
+- DOMAIN,cat.xiaojiji.nl,REJECT
+- DOMAIN,cat.xiaoshabi.nl,REJECT
+- DOMAIN,catbaparadisehotel.com.vn,REJECT
+- DOMAIN,cdaonline.com.ar,REJECT
+- DOMAIN,cdn.file6.goodid.com,REJECT
+- DOMAIN,cdn.gomlab.com,REJECT
+- DOMAIN,cdnasiaclub.com,REJECT
+- DOMAIN,cdnfgo.xyz,REJECT
+- DOMAIN,celebratingseniors.net,REJECT
+- DOMAIN,cepde.org,REJECT
+- DOMAIN,ceramicasaosebastiao.com.br,REJECT
+- DOMAIN,cfs.uzone.id,REJECT
+- DOMAIN,cfs1.uzone.id,REJECT
+- DOMAIN,cfs10.blog.daum.net,REJECT
+- DOMAIN,cfs13.tistory.com,REJECT
+- DOMAIN,cfs2.uzone.id,REJECT
+- DOMAIN,cfs7.blog.daum.net,REJECT
+- DOMAIN,cfs9.blog.daum.net,REJECT
+- DOMAIN,chant66.com,REJECT
+- DOMAIN,chant98.com,REJECT
+- DOMAIN,chantcompass9.com,REJECT
+- DOMAIN,chat-server.maverickpreviews.com,REJECT
+- DOMAIN,checkfivem.com,REJECT
+- DOMAIN,chenwangqiao.com,REJECT
+- DOMAIN,chuguadventures.co.tz,REJECT
+- DOMAIN,churchinmanila.org,REJECT
+- DOMAIN,cl.ssouy.com,REJECT
+- DOMAIN,class1004.dothome.co.kr,REJECT
+- DOMAIN,cliffg.me,REJECT
+- DOMAIN,clinx.co.za,REJECT
+- DOMAIN,cloudflare.gd,REJECT
+- DOMAIN,clubdetiroelpicarcho.com,REJECT
+- DOMAIN,cn.unionlever.com,REJECT
+- DOMAIN,compuserviceonline.com.br,REJECT
+- DOMAIN,controliumbt.com,REJECT
+- DOMAIN,coreprotector.org,REJECT
+- DOMAIN,cpc188.day,REJECT
+- DOMAIN,cpofficial.com,REJECT
+- DOMAIN,cqintzfep6rw6jc9.public.blob.vercel-storage.com,REJECT
+- DOMAIN,crazywickedaddiction.com,REJECT
+- DOMAIN,creativit.fr,REJECT
+- DOMAIN,crystalpvp.ru,REJECT
+- DOMAIN,cs.go.kg,REJECT
+- DOMAIN,csf.uzone.id,REJECT
+- DOMAIN,cutting-edge.in,REJECT
+- DOMAIN,d.14yaa.com,REJECT
+- DOMAIN,d.kpzip.com,REJECT
+- DOMAIN,d.wanyouxi7.com,REJECT
+- DOMAIN,d3cciiowg5l3jx.cloudfront.net,REJECT
+- DOMAIN,dairouzy.net,REJECT
+- DOMAIN,damiancollier.com,REJECT
+- DOMAIN,data.yhydl.com,REJECT
+- DOMAIN,dcrun.co.uk,REJECT
+- DOMAIN,dcwblida.dz,REJECT
+- DOMAIN,deagroup-ks.com,REJECT
+- DOMAIN,del.sou.pp.ua,REJECT
+- DOMAIN,delp-heizungsbau.de,REJECT
+- DOMAIN,delta-canvas.com,REJECT
+- DOMAIN,deltabehavioralhealth.org,REJECT
+- DOMAIN,dermaclinicmd.com,REJECT
+- DOMAIN,dezcom.com,REJECT
+- DOMAIN,dfd.zhzy999.net,REJECT
+- DOMAIN,digiads.co.id,REJECT
+- DOMAIN,dinamikakargo.com,REJECT
+- DOMAIN,disk.accord1key.cn,REJECT
+- DOMAIN,dl.1003b.56a.com,REJECT
+- DOMAIN,dl.2345.com,REJECT
+- DOMAIN,dl.dzqzd.com,REJECT
+- DOMAIN,dl.natgo.cn,REJECT
+- DOMAIN,dlied6.bytes.tcdnos.com,REJECT
+- DOMAIN,dlied6.yz.tcdnos.com,REJECT
+- DOMAIN,doathair.com,REJECT
+- DOMAIN,domainmob.com,REJECT
+- DOMAIN,dongyu.us,REJECT
+- DOMAIN,donkeytourscroatia.com,REJECT
+- DOMAIN,down.fwqlt.com,REJECT
+- DOMAIN,down.pcclear.com,REJECT
+- DOMAIN,down.ruanmei.com,REJECT
+- DOMAIN,down10d.zol.com.cn,REJECT
+- DOMAIN,downali.game.uc.cn,REJECT
+- DOMAIN,download-azhioss.space,REJECT
+- DOMAIN,download.bt.cn,REJECT
+- DOMAIN,download.caihong.com,REJECT
+- DOMAIN,download.doumaibiji.cn,REJECT
+- DOMAIN,download.haozip.com,REJECT
+- DOMAIN,download.kaobeitu.com,REJECT
+- DOMAIN,download.kbcard.com,REJECT
+- DOMAIN,download.pdf00.cn,REJECT
+- DOMAIN,download.pdf00.com,REJECT
+- DOMAIN,download.tg1101.com,REJECT
+- DOMAIN,download2.huduntech.com,REJECT
+- DOMAIN,draft-loop.com,REJECT
+- DOMAIN,dreamwatchevent.com,REJECT
+- DOMAIN,drgenov.com,REJECT
+- DOMAIN,dsfojsofsdofijdsofjisdofjisdofijsdfijsdiojsdo.com,REJECT
+- DOMAIN,dubapkg.cmcmcdn.com,REJECT
+- DOMAIN,duelvalenza.it,REJECT
+- DOMAIN,dynga.pl,REJECT
+- DOMAIN,edomz.com,REJECT
+- DOMAIN,electri.billregulator.com,REJECT
+- DOMAIN,elisans.novayonetim.com,REJECT
+- DOMAIN,embalageral.hospedagemdesites.ws,REJECT
+- DOMAIN,embedone.com,REJECT
+- DOMAIN,en.taichuan.com,REJECT
+- DOMAIN,epanpano.com,REJECT
+- DOMAIN,etoads.net,REJECT
+- DOMAIN,f24-zfcloud.zdn.vn,REJECT
+- DOMAIN,fable-shine.com,REJECT
+- DOMAIN,fakers.co.jp,REJECT
+- DOMAIN,fd.v2downf.shop,REJECT
+- DOMAIN,file.blackint3.com,REJECT
+- DOMAIN,filebanner.com,REJECT
+- DOMAIN,filerit.com,REJECT
+- DOMAIN,first-security-verden.de,REJECT
+- DOMAIN,flicargo.com,REJECT
+- DOMAIN,flyingmutts.com,REJECT
+- DOMAIN,fmrio.com,REJECT
+- DOMAIN,forge-copper.com,REJECT
+- DOMAIN,forspeed.onlinedown.net,REJECT
+- DOMAIN,forumiklan.com,REJECT
+- DOMAIN,frame-kite.com,REJECT
+- DOMAIN,frame97.com,REJECT
+- DOMAIN,ftp.vietnam852.com,REJECT
+- DOMAIN,fullstacknir.com,REJECT
+- DOMAIN,fz.tiansys.cn,REJECT
+- DOMAIN,g6.wtf,REJECT
+- DOMAIN,gabyagozetim.com,REJECT
+- DOMAIN,gaenterprises.in,REJECT
+- DOMAIN,galeri3.arkitera.com,REJECT
+- DOMAIN,galerisenimutiara.com,REJECT
+- DOMAIN,gaode11223.oss-ap-southeast-7.aliyuncs.com,REJECT
+- DOMAIN,garden-82.com,REJECT
+- DOMAIN,gaslah.my.id,REJECT
+- DOMAIN,geoxsecurity.ro,REJECT
+- DOMAIN,globalbank.us,REJECT
+- DOMAIN,goid.space,REJECT
+- DOMAIN,goratu.site,REJECT
+- DOMAIN,goto.stnts.com,REJECT
+- DOMAIN,greenf.alexion.rs,REJECT
+- DOMAIN,griffcar.com.br,REJECT
+- DOMAIN,groupiklan.com,REJECT
+- DOMAIN,groverudder12.com,REJECT
+- DOMAIN,grupomcperu.com,REJECT
+- DOMAIN,gudangbanner.com,REJECT
+- DOMAIN,gummy-debt.com,REJECT
+- DOMAIN,gutando.com,REJECT
+- DOMAIN,haeum.nfile.net,REJECT
+- DOMAIN,halal.ad,REJECT
+- DOMAIN,hanasrmt.ca,REJECT
+- DOMAIN,hasalltalent.com,REJECT
+- DOMAIN,hasil-gov-my.shop,REJECT
+- DOMAIN,hasilgov-my.my.id,REJECT
+- DOMAIN,hasilgov-my.shop,REJECT
+- DOMAIN,haven-post.com,REJECT
+- DOMAIN,higreens.co.in,REJECT
+- DOMAIN,hitadsmedia.com,REJECT
+- DOMAIN,hitman-pro.ru,REJECT
+- DOMAIN,hitstation.nl,REJECT
+- DOMAIN,hnjgdl.geps.glodon.com,REJECT
+- DOMAIN,hobobot.net,REJECT
+- DOMAIN,host-195-103-203-106.business.telecomitalia.it,REJECT
+- DOMAIN,host-95-230-215-65.business.telecomitalia.it,REJECT
+- DOMAIN,host-95-255-114-11.business.telecomitalia.it,REJECT
+- DOMAIN,hostingcloud.science,REJECT
+- DOMAIN,hotelhungry.com,REJECT
+- DOMAIN,hqsblog.com,REJECT
+- DOMAIN,hseda.com,REJECT
+- DOMAIN,huntfishbrag.store,REJECT
+- DOMAIN,ibnads.xl.co.id,REJECT
+- DOMAIN,icoffeecloud.com,REJECT
+- DOMAIN,ihmmkvkaiwnilneauhfn.supabase.co,REJECT
+- DOMAIN,iklan-laris.com,REJECT
+- DOMAIN,iklanads.com,REJECT
+- DOMAIN,iklanbarisgratis.com,REJECT
+- DOMAIN,iklanbarismu.com,REJECT
+- DOMAIN,iklanblogger.com,REJECT
+- DOMAIN,iklanbogor.com,REJECT
+- DOMAIN,iklandenpasar.com,REJECT
+- DOMAIN,iklangratis.com,REJECT
+- DOMAIN,iklanhemat.com,REJECT
+- DOMAIN,iklanhoki.com,REJECT
+- DOMAIN,iklanoke.com,REJECT
+- DOMAIN,iklantelevisi.com,REJECT
+- DOMAIN,iklantext.com,REJECT
+- DOMAIN,iklanumum.com,REJECT
+- DOMAIN,imagefiles-backup.oss-ap-southeast-7.aliyuncs.com,REJECT
+- DOMAIN,impectorinternational.com,REJECT
+- DOMAIN,injd.site,REJECT
+- DOMAIN,intelligradeeducation.vicentecisnerospub.com,REJECT
+- DOMAIN,ircftp.net,REJECT
+- DOMAIN,isiore.com.co,REJECT
+- DOMAIN,istanaimpian1.com,REJECT
+- DOMAIN,istanaimpian2.com,REJECT
+- DOMAIN,itssprout.com,REJECT
+- DOMAIN,iwtserve.com,REJECT
+- DOMAIN,jagoiklan.com,REJECT
+- DOMAIN,jagopromo.com,REJECT
+- DOMAIN,jasaiklan.com,REJECT
+- DOMAIN,jd-forever.com,REJECT
+- DOMAIN,jenniferloeffler.com,REJECT
+- DOMAIN,jessespridecharters.com,REJECT
+- DOMAIN,jozefinskiatelje.si,REJECT
+- DOMAIN,jumalputty.com,REJECT
+- DOMAIN,kavacanada.ca,REJECT
+- DOMAIN,kavyasourcing.com,REJECT
+- DOMAIN,khavar.com,REJECT
+- DOMAIN,kimberly.digital,REJECT
+- DOMAIN,kimyen.net,REJECT
+- DOMAIN,kits.frog.tw,REJECT
+- DOMAIN,klik4.me,REJECT
+- DOMAIN,klikajadeh.com,REJECT
+- DOMAIN,konsor.ru,REJECT
+- DOMAIN,kral.shaderzone.org,REJECT
+- DOMAIN,kronemedia.de,REJECT
+- DOMAIN,kuakuawenjian.oss-cn-hangzhou.aliyuncs.com,REJECT
+- DOMAIN,landonirwin.com,REJECT
+- DOMAIN,lawfirm.paperbirdtech.com,REJECT
+- DOMAIN,layarotaku.id,REJECT
+- DOMAIN,lepafonso.bz,REJECT
+- DOMAIN,lindnerelektroanlagen.de,REJECT
+- DOMAIN,livinginpurpose.co.za,REJECT
+- DOMAIN,local-update.com,REJECT
+- DOMAIN,lomejordesalamanca.es,REJECT
+- DOMAIN,londonairportstransfer.co.uk,REJECT
+- DOMAIN,luckyads.com,REJECT
+- DOMAIN,luizmatoso.com.br,REJECT
+- DOMAIN,luminouspower.com.pk,REJECT
+- DOMAIN,m.jkoa.co.kr,REJECT
+- DOMAIN,m.meta-dm.com,REJECT
+- DOMAIN,maidforyou1985.com,REJECT
+- DOMAIN,makemewin.club,REJECT
+- DOMAIN,malupieng.com.br,REJECT
+- DOMAIN,mandarin.net.au,REJECT
+- DOMAIN,maple30.com,REJECT
+- DOMAIN,medises.co.kr,REJECT
+- DOMAIN,mersped.mycpanel.rs,REJECT
+- DOMAIN,meteorclients.com,REJECT
+- DOMAIN,metrics.gocloudmaps.com,REJECT
+- DOMAIN,mhftee.my.id,REJECT
+- DOMAIN,mibd.org,REJECT
+- DOMAIN,mininews.kpzip.com,REJECT
+- DOMAIN,miriamgualda.com.br,REJECT
+- DOMAIN,mitreart.com,REJECT
+- DOMAIN,mkconstructions.net,REJECT
+- DOMAIN,mmns.oss-me-east-1.aliyuncs.com,REJECT
+- DOMAIN,mnurlogistics.az,REJECT
+- DOMAIN,mogimall.com,REJECT
+- DOMAIN,moneyfree.co,REJECT
+- DOMAIN,mousheen.net,REJECT
+- DOMAIN,mrsweaterltd.com,REJECT
+- DOMAIN,muaklekcoop.com,REJECT
+- DOMAIN,muledo.com,REJECT
+- DOMAIN,munihuacho.gob.pe,REJECT
+- DOMAIN,mysura.it,REJECT
+- DOMAIN,myvcart.com,REJECT
+- DOMAIN,n.vs108.com,REJECT
+- DOMAIN,namuvpn.com,REJECT
+- DOMAIN,ncxps.com,REJECT
+- DOMAIN,nest-52.com,REJECT
+- DOMAIN,newkey.co.kr,REJECT
+- DOMAIN,noithaticon.vn,REJECT
+- DOMAIN,nossl.segfault.net,REJECT
+- DOMAIN,notbak.com,REJECT
+- DOMAIN,nova-75.com,REJECT
+- DOMAIN,obohands.com,REJECT
+- DOMAIN,oedturk.com,REJECT
+- DOMAIN,offdeck.telkomsel.com,REJECT
+- DOMAIN,ojang.pe.kr,REJECT
+- DOMAIN,okhan.net,REJECT
+- DOMAIN,oknoplastik.sk,REJECT
+- DOMAIN,old.bullydog.com,REJECT
+- DOMAIN,old.umcl.us,REJECT
+- DOMAIN,openadserving.com,REJECT
+- DOMAIN,ossapp.suning.com,REJECT
+- DOMAIN,outpost.co.ke,REJECT
+- DOMAIN,oz-courses.com,REJECT
+- DOMAIN,p3.zbjimg.com,REJECT
+- DOMAIN,paidforfree.com,REJECT
+- DOMAIN,palharesinformatica.com.br,REJECT
+- DOMAIN,pasangiklan.com,REJECT
+- DOMAIN,pay.aqiu6.com,REJECT
+- DOMAIN,paypopup.com,REJECT
+- DOMAIN,pcupd.com,REJECT
+- DOMAIN,pfatrivandrum.org,REJECT
+- DOMAIN,pictureurl.com,REJECT
+- DOMAIN,pingl.vip,REJECT
+- DOMAIN,pjsn.hi2.ro,REJECT
+- DOMAIN,pointtohealth.com,REJECT
+- DOMAIN,polinex.org,REJECT
+- DOMAIN,pondokiklan.com,REJECT
+- DOMAIN,porterneuman.mx,REJECT
+- DOMAIN,porvootransitioncare.com,REJECT
+- DOMAIN,postelnini.mk,REJECT
+- DOMAIN,prepstarcenter.com,REJECT
+- DOMAIN,procuratio.nu,REJECT
+- DOMAIN,programandojuntos.us.tempcloudsite.com,REJECT
+- DOMAIN,projetodegente.com,REJECT
+- DOMAIN,promotioncamp.com,REJECT
+- DOMAIN,props.id,REJECT
+- DOMAIN,public.demo.securecloudsandbox.com,REJECT
+- DOMAIN,publiempresa.es,REJECT
+- DOMAIN,pulgarinrealtor.com,REJECT
+- DOMAIN,purelypulse.media,REJECT
+- DOMAIN,pvsa.gxfugy.cn,REJECT
+- DOMAIN,qiniuyunxz.yxflzs.com,REJECT
+- DOMAIN,qprskl.com,REJECT
+- DOMAIN,qqwwaa.tos-cn-hongkong.volces.com,REJECT
+- DOMAIN,quillchant14.com,REJECT
+- DOMAIN,ramirex.ro,REJECT
+- DOMAIN,razao.pt,REJECT
+- DOMAIN,rbxhub.pro,REJECT
+- DOMAIN,rcf.co.mz,REJECT
+- DOMAIN,rdm.91yunma.cn,REJECT
+- DOMAIN,reauthenticator.com,REJECT
+- DOMAIN,records.dennisign.se,REJECT
+- DOMAIN,reifenquick.de,REJECT
+- DOMAIN,reutilizemais.co.mz,REJECT
+- DOMAIN,rheddh.com,REJECT
+- DOMAIN,riderspin.com,REJECT
+- DOMAIN,robertrowe.com,REJECT
+- DOMAIN,roboth.ir,REJECT
+- DOMAIN,rosidlhassan.com,REJECT
+- DOMAIN,royalindiancurryclub.com,REJECT
+- DOMAIN,rts.gdn,REJECT
+- DOMAIN,runelight.net,REJECT
+- DOMAIN,runelite.cc,REJECT
+- DOMAIN,runeliteplus.net,REJECT
+- DOMAIN,safeifm.com,REJECT
+- DOMAIN,sail91.com,REJECT
+- DOMAIN,sales.ifree.page,REJECT
+- DOMAIN,samiksha.com.sg,REJECT
+- DOMAIN,sanghyun.nfile.net,REJECT
+- DOMAIN,sanglah.com,REJECT
+- DOMAIN,sarapbeh.com,REJECT
+- DOMAIN,satgob-mx.shop,REJECT
+- DOMAIN,scoala1gherla.ro,REJECT
+- DOMAIN,screenconnect.pro,REJECT
+- DOMAIN,scripts.jixie.media,REJECT
+- DOMAIN,scrroeder.com,REJECT
+- DOMAIN,sec.dashabi.in,REJECT
+- DOMAIN,sec.xiaojiji.nl,REJECT
+- DOMAIN,sec.xiaoshabi.nl,REJECT
+- DOMAIN,see-work.info,REJECT
+- DOMAIN,semencepourlavie.org,REJECT
+- DOMAIN,server.toeicswt.co.kr,REJECT
+- DOMAIN,sg123.net,REJECT
+- DOMAIN,sgeseducation.com,REJECT
+- DOMAIN,sgwv.jp,REJECT
+- DOMAIN,shqdown.ggzuhao.com,REJECT
+- DOMAIN,siedle-balkan.com,REJECT
+- DOMAIN,silver-hubdachwohnwagen.de,REJECT
+- DOMAIN,sitti.co.id,REJECT
+- DOMAIN,sk-comtel.com,REJECT
+- DOMAIN,skyblockaddons.org,REJECT
+- DOMAIN,skyblockrpc.com,REJECT
+- DOMAIN,smartermail.host,REJECT
+- DOMAIN,soft.110route.com,REJECT
+- DOMAIN,softbank126023203236.bbtec.net,REJECT
+- DOMAIN,softdl.360tpcdn.com,REJECT
+- DOMAIN,softdl2.360tpcdn.com,REJECT
+- DOMAIN,softdl4.360.cn,REJECT
+- DOMAIN,soniamart.com,REJECT
+- DOMAIN,southwindsfineart.com,REJECT
+- DOMAIN,spgint.com,REJECT
+- DOMAIN,src1.minibai.com,REJECT
+- DOMAIN,srsorvete.com.br,REJECT
+- DOMAIN,stanarcservice.com,REJECT
+- DOMAIN,star.zcnet.net,REJECT
+- DOMAIN,starcountry.net,REJECT
+- DOMAIN,static.ilclock.com,REJECT
+- DOMAIN,static.topxgun.com,REJECT
+- DOMAIN,static.youdm.cn,REJECT
+- DOMAIN,statics1.tceru134gsur.ru,REJECT
+- DOMAIN,stdown.dinju.com,REJECT
+- DOMAIN,stellaspicy.org,REJECT
+- DOMAIN,streammobs.com,REJECT
+- DOMAIN,sugarfreedcup.co.za,REJECT
+- DOMAIN,sugarfreedcupcake.co.za,REJECT
+- DOMAIN,support.clz.kr,REJECT
+- DOMAIN,sutterpoint.com,REJECT
+- DOMAIN,swiftfusion.tech,REJECT
+- DOMAIN,swiftonyx16.com,REJECT
+- DOMAIN,swscripts.com,REJECT
+- DOMAIN,syguihdburb.com,REJECT
+- DOMAIN,synergyconsulting.us,REJECT
+- DOMAIN,tadex.id,REJECT
+- DOMAIN,talkandtypeapp.com,REJECT
+- DOMAIN,tangentwaves.com,REJECT
+- DOMAIN,tanscarattorneys.co.tz,REJECT
+- DOMAIN,tapestryoftruth.com,REJECT
+- DOMAIN,taskercounselling.com,REJECT
+- DOMAIN,tecunonline.com,REJECT
+- DOMAIN,tehnomag.rs,REJECT
+- DOMAIN,teliad.com,REJECT
+- DOMAIN,tengfeidn.cn,REJECT
+- DOMAIN,tenis-team-km.com,REJECT
+- DOMAIN,terbit21.gdn,REJECT
+- DOMAIN,termoglas.ba,REJECT
+- DOMAIN,test.peperoncinochepassione.it,REJECT
+- DOMAIN,theclickers.net,REJECT
+- DOMAIN,theholidayroads.com,REJECT
+- DOMAIN,thementordirectory.com,REJECT
+- DOMAIN,tiacreation.club,REJECT
+- DOMAIN,tinggalklik.com,REJECT
+- DOMAIN,tmcksa.com,REJECT
+- DOMAIN,toolshare.com.tr,REJECT
+- DOMAIN,top8onlinegame.com,REJECT
+- DOMAIN,topklik.com,REJECT
+- DOMAIN,topsurfer.com,REJECT
+- DOMAIN,tr.zhzy999.net,REJECT
+- DOMAIN,track.aptitudemedia.co,REJECT
+- DOMAIN,track.zerofriend.com,REJECT
+- DOMAIN,trackingclick.net,REJECT
+- DOMAIN,trafficfactory.biz,REJECT
+- DOMAIN,transparenciacanaa.com.br,REJECT
+- DOMAIN,trtmyanmar.com,REJECT
+- DOMAIN,twitch.tj,REJECT
+- DOMAIN,u-ad.info,REJECT
+- DOMAIN,u-on.eu,REJECT
+- DOMAIN,uadexchange.com,REJECT
+- DOMAIN,union.macoms.la,REJECT
+- DOMAIN,upaicdn.xinmei365.com,REJECT
+- DOMAIN,upchemicals.co.in,REJECT
+- DOMAIN,update.cg100iii.com,REJECT
+- DOMAIN,update.neewsoo.com,REJECT
+- DOMAIN,useads.com,REJECT
+- DOMAIN,uu.v2raynapps.com.cn,REJECT
+- DOMAIN,vaibhavtripathi.in,REJECT
+- DOMAIN,veryboys.com,REJECT
+- DOMAIN,vexonmods.shop,REJECT
+- DOMAIN,villainoussession.com,REJECT
+- DOMAIN,vine-linen.com,REJECT
+- DOMAIN,vizyonuniversitesi.com.tr,REJECT
+- DOMAIN,vizyonuniversitesi.web.tr,REJECT
+- DOMAIN,vkwaeo.com,REJECT
+- DOMAIN,vrajras.com,REJECT
+- DOMAIN,vuelaviajero.com,REJECT
+- DOMAIN,w.zhzy999.net,REJECT
+- DOMAIN,webiklan.com,REJECT
+- DOMAIN,website.mypetapp.co.za,REJECT
+- DOMAIN,weco2.oss-me-east-1.aliyuncs.com,REJECT
+- DOMAIN,wegrowcoaching.com,REJECT
+- DOMAIN,wicreset.online,REJECT
+- DOMAIN,wicresetconnect.com,REJECT
+- DOMAIN,widexenmexico.com.mx,REJECT
+- DOMAIN,win.down.55kantu.com,REJECT
+- DOMAIN,winbitbrowser.com,REJECT
+- DOMAIN,windomstatetheater.com,REJECT
+- DOMAIN,windriversfiles.imeitools.com,REJECT
+- DOMAIN,wittenhorst.eu,REJECT
+- DOMAIN,www-connect-secure-wellcfargo.sekolahkejarpaket.com,REJECT
+- DOMAIN,xeno.baby,REJECT
+- DOMAIN,xenon.studio,REJECT
+- DOMAIN,xenonclient.com,REJECT
+- DOMAIN,xiaozzz.oss-me-east-1.aliyuncs.com,REJECT
+- DOMAIN,xn--on3b15m2lco2u.com,REJECT
+- DOMAIN,xn--yh4bx88a.com,REJECT
+- DOMAIN,xshop.com.tr,REJECT
+- DOMAIN,yakult-hk.com,REJECT
+- DOMAIN,ybgctdtbzvgpdxjivafy.supabase.co,REJECT
+- DOMAIN,yesads.com,REJECT
+- DOMAIN,yllix.com,REJECT
+- DOMAIN,youreonlymassive.com,REJECT
+- DOMAIN,youtransfer.net,REJECT
+- DOMAIN,zamilgroups.com,REJECT
+- DOMAIN,zhigao5191.com,REJECT
+- DOMAIN,zhikey.com,REJECT
+- DOMAIN,zumvu.net,REJECT
+- DOMAIN,zycdjz.com,REJECT
+- DOMAIN-SUFFIX,local,DIRECT
+- DOMAIN-SUFFIX,lan,DIRECT
+- IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+- IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
+- IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+- IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+- DOMAIN,static.doubleclick.net,YOUTUBE
+- DOMAIN,jnn-pa.googleapis.com,YOUTUBE
+- DOMAIN,googleads.g.doubleclick.net,REJECT
+- DOMAIN,ad.doubleclick.net,REJECT
+- DOMAIN,pubads.g.doubleclick.net,REJECT
+- DOMAIN,securepubads.g.doubleclick.net,REJECT
+- DOMAIN,pagead2.googlesyndication.com,REJECT
+- DOMAIN,tpc.googlesyndication.com,REJECT
+- DOMAIN,www.googleadservices.com,REJECT
+- DOMAIN,imasdk.googleapis.com,REJECT
+- DOMAIN,ads.youtube.com,REJECT
+- DOMAIN-SUFFIX,2mdn.net,REJECT
+- DOMAIN-SUFFIX,googlesyndication.com,REJECT
+- DOMAIN-SUFFIX,googleadservices.com,REJECT
+- DOMAIN,adtrafficquality.google,REJECT
+- DOMAIN-SUFFIX,googleadapis.com,REJECT
+- DOMAIN,mobileads.google.com,REJECT
+- DOMAIN,pagead.l.google.com,REJECT
+- DOMAIN,adservice.google.com,REJECT
+- DOMAIN,stats.g.doubleclick.net,REJECT
+- DOMAIN,m.doubleclick.net,REJECT
+- DOMAIN,mediavisor.doubleclick.net,REJECT
+- RULE-SET,youtube_domain,YOUTUBE
+- DOMAIN-SUFFIX,youtube.com,YOUTUBE
+- DOMAIN-SUFFIX,youtu.be,YOUTUBE
+- DOMAIN-SUFFIX,youtube-nocookie.com,YOUTUBE
+- DOMAIN-SUFFIX,googlevideo.com,YOUTUBE
+- DOMAIN-SUFFIX,ytimg.com,YOUTUBE
+- DOMAIN-SUFFIX,youtubei.googleapis.com,YOUTUBE
+- DOMAIN-SUFFIX,youtube.googleapis.com,YOUTUBE
+- DOMAIN-SUFFIX,ggpht.com,YOUTUBE
+- DOMAIN,adstatistics.av380.net,REJECT
+- DOMAIN,logs.av380.net,REJECT
+- DOMAIN,ad.av380.net,REJECT
+- DOMAIN,ads.av380.net,REJECT
+- DOMAIN,advert.av380.net,REJECT
+- DOMAIN,advertising.av380.net,REJECT
+- DOMAIN,promotion.av380.net,REJECT
+- DOMAIN,promotions.av380.net,REJECT
+- DOMAIN,app-ad.av380.net,REJECT
+- DOMAIN-SUFFIX,av380.net,GLOBAL
+- DOMAIN,veepai-device-log.eye4.cn,REJECT
+- DOMAIN,eulog.ezvizlife.com,REJECT
+- DOMAIN,log.ezvizlife.com,REJECT
+- DOMAIN,salog.ezvizlife.com,REJECT
+- DOMAIN,sgplog.ezvizlife.com,REJECT
+- DOMAIN,uslog.ezvizlife.com,REJECT
+- DOMAIN,rum-apis.reolink.com,REJECT
+- DOMAIN,sentry.tuyaus.com,REJECT
+- DOMAIN,promotion-en.xmeye.net,REJECT
+- DOMAIN-SUFFIX,challenges.cloudflare.com,GLOBAL
+- DOMAIN-SUFFIX,hcaptcha.com,GLOBAL
+- DOMAIN-SUFFIX,licdn.com,GLOBAL
+- DOMAIN-SUFFIX,linkedin.cn,GLOBAL
+- DOMAIN-SUFFIX,linkedin.com,GLOBAL
+- DOMAIN-SUFFIX,lnkd.in,GLOBAL
+- DOMAIN-SUFFIX,recaptcha.net,GLOBAL
+- DOMAIN-SUFFIX,simaster.ugm.ac.id,GLOBAL
+- DOMAIN-SUFFIX,speedtest.net,GLOBAL
+- DOMAIN-SUFFIX,ookla.com,GLOBAL
+- DOMAIN-SUFFIX,speedtestcustom.com,GLOBAL
+- RULE-SET,threat-malware,REJECT
+- RULE-SET,threat-phishing,REJECT
+- RULE-SET,threat-cryptominers,REJECT
+- RULE-SET,threat-fake-scam,REJECT
+- RULE-SET,threat-tif-mini,REJECT
+- RULE-SET,gambling-mini,REJECT
+- RULE-SET,gambling-regex,REJECT
+- RULE-SET,adult-category,REJECT
+- RULE-SET,adult-local,REJECT
+- RULE-SET,pinjol-local,REJECT
+- RULE-SET,popup-ads,REJECT
+- DOMAIN,805ba.v.fwmrm.net,REJECT
+- DOMAIN,tvm-mtv-freewheel.akamaized.net,REJECT
+- DOMAIN,adeventtracker.spotify.com,REJECT
+- DOMAIN,ads.spotify.com,REJECT
+- DOMAIN,ads-fa.spotify.com,REJECT
+- DOMAIN,ads-ak.spotify.com,REJECT
+- DOMAIN,adserver.spotify.com,REJECT
+- DOMAIN,adstudio.spotify.com,REJECT
+- DOMAIN,ad-analytics.spotify.com,REJECT
+- DOMAIN,aet.spotify.com,REJECT
+- DOMAIN,analytics.spotify.com,REJECT
+- DOMAIN,bloodhound.spotify.com,REJECT
+- DOMAIN,crashdump.spotify.com,REJECT
+- DOMAIN,pixel.spotify.com,REJECT
+- DOMAIN,pixel-static.spotify.com,REJECT
+- DOMAIN,pixels.spotify.com,REJECT
+- DOMAIN,advertising.netflix.com,REJECT
+- DOMAIN,beacon.netflix.com,REJECT
+- DOMAIN,ichnaea.netflix.com,REJECT
+- DOMAIN,diproton-ads-prod-eu-central-1.hulu.com.akadns.net,REJECT
+- DOMAIN,diproton-ads-prod-eu-west-1.hulu.com.akadns.net,REJECT
+- DOMAIN,diproton-ads-prod-us-east-1.hulu.com.akadns.net,REJECT
+- DOMAIN,diproton-ads-prod-us-east-2.hulu.com.akadns.net,REJECT
+- DOMAIN,diproton-ads-prod-us-west-2.hulu.com.akadns.net,REJECT
+- DOMAIN,ads.twitch.tv,REJECT
+- DOMAIN,analytics.m7g.twitch.tv,REJECT
+- DOMAIN,spade.twitch.tv,REJECT
+- DOMAIN,ads.roku.com,REJECT
+- DOMAIN,advertising.roku.com,REJECT
+- DOMAIN-SUFFIX,popads.net,REJECT
+- DOMAIN-SUFFIX,popcash.net,REJECT
+- DOMAIN-SUFFIX,propellerads.com,REJECT
+- DOMAIN-SUFFIX,adsterra.com,REJECT
+- DOMAIN-SUFFIX,onclickalgo.com,REJECT
+- DOMAIN-SUFFIX,onclickperformance.com,REJECT
+- DOMAIN-SUFFIX,hilltopads.net,REJECT
+- DOMAIN-SUFFIX,richads.com,REJECT
+- DOMAIN-SUFFIX,clickadu.com,REJECT
+- DOMAIN-SUFFIX,adcash.com,REJECT
+- DOMAIN-SUFFIX,applovin.com,REJECT
+- DOMAIN-SUFFIX,applvn.com,REJECT
+- DOMAIN-SUFFIX,unityads.unity3d.com,REJECT
+- DOMAIN-SUFFIX,supersonicads.com,REJECT
+- DOMAIN-SUFFIX,ironsrc.com,REJECT
+- DOMAIN-SUFFIX,vungle.com,REJECT
+- DOMAIN-SUFFIX,vunglecloud.com,REJECT
+- DOMAIN-SUFFIX,chartboost.com,REJECT
+- DOMAIN-SUFFIX,inmobi.com,REJECT
+- DOMAIN-SUFFIX,adcolony.com,REJECT
+- DOMAIN-SUFFIX,mintegral.com,REJECT
+- DOMAIN-SUFFIX,mtgglobals.com,REJECT
+- DOMAIN-SUFFIX,rayjump.com,REJECT
+- DOMAIN-SUFFIX,pangle.io,REJECT
+- DOMAIN-SUFFIX,pangleglobal.com,REJECT
+- DOMAIN-SUFFIX,tapjoy.com,REJECT
+- DOMAIN-SUFFIX,tapjoyads.com,REJECT
+- DOMAIN-SUFFIX,startappservice.com,REJECT
+- DOMAIN-SUFFIX,startapp.com,REJECT
+- DOMAIN-SUFFIX,fyber.com,REJECT
+- DOMAIN-SUFFIX,inner-active.mobi,REJECT
+- RULE-SET,app-ad-safe,REJECT
+- RULE-SET,ads_indonesia,REJECT
+- RULE-SET,ads_domain,REJECT
+- RULE-SET,anti-ad,REJECT
+- RULE-SET,tracker-domain,REJECT
+- DOMAIN-SUFFIX,reddit.com,REDDIT
+- DOMAIN-SUFFIX,redditmedia.com,REDDIT
+- DOMAIN-SUFFIX,redd.it,REDDIT
+- DOMAIN-KEYWORD,reddit,REDDIT
+- DOMAIN-SUFFIX,twitter.com,REDDIT
+- DOMAIN-SUFFIX,x.com,REDDIT
+- DOMAIN-SUFFIX,api.twitter.com,REDDIT
+- DOMAIN-SUFFIX,api.x.com,REDDIT
+- DOMAIN-SUFFIX,t.co,REDDIT
+- DOMAIN,1win-casino.fr,REJECT
+- DOMAIN,aff.esportesdasorte.bet.br,REJECT
+- DOMAIN,amunra-casinos.fr,REJECT
+- DOMAIN,cowboyspin-casino.fr,REJECT
+- DOMAIN,cresus-casino-fr.fr,REJECT
+- DOMAIN,gtbetcasino-fr.fr,REJECT
+- DOMAIN,gtbetcasino.fr,REJECT
+- DOMAIN,oscar-spincasino.fr,REJECT
+- DOMAIN,roobetcasinoonline.fr,REJECT
+- DOMAIN,savaspinscasino.fr,REJECT
+- DOMAIN,sentry.celsiuscasino.com,REJECT
+- DOMAIN,sevencasino-officiel.fr,REJECT
+- DOMAIN,simsinocasinofrance.fr,REJECT
+- DOMAIN,udintogel.io,REJECT
+- DOMAIN,x7casino-jeux.fr,REJECT
+- DOMAIN,77-casino.fr,REJECT
+- DOMAIN,7gamescasino.fr,REJECT
+- DOMAIN,888sport-casino.fr,REJECT
+- DOMAIN,ads.brazino777.bet.br,REJECT
+- DOMAIN,aff.oleybet.bet.br,REJECT
+- DOMAIN,africabetcasino.fr,REJECT
+- DOMAIN,candyspinz-casinos.fr,REJECT
+- DOMAIN,casinoist-fr.fr,REJECT
+- DOMAIN,err.28brionis936.casino,REJECT
+- DOMAIN,flush-casino-fr.fr,REJECT
+- DOMAIN,fr-blitzcasino.fr,REJECT
+- DOMAIN,funbetscasino.fr,REJECT
+- DOMAIN,gg-bet.fr,REJECT
+- DOMAIN,gtm.7games.bet.br,REJECT
+- DOMAIN,gtm.betao.bet.br,REJECT
+- DOMAIN,instant-casino-officiel.fr,REJECT
+- DOMAIN,posido-casino-france.fr,REJECT
+- DOMAIN,robocat-casino-fr.fr,REJECT
+- DOMAIN,savaspin-casinoonline.fr,REJECT
+- DOMAIN,spinaura-bet-france.fr,REJECT
+- DOMAIN,stakecasino-fr.fr,REJECT
+- DOMAIN,tantegacor88.link,REJECT
+- DOMAIN,wg87vip.bet,REJECT
+- DOMAIN,wonaco-casinoonline.fr,REJECT
+- DOMAIN-SUFFIX,x.com,MANUAL
+- DOMAIN-SUFFIX,api.x.com,MANUAL
+- DOMAIN-SUFFIX,twitter.com,MANUAL
+- DOMAIN-SUFFIX,api.twitter.com,MANUAL
+- DOMAIN-SUFFIX,t.co,MANUAL
+- DOMAIN-SUFFIX,twimg.com,MANUAL
+- DOMAIN-SUFFIX,abs.twimg.com,MANUAL
+- DOMAIN-SUFFIX,pbs.twimg.com,MANUAL
+- DOMAIN-SUFFIX,video.twimg.com,MANUAL
+- DOMAIN-SUFFIX,cloudflare.com,MANUAL
+- DOMAIN-SUFFIX,gstatic.com,MANUAL
+- MATCH,GLOBAL
+rule-providers:
+  ads_indonesia:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./rule_provider/akunyaml-639df57467e0.mrs
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/proxy/rule_providers/compiled/ads_indonesia.mrs
+    interval: 43200
+  ads_domain:
+    type: http
+    behavior: domain
+    path: ./rule_providers/ads_domain.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs
+    interval: 43200
+    format: mrs
+  anti-ad:
+    type: http
+    behavior: domain
+    path: ./rule_providers/anti-ad-clash.yaml
+    url: https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-clash.yaml
+    interval: 43200
+    format: yaml
+  tracker-domain:
+    type: http
+    behavior: domain
+    path: ./rule_providers/tracker.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tracker.mrs
+    interval: 43200
+    format: mrs
+  threat-tif-mini:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./rule_provider/akunyaml-4bc31b99f212.mrs
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/proxy/rule_providers/compiled/threat-tif-mini.mrs
+    interval: 43200
+  adult-category:
+    type: http
+    behavior: domain
+    path: ./rule_providers/adult-category.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-porn.mrs
+    interval: 43200
+    format: mrs
+  gambling-mini:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./rule_provider/akunyaml-9d8585e7b55a.mrs
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/proxy/rule_providers/compiled/gambling-mini.mrs
+    interval: 43200
+  gambling-regex:
+    type: http
+    behavior: classical
+    format: yaml
+    path: ./rule_provider/akunyaml-e0e17c2a2531.yaml
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/proxy/rule_providers/security-gambling.yaml
+    interval: 43200
+  adult-local:
+    type: http
+    behavior: classical
+    format: yaml
+    path: ./rule_provider/akunyaml-160dac21f9a6.yaml
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/proxy/rule_providers/security-adult.yaml
+    interval: 43200
+  pinjol-local:
+    type: http
+    behavior: classical
+    format: yaml
+    path: ./rule_provider/akunyaml-f8bd6e8f93a1.yaml
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/proxy/rule_providers/security-pinjol.yaml
+    interval: 43200
+  popup-ads:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./rule_provider/akunyaml-000cdc3700f2.mrs
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/proxy/rule_providers/compiled/popup-ads.mrs
+    interval: 43200
+  threat-malware:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./rule_provider/akunyaml-b7071fc61188.mrs
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/proxy/rule_providers/compiled/threat-malware.mrs
+    interval: 43200
+  threat-phishing:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./rule_provider/akunyaml-ee08bc01929c.mrs
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/proxy/rule_providers/compiled/threat-phishing.mrs
+    interval: 43200
+  threat-cryptominers:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./rule_provider/akunyaml-f4d4b58455eb.mrs
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/proxy/rule_providers/compiled/threat-cryptominers.mrs
+    interval: 43200
+  threat-fake-scam:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./rule_provider/akunyaml-4619f3dfa93c.mrs
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/proxy/rule_providers/compiled/threat-fake-scam.mrs
+    interval: 43200
+  app-ad-safe:
+    type: inline
+    behavior: domain
+    payload:
+    - adv.sec.intl.miui.com
+    - adv.l7.34.sec.miui.com
+    - adv.sec.miui.com
+    - ad.miui.com
+    - api.ads.xiaomi.com
+    - ad.eu.xiaomi.com
+    - ad.quickapp.hybrid.xiaomi.com
+    - ad.india.xiaomi.com
+    - ad.intl.xiaomi.com
+    - xadx.file.market.xiaomi.com
+    - wtradv.market.xiaomi.com
+    - ad.cdn.pandora.xiaomi.com
+    - ads.heytapmobi.com
+    - ads.heytapmobile.com
+    - ads-bdapi-my.heytapmobile.com
+    - ads-bdapi-ph.heytapmobile.com
+    - ads-bdapi-th.heytapmobile.com
+    - ads-bdapi-vn.heytapmobile.com
+    - ad-growth-in.heytapmobile.com
+    - ad-growth-ru.heytapmobile.com
+    - ad-growth-sg.heytapmobile.com
+    - adx-ads-fr.heytapmobile.com
+    - adx-ads-ru.heytapmobile.com
+    - bdapi-ads-sg.heytapmobile.com
+    - cldata-ads-fr.heytapmobile.com
+    - cldata-ads-ru.heytapmobile.com
+    - sms-ads-in.heytapmobile.com
+    - sms-ads-ru.heytapmobile.com
+    - stgdata-ads-fr.heytapmobile.com
+    - ads.oppomobile.com
+    - adsfs.oppomobile.com
+    - ads.bing.com
+    - adserver.bing.com
+    - outlookads.live.com
+    - ads.microsoft.com
+    - adsdk.microsoft.com
+    - advertising.microsoft.com
+    - bingads.microsoft.com
+    - msadsscale.microsoft.com
+    - ads.eu.msn.com
+    - rmads.eu.msn.com
+    - ads.jp.msn.com
+    - advertising.jp.msn.com
+    - ad.msn.com
+    - adevents.msn.com
+    - ads.msn.com
+    - ads1.msn.com
+    - mobileads.msn.com
+    - rads.msn.com
+    - rmads.msn.com
+    - srtb.msn.com
+    - prod.editor.ads.trafficmanager.net
+    - ads-msn-com-profile.trafficmanager.net
+    - adsdk.trafficmanager.net
+    - dsp-ad-cache-tm.trafficmanager.net
+    - ssp-prod-eastus-nonmutt.trafficmanager.net
+    - msads.net
+    - advertising.apple.com
+    - advp.apple.com
+    - api-adservices.apple.com
+    - iad.apple.com
+    - iadcontent.apple.com
+    - iadmoo.apple.com
+    - iadsdk.apple.com
+    - iadworkbench.apple.com
+    - searchads.apple.com
+    - .smaato.com
+    - .smaato.net
+    - .ogury.com
+    - .ogury.co
+    - .pubnative.net
+    - .hyprmx.com
+    - .mobilefuse.com
+    - .amazon-adsystem.com
+    - .mopub.com
+    - .adjoe.io
+  youtube_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/youtube.mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs
+    interval: 43200
+hosts:
+  www.google.com: forcesafesearch.google.com
+  www.google.co.id: forcesafesearch.google.com
+  www.youtube.com: restrictmoderate.youtube.com
+  m.youtube.com: restrictmoderate.youtube.com
+  youtubei.googleapis.com: restrictmoderate.youtube.com
+  youtube.googleapis.com: restrictmoderate.youtube.com
+  www.youtube-nocookie.com: restrictmoderate.youtube.com

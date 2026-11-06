@@ -1,29 +1,17 @@
 # Project context
 
-AkunYaml main, verified commit 5ff68079c040d5726f8270b595587c412a9e9e4f. Existing provider_cache change preserved. User requested smarter adblock/malware processing. Added adaptive_guard.py, integrated into unified_update: online refresh correlates 4 public feeds (HaGeZi threat/ad, Chocolate4U malware, ABPindo ads), same-category support from >=2 publishers auto-blocks exact hosts only. Publisher agreement not independent ground truth. AI/single-source not sufficient for adaptive overlay. Baseline DIRECT exceptions and adblock_allowlist applied, IPs excluded, cache expires after 24h; invalid timestamp/policy rejected. Overlay applied only to output OpenClash/Mihomo/Sing-box before core validation. output/security contains accepted evidence/report; no browsing telemetry published. Ordinary existing feeds/AI path remain separate.
+AkunYaml main, inspected commit 2e2cc5de82be43bdaeef48197952f944c0d690bd. Worktree initially clean. User reports unable to import accounts into OpenClash OpenWrt; exact router error/version unavailable. Found concrete packaging issue: existing YAML uses local file providers not downloaded when importing raw YAML alone.
 
-Added --security-only to update_all.sh to refresh adaptive/feed security without account runner/API AI. No scheduler, news ingestion, zero-day detection, automatic push/deploy. URLhaus/ThreatFox authenticated APIs not integrated. This is correlation of existing live upstream evidence, not fully autonomous malware analysis. Offline builds omit expired overlay; already deployed devices require redeploy to remove old rules.
+Added openwrt_export.py to unified packaging after adaptive overlay, before all-core validation. Generates six complete output/openclash/subscription/*.yaml variants: file rule providers become HTTPS providers referencing published output companion assets. Distinct cache names, safe local path checks, missing dependencies abort. Existing external HTTP/inline providers retained. URLs currently fixed to adiorany3/AkunYaml main; all generated outputs must be committed/pushed for URLs to exist. Existing local/manual deployment profiles untouched.
 
-Verification: full pytest 49 passed, targeted Ruff/diff check clean. Concurrent external unified update/account runner was active; own security-only run correctly refused due lock. Did NOT remove lock/stop user process. Fresh adaptive cache existed with 553 accepted hosts, 4 sources. Validated overlay in isolated copy: 9 YAML profiles + 2 Sing-box profiles passed installed cores. No production output replaced by isolated test. External runner may change outputs independently. No own AI calls or account refresh.
+Also output/akun/openclash_proxy_provider.yaml contains proxies mapping (10 existing nodes), intended for proxy-provider integration not full config. akun.txt is URI list, not config YAML. README explains subscription Raw URL, Meta/Mihomo core, router access and public/private GitHub limitations. Target project core OpenClash v0.47.156 + Mihomo alpha-ge183c58, other versions unverified. Core import validity does not imply account liveness.
 
-Primary update_all.sh outputs output/, local_build retained. Both generated folders now intentionally versioned with explicit user approval of public credential exposure. .secrets/cache remain ignored. Private AI file JSON api_key/base_url/model; never print. Source gameblock_policy maintained local, 14 independent gameblock feeds. Sing-box gameblock still unavailable (adaptive malware overlay supported).
+Verification: full pytest 69 passed, targeted Ruff/py_compile/diff check clean. Actual update_all.sh --offline succeeded validating all original and six subscription profiles plus Sing-box. Six profiles have no file rule providers; all generated URL asset paths exist locally; account provider shape verified. No account refresh/remote GitHub push/device runtime test performed. Generated output files changed and new ones untracked pending commit.
+
+Prior features retained: independent gameblock feeds, adaptive overlay, exit-3 account retention, strict AI parser with per-domain fallback. .secrets/ai_adblock.key JSON api_key/base_url/model ignored; never print. local_build/output intentionally Git-trackable with user consent for credential exposure; caches ignored. One entry update_all.sh, --offline and --security-only supported.
 
 Fingerprints:
-adaptive_guard.py 13d79ac213c059eb38b4d2a0d195bdcd34ce774edcb7bba262a7604cbe762e3f
-unified_update.py 21091e32949cc4b1a836e6f10eeb4def53f68bf4207a3b484eaef3c2e2203de7
-tests/test_adaptive_guard.py aeb0eb204869d75f0b7d48158e56e859226ca9ae36611964d5a46c5b8d2a39fb
-README.md 79eb96a01a19a3e81ccac786b64eb0ccea9700bc13a0d4df0379bc534f4f8ec2
-
-AI response bug fix: Extra data log addressed by accepting one JSON object with optional Markdown fence/plain trailing prose; reject additional structured data and duplicate keys, preserve full schema/exact-domain validation. Invalid-format/schema batch retries once then fail-open. Mock regression suite now full pytest 58 passed; new test lint/py_compile/diff check passed. Existing classifier lint issues remain (shebang, timeout alias, broad catch/type conventions); no live API calls. Cannot determine outer API versus inner model formatting from log alone.
-ai_adblock_classifier.py 577ca9eadbeff7a93009eb2786663197cbe42c6d62cd0412fe45f0ae82e7e1be
-tests/test_ai_response_format.py 356733516b8f1d1197c809156428135a1fa473ec7640cff6311b6f68f6683b6a
-
-Manual log cleanup at commit c7f73d9dab7c8c6f80d787ccebe8e13023e8bdd1: removed skipped counter only from generate_yaml main manual TCPing/compat summary. Health filters and diagnostic reports unchanged. Regression test executes local print AST; full pytest 59 passed, targeted lint/test/diff check passed. Provider cache changes preserved.
-
-Runner exit-3 handling fixed: generate_yaml returns 3 when manual/total node minimum fails and preserves old profiles; local_runner still optimizes/validates existing outputs then returns 3. Unified update now continues only for local_runner exit 3, runs remaining security stages and packaging validation, mode security-refresh-retained-accounts/account_refresh retained-old. Other stages/code errors still abort. Missing/bad old profiles rejected by subsequent build/core checks. Full pytest 62 passed, targeted Ruff/diff check passed; mocked orchestration verifies fallback vs fatal, no live account refresh run.
-unified_update.py f6803f245881bb8b0b483ad31237d88ce49b2780be074d41d4fcf8eb2a25189a
-tests/test_unified_update.py 1a57a2206806bd4ed6dcb6e825d38f6b1912e165d666544fbfea1e125b572072
-
-Recurring ambiguous AI response fix at commit eb25be22db39206b225aec98da924cc459508bbe: parser now accepts disjoint concatenated JSON results objects or bare classification records, plus single bare record; full schema and exact expected domain set/duplicates enforced. Empty/malformed/additional conflicting structured documents rejected. After two invalid batch responses, multi-domain batch falls back to one request per domain; invalid single response still aborts fail-open. This may add API calls/latency; no external API invoked in testing. Full pytest 67 passed; test lint, py_compile, diff check passed. Current runtime subscription modifications preserved. Exact live raw response still unavailable; no guarantee arbitrary model formatting accepted.
-ai_adblock_classifier.py b77b4b989d6d250a7b891bdaccdbb3ce95e9b989dc83c5c90701ef466384af28
-tests/test_ai_response_format.py bb7b0116b991c87158c2e537ac7e27b8dc78bdcdaa119268b94cad8aef894044
+openwrt_export.py 0f2c608486e2987aa3238aa3b0e6efa29fda5db97ce7d31dd9d9360225c79ed0
+unified_update.py 0bf3b94be8a02cfb216a75c475929aa1c5eba6043b71ff6e25563e03e7a2afe3
+tests/test_openwrt_export.py 9e2d005cc0c618aa1bd41e174d5331343fe2a28784bbbb7724290f43a3ac254a
+README.md 8df09d8bd410d3daf823a7092d0e1d6b759b07340bdfe0c5793156bc5c689dec

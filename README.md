@@ -50,6 +50,31 @@ menggantikan patch, segmentasi LAN, firewall, dan endpoint protection.
 
 ## Hasil
 
+### Impor OpenClash OpenWrt melalui URL
+
+Gunakan `output/openclash/subscription/openclash_auto.yaml` untuk konfigurasi
+lengkap berakun. Varian ini mengubah provider lokal menjadi HTTP agar OpenClash
+dapat mengunduh dependensinya, bukan mengharapkan folder pendamping terpasang.
+URL setelah seluruh hasil di-commit/push ke branch `main`:
+
+```text
+https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/subscription/openclash_auto.yaml
+```
+
+Pada OpenClash, tambahkan URL itu sebagai subscription konfigurasi, unduh,
+pilih profil, dan gunakan core **Meta/Mihomo**, bukan core Clash lama.
+Target lokal proyek: OpenClash v0.47.156 + Mihomo alpha-ge183c58. Versi perangkat
+lain perlu diperiksa jika ada error. Provider MRS memerlukan dukungan core yang
+sesuai; router harus dapat mengakses GitHub Raw. Repository privat tidak dapat
+dibaca anonim oleh URL ini. Jangan menaruh token GitHub di URL publik.
+
+Untuk hanya mengambil akun ke konfigurasi sendiri, gunakan
+`output/akun/openclash_proxy_provider.yaml` sebagai **proxy-provider**, bukan
+sebagai konfigurasi lengkap. `akun.txt` adalah daftar URI dan bukan YAML lengkap.
+Daftar URL varian lengkap ada di `output/openclash/subscription/urls.json`.
+File dalam `openclash/proxy/`, `direct/`, `gameblock/` tetap untuk pemasangan
+folder lengkap secara manual. Update tidak otomatis push ke GitHub.
+
 Lokasi utama: `/Users/macbookpro/Documents/GitHub/AkunYaml/output/`
 
 | Folder | Isi |

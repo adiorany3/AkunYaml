@@ -16,6 +16,7 @@ import yaml
 from adaptive_guard import apply as apply_adaptive_guard
 from adaptive_guard import refresh as refresh_adaptive_guard
 from build_support import publish
+from openwrt_export import export as export_openwrt
 
 
 def mac_profile(source):
@@ -92,6 +93,7 @@ def collect(root, mode):
             shutil.copy2(source, destination)
             sources.append(source)
         adaptive_status = apply_adaptive_guard(stage, root)
+        export_openwrt(stage)
         profiles = validate_bundle(stage, root)
         # Validators may download caches; retain only declared profiles/providers.
         for directory in {config.parent for config in profiles}:
@@ -114,6 +116,8 @@ def collect(root, mode):
             "HASIL UTAMA AKUNYAML\n"
             "akun/: daftar akun hasil generator (rahasia).\n"
             "openclash/proxy|direct|gameblock/: profil OpenWrt; salin provider bersama YAML.\n"
+            "openclash/subscription/: impor URL Raw YAML; provider lokal diunduh via HTTPS setelah seluruh output di-push.\n"
+            "akun/openclash_proxy_provider.yaml: hanya akun, untuk proxy-provider; bukan konfigurasi lengkap.\n"
             "sing-box/: Android proxy dan direct/adblock; BELUM ada gameblock.\n"
             "mihomo-mac/proxy|direct|gameblock/: config.yaml untuk Mihomo Mac.\n"
             "Mac: gunakan system proxy HTTP/SOCKS 127.0.0.1:7890; bukan TUN otomatis.\n"
