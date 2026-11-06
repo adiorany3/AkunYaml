@@ -1,0 +1,1634 @@
+mixed-port: 7890
+allow-lan: false
+bind-address: '*'
+mode: rule
+log-level: warning
+ipv6: false
+unified-delay: true
+tcp-concurrent: true
+keep-alive-interval: 15
+keep-alive-idle: 30
+disable-keep-alive: false
+tun:
+  enable: true
+  stack: gvisor
+  mtu: 1280
+  auto-route: true
+  auto-detect-interface: true
+  strict-route: true
+  dns-hijack:
+  - any:53
+profile:
+  store-selected: true
+  store-fake-ip: true
+sniffer:
+  enable: true
+  sniff:
+    TLS:
+      ports:
+      - 443
+      - 8443
+    HTTP:
+      ports:
+      - 80
+      - 8080-8880
+      override-destination: true
+  skip-domain:
+  - +.lan
+  - +.local
+  - +.blu.co.id
+  - +.jago.com
+  - +.seabank.co.id
+  - +.bca.co.id
+  - +.klikbca.com
+  - +.mybca.co.id
+  - +.bankmandiri.co.id
+  - +.livinbymandiri.co.id
+  - +.bri.co.id
+  - +.bni.co.id
+  - +.btn.co.id
+  - +.cimbniaga.co.id
+  - +.octo.co.id
+  - +.danamon.co.id
+  - +.permatabank.com
+  - +.panin.co.id
+  - +.ocbc.id
+  - +.ocbcnisp.com
+  - +.maybank.co.id
+  - +.hsbc.co.id
+  - +.uob.co.id
+  - +.dbs.com
+  - +.dbs.id
+  - +.sc.com
+  - +.citibank.co.id
+  - +.bankmega.com
+  - +.bankmega.co.id
+  - +.btpn.com
+  - +.jenius.com
+  - +.bankjago.com
+  - +.bankneo.co.id
+  - +.allobank.com
+  - +.bankraya.co.id
+  - +.bankaladin.co.id
+  - +.bankina.co.id
+  - +.bankbsi.co.id
+  - +.bankmuamalat.co.id
+  - +.bankmega-syariah.co.id
+  - +.bcasyariah.co.id
+  - +.btpnsyariah.com
+  - +.bankvictoriasyariah.co.id
+  - +.banksinarmas.com
+  - +.bankmas.co.id
+  - +.bankmestika.co.id
+  - +.bankmayapada.com
+  - +.bankcapital.co.id
+  - +.bankganesha.co.id
+  - +.bankindex.co.id
+  - +.bankmayora.com
+  - +.bankwoorisaudara.com
+  - +.kebhana.co.id
+  - +.shinhan.co.id
+  - +.bankbisnis.com
+  - +.banksampoerna.com
+  - +.banknobu.com
+  - +.bankbjb.co.id
+  - +.bankdki.co.id
+  - +.bankjateng.co.id
+  - +.bankjatim.co.id
+  - +.bpddiy.co.id
+  - +.banksumut.co.id
+  - +.bankaceh.co.id
+  - +.banknagari.co.id
+  - +.bankriaukepri.co.id
+  - +.banksumselbabel.com
+  - +.banklampung.co.id
+  - +.bankkalbar.co.id
+  - +.bankkalsel.co.id
+  - +.bankkalteng.co.id
+  - +.bankaltimtara.co.id
+  - +.banksulselbar.co.id
+  - +.banksulutgo.co.id
+  - +.bankntbsyariah.co.id
+  - +.bpdbali.co.id
+  - +.bpdntt.co.id
+  - +.bankmalukumalut.co.id
+  - +.bankpapua.co.id
+  - +.gojek.com
+  - +.gojekapi.com
+  - +.gopay.co.id
+  - +.grab.com
+  - +.grabtaxi.com
+  - +.ovo.id
+  - +.dana.id
+  - +.linkaja.id
+  - +.flip.id
+  - +.shopee.co.id
+  - +.shopee.com
+  - +.shopee.sg
+  - +.shopeemobile.com
+  - +.shopeeusercontent.com
+  - +.susercontent.com
+  - +.shp.ee
+  - +.spaylater.co.id
+  - +.shopeepay.co.id
+  - +.midtrans.com
+  - +.xendit.co
+  - +.doku.com
+  - +.faspay.co.id
+  - +.nicepay.co.id
+  - +.duitku.com
+  - +.tripay.co.id
+  - +.prismalink.co.id
+  - +.finpay.co.id
+  - +.ipaymu.com
+  - +.oyindonesia.com
+  - +.qris.id
+  - +.bi.go.id
+  - +.tokopedia.com
+  - +.tokopedia.net
+  - +.lazada.co.id
+  - +.lazada.com
+  - +.lzd.co
+  - +.lazcdn.com
+  - +.slatic.net
+  - +.blibli.com
+  - +.bukalapak.com
+  - +.tiktokv.com
+  - +.tiktokcdn.com
+  - +.ibytedtos.com
+  - +.byteimg.com
+  - business-api.tiktok.com
+  - log.byteoversea.com
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+  - +.lan
+  - +.local
+  - localhost.ptlogin2.qq.com
+  - dns.msftncsi.com
+  - www.msftconnecttest.com
+  - connectivitycheck.gstatic.com
+  - connect.rom.miui.com
+  - time.*.com
+  - ntp.*.com
+  - +.pool.ntp.org
+  - router.asus.com
+  - tplinkwifi.net
+  - tendawifi.com
+  - +.bca.co.id
+  - +.bni.co.id
+  - +.bri.co.id
+  - +.mandiri.co.id
+  - +.blu.co.id
+  - +.jago.com
+  - +.seabank.co.id
+  - +.klikbca.com
+  - +.mybca.co.id
+  - +.bankmandiri.co.id
+  - +.livinbymandiri.co.id
+  - +.btn.co.id
+  - +.cimbniaga.co.id
+  - +.octo.co.id
+  - +.danamon.co.id
+  - +.permatabank.com
+  - +.panin.co.id
+  - +.ocbc.id
+  - +.ocbcnisp.com
+  - +.maybank.co.id
+  - +.hsbc.co.id
+  - +.uob.co.id
+  - +.dbs.com
+  - +.dbs.id
+  - +.sc.com
+  - +.citibank.co.id
+  - +.bankmega.com
+  - +.bankmega.co.id
+  - +.btpn.com
+  - +.jenius.com
+  - +.bankjago.com
+  - +.bankneo.co.id
+  - +.allobank.com
+  - +.bankraya.co.id
+  - +.bankaladin.co.id
+  - +.bankina.co.id
+  - +.bankbsi.co.id
+  - +.bankmuamalat.co.id
+  - +.bankmega-syariah.co.id
+  - +.bcasyariah.co.id
+  - +.btpnsyariah.com
+  - +.bankvictoriasyariah.co.id
+  - +.banksinarmas.com
+  - +.bankmas.co.id
+  - +.bankmestika.co.id
+  - +.bankmayapada.com
+  - +.bankcapital.co.id
+  - +.bankganesha.co.id
+  - +.bankindex.co.id
+  - +.bankmayora.com
+  - +.bankwoorisaudara.com
+  - +.kebhana.co.id
+  - +.shinhan.co.id
+  - +.bankbisnis.com
+  - +.banksampoerna.com
+  - +.banknobu.com
+  - +.bankbjb.co.id
+  - +.bankdki.co.id
+  - +.bankjateng.co.id
+  - +.bankjatim.co.id
+  - +.bpddiy.co.id
+  - +.banksumut.co.id
+  - +.bankaceh.co.id
+  - +.banknagari.co.id
+  - +.bankriaukepri.co.id
+  - +.banksumselbabel.com
+  - +.banklampung.co.id
+  - +.bankkalbar.co.id
+  - +.bankkalsel.co.id
+  - +.bankkalteng.co.id
+  - +.bankaltimtara.co.id
+  - +.banksulselbar.co.id
+  - +.banksulutgo.co.id
+  - +.bankntbsyariah.co.id
+  - +.bpdbali.co.id
+  - +.bpdntt.co.id
+  - +.bankmalukumalut.co.id
+  - +.bankpapua.co.id
+  - +.gojek.com
+  - +.gojekapi.com
+  - +.gopay.co.id
+  - +.grab.com
+  - +.grabtaxi.com
+  - +.ovo.id
+  - +.dana.id
+  - +.linkaja.id
+  - +.flip.id
+  - +.shopee.co.id
+  - +.shopee.com
+  - +.shopee.sg
+  - +.shopeemobile.com
+  - +.shopeeusercontent.com
+  - +.susercontent.com
+  - +.shp.ee
+  - +.spaylater.co.id
+  - +.shopeepay.co.id
+  - +.midtrans.com
+  - +.xendit.co
+  - +.doku.com
+  - +.faspay.co.id
+  - +.nicepay.co.id
+  - +.duitku.com
+  - +.tripay.co.id
+  - +.prismalink.co.id
+  - +.finpay.co.id
+  - +.ipaymu.com
+  - +.oyindonesia.com
+  - +.qris.id
+  - +.bi.go.id
+  - +.tokopedia.com
+  - +.tokopedia.net
+  - +.lazada.co.id
+  - +.lazada.com
+  - +.lzd.co
+  - +.lazcdn.com
+  - +.slatic.net
+  - +.blibli.com
+  - +.bukalapak.com
+  - +.tiktokv.com
+  - +.tiktokcdn.com
+  - +.ibytedtos.com
+  - +.byteimg.com
+  - business-api.tiktok.com
+  - log.byteoversea.com
+  - +.stun.*.*
+  - +.stun.*.*.*
+  - +.stun.*.*.*.*
+  - +.stun.*.*.*.*.*
+  - '*.n.n.srv.nintendo.net'
+  - xbox.*.*.microsoft.com
+  - '*.*.xboxlive.com'
+  default-nameserver:
+  - https://1.1.1.1/dns-query
+  - https://9.9.9.9/dns-query
+  nameserver:
+  - https://family.dns.bebasid.com/dns-query
+  - tls://family.dns.bebasid.com:853
+  proxy-server-nameserver:
+  - https://1.1.1.1/dns-query
+  - https://dns.google/dns-query
+  - https://dns.quad9.net/dns-query
+  - https://9.9.9.9/dns-query
+  - https://94.140.14.14/dns-query
+  nameserver-policy:
+    +.openai.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.chatgpt.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.chatgpt.site:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.anthropic.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.claude.ai:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.claude.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.gemini.google.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.blu.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.jago.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.seabank.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bca.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.klikbca.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.mybca.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankmandiri.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.livinbymandiri.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bri.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bni.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.btn.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.cimbniaga.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.octo.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.danamon.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.permatabank.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.panin.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.ocbc.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.ocbcnisp.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.maybank.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.hsbc.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.uob.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.dbs.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.dbs.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.sc.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.citibank.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankmega.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankmega.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.btpn.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.jenius.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankjago.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankneo.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.allobank.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankraya.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankaladin.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankina.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankbsi.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankmuamalat.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankmega-syariah.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bcasyariah.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.btpnsyariah.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankvictoriasyariah.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.banksinarmas.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankmas.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankmestika.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankmayapada.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankcapital.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankganesha.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankindex.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankmayora.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankwoorisaudara.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.kebhana.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shinhan.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankbisnis.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.banksampoerna.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.banknobu.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankbjb.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankdki.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankjateng.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankjatim.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bpddiy.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.banksumut.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankaceh.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.banknagari.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankriaukepri.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.banksumselbabel.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.banklampung.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankkalbar.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankkalsel.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankkalteng.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankaltimtara.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.banksulselbar.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.banksulutgo.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankntbsyariah.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bpdbali.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bpdntt.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankmalukumalut.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bankpapua.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.gojek.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.gojekapi.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.gopay.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.grab.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.grabtaxi.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.ovo.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.dana.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.linkaja.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.flip.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shopee.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shopee.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shopee.sg:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shopeemobile.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shopeeusercontent.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.susercontent.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shp.ee:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.spaylater.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.shopeepay.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.midtrans.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.xendit.co:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.doku.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.faspay.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.nicepay.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.duitku.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.tripay.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.prismalink.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.finpay.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.ipaymu.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.oyindonesia.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.qris.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bi.go.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.tokopedia.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.tokopedia.net:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.lazada.co.id:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.lazada.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.lzd.co:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.lazcdn.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.slatic.net:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.blibli.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.bukalapak.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.tiktokv.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.tiktokcdn.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.ibytedtos.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.byteimg.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.business-api.tiktok.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+    +.log.byteoversea.com:
+    - https://1.1.1.1/dns-query
+    - https://dns.google/dns-query
+  cache-algorithm: arc
+  prefer-h3: false
+  respect-rules: true
+  use-hosts: true
+  use-system-hosts: false
+  fallback:
+  - https://family.dns.bebasid.com/dns-query
+  - tls://family.dns.bebasid.com:853
+  fallback-lazy-query: false
+proxies:
+- name: MANUAL-VMess-WS-TLS-443-ikada543
+  type: vmess
+  server: 104.17.3.81
+  port: 443
+  uuid: 07b0b1d3-0f2a-4d95-895a-c31be0f6a784
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: fbcdn.sbs
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /modern-analyze-to-machine-learning/buy-vmess-ws-pm-telegram-at-synricha
+    headers:
+      Host: fbcdn.sbs
+  alpn:
+  - http/1.1
+- name: MANUAL-VMess-WS-TLS-443-akuku8
+  type: vmess
+  server: 104.17.3.81
+  port: 443
+  uuid: 4ee97185-f0ea-4842-b116-aaa1832665cc
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: true
+  servername: fbcdn.sbs
+  network: ws
+  client-fingerprint: chrome
+  skip-cert-verify: true
+  ws-opts:
+    path: /beginner-understand-to-growth-hacking/buy-vmess-ws-pm-telegram-at-synricha
+    headers:
+      Host: fbcdn.sbs
+  alpn:
+  - http/1.1
+proxy-groups:
+- name: GLOBAL
+  type: fallback
+  proxies:
+  - FALLBACK
+  - AUTO-FAST
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 3
+- name: AI-OPENAI
+  type: fallback
+  proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  url: https://chatgpt.com/favicon.ico
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 3
+- name: AI-CLAUDE
+  type: fallback
+  proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  url: https://claude.ai/favicon.ico
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 3
+- name: AI-GEMINI
+  type: fallback
+  proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  url: https://gemini.google.com/favicon.ico
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 3
+- name: AI-OTHER
+  type: fallback
+  proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 3
+- name: AI-STABLE
+  type: fallback
+  proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 3
+- name: AI-BACKUP
+  type: fallback
+  proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 3
+- name: AI-MANUAL
+  type: fallback
+  proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  url: https://www.gstatic.com/generate_204
+  interval: 600
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 3
+- name: AI
+  type: fallback
+  proxies:
+  - AI-OPENAI
+  - AI-CLAUDE
+  - AI-GEMINI
+  - AI-OTHER
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 3
+- name: PING-CHECK
+  type: url-test
+  proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  url: https://www.gstatic.com/generate_204
+  interval: 180
+  tolerance: 100
+  lazy: true
+  timeout: 6000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+- name: WARM-UP
+  type: url-test
+  proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  url: https://www.gstatic.com/generate_204
+  interval: 60
+  tolerance: 150
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+- name: WARM-UP-CF
+  type: url-test
+  proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  url: https://cp.cloudflare.com
+  interval: 90
+  tolerance: 150
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+- name: STREAMING-FAST
+  type: url-test
+  proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  url: https://cp.cloudflare.com
+  interval: 180
+  tolerance: 150
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+- name: AUTO-FAST
+  type: url-test
+  proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  url: https://www.gstatic.com/generate_204
+  interval: 180
+  tolerance: 150
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+- name: FALLBACK
+  type: fallback
+  proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  url: https://www.gstatic.com/generate_204
+  interval: 180
+  lazy: true
+  timeout: 6000
+  expected-status: 200/204/301/302
+  max-failed-times: 3
+- name: REDDIT
+  type: fallback
+  proxies:
+  - MANUAL
+  url: https://www.gstatic.com/generate_204
+  interval: 60
+  lazy: true
+  timeout: 2500
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+- name: MANUAL
+  type: fallback
+  proxies:
+  - MANUAL-VMess-WS-TLS-443-ikada543
+  - MANUAL-VMess-WS-TLS-443-akuku8
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  lazy: true
+  timeout: 5000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+- name: YOUTUBE
+  type: fallback
+  proxies:
+  - WARM-UP-CF
+  - STREAMING-FAST
+  - AUTO-FAST
+  - FALLBACK
+  url: https://www.gstatic.com/generate_204
+  interval: 120
+  lazy: true
+  timeout: 3000
+  expected-status: 200/204/301/302
+  max-failed-times: 2
+rule-providers:
+  universal-adblock-safe:
+    type: file
+    behavior: domain
+    path: ./rule_providers/universal-adblock-safe.yaml
+  popup-ads:
+    type: http
+    behavior: domain
+    path: ./rule_providers/popup-ads_android.yaml
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/HEAD/rule_providers/popup-ads_android.yaml
+    interval: 43200
+    format: yaml
+  ads_domain:
+    type: http
+    behavior: domain
+    path: ./rule_providers/ads_domain.yaml
+    url: https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/category-ads-all.yaml
+    interval: 43200
+  anti-ad:
+    type: http
+    behavior: domain
+    path: ./rule_providers/anti-ad-clash.yaml
+    url: https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-clash.yaml
+    interval: 43200
+    format: yaml
+  tracker-domain:
+    type: http
+    behavior: classical
+    path: ./rule_providers/tracker.yaml
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/classical/tracker.yaml
+    interval: 43200
+  threat-malware:
+    type: http
+    behavior: domain
+    path: ./rule_providers/malware.yaml
+    url: https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/malware.yaml
+    interval: 43200
+  threat-phishing:
+    type: http
+    behavior: domain
+    path: ./rule_providers/phishing.yaml
+    url: https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/phishing.yaml
+    interval: 43200
+  threat-cryptominers:
+    type: http
+    behavior: domain
+    path: ./rule_providers/cryptominers.yaml
+    url: https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/cryptominers.yaml
+    interval: 43200
+  adult-category:
+    type: http
+    behavior: classical
+    path: ./rule_providers/adult-category.yaml
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/classical/category-porn.yaml
+    interval: 43200
+  threat-fake-scam:
+    type: file
+    behavior: domain
+    path: ./rule_providers/threat-fake-scam_android.yaml
+  privacy-extra:
+    type: http
+    behavior: classical
+    path: ./rule_providers/privacy-extra.yaml
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Privacy/Privacy.yaml
+    interval: 43200
+  ads_indonesia:
+    type: file
+    behavior: domain
+    path: ./rule_providers/ads_indonesia_android.yaml
+rules:
+- DOMAIN-SUFFIX,local,GLOBAL
+- DOMAIN-SUFFIX,lan,GLOBAL
+- DOMAIN-SUFFIX,localhost,GLOBAL
+- IP-CIDR,127.0.0.0/8,GLOBAL,no-resolve
+- IP-CIDR,10.0.0.0/8,GLOBAL,no-resolve
+- IP-CIDR,172.16.0.0/12,GLOBAL,no-resolve
+- IP-CIDR,192.168.0.0/16,GLOBAL,no-resolve
+- IP-CIDR,169.254.0.0/16,GLOBAL,no-resolve
+- GEOIP,LAN,GLOBAL,no-resolve
+- DOMAIN,cdn.openaimerge.com,AI-OPENAI
+- DOMAIN,cdn.workos.com,AI-OPENAI
+- DOMAIN,challenges.cloudflare.com,AI-OPENAI
+- DOMAIN,forwarder.workos.com,AI-OPENAI
+- DOMAIN,humb.apple.com,AI-OPENAI
+- DOMAIN,images.workoscdn.com,AI-OPENAI
+- DOMAIN,js.intercomcdn.com,AI-OPENAI
+- DOMAIN,js.stripe.com,AI-OPENAI
+- DOMAIN,o207216.ingest.sentry.io,AI-OPENAI
+- DOMAIN,o33249.ingest.sentry.io,AI-OPENAI
+- DOMAIN,rum.browser-intake-datadoghq.com,AI-OPENAI
+- DOMAIN,setup.workos.com,AI-OPENAI
+- DOMAIN,workos.imgix.net,AI-OPENAI
+- DOMAIN-SUFFIX,auth.openai.com,AI-OPENAI
+- DOMAIN-SUFFIX,chatgpt.com,AI-OPENAI
+- DOMAIN-SUFFIX,chatgpt.site,AI-OPENAI
+- DOMAIN-SUFFIX,ct.sendgrid.net,AI-OPENAI
+- DOMAIN-SUFFIX,intercom.io,AI-OPENAI
+- DOMAIN-SUFFIX,intercomcdn.com,AI-OPENAI
+- DOMAIN-SUFFIX,oaistatic.com,AI-OPENAI
+- DOMAIN-SUFFIX,oaiusercontent.com,AI-OPENAI
+- DOMAIN-SUFFIX,openai.com,AI-OPENAI
+- DOMAIN-SUFFIX,oaistatsig.com,AI-OPENAI
+- DOMAIN-SUFFIX,sora.com,AI-OPENAI
+- DOMAIN,cdn.usefathom.com,AI-CLAUDE
+- DOMAIN-SUFFIX,anthropic.com,AI-CLAUDE
+- DOMAIN-SUFFIX,claude.ai,AI-CLAUDE
+- DOMAIN-SUFFIX,claude.com,AI-CLAUDE
+- DOMAIN-SUFFIX,claudeusercontent.com,AI-CLAUDE
+- DOMAIN,ai.google.dev,AI-GEMINI
+- DOMAIN,aistudio.google.com,AI-GEMINI
+- DOMAIN,alkalimakersuite-pa.clients6.google.com,AI-GEMINI
+- DOMAIN,aiplatform.googleapis.com,AI-GEMINI
+- DOMAIN,cloudcode-pa.googleapis.com,AI-GEMINI
+- DOMAIN,gemini.google.com,AI-GEMINI
+- DOMAIN,generativelanguage.googleapis.com,AI-GEMINI
+- DOMAIN,makersuite.google.com,AI-GEMINI
+- DOMAIN,proactivebackend-pa.googleapis.com,AI-GEMINI
+- DOMAIN,robinfrontend-pa.googleapis.com,AI-GEMINI
+- DOMAIN-SUFFIX,bard.google.com,AI-GEMINI
+- DOMAIN-SUFFIX,deepmind.com,AI-GEMINI
+- DOMAIN-SUFFIX,deepmind.google,AI-GEMINI
+- DOMAIN-SUFFIX,generativeai.google,AI-GEMINI
+- DOMAIN,api.githubcopilot.com,AI-OTHER
+- DOMAIN,copilot-proxy.githubusercontent.com,AI-OTHER
+- DOMAIN,copilot.cloud.microsoft,AI-OTHER
+- DOMAIN,copilot.microsoft.com,AI-OTHER
+- DOMAIN,sydney.bing.com,AI-OTHER
+- DOMAIN-SUFFIX,cohere.com,AI-OTHER
+- DOMAIN-SUFFIX,deepseek.com,AI-OTHER
+- DOMAIN-SUFFIX,githubcopilot.com,AI-OTHER
+- DOMAIN-SUFFIX,grok.com,AI-OTHER
+- DOMAIN-SUFFIX,kimi.com,AI-OTHER
+- DOMAIN-SUFFIX,meta.ai,AI-OTHER
+- DOMAIN-SUFFIX,mistral.ai,AI-OTHER
+- DOMAIN-SUFFIX,perplexity.ai,AI-OTHER
+- DOMAIN-SUFFIX,poe.com,AI-OTHER
+- DOMAIN-SUFFIX,qwen.ai,AI-OTHER
+- DOMAIN-SUFFIX,x.ai,AI-OTHER
+- IP-CIDR,4.151.200.38/32,AI-OPENAI,no-resolve
+- IP-CIDR,4.155.146.196/32,AI-OPENAI,no-resolve
+- IP-CIDR,4.197.172.116/32,AI-OPENAI,no-resolve
+- IP-CIDR,4.217.235.100/32,AI-OPENAI,no-resolve
+- IP-CIDR,4.245.198.13/32,AI-OPENAI,no-resolve
+- IP-CIDR,13.71.25.29/32,AI-OPENAI,no-resolve
+- IP-CIDR,20.74.221.21/32,AI-OPENAI,no-resolve
+- IP-CIDR,20.162.96.163/32,AI-OPENAI,no-resolve
+- IP-CIDR,20.168.48.117/32,AI-OPENAI,no-resolve
+- IP-CIDR,20.184.36.134/32,AI-OPENAI,no-resolve
+- IP-CIDR,20.203.144.245/32,AI-OPENAI,no-resolve
+- IP-CIDR,40.118.236.137/32,AI-OPENAI,no-resolve
+- IP-CIDR,51.4.112.173/32,AI-OPENAI,no-resolve
+- IP-CIDR,52.143.181.161/32,AI-OPENAI,no-resolve
+- IP-CIDR,68.155.152.41/32,AI-OPENAI,no-resolve
+- IP-CIDR,72.146.20.246/32,AI-OPENAI,no-resolve
+- IP-CIDR,74.248.148.7/32,AI-OPENAI,no-resolve
+- IP-CIDR,102.37.57.54/32,AI-OPENAI,no-resolve
+- IP-CIDR,135.220.40.201/32,AI-OPENAI,no-resolve
+- IP-CIDR,172.203.39.49/32,AI-OPENAI,no-resolve
+- IP-CIDR,172.207.173.200/32,AI-OPENAI,no-resolve
+- IP-CIDR,172.214.226.198/32,AI-OPENAI,no-resolve
+- IP-CIDR,191.233.251.27/32,AI-OPENAI,no-resolve
+- DOMAIN,static.doubleclick.net,YOUTUBE
+- DOMAIN,jnn-pa.googleapis.com,YOUTUBE
+- DOMAIN,googleads.g.doubleclick.net,REJECT
+- DOMAIN,ad.doubleclick.net,REJECT
+- DOMAIN,pubads.g.doubleclick.net,REJECT
+- DOMAIN,securepubads.g.doubleclick.net,REJECT
+- DOMAIN,pagead2.googlesyndication.com,REJECT
+- DOMAIN,tpc.googlesyndication.com,REJECT
+- DOMAIN,www.googleadservices.com,REJECT
+- DOMAIN,imasdk.googleapis.com,REJECT
+- DOMAIN,ads.youtube.com,REJECT
+- DOMAIN-SUFFIX,2mdn.net,REJECT
+- DOMAIN-SUFFIX,googlesyndication.com,REJECT
+- DOMAIN-SUFFIX,googleadservices.com,REJECT
+- DOMAIN,adtrafficquality.google,REJECT
+- DOMAIN-SUFFIX,googleadapis.com,REJECT
+- DOMAIN,mobileads.google.com,REJECT
+- DOMAIN,pagead.l.google.com,REJECT
+- DOMAIN-SUFFIX,youtube.com,YOUTUBE
+- DOMAIN-SUFFIX,youtu.be,YOUTUBE
+- DOMAIN-SUFFIX,youtube-nocookie.com,YOUTUBE
+- DOMAIN-SUFFIX,googlevideo.com,YOUTUBE
+- DOMAIN-SUFFIX,ytimg.com,YOUTUBE
+- DOMAIN-SUFFIX,youtubei.googleapis.com,YOUTUBE
+- DOMAIN-SUFFIX,youtube.googleapis.com,YOUTUBE
+- DOMAIN-SUFFIX,ggpht.com,YOUTUBE
+- DOMAIN,adstatistics.av380.net,REJECT
+- DOMAIN,logs.av380.net,REJECT
+- DOMAIN,ad.av380.net,REJECT
+- DOMAIN,ads.av380.net,REJECT
+- DOMAIN,advert.av380.net,REJECT
+- DOMAIN,advertising.av380.net,REJECT
+- DOMAIN,promotion.av380.net,REJECT
+- DOMAIN,promotions.av380.net,REJECT
+- DOMAIN,app-ad.av380.net,REJECT
+- DOMAIN-SUFFIX,av380.net,GLOBAL
+- DOMAIN,veepai-device-log.eye4.cn,REJECT
+- DOMAIN,eulog.ezvizlife.com,REJECT
+- DOMAIN,log.ezvizlife.com,REJECT
+- DOMAIN,salog.ezvizlife.com,REJECT
+- DOMAIN,sgplog.ezvizlife.com,REJECT
+- DOMAIN,uslog.ezvizlife.com,REJECT
+- DOMAIN,rum-apis.reolink.com,REJECT
+- DOMAIN,sentry.tuyaus.com,REJECT
+- DOMAIN,promotion-en.xmeye.net,REJECT
+- DOMAIN-SUFFIX,challenges.cloudflare.com,GLOBAL
+- DOMAIN-SUFFIX,hcaptcha.com,GLOBAL
+- DOMAIN-SUFFIX,licdn.com,GLOBAL
+- DOMAIN-SUFFIX,linkedin.cn,GLOBAL
+- DOMAIN-SUFFIX,linkedin.com,GLOBAL
+- DOMAIN-SUFFIX,lnkd.in,GLOBAL
+- DOMAIN-SUFFIX,recaptcha.net,GLOBAL
+- DOMAIN-SUFFIX,simaster.ugm.ac.id,GLOBAL
+- DOMAIN-SUFFIX,speedtest.net,GLOBAL
+- DOMAIN-SUFFIX,ookla.com,GLOBAL
+- DOMAIN-SUFFIX,speedtestcustom.com,GLOBAL
+- RULE-SET,threat-malware,REJECT
+- RULE-SET,threat-phishing,REJECT
+- RULE-SET,threat-cryptominers,REJECT
+- DOMAIN-SUFFIX,blu.co.id,GLOBAL
+- DOMAIN-SUFFIX,jago.com,GLOBAL
+- DOMAIN-SUFFIX,seabank.co.id,GLOBAL
+- DOMAIN-SUFFIX,bca.co.id,GLOBAL
+- DOMAIN-SUFFIX,klikbca.com,GLOBAL
+- DOMAIN-SUFFIX,mybca.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankmandiri.co.id,GLOBAL
+- DOMAIN-SUFFIX,livinbymandiri.co.id,GLOBAL
+- DOMAIN-SUFFIX,bri.co.id,GLOBAL
+- DOMAIN-SUFFIX,bni.co.id,GLOBAL
+- DOMAIN-SUFFIX,btn.co.id,GLOBAL
+- DOMAIN-SUFFIX,cimbniaga.co.id,GLOBAL
+- DOMAIN-SUFFIX,octo.co.id,GLOBAL
+- DOMAIN-SUFFIX,danamon.co.id,GLOBAL
+- DOMAIN-SUFFIX,permatabank.com,GLOBAL
+- DOMAIN-SUFFIX,panin.co.id,GLOBAL
+- DOMAIN-SUFFIX,ocbc.id,GLOBAL
+- DOMAIN-SUFFIX,ocbcnisp.com,GLOBAL
+- DOMAIN-SUFFIX,maybank.co.id,GLOBAL
+- DOMAIN-SUFFIX,hsbc.co.id,GLOBAL
+- DOMAIN-SUFFIX,uob.co.id,GLOBAL
+- DOMAIN-SUFFIX,dbs.com,GLOBAL
+- DOMAIN-SUFFIX,dbs.id,GLOBAL
+- DOMAIN-SUFFIX,sc.com,GLOBAL
+- DOMAIN-SUFFIX,citibank.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankmega.com,GLOBAL
+- DOMAIN-SUFFIX,bankmega.co.id,GLOBAL
+- DOMAIN-SUFFIX,btpn.com,GLOBAL
+- DOMAIN-SUFFIX,jenius.com,GLOBAL
+- DOMAIN-SUFFIX,bankjago.com,GLOBAL
+- DOMAIN-SUFFIX,bankneo.co.id,GLOBAL
+- DOMAIN-SUFFIX,allobank.com,GLOBAL
+- DOMAIN-SUFFIX,bankraya.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankaladin.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankina.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankbsi.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankmuamalat.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankmega-syariah.co.id,GLOBAL
+- DOMAIN-SUFFIX,bcasyariah.co.id,GLOBAL
+- DOMAIN-SUFFIX,btpnsyariah.com,GLOBAL
+- DOMAIN-SUFFIX,bankvictoriasyariah.co.id,GLOBAL
+- DOMAIN-SUFFIX,banksinarmas.com,GLOBAL
+- DOMAIN-SUFFIX,bankmas.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankmestika.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankmayapada.com,GLOBAL
+- DOMAIN-SUFFIX,bankcapital.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankganesha.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankindex.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankmayora.com,GLOBAL
+- DOMAIN-SUFFIX,bankwoorisaudara.com,GLOBAL
+- DOMAIN-SUFFIX,kebhana.co.id,GLOBAL
+- DOMAIN-SUFFIX,shinhan.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankbisnis.com,GLOBAL
+- DOMAIN-SUFFIX,banksampoerna.com,GLOBAL
+- DOMAIN-SUFFIX,banknobu.com,GLOBAL
+- DOMAIN-SUFFIX,bankbjb.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankdki.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankjateng.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankjatim.co.id,GLOBAL
+- DOMAIN-SUFFIX,bpddiy.co.id,GLOBAL
+- DOMAIN-SUFFIX,banksumut.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankaceh.co.id,GLOBAL
+- DOMAIN-SUFFIX,banknagari.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankriaukepri.co.id,GLOBAL
+- DOMAIN-SUFFIX,banksumselbabel.com,GLOBAL
+- DOMAIN-SUFFIX,banklampung.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankkalbar.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankkalsel.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankkalteng.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankaltimtara.co.id,GLOBAL
+- DOMAIN-SUFFIX,banksulselbar.co.id,GLOBAL
+- DOMAIN-SUFFIX,banksulutgo.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankntbsyariah.co.id,GLOBAL
+- DOMAIN-SUFFIX,bpdbali.co.id,GLOBAL
+- DOMAIN-SUFFIX,bpdntt.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankmalukumalut.co.id,GLOBAL
+- DOMAIN-SUFFIX,bankpapua.co.id,GLOBAL
+- DOMAIN-SUFFIX,gojek.com,GLOBAL
+- DOMAIN-SUFFIX,gojekapi.com,GLOBAL
+- DOMAIN-SUFFIX,gopay.co.id,GLOBAL
+- DOMAIN-SUFFIX,grab.com,GLOBAL
+- DOMAIN-SUFFIX,grabtaxi.com,GLOBAL
+- DOMAIN-SUFFIX,ovo.id,GLOBAL
+- DOMAIN-SUFFIX,dana.id,GLOBAL
+- DOMAIN-SUFFIX,linkaja.id,GLOBAL
+- DOMAIN-SUFFIX,flip.id,GLOBAL
+- DOMAIN-SUFFIX,shopee.co.id,GLOBAL
+- DOMAIN-SUFFIX,shopee.com,GLOBAL
+- DOMAIN-SUFFIX,shopee.sg,GLOBAL
+- DOMAIN-SUFFIX,shopeemobile.com,GLOBAL
+- DOMAIN-SUFFIX,shopeeusercontent.com,GLOBAL
+- DOMAIN-SUFFIX,susercontent.com,GLOBAL
+- DOMAIN-SUFFIX,shp.ee,GLOBAL
+- DOMAIN-SUFFIX,spaylater.co.id,GLOBAL
+- DOMAIN-SUFFIX,shopeepay.co.id,GLOBAL
+- DOMAIN-SUFFIX,midtrans.com,GLOBAL
+- DOMAIN-SUFFIX,xendit.co,GLOBAL
+- DOMAIN-SUFFIX,doku.com,GLOBAL
+- DOMAIN-SUFFIX,faspay.co.id,GLOBAL
+- DOMAIN-SUFFIX,nicepay.co.id,GLOBAL
+- DOMAIN-SUFFIX,duitku.com,GLOBAL
+- DOMAIN-SUFFIX,tripay.co.id,GLOBAL
+- DOMAIN-SUFFIX,prismalink.co.id,GLOBAL
+- DOMAIN-SUFFIX,finpay.co.id,GLOBAL
+- DOMAIN-SUFFIX,ipaymu.com,GLOBAL
+- DOMAIN-SUFFIX,oyindonesia.com,GLOBAL
+- DOMAIN-SUFFIX,qris.id,GLOBAL
+- DOMAIN-SUFFIX,bi.go.id,GLOBAL
+- DOMAIN,business-api.tiktok.com,GLOBAL
+- DOMAIN,log.byteoversea.com,GLOBAL
+- DOMAIN-SUFFIX,tokopedia.com,GLOBAL
+- DOMAIN-SUFFIX,tokopedia.net,GLOBAL
+- DOMAIN-SUFFIX,lazada.co.id,GLOBAL
+- DOMAIN-SUFFIX,lazada.com,GLOBAL
+- DOMAIN-SUFFIX,lzd.co,GLOBAL
+- DOMAIN-SUFFIX,lazcdn.com,GLOBAL
+- DOMAIN-SUFFIX,slatic.net,GLOBAL
+- DOMAIN-SUFFIX,blibli.com,GLOBAL
+- DOMAIN-SUFFIX,bukalapak.com,GLOBAL
+- DOMAIN-SUFFIX,tiktokv.com,GLOBAL
+- DOMAIN-SUFFIX,tiktokcdn.com,GLOBAL
+- DOMAIN-SUFFIX,ibytedtos.com,GLOBAL
+- DOMAIN-SUFFIX,byteimg.com,GLOBAL
+- RULE-SET,adult-category,REJECT
+- RULE-SET,threat-fake-scam,REJECT
+- RULE-SET,privacy-extra,REJECT
+- DOMAIN,adtago.s3.amazonaws.com,REJECT
+- DOMAIN,analyticsengine.s3.amazonaws.com,REJECT
+- DOMAIN,analytics.s3.amazonaws.com,REJECT
+- DOMAIN,advice-ads.s3.amazonaws.com,REJECT
+- DOMAIN,adservice.google.com,REJECT
+- DOMAIN,stats.g.doubleclick.net,REJECT
+- DOMAIN,m.doubleclick.net,REJECT
+- DOMAIN,mediavisor.doubleclick.net,REJECT
+- DOMAIN,ads30.adcolony.com,REJECT
+- DOMAIN,adc3-launch.adcolony.com,REJECT
+- DOMAIN,events3alt.adcolony.com,REJECT
+- DOMAIN,wd.adcolony.com,REJECT
+- DOMAIN,static.media.net,REJECT
+- DOMAIN,media.net,REJECT
+- DOMAIN,adservetx.media.net,REJECT
+- DOMAIN,analytics.google.com,REJECT
+- DOMAIN,click.googleanalytics.com,REJECT
+- DOMAIN,google-analytics.com,REJECT
+- DOMAIN,ssl.google-analytics.com,REJECT
+- DOMAIN,adm.hotjar.com,REJECT
+- DOMAIN,identify.hotjar.com,REJECT
+- DOMAIN,insights.hotjar.com,REJECT
+- DOMAIN,script.hotjar.com,REJECT
+- DOMAIN,surveys.hotjar.com,REJECT
+- DOMAIN,careers.hotjar.com,REJECT
+- DOMAIN,events.hotjar.io,REJECT
+- DOMAIN,mouseflow.com,REJECT
+- DOMAIN,cdn.mouseflow.com,REJECT
+- DOMAIN,o2.mouseflow.com,REJECT
+- DOMAIN,gtm.mouseflow.com,REJECT
+- DOMAIN,api.mouseflow.com,REJECT
+- DOMAIN,tools.mouseflow.com,REJECT
+- DOMAIN,cdn-test.mouseflow.com,REJECT
+- DOMAIN,freshmarketer.com,REJECT
+- DOMAIN,claritybt.freshmarketer.com,REJECT
+- DOMAIN,fwtracks.freshmarketer.com,REJECT
+- DOMAIN,luckyorange.com,REJECT
+- DOMAIN,api.luckyorange.com,REJECT
+- DOMAIN,realtime.luckyorange.com,REJECT
+- DOMAIN,cdn.luckyorange.com,REJECT
+- DOMAIN,w1.luckyorange.com,REJECT
+- DOMAIN,upload.luckyorange.net,REJECT
+- DOMAIN,cs.luckyorange.net,REJECT
+- DOMAIN,settings.luckyorange.net,REJECT
+- DOMAIN,stats.wp.com,REJECT
+- DOMAIN,notify.bugsnag.com,REJECT
+- DOMAIN,sessions.bugsnag.com,REJECT
+- DOMAIN,api.bugsnag.com,REJECT
+- DOMAIN,app.bugsnag.com,REJECT
+- DOMAIN,browser.sentry-cdn.com,REJECT
+- DOMAIN,app.getsentry.com,REJECT
+- DOMAIN,pixel.facebook.com,REJECT
+- DOMAIN,an.facebook.com,REJECT
+- DOMAIN,static.ads-twitter.com,REJECT
+- DOMAIN,ads-api.twitter.com,REJECT
+- DOMAIN,ads.linkedin.com,REJECT
+- DOMAIN,analytics.pointdrive.linkedin.com,REJECT
+- DOMAIN,ads.pinterest.com,REJECT
+- DOMAIN,log.pinterest.com,REJECT
+- DOMAIN,trk.pinterest.com,REJECT
+- DOMAIN,events.reddit.com,REJECT
+- DOMAIN,events.redditmedia.com,REJECT
+- DOMAIN,ads-api.tiktok.com,REJECT
+- DOMAIN,analytics.tiktok.com,REJECT
+- DOMAIN,ads-sg.tiktok.com,REJECT
+- DOMAIN,analytics-sg.tiktok.com,REJECT
+- DOMAIN,business-api.tiktok.com,REJECT
+- DOMAIN,ads.tiktok.com,REJECT
+- DOMAIN,log.byteoversea.com,REJECT
+- DOMAIN,ads.yahoo.com,REJECT
+- DOMAIN,analytics.yahoo.com,REJECT
+- DOMAIN,geo.yahoo.com,REJECT
+- DOMAIN,udcm.yahoo.com,REJECT
+- DOMAIN,analytics.query.yahoo.com,REJECT
+- DOMAIN,partnerads.ysm.yahoo.com,REJECT
+- DOMAIN,log.fc.yahoo.com,REJECT
+- DOMAIN,gemini.yahoo.com,REJECT
+- DOMAIN,adtech.yahooinc.com,REJECT
+- DOMAIN,extmaps-api.yandex.net,REJECT
+- DOMAIN,appmetrica.yandex.ru,REJECT
+- DOMAIN,adfstat.yandex.ru,REJECT
+- DOMAIN,metrika.yandex.ru,REJECT
+- DOMAIN,offerwall.yandex.net,REJECT
+- DOMAIN,adfox.yandex.ru,REJECT
+- DOMAIN,auction.unityads.unity3d.com,REJECT
+- DOMAIN,webview.unityads.unity3d.com,REJECT
+- DOMAIN,config.unityads.unity3d.com,REJECT
+- DOMAIN,adserver.unityads.unity3d.com,REJECT
+- DOMAIN,iot-eu-logser.realme.com,REJECT
+- DOMAIN,iot-logser.realme.com,REJECT
+- DOMAIN,bdapi-ads.realmemobile.com,REJECT
+- DOMAIN,bdapi-in-ads.realmemobile.com,REJECT
+- DOMAIN,api.ad.xiaomi.com,REJECT
+- DOMAIN,data.mistat.xiaomi.com,REJECT
+- DOMAIN,data.mistat.india.xiaomi.com,REJECT
+- DOMAIN,data.mistat.rus.xiaomi.com,REJECT
+- DOMAIN,sdkconfig.ad.xiaomi.com,REJECT
+- DOMAIN,sdkconfig.ad.intl.xiaomi.com,REJECT
+- DOMAIN,tracking.rus.miui.com,REJECT
+- DOMAIN,adsfs.oppomobile.com,REJECT
+- DOMAIN,adx.ads.oppomobile.com,REJECT
+- DOMAIN,ck.ads.oppomobile.com,REJECT
+- DOMAIN,data.ads.oppomobile.com,REJECT
+- DOMAIN,metrics.data.hicloud.com,REJECT
+- DOMAIN,metrics2.data.hicloud.com,REJECT
+- DOMAIN,grs.hicloud.com,REJECT
+- DOMAIN,logservice.hicloud.com,REJECT
+- DOMAIN,logservice1.hicloud.com,REJECT
+- DOMAIN,logbak.hicloud.com,REJECT
+- DOMAIN,click.oneplus.cn,REJECT
+- DOMAIN,open.oneplus.net,REJECT
+- DOMAIN,samsungads.com,REJECT
+- DOMAIN,smetrics.samsung.com,REJECT
+- DOMAIN,nmetrics.samsung.com,REJECT
+- DOMAIN,samsung-com.112.2o7.net,REJECT
+- DOMAIN,analytics-api.samsunghealthcn.com,REJECT
+- DOMAIN,iadsdk.apple.com,REJECT
+- DOMAIN,metrics.icloud.com,REJECT
+- DOMAIN,metrics.mzstatic.com,REJECT
+- DOMAIN,api-adservices.apple.com,REJECT
+- DOMAIN,books-analytics-events.apple.com,REJECT
+- DOMAIN,weather-analytics-events.apple.com,REJECT
+- DOMAIN,notes-analytics-events.apple.com,REJECT
+- DOMAIN,805ba.v.fwmrm.net,REJECT
+- DOMAIN,tvm-mtv-freewheel.akamaized.net,REJECT
+- DOMAIN,adeventtracker.spotify.com,REJECT
+- DOMAIN,ads.spotify.com,REJECT
+- DOMAIN,ads-fa.spotify.com,REJECT
+- DOMAIN,ads-ak.spotify.com,REJECT
+- DOMAIN,adserver.spotify.com,REJECT
+- DOMAIN,adstudio.spotify.com,REJECT
+- DOMAIN,ad-analytics.spotify.com,REJECT
+- DOMAIN,aet.spotify.com,REJECT
+- DOMAIN,analytics.spotify.com,REJECT
+- DOMAIN,bloodhound.spotify.com,REJECT
+- DOMAIN,crashdump.spotify.com,REJECT
+- DOMAIN,pixel.spotify.com,REJECT
+- DOMAIN,pixel-static.spotify.com,REJECT
+- DOMAIN,pixels.spotify.com,REJECT
+- DOMAIN,advertising.netflix.com,REJECT
+- DOMAIN,beacon.netflix.com,REJECT
+- DOMAIN,ichnaea.netflix.com,REJECT
+- DOMAIN,diproton-ads-prod-eu-central-1.hulu.com.akadns.net,REJECT
+- DOMAIN,diproton-ads-prod-eu-west-1.hulu.com.akadns.net,REJECT
+- DOMAIN,diproton-ads-prod-us-east-1.hulu.com.akadns.net,REJECT
+- DOMAIN,diproton-ads-prod-us-east-2.hulu.com.akadns.net,REJECT
+- DOMAIN,diproton-ads-prod-us-west-2.hulu.com.akadns.net,REJECT
+- DOMAIN,ads.twitch.tv,REJECT
+- DOMAIN,analytics.m7g.twitch.tv,REJECT
+- DOMAIN,spade.twitch.tv,REJECT
+- DOMAIN,ads.roku.com,REJECT
+- DOMAIN,advertising.roku.com,REJECT
+- DOMAIN-SUFFIX,popads.net,REJECT
+- DOMAIN-SUFFIX,popcash.net,REJECT
+- DOMAIN-SUFFIX,propellerads.com,REJECT
+- DOMAIN-SUFFIX,adsterra.com,REJECT
+- DOMAIN-SUFFIX,onclickalgo.com,REJECT
+- DOMAIN-SUFFIX,onclickperformance.com,REJECT
+- DOMAIN-SUFFIX,hilltopads.net,REJECT
+- DOMAIN-SUFFIX,richads.com,REJECT
+- DOMAIN-SUFFIX,clickadu.com,REJECT
+- DOMAIN-SUFFIX,adcash.com,REJECT
+- DOMAIN-SUFFIX,applovin.com,REJECT
+- DOMAIN-SUFFIX,applvn.com,REJECT
+- DOMAIN-SUFFIX,unityads.unity3d.com,REJECT
+- DOMAIN-SUFFIX,supersonicads.com,REJECT
+- DOMAIN-SUFFIX,ironsrc.com,REJECT
+- DOMAIN-SUFFIX,vungle.com,REJECT
+- DOMAIN-SUFFIX,vunglecloud.com,REJECT
+- DOMAIN-SUFFIX,chartboost.com,REJECT
+- DOMAIN-SUFFIX,inmobi.com,REJECT
+- DOMAIN-SUFFIX,adcolony.com,REJECT
+- DOMAIN-SUFFIX,mintegral.com,REJECT
+- DOMAIN-SUFFIX,mtgglobals.com,REJECT
+- DOMAIN-SUFFIX,rayjump.com,REJECT
+- DOMAIN-SUFFIX,pangle.io,REJECT
+- DOMAIN-SUFFIX,pangleglobal.com,REJECT
+- DOMAIN-SUFFIX,tapjoy.com,REJECT
+- DOMAIN-SUFFIX,tapjoyads.com,REJECT
+- DOMAIN-SUFFIX,startappservice.com,REJECT
+- DOMAIN-SUFFIX,startapp.com,REJECT
+- DOMAIN-SUFFIX,fyber.com,REJECT
+- DOMAIN-SUFFIX,inner-active.mobi,REJECT
+- DOMAIN,adv.sec.intl.miui.com,REJECT
+- DOMAIN,adv.l7.34.sec.miui.com,REJECT
+- DOMAIN,adv.sec.miui.com,REJECT
+- DOMAIN,ad.miui.com,REJECT
+- DOMAIN,api.ads.xiaomi.com,REJECT
+- DOMAIN,ad.eu.xiaomi.com,REJECT
+- DOMAIN,ad.quickapp.hybrid.xiaomi.com,REJECT
+- DOMAIN,ad.india.xiaomi.com,REJECT
+- DOMAIN,ad.intl.xiaomi.com,REJECT
+- DOMAIN,xadx.file.market.xiaomi.com,REJECT
+- DOMAIN,wtradv.market.xiaomi.com,REJECT
+- DOMAIN,ad.cdn.pandora.xiaomi.com,REJECT
+- DOMAIN,ads.heytapmobi.com,REJECT
+- DOMAIN,ads.heytapmobile.com,REJECT
+- DOMAIN,ads-bdapi-my.heytapmobile.com,REJECT
+- DOMAIN,ads-bdapi-ph.heytapmobile.com,REJECT
+- DOMAIN,ads-bdapi-th.heytapmobile.com,REJECT
+- DOMAIN,ads-bdapi-vn.heytapmobile.com,REJECT
+- DOMAIN,ad-growth-in.heytapmobile.com,REJECT
+- DOMAIN,ad-growth-ru.heytapmobile.com,REJECT
+- DOMAIN,ad-growth-sg.heytapmobile.com,REJECT
+- DOMAIN,adx-ads-fr.heytapmobile.com,REJECT
+- DOMAIN,adx-ads-ru.heytapmobile.com,REJECT
+- DOMAIN,bdapi-ads-sg.heytapmobile.com,REJECT
+- DOMAIN,cldata-ads-fr.heytapmobile.com,REJECT
+- DOMAIN,cldata-ads-ru.heytapmobile.com,REJECT
+- DOMAIN,sms-ads-in.heytapmobile.com,REJECT
+- DOMAIN,sms-ads-ru.heytapmobile.com,REJECT
+- DOMAIN,stgdata-ads-fr.heytapmobile.com,REJECT
+- DOMAIN,ads.oppomobile.com,REJECT
+- DOMAIN,ads.bing.com,REJECT
+- DOMAIN,adserver.bing.com,REJECT
+- DOMAIN,outlookads.live.com,REJECT
+- DOMAIN,ads.microsoft.com,REJECT
+- DOMAIN,adsdk.microsoft.com,REJECT
+- DOMAIN,advertising.microsoft.com,REJECT
+- DOMAIN,bingads.microsoft.com,REJECT
+- DOMAIN,msadsscale.microsoft.com,REJECT
+- DOMAIN,ads.eu.msn.com,REJECT
+- DOMAIN,rmads.eu.msn.com,REJECT
+- DOMAIN,ads.jp.msn.com,REJECT
+- DOMAIN,advertising.jp.msn.com,REJECT
+- DOMAIN,ad.msn.com,REJECT
+- DOMAIN,adevents.msn.com,REJECT
+- DOMAIN,ads.msn.com,REJECT
+- DOMAIN,ads1.msn.com,REJECT
+- DOMAIN,mobileads.msn.com,REJECT
+- DOMAIN,rads.msn.com,REJECT
+- DOMAIN,rmads.msn.com,REJECT
+- DOMAIN,srtb.msn.com,REJECT
+- DOMAIN,prod.editor.ads.trafficmanager.net,REJECT
+- DOMAIN,ads-msn-com-profile.trafficmanager.net,REJECT
+- DOMAIN,adsdk.trafficmanager.net,REJECT
+- DOMAIN,dsp-ad-cache-tm.trafficmanager.net,REJECT
+- DOMAIN,ssp-prod-eastus-nonmutt.trafficmanager.net,REJECT
+- DOMAIN,msads.net,REJECT
+- DOMAIN,advertising.apple.com,REJECT
+- DOMAIN,advp.apple.com,REJECT
+- DOMAIN,iad.apple.com,REJECT
+- DOMAIN,iadcontent.apple.com,REJECT
+- DOMAIN,iadmoo.apple.com,REJECT
+- DOMAIN,iadworkbench.apple.com,REJECT
+- DOMAIN,searchads.apple.com,REJECT
+- DOMAIN-SUFFIX,smaato.com,REJECT
+- DOMAIN-SUFFIX,smaato.net,REJECT
+- DOMAIN-SUFFIX,ogury.com,REJECT
+- DOMAIN-SUFFIX,ogury.co,REJECT
+- DOMAIN-SUFFIX,pubnative.net,REJECT
+- DOMAIN-SUFFIX,hyprmx.com,REJECT
+- DOMAIN-SUFFIX,mobilefuse.com,REJECT
+- DOMAIN-SUFFIX,amazon-adsystem.com,REJECT
+- DOMAIN-SUFFIX,mopub.com,REJECT
+- DOMAIN-SUFFIX,adjoe.io,REJECT
+- RULE-SET,ads_indonesia,REJECT
+- RULE-SET,popup-ads,REJECT
+- RULE-SET,ads_domain,REJECT
+- RULE-SET,anti-ad,REJECT
+- RULE-SET,tracker-domain,REJECT
+- DOMAIN-SUFFIX,reddit.com,REDDIT
+- DOMAIN-SUFFIX,redditmedia.com,REDDIT
+- DOMAIN-SUFFIX,redd.it,REDDIT
+- DOMAIN-KEYWORD,reddit,REDDIT
+- DOMAIN-SUFFIX,twitter.com,REDDIT
+- DOMAIN-SUFFIX,x.com,REDDIT
+- DOMAIN-SUFFIX,api.twitter.com,REDDIT
+- DOMAIN-SUFFIX,api.x.com,REDDIT
+- DOMAIN-SUFFIX,t.co,REDDIT
+- DOMAIN,1win-casino.fr,REJECT
+- DOMAIN,aff.esportesdasorte.bet.br,REJECT
+- DOMAIN,amunra-casinos.fr,REJECT
+- DOMAIN,cowboyspin-casino.fr,REJECT
+- DOMAIN,cresus-casino-fr.fr,REJECT
+- DOMAIN,gtbetcasino-fr.fr,REJECT
+- DOMAIN,gtbetcasino.fr,REJECT
+- DOMAIN,oscar-spincasino.fr,REJECT
+- DOMAIN,roobetcasinoonline.fr,REJECT
+- DOMAIN,savaspinscasino.fr,REJECT
+- DOMAIN,sentry.celsiuscasino.com,REJECT
+- DOMAIN,sevencasino-officiel.fr,REJECT
+- DOMAIN,simsinocasinofrance.fr,REJECT
+- DOMAIN,udintogel.io,REJECT
+- DOMAIN,x7casino-jeux.fr,REJECT
+- DOMAIN,77-casino.fr,REJECT
+- DOMAIN,7gamescasino.fr,REJECT
+- DOMAIN,888sport-casino.fr,REJECT
+- DOMAIN,ads.brazino777.bet.br,REJECT
+- DOMAIN,aff.oleybet.bet.br,REJECT
+- DOMAIN,africabetcasino.fr,REJECT
+- DOMAIN,candyspinz-casinos.fr,REJECT
+- DOMAIN,casinoist-fr.fr,REJECT
+- DOMAIN,err.28brionis936.casino,REJECT
+- DOMAIN,flush-casino-fr.fr,REJECT
+- DOMAIN,fr-blitzcasino.fr,REJECT
+- DOMAIN,funbetscasino.fr,REJECT
+- DOMAIN,gg-bet.fr,REJECT
+- DOMAIN,gtm.7games.bet.br,REJECT
+- DOMAIN,gtm.betao.bet.br,REJECT
+- DOMAIN,instant-casino-officiel.fr,REJECT
+- DOMAIN,posido-casino-france.fr,REJECT
+- DOMAIN,robocat-casino-fr.fr,REJECT
+- DOMAIN,savaspin-casinoonline.fr,REJECT
+- DOMAIN,spinaura-bet-france.fr,REJECT
+- DOMAIN,stakecasino-fr.fr,REJECT
+- DOMAIN,tantegacor88.link,REJECT
+- DOMAIN,wg87vip.bet,REJECT
+- DOMAIN,wonaco-casinoonline.fr,REJECT
+- MATCH,GLOBAL
+find-process-mode: 'off'
+hosts:
+  www.google.com: forcesafesearch.google.com
+  www.google.co.id: forcesafesearch.google.com
+  www.youtube.com: restrictmoderate.youtube.com
+  m.youtube.com: restrictmoderate.youtube.com
+  youtubei.googleapis.com: restrictmoderate.youtube.com
+  youtube.googleapis.com: restrictmoderate.youtube.com
+  www.youtube-nocookie.com: restrictmoderate.youtube.com

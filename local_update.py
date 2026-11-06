@@ -4,11 +4,12 @@ from __future__ import annotations
 import argparse
 import copy
 import json
-from pathlib import Path
 import shutil
 import sys
+from pathlib import Path
 
 import yaml
+
 from openclash_target import atomic_write_text
 
 

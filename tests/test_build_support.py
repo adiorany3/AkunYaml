@@ -43,3 +43,19 @@ def test_download_rejects_untrusted_host():
 def test_missing_validator(tmp_path):
     with pytest.raises(FileNotFoundError):
         validate(tmp_path, tmp_path / "missing")
+
+
+def test_backup_cleanup_failure_reports_publication_success(tmp_path, monkeypatch):
+    import build_support
+    target, stage = tmp_path / "output", tmp_path / "stage"
+    target.mkdir()
+    stage.mkdir()
+    (stage / "new").touch()
+
+    def fail_cleanup(path):
+        raise OSError("busy")
+
+    monkeypatch.setattr(build_support.shutil, "rmtree", fail_cleanup)
+    with pytest.warns(RuntimeWarning, match="sudah diterbitkan"):
+        publish(stage, target)
+    assert (target / "new").exists()

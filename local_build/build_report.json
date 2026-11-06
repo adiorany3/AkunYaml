@@ -1,0 +1,17 @@
+{
+  "mode": "local-snapshot",
+  "proxy_accounts": 0,
+  "remote_providers_at_runtime": [
+    "ads_domain",
+    "youtube_domain",
+    "openai_domain",
+    "ai_category",
+    "chatgpt_voice",
+    "anti-ad",
+    "tracker-domain",
+    "adult-category",
+    "ads-domain",
+    "tracker-domain"
+  ],
+  "note": "Build offline; provider remote membutuhkan internet saat runtime. Kesegaran aturan mengikuti sumber lokal."
+}

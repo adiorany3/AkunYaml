@@ -1,15 +1,15 @@
 """One update entry point and a private, organized output directory."""
 import argparse
 import copy
-from datetime import datetime, timezone
 import hashlib
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tempfile
+from datetime import UTC, datetime
+from pathlib import Path
 
 import yaml
 
@@ -28,6 +28,8 @@ def mac_profile(source):
 
 def bundle_yaml(source, folder, name, *, mac=False):
     config = yaml.safe_load(source.read_text())
+    if not isinstance(config, dict) or not isinstance(config.get("rules"), list) or not config["rules"]:
+        raise ValueError(f"Profil YAML tidak memiliki aturan: {source.name}")
     if mac:
         config = mac_profile(config)
     folder.mkdir(parents=True, exist_ok=True)
@@ -42,6 +44,22 @@ def bundle_yaml(source, folder, name, *, mac=False):
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(origin, target)
     (folder / name).write_text(yaml.safe_dump(config, sort_keys=False, allow_unicode=True))
+
+
+def validate_bundle(stage, root):
+    """Check every published profile, not just transformed Mac variants."""
+    profiles = list((stage / "openclash").glob("*/*.yaml"))
+    profiles += list((stage / "mihomo-mac").glob("*/config.yaml"))
+    for config in profiles:
+        command = [str(root / ".local_bin/mihomo"), "-t", "-d", str(config.parent), "-f", str(config)]
+        result = subprocess.run(command, capture_output=True, text=True, timeout=120, check=False)
+        if result.returncode:
+            raise RuntimeError(f"Validasi Mihomo gagal: {config.relative_to(stage)}\n" + (result.stdout + result.stderr)[-2000:])
+    for config in (stage / "sing-box").glob("*.json"):
+        result = subprocess.run([str(root / ".local_bin/sing-box"), "check", "-c", str(config)], cwd=config.parent, capture_output=True, text=True, timeout=120, check=False)
+        if result.returncode:
+            raise RuntimeError(f"Validasi Sing-box gagal: {config.name}\n" + (result.stdout + result.stderr)[-2000:])
+    return profiles
 
 
 def collect(root, mode):
@@ -71,24 +89,20 @@ def collect(root, mode):
                 json.loads(source.read_text())
             shutil.copy2(source, destination)
             sources.append(source)
-        # Validate only new Mac transformations. Runtime/provider connectivity is not tested.
-        core = root / ".local_bin/mihomo"
-        for config in (stage / "mihomo-mac").glob("*/config.yaml"):
-            result = subprocess.run([str(core), "-t", "-d", str(config.parent), "-f", str(config)], capture_output=True, text=True, timeout=120)
-            if result.returncode:
-                raise RuntimeError(f"Validasi profil Mac gagal: {config.parent.name}\n" + (result.stdout + result.stderr)[-2000:])
+        profiles = validate_bundle(stage, root)
         # Validators may download caches; retain only declared profiles/providers.
-        for directory in (stage / "mihomo-mac").iterdir():
+        for directory in {config.parent for config in profiles}:
+            declared = {config.name for config in profiles if config.parent == directory}
             for item in directory.iterdir():
-                if item.name not in {"config.yaml", "rule_providers"}:
+                if item.name not in declared | {"rule_providers"}:
                     if item.is_dir():
                         shutil.rmtree(item)
                     else:
                         item.unlink()
         report = {
-            "mode": mode, "packaged_at": datetime.now(timezone.utc).isoformat(),
+            "mode": mode, "packaged_at": datetime.now(UTC).isoformat(),
             "warning": "Offline hanya snapshot; waktu packaging bukan bukti akun aktif. Sing-box gameblock belum tersedia.",
-            "sources": [{"path": str(p.relative_to(root)), "modified_at": datetime.fromtimestamp(p.stat().st_mtime, timezone.utc).isoformat(), "sha256": hashlib.sha256(p.read_bytes()).hexdigest()} for p in sources],
+            "sources": [{"path": str(p.relative_to(root)), "modified_at": datetime.fromtimestamp(p.stat().st_mtime, UTC).isoformat(), "sha256": hashlib.sha256(p.read_bytes()).hexdigest()} for p in sources],
         }
         (stage / "manifest.json").write_text(json.dumps(report, indent=2) + "\n")
         (stage / "README.txt").write_text(
@@ -100,7 +114,8 @@ def collect(root, mode):
             "Mac: gunakan system proxy HTTP/SOCKS 127.0.0.1:7890; bukan TUN otomatis.\n"
             "Jalankan hanya satu profil Mac sekaligus. OpenClash bukan aplikasi macOS.\n"
             "manifest.json mencatat waktu sumber; snapshot offline tidak memperbarui akun.\n"
-            "Jangan unggah folder ini ke publik. File lama di root tetap merupakan sumber/internal.\n"
+            "Folder ini dilacak Git atas persetujuan pemilik; repository publik mengekspos kredensial proxy.\n"
+            "Permission lokal tidak melindungi file di GitHub. Jangan sertakan .secrets/.\n"
         )
         for item in stage.rglob("*"):
             item.chmod(0o700 if item.is_dir() else 0o600)
@@ -129,7 +144,7 @@ def main():
         commands.append([sys.executable, str(root / "independent_gameblock.py")] + ([] if args.offline else ["--refresh"]))
         for command in commands:
             print(f"[RUN] {Path(command[1]).name}", flush=True)
-            result = subprocess.run(command, cwd=root)
+            result = subprocess.run(command, cwd=root, check=False)
             if result.returncode:
                 print(f"[ERROR] Tahap gagal/parsial (exit {result.returncode}); output terpadu lama tidak diganti.")
                 return result.returncode

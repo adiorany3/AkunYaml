@@ -71,13 +71,37 @@ dipelihara lokal. Gameblock memblokir game itu sendiri, termasuk blokir luas
 4. Packaging serta validasi varian Mac ke `output/`.
 
 `build_support.py` menyediakan unduhan, validasi, dan publikasi bertahap.
+Semua profil OpenClash/Mihomo dan Sing-box diperiksa core lokal sebelum
+publikasi. Jika katalog URL/format feed berubah atau cache berasal dari versi
+lama yang belum mencatat format, jalankan refresh online sekali sebelum offline.
+Cache tidak boleh dianggap cocok hanya karena nama file dan hash-nya valid.
 `local_build/`, `.runtime_cache/independent_gameblock/`, serta profil di root
 masih diperlukan sebagai hasil antara/cache. Jangan hapus sumber aturan,
 `.local_bin/`, atau cache bila membutuhkan build offline. Dokumen versi lama
 merupakan referensi historis, bukan panduan menjalankan update saat ini.
 
-Output mengandung akun: diabaikan Git, file `600`, direktori `700`.
-Jangan unggah `.secrets/` atau `output/` ke publik.
+## Publikasi hasil ke GitHub
+
+`local_build/` dan `output/` dilacak Git, termasuk akun/profil proxy sesuai
+persetujuan pemilik. **Repository publik mengekspos kredensial proxy**; siapa pun
+yang dapat membaca repository dapat menyalinnya. Permission lokal `600`/`700`
+tidak melindungi file yang sudah dipublikasikan. `.secrets/`, cache internal,
+database validator, backup dan staging tetap diabaikan Git.
+
+Setelah update berhasil, tinjau hasil lalu commit/push:
+
+```bash
+cd /Users/macbookpro/Documents/GitHub/AkunYaml
+git add local_build output
+git commit -m "Update generated device profiles"
+git push origin HEAD
+```
+
+Perintah update tidak otomatis melakukan commit/push. Publikasi pertama juga
+memerlukan perubahan `.gitignore` agar hasil berikutnya tetap terlacak.
+URL Raw YAML saja tidak memasang provider `type: file` secara otomatis: salin
+folder profil lengkap beserta `rule_providers/` ke direktori kerja core pada
+setiap device. Manifest mencatat waktu sumber, bukan jaminan akun masih aktif.
 
 ## Pengujian
 

@@ -49,3 +49,40 @@ def test_catalog_independent():
     manifest = json.loads((root / "gameblock_policy" / "sources.json").read_text())
     assert "games-category" in manifest
     assert all("/adiorany3/" not in spec["url"] for spec in manifest.values())
+
+
+def test_offline_rejects_changed_source(tmp_path, monkeypatch):
+    setup_policy(tmp_path)
+    monkeypatch.setattr(builder, "fetch", lambda url: b"\x28\xb5\x2f\xfd-test")
+    monkeypatch.setattr(builder, "validate", lambda *args: None)
+    output = builder.update(tmp_path, True)
+    previous = output.read_bytes()
+    path = tmp_path / "gameblock_policy/sources.json"
+    manifest = json.loads(path.read_text())
+    manifest["games-category"]["url"] += "?changed"
+    path.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match="cache berbeda"):
+        builder.update(tmp_path, False)
+    assert output.read_bytes() == previous
+
+
+@pytest.mark.parametrize("path", ["", ".", "rule_providers", "../escape"])
+def test_invalid_catalog_path(path):
+    with pytest.raises(ValueError):
+        builder.validate_manifest({"test": {"url": "https://raw.githubusercontent.com/a/b/main/f", "format": "mrs", "path": path}})
+
+
+def test_duplicate_catalog_paths():
+    spec = {"url": "https://raw.githubusercontent.com/a/b/main/f", "format": "mrs", "path": "rule_providers/test.mrs"}
+    with pytest.raises(ValueError, match="duplikat"):
+        builder.validate_manifest({"one": spec, "two": spec})
+
+
+def test_unknown_feed_format(tmp_path):
+    with pytest.raises(ValueError, match="Format"):
+        builder.materialize(b"data", "unknown", tmp_path / "feed", tmp_path / "core")
+
+
+def test_yaml_payload_must_be_list(tmp_path):
+    with pytest.raises(ValueError):
+        builder.materialize(b"payload: abcdefghijklmnop", "yaml", tmp_path / "feed", tmp_path / "core")

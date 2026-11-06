@@ -1,21 +1,25 @@
 # Project context
 
-AkunYaml main, commit 68df270143d4af9449571ca6591f1e4a999354fa. Existing dirty AI/generator changes preserved. Verify working tree and hashes before relying on facts.
+AkunYaml main, verified commit 7d0d47d9d68ea70fdf72f05a404a42ee014c97c4. Worktree clean before this audit; current changes are audit fixes. Recheck working tree/fingerprints before edits.
 
-Primary entry: bash update_all.sh (online) or --offline. unified_update.py runs local_runner, local_update, independent_gameblock, then publishes private output/. Sources/root profiles/local_build retained as required intermediates. Output: akun; openclash proxy/direct/gameblock; sing-box Android/direct (NO gameblock); mihomo-mac proxy/direct/gameblock. Mac uses localhost system proxy 7890, no automatic TUN. Manifest records source mtimes/hashes, not account liveness. No Git push/pip install/scheduler. Failed stages keep previous unified output, but internal sources may change.
+Entry bash update_all.sh, --offline skips account/feed refresh. unified_update stages local_runner (online only), local_update, independent_gameblock, then private output packaging. output includes accounts, OpenClash proxy/direct/gameblock, Sing-box Android/direct (NO gameblock), Mihomo Mac proxy/direct/gameblock. Root/local_build are necessary intermediates. No Git push or scheduler. Online runner may call configured AI.
 
-Cleanup completed: removed legacy HerYaml importer gameblock_update.py, one-time gameblock_bootstrap.py, redundant update_local.sh, obsolete importer tests. Extracted live fetch/validate/publish helpers into build_support.py and updated both consumers. Replaced deleted tests with publish rollback/download/validator tests. Removed untracked obsolete .runtime_cache/heryaml_gameblock (21187370 bytes), retained independent_gameblock cache. No active references to deleted components remain. README rewritten to concise 89-line primary usage/reference; historical docs not deleted without dependency evidence. Current gameblock lock .runtime_cache/gameblock.lock.
+Audit fixes: validate every bundled OpenClash/Mihomo YAML and both Sing-box JSON with installed cores before publication (previously Mac only); reject empty YAML policy; validate feed manifest structure, nonempty safe unique paths, allowed URLs/formats before downloading; reject unknown feed formats/YAML non-list payload; offline cache must match URL/path/format as well as SHA256. Old metadata without format requires one feed refresh. Cache refreshed successfully. Backup cleanup failure after successful publication now warns rather than falsely claiming rollback. Targeted lint fixes applied.
 
-Verification after cleanup: tests/ 31 passed; bash syntax/py_compile/diff check passed; complete bash update_all.sh --offline succeeded, republished output and validated Mac/gameblock configurations. Deleted paths absent; active cache present. No online account refresh performed.
+Verification: full pytest collection 44 passed (initial 33); targeted Ruff clean, py_compile/bash syntax/diff check passed. Actual independent_gameblock --refresh succeeded for 14 feeds; complete update_all.sh --offline succeeded including all profile core validation. Output permissions 600/700, manifest and lock cleanup verified. Online account refresh, AI endpoint health, account liveness and device runtime tests NOT performed. No claim exhaustive bug freedom.
 
-Gameblock: 14 direct feeds from HaGeZi/ABPindo/anti-AD/Chocolate4U/MetaCubeX, local gameblock_policy baseline. 11984 top-level rules/20 providers from earlier live refresh. Manual baseline not automatically rediscovered. Broad msn.com/yandex.com blocks retained. Feed integrity guard and staged publication. No HerYaml runtime refresh dependency.
+Remaining limitations: offline validators can download geodata; O_EXCL lock can remain after hard kill; external/legacy processes can modify root sources concurrently; multi-directory cache/output publication not a single atomic transaction. Provider manual rules still require maintenance. Game baseline blocks broad msn.com/yandex.com. 14 independent feeds, local gameblock_policy, no HerYaml refresh dependency.
 
-Private AI .secrets/ai_adblock.key JSON api_key/base_url/model, permission 600/ignored; never print. Output files 600/directories 700/ignored. Do not delete local_build, active cache, providers or root profiles without refactoring consumers.
+Private .secrets/ai_adblock.key JSON api_key/base_url/model mode 600, ignored; never print. Legacy importer/bootstrap/update_local removed in prior task; shared build_support retained.
 
 Fingerprints:
-build_support.py fa3f8670c8263fabc5af450a5e3735737b961e1d1825439a88785784f1a6aedd
-independent_gameblock.py c4e6d44297c44807161866b965167e8b81dbcf1f23f3f9c19c70b89feb87590f
-unified_update.py b2c7e4c979a0b7b737e38e810e6c268f1cb480fd3929b9b4e95a32e60c334cbc
-tests/test_build_support.py 4d2b575a3db9cfb5287c2980df8b2450b89896ca389c6985437dd51bc39a4481
-README.md 64678387fb749752eb054ee567b157ed2ad0cb9d7be07ab984e9b6fa43fd58e4
-update_all.sh 6655dbe7d7f5165db91a43fcbd46396a1e0136714bb7f31c5efca2ac84c34075
+build_support.py e6043f045592f17acd870e4bc9e18f02efc8f6447b92b9b983a0711d5f84ca27
+independent_gameblock.py 4b22aad26b7831dd6e5bae2bee8db6c670869990b1e3c297f8762b61981fddc6
+unified_update.py 8244a1b662fffb37a08a6f8509e426d3b7694ca24809cc33963ebc72f40d2514
+local_update.py 0d2c7be6cbb29a5e28e64f444b5bbb2964c86545173f0576ce51dc8765927833
+tests/test_build_support.py 9a5abdf005ca80d7fb59b93ed93d8c1504d8702eb13cccd3de99c5dcbc61a8c2
+tests/test_independent_gameblock.py d16e844dc8a415e518a230395013c673dbe4db13b6a6e8fe097be49e0a5cc6bd
+tests/test_unified_update.py b85cf87b88666058a373ee5e47f7672da8b2404d9417187cd2c06278908669f3
+README.md 66b2bb36b5e578c803b26dcc5b49e5383d8e3c711b0187475ddcb0148194abf5
+
+Publication change: user explicitly approved publishing all generated proxy/account credentials after warning. Removed local_build/output ignores; keep .secrets/runtime caches/validator databases/staging/backups ignored. Staged .gitignore plus 146 generated files (147 files total); no commit or push. README/generated README warn about exposure and local file-provider deployment. Tests 44 passed. Earlier audit changes remain unstaged; do not silently include unrelated work.

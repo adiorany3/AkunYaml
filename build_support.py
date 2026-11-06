@@ -1,8 +1,9 @@
 """Shared download, validation, and staged publication helpers."""
-from pathlib import Path
 import shutil
 import subprocess
 import urllib.request
+import warnings
+from pathlib import Path
 
 PROFILE = "openclash_noproxy_gameblock.yaml"
 
@@ -43,4 +44,7 @@ def publish(stage: Path, target: Path) -> None:
             backup.rename(target)
         raise
     if existed:
-        shutil.rmtree(backup)
+        try:
+            shutil.rmtree(backup)
+        except OSError:
+            warnings.warn(f"Hasil baru sudah diterbitkan; backup belum dapat dibersihkan: {backup}", RuntimeWarning, stacklevel=2)

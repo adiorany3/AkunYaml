@@ -15,8 +15,14 @@ __pycache__/
 .feed_cache/*.tmp
 config.yaml
 
-# Local generated direct profiles (publish only after review).
-local_build/
-output/
+# Generated profiles/providers are intentionally versioned for device updates.
+# Keep validator runtime databases, temporary releases and backups local.
+local_build/**/*.db
+local_build/**/*.metadb
+local_build/**/GeoSite.dat
+local_build/**/GeoIP.dat
+local_build/gameblock.previous/
+local_build/gameblock-*/
+local_build/independent-*/
 output.previous/
 output-stage-*/
