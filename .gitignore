@@ -14,3 +14,9 @@ __pycache__/
 .feed_cache/*.json
 .feed_cache/*.tmp
 config.yaml
+
+# Local generated direct profiles (publish only after review).
+local_build/
+output/
+output.previous/
+output-stage-*/

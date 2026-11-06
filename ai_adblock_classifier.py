@@ -183,15 +183,28 @@ def parse_response(content: str, expected: list[str]) -> list[dict[str, Any]]:
     return results
 
 
-def _read_api_key(path: Path | None) -> str:
-    key = os.environ.get("AI_ADBLOCK_API_KEY", "").strip()
-    if key:
-        return key
+def _read_ai_settings(path: Path | None) -> dict[str, str]:
+    """Accept legacy plain keys or a private JSON object containing key/base URL."""
     if path is None or not path.exists():
-        return ""
+        return {}
     if os.name == "posix" and stat.S_IMODE(path.stat().st_mode) & 0o077:
         raise PermissionError(f"permission file key harus 600: {path}")
-    return path.read_text(encoding="utf-8").strip()
+    text = path.read_text(encoding="utf-8").strip()
+    if not text.startswith("{"):
+        return {"api_key": text}
+    try:
+        settings = json.loads(text)
+    except ValueError:
+        raise ValueError("Format JSON konfigurasi AI lokal tidak valid") from None
+    if not isinstance(settings, dict) or any(
+        not isinstance(value, str) for value in settings.values()
+    ):
+        raise ValueError("Konfigurasi AI lokal harus berisi nilai string")
+    return settings
+
+
+def _read_api_key(path: Path | None) -> str:
+    return os.environ.get("AI_ADBLOCK_API_KEY", "").strip() or _read_ai_settings(path).get("api_key", "").strip()
 
 
 def _classify_batch(base_url: str, model: str, api_key: str, domains: list[str], timeout: float) -> list[dict[str, Any]]:
@@ -259,7 +272,10 @@ def classify_candidates(
     if not candidates:
         return {"status": "skipped", "reason": "tidak ada kandidat non-allowlist", "count": 0}
 
-    api_key = _read_api_key(key_file)
+    settings = _read_ai_settings(key_file)
+    base_url = settings.get("base_url", "").strip() or base_url
+    model = settings.get("model", "").strip() or model
+    api_key = os.environ.get("AI_ADBLOCK_API_KEY", "").strip() or settings.get("api_key", "").strip()
     if not api_key:
         return {"status": "skipped", "reason": "API key lokal tidak tersedia", "count": len(candidates)}
 
@@ -306,8 +322,8 @@ def classify_candidates(
 def main() -> int:
     parser = argparse.ArgumentParser(description="Conservative offline AI adblock classifier")
     parser.add_argument("--workdir", type=Path, default=Path.cwd())
-    parser.add_argument("--base-url", default=os.environ.get("AI_ADBLOCK_BASE_URL", "https://ai.tamandata.com/v1"))
-    parser.add_argument("--model", default=os.environ.get("AI_ADBLOCK_MODEL", "tamandata"))
+    parser.add_argument("--base-url", default=os.environ.get("AI_ADBLOCK_BASE_URL", ""), help="Fallback endpoint jika base_url tidak ada di file key")
+    parser.add_argument("--model", default=os.environ.get("AI_ADBLOCK_MODEL", ""), help="Fallback model jika model tidak ada di file key")
     parser.add_argument("--key-file", type=Path, default=Path(os.environ.get("AI_ADBLOCK_API_KEY_FILE", ".secrets/ai_adblock.key")))
     parser.add_argument("--batch-size", type=int, default=int(os.environ.get("AI_ADBLOCK_BATCH_SIZE", "5")))
     parser.add_argument("--min-confidence", type=float, default=float(os.environ.get("AI_ADBLOCK_MIN_CONFIDENCE", "0.98")))

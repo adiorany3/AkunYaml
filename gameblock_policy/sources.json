@@ -1,0 +1,72 @@
+{
+  "ads_indonesia": {
+    "url": "https://raw.githubusercontent.com/ABPindo/indonesianadblockrules/master/subscriptions/domain.txt",
+    "format": "text",
+    "path": "rule_providers/live/ads_indonesia.mrs"
+  },
+  "ads_domain": {
+    "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs",
+    "format": "mrs",
+    "path": "rule_providers/live/ads_domain.mrs"
+  },
+  "anti-ad": {
+    "url": "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-clash.yaml",
+    "format": "yaml",
+    "path": "rule_providers/live/anti-ad.yaml"
+  },
+  "tracker-domain": {
+    "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tracker.mrs",
+    "format": "mrs",
+    "path": "rule_providers/live/tracker-domain.mrs"
+  },
+  "threat-tif-mini": {
+    "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/tif.mini-onlydomains.txt",
+    "format": "text",
+    "path": "rule_providers/live/threat-tif-mini.mrs"
+  },
+  "threat-malware": {
+    "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/malware.txt",
+    "format": "text",
+    "path": "rule_providers/live/threat-malware.mrs"
+  },
+  "threat-phishing": {
+    "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/phishing.txt",
+    "format": "text",
+    "path": "rule_providers/live/threat-phishing.mrs"
+  },
+  "threat-cryptominers": {
+    "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/cryptominers.txt",
+    "format": "text",
+    "path": "rule_providers/live/threat-cryptominers.mrs"
+  },
+  "threat-fake-scam": {
+    "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/fake-onlydomains.txt",
+    "format": "text",
+    "path": "rule_providers/live/threat-fake-scam.mrs"
+  },
+  "gambling-mini": {
+    "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/gambling.mini-onlydomains.txt",
+    "format": "text",
+    "path": "rule_providers/live/gambling-mini.mrs"
+  },
+  "adult-category": {
+    "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-porn.mrs",
+    "format": "mrs",
+    "path": "rule_providers/live/adult-category.mrs"
+  },
+  "popup-ads": {
+    "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/popupads-onlydomains.txt",
+    "format": "text",
+    "path": "rule_providers/live/popup-ads.mrs"
+  },
+  "hagezi-pro": {
+    "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt",
+    "format": "text",
+    "path": "rule_providers/live/hagezi-pro.mrs"
+  },
+  "games-category": {
+    "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-games.mrs",
+    "format": "mrs",
+    "path": "rule_providers/live/games-category.mrs"
+  }
+}

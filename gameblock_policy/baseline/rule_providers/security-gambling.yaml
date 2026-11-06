@@ -1,0 +1,4 @@
+payload:
+  # Exact known-bad feeds handle reputation. Guard only unambiguous gambling labels.
+  - DOMAIN-REGEX,(?i)(^|\.)[^.]*((casino|casinogame|slot|slots|togel|judi|judol|gacor|poker|jackpot|sbobet)[^.]*)(\.|$),REJECT
+  - DOMAIN-REGEX,(?i)(^|\.)[^.]+\.(bet|casino)(\.|$),REJECT

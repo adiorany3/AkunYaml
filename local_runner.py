@@ -138,8 +138,8 @@ DEFAULT_ENV = {
     "FEED_MAX_DROP_RATIO": "0.65",
     "FEED_MAX_GROWTH_RATIO": "4.0",
     "AI_ADBLOCK_ENABLED": "false",
-    "AI_ADBLOCK_BASE_URL": "http://127.0.0.1:20128/v1",
-    "AI_ADBLOCK_MODEL": "Gabungan",
+    "AI_ADBLOCK_BASE_URL": "",
+    "AI_ADBLOCK_MODEL": "",
     "AI_ADBLOCK_API_KEY_FILE": ".secrets/ai_adblock.key",
     "AI_ADBLOCK_BATCH_SIZE": "5",
     "AI_ADBLOCK_MIN_CONFIDENCE": "0.98",
@@ -2947,8 +2947,8 @@ def main() -> int:
             refresh_streaming_candidates(workdir, log=log)
             ai_result = classify_candidates(
                 workdir,
-                base_url=env.get("AI_ADBLOCK_BASE_URL", "https://ai.tamandata.com/v1"),
-                model=env.get("AI_ADBLOCK_MODEL", "tamandata"),
+                base_url=env.get("AI_ADBLOCK_BASE_URL", ""),
+                model=env.get("AI_ADBLOCK_MODEL", ""),
                 key_file=key_file,
                 batch_size=max(1, min(100, int(env.get("AI_ADBLOCK_BATCH_SIZE", "25")))),
                 min_confidence=max(0.95, min(1.0, float(env.get("AI_ADBLOCK_MIN_CONFIDENCE", "0.98")))),

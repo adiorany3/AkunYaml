@@ -1,47 +1,90 @@
 # AkunYaml
 
-A suite of ad‑blocking audits for YAML based rule sets. It can audit Netflix playback safety, provider blocklists, app‑specific rules, streaming services, popup/game filters, and gambling‑sponsor detection.
+Generator lokal akun, profil OpenClash/Mihomo, Sing-box, adblock, dan gameblock.
+Tidak membutuhkan Hermes. Gunakan **satu perintah** dan ambil hasil di **output/**.
 
-## Features
-- Configurable via `config.yaml` (override defaults for files, Netflix domains, broad‑block rules, and audit scripts).
-- Flexible logging: console, optional file output, and debug mode (`-v/--verbose`).
-- Self‑checks to ensure Netflix domains are never broad‑blocked.
-- Simple CLI entry point (`python -m akunyaml.ads_audit` or `adaudit`).
-- Unit‑tests with pytest and CI via GitHub Actions.
+## Pemakaian
 
-## Usage
+Update akun dan feed melalui internet, lalu bangun semua hasil:
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the audit suite (JSON report)
-python -m akunyaml.ads_audit --report audit.json
-
-# Run with HTML report
-python -m akunyaml.ads_audit --html-report audit.html
+bash /Users/macbookpro/Documents/GitHub/AkunYaml/update_all.sh
 ```
+
+Bangun ulang sumber/cache lokal tanpa refresh:
+
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the audit suite
-python -m akunyaml.ads_audit
-
-# With verbose logging and log file
-python -m akunyaml.ads_audit -v --log-file audit.log
+bash /Users/macbookpro/Documents/GitHub/AkunYaml/update_all.sh --offline
 ```
 
-## Configuration
-Create a `config.yaml` in the repository root to override defaults. See `config.yaml` example for the available keys.
+Prasyarat: Python dan dependensi `requirements.txt` sudah terpasang; validator
+Mihomo/Sing-box lokal tersedia. Skrip memilih `.venv/bin/python`, atau interpreter
+dari `PYTHON`. Tidak ada instalasi pip, Git pull/push, atau scheduler otomatis.
+Runner online dapat mengunduh core dan memakai AI jika diaktifkan.
+Jangan menjalankan beberapa refresh bersamaan.
 
-## Development
-- Run tests: `pytest -q`
-- Lint: `ruff check .`
-- Type‑check: `mypy .`
+## Hasil
 
-## Local workflow script
-A convenience script `run_all.sh` is provided to install dependencies, lint, type‑check, and run tests in one step. Make it executable with `chmod +x run_all.sh` and execute `./run_all.sh`.
+Lokasi utama: `/Users/macbookpro/Documents/GitHub/AkunYaml/output/`
 
-## License
-MIT
+| Folder | Isi |
+|---|---|
+| `akun/` | Daftar akun hasil generator |
+| `openclash/proxy/` | Auto, Android, lite, fresh pool |
+| `openclash/direct/` | Adblock tanpa proxy |
+| `openclash/gameblock/` | Adblock + blokir game tanpa proxy |
+| `sing-box/` | Android berakun dan direct/adblock |
+| `mihomo-mac/proxy/`, `direct/`, `gameblock/` | Profil Mihomo untuk Mac |
+
+Salin **folder profil beserta `rule_providers/`**, bukan YAML saja. OpenClash
+ditujukan untuk OpenWrt; Mac memakai Mihomo dengan system proxy HTTP/SOCKS
+`127.0.0.1:7890`, bukan TUN otomatis. Aktifkan satu profil Mac saja.
+**Sing-box gameblock belum tersedia.**
+
+`output/manifest.json` mencatat mode, waktu sumber, dan hash. Waktu packaging
+bukan bukti akun aktif. Jika satu tahap gagal/parsial, hasil terpadu lama tidak
+diganti; file internal di root dapat sudah berubah. Mode offline hanya memakai
+snapshot, dan validator masih dapat membutuhkan database jika belum tersedia.
+
+## Konfigurasi yang perlu dikenali
+
+- `local_config.json`: pengaturan runner akun dan AI.
+- `akun_manual.txt`: input akun manual, bukan output.
+- `.secrets/ai_adblock.key`: JSON privat dengan `api_key`, `base_url`, dan `model`;
+  permission `600`. Endpoint/model privat diprioritaskan. Environment
+  `AI_ADBLOCK_API_KEY` dapat mengganti key. Format key polos lama masih didukung.
+- `gameblock_policy/sources.json`: katalog 14 feed independen.
+- `gameblock_policy/baseline/`: aturan khusus dan pengecualian lokal.
+
+Feed gameblock/adblock diperbarui langsung dari HaGeZi, ABPindo, anti-AD,
+Chocolate4U, dan MetaCubeX, bukan dari hasil jadi HerYaml. Baseline awal berasal
+dari [HerYaml](https://github.com/adiorany3/HerYaml); kebijakan khusus tetap
+dipelihara lokal. Gameblock memblokir game itu sendiri, termasuk blokir luas
+`msn.com` dan `yandex.com` dari baseline. Tidak menjamin semua iklan/game terblokir.
+
+## Struktur internal
+
+`update_all.sh` → `unified_update.py` menjalankan:
+1. `local_runner.py`: refresh profil berakun (dilewati saat offline).
+2. `local_update.py`: bangun profil direct.
+3. `independent_gameblock.py`: bangun gameblock dari kebijakan dan feed/cache.
+4. Packaging serta validasi varian Mac ke `output/`.
+
+`build_support.py` menyediakan unduhan, validasi, dan publikasi bertahap.
+`local_build/`, `.runtime_cache/independent_gameblock/`, serta profil di root
+masih diperlukan sebagai hasil antara/cache. Jangan hapus sumber aturan,
+`.local_bin/`, atau cache bila membutuhkan build offline. Dokumen versi lama
+merupakan referensi historis, bukan panduan menjalankan update saat ini.
+
+Output mengandung akun: diabaikan Git, file `600`, direktori `700`.
+Jangan unggah `.secrets/` atau `output/` ke publik.
+
+## Pengujian
+
+```bash
+cd /Users/macbookpro/Documents/GitHub/AkunYaml
+.venv/bin/python -m pytest tests -q
+```
+
+Validasi sintaks tidak membuktikan semua akun aktif atau semua aplikasi bebas
+false positive. Periksa profil pada perangkat target sebelum penggunaan rutin.
