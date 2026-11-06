@@ -8,6 +8,20 @@ from pathlib import Path
 PROFILE = "openclash_noproxy_gameblock.yaml"
 
 
+def seed_geodata(directory: Path, root: Path) -> None:
+    """Reuse installed databases in temporary core homes; never alter sources."""
+    locations = (root, root / ".runtime_cache/independent_gameblock", root / "local_build")
+    for name in ("GeoSite.dat", "GeoIP.dat", "geoip.metadb", "Country.mmdb"):
+        target = directory / name
+        if target.exists():
+            continue
+        for location in locations:
+            source = location / name
+            if source.is_file() and source.stat().st_size:
+                shutil.copy2(source, target)
+                break
+
+
 def fetch(url: str) -> bytes:
     if not url.startswith("https://raw.githubusercontent.com/"):
         raise ValueError("Provider harus berasal dari raw.githubusercontent.com HTTPS")
@@ -21,6 +35,7 @@ def fetch(url: str) -> bytes:
 def validate(directory: Path, core: Path) -> None:
     if not core.is_file():
         raise FileNotFoundError("Validator Mihomo lokal tidak tersedia")
+    seed_geodata(directory, core.resolve().parent.parent)
     result = subprocess.run(
         [str(core), "-t", "-d", str(directory), "-f", str(directory / PROFILE)],
         capture_output=True, text=True, timeout=120, check=False,

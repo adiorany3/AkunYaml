@@ -2,7 +2,31 @@ from pathlib import Path
 
 import pytest
 
-from build_support import fetch, publish, validate
+from build_support import fetch, publish, seed_geodata, validate
+
+
+def test_seed_geodata_reuses_local_without_overwriting(tmp_path):
+    root = tmp_path / "project"
+    stage = tmp_path / "stage"
+    root.mkdir()
+    stage.mkdir()
+    (root / "GeoSite.dat").write_bytes(b"local geosite")
+    (root / "geoip.metadb").write_bytes(b"local geoip")
+    (stage / "geoip.metadb").write_bytes(b"existing")
+    seed_geodata(stage, root)
+    assert (stage / "GeoSite.dat").read_bytes() == b"local geosite"
+    assert (stage / "geoip.metadb").read_bytes() == b"existing"
+    assert (root / "GeoSite.dat").read_bytes() == b"local geosite"
+
+
+def test_seed_geodata_falls_back_to_cache(tmp_path):
+    cache = tmp_path / ".runtime_cache/independent_gameblock"
+    cache.mkdir(parents=True)
+    (cache / "GeoSite.dat").write_bytes(b"cached")
+    stage = tmp_path / "stage"
+    stage.mkdir()
+    seed_geodata(stage, tmp_path)
+    assert (stage / "GeoSite.dat").read_bytes() == b"cached"
 
 
 def test_publish_replaces_previous(tmp_path):

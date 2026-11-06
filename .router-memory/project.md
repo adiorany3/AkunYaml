@@ -22,3 +22,10 @@ HerYaml structure clarification at e1c6d236b1be60ad5ef9604b66cd78508e55ed51: fet
 openwrt_export.py ff0da002933e398cab3aea81be489989dd75d8fce80602f81e5b6993e1621fa2
 unified_update.py d0b319241149f8e067809d3a96f0fea3f7970155c4314e3339a654861439f7bf
 tests/test_openwrt_export.py 181bbc09c00ac4c439feba757fdc5ab218e3d6b6b6d40c8e7988a9c9042f4c4e
+
+Router log diagnosis at local commit 4050572fbf0250026e6e1f747ebff861799969a0: real logs core test succeeds then OpenClash Has No Proxy Field, fallback curl timeout. Fetched public main files: local_build and output/gameblock zero accounts; subscription zero accounts DIRECT-ONLY. Local output gameblock/subscription have 10 accounts MATCH,MANUAL; local main commit includes them but origin tracking remains e1c6d23. Raw pinned local SHA 404. Attempted git push origin main with noninteractive auth; FAILED github.com port443 connectivity (~5s), no publication. No further code change warranted for old remote artifact. Tell user push once GitHub reachable or upload local subscription YAML directly; HTTP provider files already require repository availability. Do not claim remote updated.
+
+Geodata validation fix at commit 4050572fbf0250026e6e1f747ebff861799969a0: user failure temporary independent stage lacks GeoSite.dat; automatic GitHub release download resolves 198.18.2.134 refused. Installed root/cached geodata exists. Added seed_geodata copies nonempty GeoSite.dat/GeoIP.dat/geoip.metadb/Country.mmdb from root then independent cache then local_build into validator homes, preserving existing destination. Called by gameblock validate and all packaging Mihomo validations. No DNS/firewall changes, no fallback bypassing validation. Actual update_all.sh --offline now succeeded, 77 tests passed, targeted Ruff/diff check clean. Database freshness/integrity depends on installed copies; absent/corrupt data still causes core failure. Not pushed.
+build_support.py 8db8a408c4a4a507f443d0c66a89612eb87888ccbecd5c35f46ce4820d6b01af
+unified_update.py a4bb708c3a9dd13f8dd9fd9d25928ea9b91bd586228652428facfd66a0b6d6d6
+tests/test_build_support.py 6ba9b485eed3766560aba0b6ca4125f5ec765792265836a5918f53ac7b34c9e8

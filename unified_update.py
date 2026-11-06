@@ -15,7 +15,7 @@ import yaml
 
 from adaptive_guard import apply as apply_adaptive_guard
 from adaptive_guard import refresh as refresh_adaptive_guard
-from build_support import publish
+from build_support import publish, seed_geodata
 from openwrt_export import export as export_openwrt
 
 
@@ -54,6 +54,7 @@ def validate_bundle(stage, root):
     profiles = list((stage / "openclash").glob("*/*.yaml"))
     profiles += list((stage / "mihomo-mac").glob("*/config.yaml"))
     for config in profiles:
+        seed_geodata(config.parent, root)
         command = [str(root / ".local_bin/mihomo"), "-t", "-d", str(config.parent), "-f", str(config)]
         result = subprocess.run(command, capture_output=True, text=True, timeout=120, check=False)
         if result.returncode:
