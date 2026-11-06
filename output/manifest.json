@@ -1,7 +1,7 @@
 {
-  "mode": "security-refresh-retained-accounts",
-  "packaged_at": "2026-11-06T16:15:36.103993+00:00",
-  "account_refresh": "retained-old",
+  "mode": "offline-snapshot",
+  "packaged_at": "2026-11-06T16:21:14.417631+00:00",
+  "account_refresh": "not-requested",
   "adaptive_guard": "fresh",
   "warning": "Offline hanya snapshot; waktu packaging bukan bukti akun aktif. Sing-box gameblock belum tersedia.",
   "sources": [
@@ -27,12 +27,12 @@
     },
     {
       "path": "local_build/openclash_noproxy.yaml",
-      "modified_at": "2026-11-06T16:15:22.770300+00:00",
+      "modified_at": "2026-11-06T16:21:05.215303+00:00",
       "sha256": "b512b140236475287b7870129a3fa956aaf8843c3ac28dc16a0cfca705934fc8"
     },
     {
       "path": "local_build/gameblock/openclash_noproxy_gameblock.yaml",
-      "modified_at": "2026-11-06T16:15:27.835277+00:00",
+      "modified_at": "2026-11-06T16:21:05.744351+00:00",
       "sha256": "d8c816fa0c001877b4d872ad98f81368774c209e7e53dd54da888c507b4ea7b7"
     },
     {
@@ -42,7 +42,7 @@
     },
     {
       "path": "local_build/singbox_direct_adblock.json",
-      "modified_at": "2026-11-06T16:15:22.775181+00:00",
+      "modified_at": "2026-11-06T16:21:05.221375+00:00",
       "sha256": "f0291309ffcc83355c154aa6f8d4247ad90d8e6b0efbab321e461b1a3f56abb1"
     },
     {
