@@ -1,7 +1,7 @@
 {
   "generator": "independent-local",
-  "built_at": "2026-11-06T16:21:05.744722+00:00",
-  "mode": "offline",
+  "built_at": "2026-11-07T01:02:12.305147+00:00",
+  "mode": "refresh",
   "rules": 11986,
   "providers": 20,
   "assets": [
@@ -11,7 +11,7 @@
       "format": "text",
       "path": "rule_providers/live/ads_indonesia.mrs",
       "entries": 125,
-      "fetched_at": "2026-11-06T16:15:23.281160+00:00",
+      "fetched_at": "2026-11-07T01:02:08.518446+00:00",
       "sha256": "28015ff170efdd5e3862839e9727220e4a1fbef5ab6368ca60893d02c5df990d"
     },
     {
@@ -20,7 +20,7 @@
       "format": "mrs",
       "path": "rule_providers/live/ads_domain.mrs",
       "entries": null,
-      "fetched_at": "2026-11-06T16:15:23.474198+00:00",
+      "fetched_at": "2026-11-07T01:02:08.504654+00:00",
       "sha256": "24376f8f11e324fe07df07d3c5a263ff13fb7b379743a26390d9db35545dccb9"
     },
     {
@@ -29,7 +29,7 @@
       "format": "yaml",
       "path": "rule_providers/live/anti-ad.yaml",
       "entries": null,
-      "fetched_at": "2026-11-06T16:15:25.577414+00:00",
+      "fetched_at": "2026-11-07T01:02:10.656343+00:00",
       "sha256": "df44d07c41223ad454b13a700e2cd65dbf24329c5cf6b399c5aadd707d81d098"
     },
     {
@@ -38,7 +38,7 @@
       "format": "mrs",
       "path": "rule_providers/live/tracker-domain.mrs",
       "entries": null,
-      "fetched_at": "2026-11-06T16:15:23.493340+00:00",
+      "fetched_at": "2026-11-07T01:02:08.455079+00:00",
       "sha256": "e904e567100e133074ac14936e2ff8f9bb4b6f1fc6f9be3d38c0f03c3c8215c2"
     },
     {
@@ -46,9 +46,9 @@
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/tif.mini-onlydomains.txt",
       "format": "text",
       "path": "rule_providers/live/threat-tif-mini.mrs",
-      "entries": 194772,
-      "fetched_at": "2026-11-06T16:15:26.354541+00:00",
-      "sha256": "c83c4919d27c05a351a5dd32a7917682f0a3f342a577ca321c578e3a8d5e1e2c"
+      "entries": 195355,
+      "fetched_at": "2026-11-07T01:02:10.742839+00:00",
+      "sha256": "f77188f168dc8fe4ad834ce8cdafe47a61f63323139ced5cc172f0b05d7e786c"
     },
     {
       "name": "threat-malware",
@@ -56,7 +56,7 @@
       "format": "text",
       "path": "rule_providers/live/threat-malware.mrs",
       "entries": 535,
-      "fetched_at": "2026-11-06T16:15:24.043743+00:00",
+      "fetched_at": "2026-11-07T01:02:09.022681+00:00",
       "sha256": "5e99803d494d88988280ef756963bc9f27f7a94b9fd261977911feeae42df594"
     },
     {
@@ -65,7 +65,7 @@
       "format": "text",
       "path": "rule_providers/live/threat-phishing.mrs",
       "entries": 22309,
-      "fetched_at": "2026-11-06T16:15:24.326139+00:00",
+      "fetched_at": "2026-11-07T01:02:09.339197+00:00",
       "sha256": "42e32fe2fbb4ab5e291e45e328e26464e25a64154214c0d3651729a132e82bfb"
     },
     {
@@ -74,7 +74,7 @@
       "format": "text",
       "path": "rule_providers/live/threat-cryptominers.mrs",
       "entries": 296,
-      "fetched_at": "2026-11-06T16:15:24.669070+00:00",
+      "fetched_at": "2026-11-07T01:02:09.639080+00:00",
       "sha256": "6522bdba2094517b26a5ffa3d9e02f88dfc32d2edad0d10e06d6b79e2fca3e12"
     },
     {
@@ -82,18 +82,18 @@
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/fake-onlydomains.txt",
       "format": "text",
       "path": "rule_providers/live/threat-fake-scam.mrs",
-      "entries": 18893,
-      "fetched_at": "2026-11-06T16:15:24.910932+00:00",
-      "sha256": "027691cbfc4978b6bd04079e05f9ca2c30eca6c5fc03699298131370b72d5ad8"
+      "entries": 18969,
+      "fetched_at": "2026-11-07T01:02:10.102602+00:00",
+      "sha256": "c6110ee197ebfa957a88ca000388125395276569dfc0d08430caf0357dcd3030"
     },
     {
       "name": "gambling-mini",
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/gambling.mini-onlydomains.txt",
       "format": "text",
       "path": "rule_providers/live/gambling-mini.mrs",
-      "entries": 85143,
-      "fetched_at": "2026-11-06T16:15:25.782718+00:00",
-      "sha256": "67132a78bd4a8ba61691773aaecd9298720b5714d4f3e82d9749c013a322a38e"
+      "entries": 93795,
+      "fetched_at": "2026-11-07T01:02:10.963377+00:00",
+      "sha256": "d34b1fc5d75be64cfb85e25129a0683989dab18da97b7621a236d225a5b46e5d"
     },
     {
       "name": "adult-category",
@@ -101,7 +101,7 @@
       "format": "mrs",
       "path": "rule_providers/live/adult-category.mrs",
       "entries": null,
-      "fetched_at": "2026-11-06T16:15:25.443882+00:00",
+      "fetched_at": "2026-11-07T01:02:10.743348+00:00",
       "sha256": "75d39549fcbfdccd2c35400421f30ff56c1ef3aa585624d4f620f597962874eb"
     },
     {
@@ -109,18 +109,18 @@
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/popupads-onlydomains.txt",
       "format": "text",
       "path": "rule_providers/live/popup-ads.mrs",
-      "entries": 77329,
-      "fetched_at": "2026-11-06T16:15:26.303223+00:00",
-      "sha256": "b4ced59abc71d5c070d05ab98cabdb2bffcb1778df44bb18f83392024fae7eb5"
+      "entries": 76592,
+      "fetched_at": "2026-11-07T01:02:11.906667+00:00",
+      "sha256": "2d97bafe0948e4b8f25cd297a763b7788c28036a3a6cde67747a592eea85a326"
     },
     {
       "name": "hagezi-pro",
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt",
       "format": "text",
       "path": "rule_providers/live/hagezi-pro.mrs",
-      "entries": 222630,
-      "fetched_at": "2026-11-06T16:15:27.674181+00:00",
-      "sha256": "7f8c0b26ba059b8095fac9be920c18d3fcf798825e2ef456a5c0fed23a06adbd"
+      "entries": 219320,
+      "fetched_at": "2026-11-07T01:02:12.138543+00:00",
+      "sha256": "df1a2163d51df83c9fc1c9495523ae83ae3b28a2cd78c57196c9ff10bf5f412c"
     },
     {
       "name": "games-category",
@@ -128,7 +128,7 @@
       "format": "mrs",
       "path": "rule_providers/live/games-category.mrs",
       "entries": null,
-      "fetched_at": "2026-11-06T16:15:26.753927+00:00",
+      "fetched_at": "2026-11-07T01:02:11.091406+00:00",
       "sha256": "3ee319dbe8a1520436354b8954e2981aedb9e56389776a5691d97465baede36f"
     }
   ],
