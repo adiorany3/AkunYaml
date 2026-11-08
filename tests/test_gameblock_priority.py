@@ -39,3 +39,12 @@ def test_existing_online_game_portals_remain_blocked(domain):
     root = Path(__file__).resolve().parents[1]
     config = yaml.safe_load((root / "gameblock_policy/baseline/openclash_noproxy_gameblock.yaml").read_text())
     assert f"DOMAIN-SUFFIX,{domain},REJECT" in config["rules"]
+
+
+def test_game_provider_precedes_every_direct_exception():
+    root = Path(__file__).resolve().parents[1]
+    config = yaml.safe_load((root / "gameblock_policy/baseline/openclash_noproxy_gameblock.yaml").read_text())
+    rules = config["rules"]
+    game_rule = "RULE-SET,game-block-online,REJECT"
+    assert rules.count(game_rule) == 1
+    assert rules.index(game_rule) < min(i for i, rule in enumerate(rules) if rule.endswith(",DIRECT"))

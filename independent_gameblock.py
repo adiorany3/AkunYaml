@@ -115,7 +115,9 @@ def update(root, refresh=False):
             for name, spec in manifest.items():
                 config["rule-providers"][name] = {"type": "file", "behavior": "domain", "format": "mrs" if spec["format"] == "text" else spec["format"], "path": "./" + spec["path"]}
                 rule = f"RULE-SET,{name},REJECT"
-                if rule not in config["rules"]:
+                if name == "games-category":
+                    config["rules"] = [rule, *[item for item in config["rules"] if item != rule]]
+                elif rule not in config["rules"]:
                     config["rules"].insert(-1, rule)
             (stage / PROFILE).write_text(yaml.safe_dump(config, sort_keys=False, allow_unicode=True))
             report = {"generator": "independent-local", "built_at": datetime.now(UTC).isoformat(),

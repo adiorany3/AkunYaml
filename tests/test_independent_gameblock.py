@@ -27,7 +27,7 @@ def test_independent_refresh_offline_and_failure(tmp_path, monkeypatch):
     monkeypatch.setattr(builder, "validate", lambda *args: None)
     output = builder.update(tmp_path, True)
     config = yaml.safe_load(output.read_text())
-    assert config["rules"] == ["DOMAIN,pay.example,DIRECT", "RULE-SET,games-category,REJECT", "MATCH,DIRECT"]
+    assert config["rules"] == ["RULE-SET,games-category,REJECT", "DOMAIN,pay.example,DIRECT", "MATCH,DIRECT"]
     assert len(calls) == 1
     builder.update(tmp_path, False)
     assert len(calls) == 1

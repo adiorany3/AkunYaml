@@ -1,6 +1,6 @@
 {
   "generator": "independent-local",
-  "built_at": "2026-11-07T01:02:12.305147+00:00",
+  "built_at": "2026-11-08T16:21:15.739039+00:00",
   "mode": "refresh",
   "rules": 11986,
   "providers": 20,
@@ -11,7 +11,7 @@
       "format": "text",
       "path": "rule_providers/live/ads_indonesia.mrs",
       "entries": 125,
-      "fetched_at": "2026-11-07T01:02:08.518446+00:00",
+      "fetched_at": "2026-11-08T16:21:08.403791+00:00",
       "sha256": "28015ff170efdd5e3862839e9727220e4a1fbef5ab6368ca60893d02c5df990d"
     },
     {
@@ -20,8 +20,8 @@
       "format": "mrs",
       "path": "rule_providers/live/ads_domain.mrs",
       "entries": null,
-      "fetched_at": "2026-11-07T01:02:08.504654+00:00",
-      "sha256": "24376f8f11e324fe07df07d3c5a263ff13fb7b379743a26390d9db35545dccb9"
+      "fetched_at": "2026-11-08T16:21:08.365102+00:00",
+      "sha256": "38424a7d19026feddb3277b6a6dce557f3add4648333516b3a76ba8674c81598"
     },
     {
       "name": "anti-ad",
@@ -29,8 +29,8 @@
       "format": "yaml",
       "path": "rule_providers/live/anti-ad.yaml",
       "entries": null,
-      "fetched_at": "2026-11-07T01:02:10.656343+00:00",
-      "sha256": "df44d07c41223ad454b13a700e2cd65dbf24329c5cf6b399c5aadd707d81d098"
+      "fetched_at": "2026-11-08T16:21:10.772633+00:00",
+      "sha256": "fbba61f1772422c1e83a8306e9cfafd10b8028e39dc84cfa18f173a7ced06942"
     },
     {
       "name": "tracker-domain",
@@ -38,7 +38,7 @@
       "format": "mrs",
       "path": "rule_providers/live/tracker-domain.mrs",
       "entries": null,
-      "fetched_at": "2026-11-07T01:02:08.455079+00:00",
+      "fetched_at": "2026-11-08T16:21:08.595048+00:00",
       "sha256": "e904e567100e133074ac14936e2ff8f9bb4b6f1fc6f9be3d38c0f03c3c8215c2"
     },
     {
@@ -46,27 +46,27 @@
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/tif.mini-onlydomains.txt",
       "format": "text",
       "path": "rule_providers/live/threat-tif-mini.mrs",
-      "entries": 195355,
-      "fetched_at": "2026-11-07T01:02:10.742839+00:00",
-      "sha256": "f77188f168dc8fe4ad834ce8cdafe47a61f63323139ced5cc172f0b05d7e786c"
+      "entries": 188782,
+      "fetched_at": "2026-11-08T16:21:15.580680+00:00",
+      "sha256": "8ece3a011ba2a3023d0d2b7ab2ff2417a7b17cd5c4879e830fa8291f5bd0e8d9"
     },
     {
       "name": "threat-malware",
       "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/malware.txt",
       "format": "text",
       "path": "rule_providers/live/threat-malware.mrs",
-      "entries": 535,
-      "fetched_at": "2026-11-07T01:02:09.022681+00:00",
-      "sha256": "5e99803d494d88988280ef756963bc9f27f7a94b9fd261977911feeae42df594"
+      "entries": 557,
+      "fetched_at": "2026-11-08T16:21:08.560834+00:00",
+      "sha256": "bb893fd36f8f356c28fb67abc24ee60225deafc577f4cc99f41f222c4f77c188"
     },
     {
       "name": "threat-phishing",
       "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/phishing.txt",
       "format": "text",
       "path": "rule_providers/live/threat-phishing.mrs",
-      "entries": 22309,
-      "fetched_at": "2026-11-07T01:02:09.339197+00:00",
-      "sha256": "42e32fe2fbb4ab5e291e45e328e26464e25a64154214c0d3651729a132e82bfb"
+      "entries": 20577,
+      "fetched_at": "2026-11-08T16:21:09.375020+00:00",
+      "sha256": "ae2d0c77f6d8d61d73fadf4caecdc945c7966666eee60e014038241bf91929a8"
     },
     {
       "name": "threat-cryptominers",
@@ -74,7 +74,7 @@
       "format": "text",
       "path": "rule_providers/live/threat-cryptominers.mrs",
       "entries": 296,
-      "fetched_at": "2026-11-07T01:02:09.639080+00:00",
+      "fetched_at": "2026-11-08T16:21:08.989052+00:00",
       "sha256": "6522bdba2094517b26a5ffa3d9e02f88dfc32d2edad0d10e06d6b79e2fca3e12"
     },
     {
@@ -82,18 +82,18 @@
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/fake-onlydomains.txt",
       "format": "text",
       "path": "rule_providers/live/threat-fake-scam.mrs",
-      "entries": 18969,
-      "fetched_at": "2026-11-07T01:02:10.102602+00:00",
-      "sha256": "c6110ee197ebfa957a88ca000388125395276569dfc0d08430caf0357dcd3030"
+      "entries": 18763,
+      "fetched_at": "2026-11-08T16:21:09.498587+00:00",
+      "sha256": "2dcfb1cf00c7bbf920f68584ac720066eecb6724250f0a7fafa18ee48938dbad"
     },
     {
       "name": "gambling-mini",
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/gambling.mini-onlydomains.txt",
       "format": "text",
       "path": "rule_providers/live/gambling-mini.mrs",
-      "entries": 93795,
-      "fetched_at": "2026-11-07T01:02:10.963377+00:00",
-      "sha256": "d34b1fc5d75be64cfb85e25129a0683989dab18da97b7621a236d225a5b46e5d"
+      "entries": 71688,
+      "fetched_at": "2026-11-08T16:21:10.552087+00:00",
+      "sha256": "0895336605893cda15810d86c268747dd68ed878b5a5869b80c69712337a3060"
     },
     {
       "name": "adult-category",
@@ -101,7 +101,7 @@
       "format": "mrs",
       "path": "rule_providers/live/adult-category.mrs",
       "entries": null,
-      "fetched_at": "2026-11-07T01:02:10.743348+00:00",
+      "fetched_at": "2026-11-08T16:21:10.079281+00:00",
       "sha256": "75d39549fcbfdccd2c35400421f30ff56c1ef3aa585624d4f620f597962874eb"
     },
     {
@@ -109,18 +109,18 @@
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/popupads-onlydomains.txt",
       "format": "text",
       "path": "rule_providers/live/popup-ads.mrs",
-      "entries": 76592,
-      "fetched_at": "2026-11-07T01:02:11.906667+00:00",
-      "sha256": "2d97bafe0948e4b8f25cd297a763b7788c28036a3a6cde67747a592eea85a326"
+      "entries": 79817,
+      "fetched_at": "2026-11-08T16:21:10.997856+00:00",
+      "sha256": "6ee3fdb3adbe1841d81e44ed2f5ab527b6cb0a44fcba1b67c4a977a54734432f"
     },
     {
       "name": "hagezi-pro",
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt",
       "format": "text",
       "path": "rule_providers/live/hagezi-pro.mrs",
-      "entries": 219320,
-      "fetched_at": "2026-11-07T01:02:12.138543+00:00",
-      "sha256": "df1a2163d51df83c9fc1c9495523ae83ae3b28a2cd78c57196c9ff10bf5f412c"
+      "entries": 225344,
+      "fetched_at": "2026-11-08T16:21:12.288814+00:00",
+      "sha256": "53c3b088da7a48a0fe6eede4120ad9c912657d516ec1b0240be6340a8fa5643d"
     },
     {
       "name": "games-category",
@@ -128,8 +128,8 @@
       "format": "mrs",
       "path": "rule_providers/live/games-category.mrs",
       "entries": null,
-      "fetched_at": "2026-11-07T01:02:11.091406+00:00",
-      "sha256": "3ee319dbe8a1520436354b8954e2981aedb9e56389776a5691d97465baede36f"
+      "fetched_at": "2026-11-08T16:21:11.653701+00:00",
+      "sha256": "9f4db5b5b003d3426b35b2c1e618869f9d6642c7bdf7d8f30ab2ff96c4defa99"
     }
   ],
   "manual_game_domains": [
@@ -137,6 +137,6 @@
     "easy-games.io",
     "coolgamesfree.org"
   ],
-  "policy_sha256": "3131cead88d2423a120cc1a94cfca829461fbe9a0b0cf15138a7bbba25fea2af",
+  "policy_sha256": "7ceacc823979adc154f25692c82aca11628c0bec24538d3f4d44ac0d1b76e401",
   "note": "Baseline khusus lokal + feed independen; tidak ada unduhan HerYaml, API AI, atau proxy."
 }

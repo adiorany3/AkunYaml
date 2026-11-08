@@ -376,6 +376,7 @@ rules:
 - DOMAIN-SUFFIX,games.co.id,REJECT
 - DOMAIN-SUFFIX,easy-games.io,REJECT
 - DOMAIN-SUFFIX,coolgamesfree.org,REJECT
+- RULE-SET,game-block-online,REJECT
 - DOMAIN-SUFFIX,reddit.com,DIRECT
 - DOMAIN-SUFFIX,redditmedia.com,DIRECT
 - DOMAIN-SUFFIX,redditstatic.com,DIRECT
@@ -12344,7 +12345,6 @@ rules:
 - DOMAIN-SUFFIX,zyngapoker.com,REJECT
 - DOMAIN-SUFFIX,zyraffa.pl,REJECT
 - DOMAIN-SUFFIX,zzstudios.com,REJECT
-- RULE-SET,game-block-online,REJECT
 - RULE-SET,hagezi-pro,REJECT
 - DOMAIN-SUFFIX,msn.com,REJECT
 - DOMAIN-SUFFIX,yandex.com,REJECT

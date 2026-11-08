@@ -373,9 +373,11 @@ dns:
   use-hosts: true
   use-system-hosts: false
 rules:
+- RULE-SET,games-category,REJECT
 - DOMAIN-SUFFIX,games.co.id,REJECT
 - DOMAIN-SUFFIX,easy-games.io,REJECT
 - DOMAIN-SUFFIX,coolgamesfree.org,REJECT
+- RULE-SET,game-block-online,REJECT
 - DOMAIN-SUFFIX,reddit.com,DIRECT
 - DOMAIN-SUFFIX,redditmedia.com,DIRECT
 - DOMAIN-SUFFIX,redditstatic.com,DIRECT
@@ -12344,7 +12346,6 @@ rules:
 - DOMAIN-SUFFIX,zyngapoker.com,REJECT
 - DOMAIN-SUFFIX,zyraffa.pl,REJECT
 - DOMAIN-SUFFIX,zzstudios.com,REJECT
-- RULE-SET,game-block-online,REJECT
 - RULE-SET,hagezi-pro,REJECT
 - DOMAIN-SUFFIX,msn.com,REJECT
 - DOMAIN-SUFFIX,yandex.com,REJECT
@@ -12357,7 +12358,6 @@ rules:
 - DOMAIN-SUFFIX,idmapper.microsoftcasualgames.com,REJECT
 - DOMAIN-SUFFIX,msnfun.com,REJECT
 - DOMAIN-KEYWORD,msnfun,REJECT
-- RULE-SET,games-category,REJECT
 - MATCH,DIRECT
 rule-providers:
   threat-malware:

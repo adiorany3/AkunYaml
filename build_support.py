@@ -1,7 +1,11 @@
 """Shared download, validation, and staged publication helpers."""
 import shutil
+import ssl
 import subprocess
+import time
+import urllib.error
 import urllib.request
+from http.client import IncompleteRead
 import warnings
 from pathlib import Path
 
@@ -25,11 +29,22 @@ def seed_geodata(directory: Path, root: Path) -> None:
 def fetch(url: str) -> bytes:
     if not url.startswith("https://raw.githubusercontent.com/"):
         raise ValueError("Provider harus berasal dari raw.githubusercontent.com HTTPS")
-    with urllib.request.urlopen(url, timeout=90) as response:
-        data = response.read(40 * 1024 * 1024 + 1)
-    if not data or len(data) > 40 * 1024 * 1024:
-        raise ValueError("Provider kosong atau melebihi batas 40 MiB")
-    return data
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(url, timeout=90) as response:
+                data = response.read(40 * 1024 * 1024 + 1)
+            if not data or len(data) > 40 * 1024 * 1024:
+                raise ValueError("Provider kosong atau melebihi batas 40 MiB")
+            return data
+        except (OSError, IncompleteRead) as exc:
+            reason = exc.reason if isinstance(exc, urllib.error.URLError) else exc
+            permanent = isinstance(reason, ssl.SSLCertVerificationError) or (
+                isinstance(exc, urllib.error.HTTPError)
+                and exc.code not in {408, 429, 500, 502, 503, 504}
+            )
+            if permanent or attempt == 2:
+                raise OSError(f"Unduhan provider gagal ({url}): {exc}") from exc
+            time.sleep(attempt + 1)
 
 
 def validate(directory: Path, core: Path) -> None:
