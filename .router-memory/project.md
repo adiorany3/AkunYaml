@@ -9,3 +9,5 @@ Latest run: 10 nodes tested, 2 public nodes passed, both manual nodes failed. Ou
 Output output/mihomo-mac/gameblock/openclash_noproxy_gameblock.yaml; 12562 rules, inline providers, localhost, TUN off/System Proxy. Exact Mihomo validation succeeded before atomic publish. Self-check passed; priority pytest 14 passed; diff --check passed. Existing Hako tunnel issue remains unresolved.
 
 SHA256 builder 93929762b78a5eddebaf001c20b68f5fd5f81960f9781f62ca30515176ab1a38; test 9632a8726c5131df8a068fa23911976ceaf6b518fd1812814d8536a98b882f1f; output c5772464b3ed1be646aea6dcc8a3fdc5151cb001f443500119c65696d3d6927f.
+
+Restoration at HEAD a9c1a0253d0f82e267e37cecdcdd6cbf72d0c2a0: custom Mac filename absent after unified output replacement. Rebuilt with --gameblock --include-live-nodes; two public nodes HTTPS 204, manuals failed. Parser and self-check passed. Absolute target existence and nonzero size confirmed (~19 MiB); SHA256 c5772464b3ed1be646aea6dcc8a3fdc5151cb001f443500119c65696d3d6927f. Unified update integration still pending: rerun builder after refresh to restore filename.
