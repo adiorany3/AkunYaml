@@ -17,6 +17,7 @@ from adaptive_guard import apply as apply_adaptive_guard
 from adaptive_guard import refresh as refresh_adaptive_guard
 from build_support import publish, seed_geodata
 from openwrt_export import export as export_openwrt
+from local_update import hako_singbox
 
 
 def mac_profile(source):
@@ -93,6 +94,13 @@ def collect(root, mode):
                 json.loads(source.read_text())
             shutil.copy2(source, destination)
             sources.append(source)
+        for source_name, target_name in (
+            ("singbox_android.json", "singbox_hako_proxy.json"),
+            ("singbox_direct_adblock.json", "singbox_hako_direct_adblock.json"),
+        ):
+            folder = stage / "sing-box"
+            config = hako_singbox(json.loads((folder / source_name).read_text()))
+            (folder / target_name).write_text(json.dumps(config, indent=2, ensure_ascii=False) + "\n")
         adaptive_status = apply_adaptive_guard(stage, root)
         export_openwrt(stage)
         profiles = validate_bundle(stage, root)

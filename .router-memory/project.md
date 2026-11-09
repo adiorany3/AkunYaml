@@ -1,11 +1,11 @@
 # Project context
 
-AkunYaml at /Users/macbookpro/Documents/GitHub/AkunYaml; main; HEAD 0141b846f0c8586731238b1eb7db6f74856bc104. Numerous pre-existing feed/cache/generated and gameblock changes: preserve. Current source inspected; old note stale.
+AkunYaml; root /Users/macbookpro/Documents/GitHub/AkunYaml; main; HEAD 7291ac0302f8963f8e566865eee4c25e13ba3c1e. Initial working tree clean.
 
-SSL EOF fix: build_support.fetch now retries transport/read errors and transient HTTP statuses up to three attempts, with 1/2-second backoff. Permanent HTTP and certificate verification failures fail immediately. TLS verification, URL allowlist, size bound, and fail-closed staged publishing preserved. Final errors identify source URL. No silent cache fallback.
+Hako DNS: local_update.hako_singbox deep-copies profiles, replaces local resolver with direct Cloudflare DoH at IP 1.1.1.1:443, TLS verification/SNI cloudflare-dns.com, keeps resolver tags and DNS policies. Hijack DNS matches port 53. Android profiles untouched. unified_update.bundle generates Hako variants before adaptive guard and core validation.
 
-Added tests/test_provider_download.py. Focused pytest: 39 passed. Live HTTPS category-games.mrs fetch succeeded (10167 bytes). Scoped diff --check passed. Global check flagged pre-existing subscription cache whitespace; untouched. Full unified refresh not run.
+Ready files: output/sing-box/singbox_hako_proxy.json and singbox_hako_direct_adblock.json. Existing security rules/accounts retained. No gameblock added.
 
-SHA256 build_support.py: 17f42a5ab07530684bba59a6262275ab030c18016ff2bd4b241885c30794056e. tests/test_provider_download.py: df1dff97f694cdf6fb50cc01cb4b5bfa42b24edb56a313954a28a8de88b0e7ef.
+Verified: both core checks pass (sing-box 1.14.2); tests/hako_dns_selftest.py passes; pytest tests/test_local_update.py tests/test_unified_update.py: 14 passed; diff --check passes. HTTPS DoH lookup for reported domain succeeded. Local SOCKS runtime experiment output unavailable; do not claim end-to-end success. Hako tunnel still requires user import/test.
 
-Previous gameblock edits remain: game providers prioritized before DIRECT. Revalidate before further edits. No project AGENTS.md. rg unavailable; use git grep and git --no-pager. Next: retry original update command; remaining failures identify URL.
+SHA256 local_update.py d2f5dc506298e28816d37dcd176c7912404242edc9aba3db130c4afb5250c5ea; unified_update.py 4c63b912243f749210c5671dccc2441c3891d25f5cf00645f11f4056acc13ad6; tests/hako_dns_selftest.py 8fc7ff4eefa80a0e148fa0b3c8d5c3f210f42f8ef0de24ce95b97cb89bdc0032.

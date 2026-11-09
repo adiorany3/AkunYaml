@@ -59,6 +59,28 @@ def direct_singbox(source: dict) -> dict:
     return config
 
 
+def hako_singbox(source: dict) -> dict:
+    """Avoid resolving through macOS system DNS captured by Hako's tunnel."""
+    config = copy.deepcopy(source)
+    dns = config.setdefault("dns", {})
+    for server in dns.get("servers", []):
+        if server.get("type") == "local":
+            tag = server["tag"]
+            server.clear()
+            server.update({
+                "type": "https", "tag": tag, "server": "1.1.1.1",
+                "server_port": 443, "path": "/dns-query", "detour": "direct",
+                "tls": {"enabled": True, "server_name": "cloudflare-dns.com"},
+            })
+    # Match DNS by port as well: sniffing need not recognize the first packet.
+    rules = config.setdefault("route", {}).setdefault("rules", [])
+    for rule in rules:
+        if rule.get("action") == "hijack-dns":
+            rule.pop("protocol", None)
+            rule["port"] = 53
+    return config
+
+
 def build(root: Path, output: Path) -> list[Path]:
     root, output = root.resolve(), output.resolve()
     if output == root or root.is_relative_to(output):
