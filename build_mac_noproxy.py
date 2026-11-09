@@ -4,6 +4,9 @@ import copy
 from pathlib import Path
 import subprocess
 import tempfile
+import socket
+import time
+from concurrent.futures import ThreadPoolExecutor
 
 import yaml
 
@@ -15,7 +18,53 @@ TARGET = ROOT / "output/mihomo-mac/direct/openclash_mac_noproxy.yaml"
 REFERENCE = "https://raw.githubusercontent.com/adiorany3/HerYaml/refs/heads/main/openclash_mac_noproxy.yaml"
 
 
-def build(gameblock=False):
+def live_nodes():
+    """Probe actual HTTPS traffic through each existing manual/public node."""
+    nodes = yaml.safe_load((ROOT / "openclash_auto.yaml").read_text()).get("proxies", [])
+    if not nodes:
+        raise ValueError("No existing manual/public nodes to test")
+
+    def probe(node):
+        with socket.socket() as sock:
+            sock.bind(("127.0.0.1", 0))
+            port = sock.getsockname()[1]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "probe.yaml"
+            path.write_text(yaml.safe_dump({"mixed-port": port, "bind-address": "127.0.0.1",
+                "allow-lan": False, "mode": "rule", "log-level": "silent",
+                "proxies": [node], "rules": ["MATCH," + node["name"]]}))
+            with (Path(tmp) / "core.log").open("w") as log:
+                proc = subprocess.Popen([str(ROOT / ".local_bin/mihomo"), "-d", tmp, "-f", str(path)], stdout=log, stderr=log)
+                try:
+                    deadline = time.monotonic() + 5
+                    while time.monotonic() < deadline and proc.poll() is None:
+                        try:
+                            with socket.create_connection(("127.0.0.1", port), timeout=0.2):
+                                break
+                        except OSError:
+                            time.sleep(0.1)
+                    result = subprocess.run(["curl", "--noproxy", "", "--proxy", f"http://127.0.0.1:{port}",
+                        "--connect-timeout", "5", "--max-time", "12", "--silent", "--output", "/dev/null",
+                        "--write-out", "%{http_code}", "https://www.gstatic.com/generate_204"],
+                        capture_output=True, text=True, timeout=15)
+                    alive = result.returncode == 0 and result.stdout.strip() == "204"
+                    print(node["name"], "HTTPS 204" if alive else "FAILED", flush=True)
+                    return node if alive else None
+                finally:
+                    proc.terminate()
+                    try:
+                        proc.wait(timeout=3)
+                    except subprocess.TimeoutExpired:
+                        proc.kill()
+                        proc.wait()
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        healthy = [node for node in pool.map(probe, nodes) if node is not None]
+    if not healthy:
+        raise RuntimeError("No node passed HTTPS testing; existing output preserved")
+    return healthy
+
+
+def build(gameblock=False, include_nodes=False):
     source = ROOT / "output/mihomo-mac/gameblock/config.yaml" if gameblock else SOURCE
     target = source.with_name("openclash_noproxy_gameblock.yaml") if gameblock else TARGET
     reference = REFERENCE.replace("openclash_mac_noproxy.yaml", "openclash_noproxy_gameblock.yaml") if gameblock else REFERENCE
@@ -61,7 +110,11 @@ def build(gameblock=False):
             payload = [line.strip() for line in path.read_text().splitlines()
                        if line.strip() and not line.startswith(("#", "//"))]
         config["rule-providers"][name] = {"type": "inline", "behavior": provider["behavior"], "payload": payload}
-    assert not config.get("proxies") and not config.get("proxy-providers")
+    if include_nodes:
+        config["proxies"] = live_nodes()
+        names = [node["name"] for node in config["proxies"]]
+        config["proxy-groups"] = [{"name": "OPTIONAL-PROXY", "type": "select", "proxies": ["DIRECT", *names]}]
+    assert not config.get("proxy-providers")
     for rule in config["rules"]:
         parts = rule.split(",")
         policy = parts[-2] if parts[-1] == "no-resolve" else parts[-1]
@@ -82,4 +135,6 @@ def build(gameblock=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gameblock", action="store_true")
-    build(gameblock=parser.parse_args().gameblock)
+    parser.add_argument("--include-live-nodes", action="store_true")
+    args = parser.parse_args()
+    build(gameblock=args.gameblock, include_nodes=args.include_live_nodes)
