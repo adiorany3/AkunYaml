@@ -1,38 +1,38 @@
 {
   "mode": "security-refresh-retained-accounts",
-  "packaged_at": "2026-11-09T00:49:17.112689+00:00",
+  "packaged_at": "2026-11-09T01:24:33.019579+00:00",
   "account_refresh": "retained-old",
   "adaptive_guard": "fresh",
   "warning": "Offline hanya snapshot; waktu packaging bukan bukti akun aktif. Sing-box gameblock belum tersedia.",
   "sources": [
     {
       "path": "openclash_auto.yaml",
-      "modified_at": "2026-11-09T00:49:02.489434+00:00",
+      "modified_at": "2026-11-09T01:24:12.355348+00:00",
       "sha256": "6aedac56bd11e88572adaff6e57c070e40e63be397bd599b890fe52c3515a731"
     },
     {
       "path": "openclash_android.yaml",
-      "modified_at": "2026-11-09T00:49:02.553822+00:00",
+      "modified_at": "2026-11-09T01:24:12.422367+00:00",
       "sha256": "94f20de15e2c614e6801bb6b81f0a41cb4441630e4c620d0164b5b760351bc9a"
     },
     {
       "path": "openclash_lite.yaml",
-      "modified_at": "2026-11-09T00:49:02.587209+00:00",
+      "modified_at": "2026-11-09T01:24:12.459973+00:00",
       "sha256": "e1cce273c8cbd577b536002b1ae440c925b077eb469b63d6229e674e58a9ea06"
     },
     {
       "path": "openclash_fresh_pool.yaml",
-      "modified_at": "2026-11-09T00:49:02.648186+00:00",
+      "modified_at": "2026-11-09T01:24:12.523507+00:00",
       "sha256": "bf52b64ad6847706214d3aa71ca7d5d66e60f507c56862fcacdb0e8e64849fa8"
     },
     {
       "path": "local_build/openclash_noproxy.yaml",
-      "modified_at": "2026-11-09T00:49:03.200760+00:00",
+      "modified_at": "2026-11-09T01:24:13.122191+00:00",
       "sha256": "b512b140236475287b7870129a3fa956aaf8843c3ac28dc16a0cfca705934fc8"
     },
     {
       "path": "local_build/gameblock/openclash_noproxy_gameblock.yaml",
-      "modified_at": "2026-11-09T00:49:08.323815+00:00",
+      "modified_at": "2026-11-09T01:24:18.853256+00:00",
       "sha256": "5cafa33a32c17a88300a65df4dfc4a72faa7b42b86f096132e52eebc035f648f"
     },
     {
@@ -42,7 +42,7 @@
     },
     {
       "path": "local_build/singbox_direct_adblock.json",
-      "modified_at": "2026-11-09T00:49:03.211830+00:00",
+      "modified_at": "2026-11-09T01:24:13.128578+00:00",
       "sha256": "f0291309ffcc83355c154aa6f8d4247ad90d8e6b0efbab321e461b1a3f56abb1"
     },
     {

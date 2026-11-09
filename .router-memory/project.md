@@ -1,11 +1,11 @@
 # Project context
 
-AkunYaml; root /Users/macbookpro/Documents/GitHub/AkunYaml; main; HEAD 7291ac0302f8963f8e566865eee4c25e13ba3c1e. Initial working tree clean.
+AkunYaml /Users/macbookpro/Documents/GitHub/AkunYaml; main HEAD b14823c18c30e62a68140975db9b7e4926939b00. Pre-existing runtime cache, build reports/output changes preserved.
 
-Hako DNS: local_update.hako_singbox deep-copies profiles, replaces local resolver with direct Cloudflare DoH at IP 1.1.1.1:443, TLS verification/SNI cloudflare-dns.com, keeps resolver tags and DNS policies. Hijack DNS matches port 53. Android profiles untouched. unified_update.bundle generates Hako variants before adaptive guard and core validation.
+Mac builder build_mac_noproxy.py now supports --gameblock. Default retains direct output. Gameblock reads output/mihomo-mac/gameblock/config.yaml and creates sibling openclash_noproxy_gameblock.yaml (~19 MiB). User HerYaml reference read via web; output adapts reference-style local policy, not exact upstream copy. All 20 provider snapshots embedded inline; no network/file providers. No accounts/groups; localhost only, System Proxy, TUN disabled deliberately pending client testing. Public DoH, 12562 rules; game-block-online and games-category REJECT forced before DIRECT exceptions. Original source untouched.
 
-Ready files: output/sing-box/singbox_hako_proxy.json and singbox_hako_direct_adblock.json. Existing security rules/accounts retained. No gameblock added.
+Validation: generator exact Mihomo alpha-ge183c58 parser succeeded before atomic publication. tests/mac_gameblock_selftest.py passes. pytest tests/test_gameblock_priority.py: 14 passed. git diff --check clean. No GUI/runtime tunnel validation. Regenerate: .venv/bin/python build_mac_noproxy.py --gameblock. Unified update can replace output directory; rerun builder afterward.
 
-Verified: both core checks pass (sing-box 1.14.2); tests/hako_dns_selftest.py passes; pytest tests/test_local_update.py tests/test_unified_update.py: 14 passed; diff --check passes. HTTPS DoH lookup for reported domain succeeded. Local SOCKS runtime experiment output unavailable; do not claim end-to-end success. Hako tunnel still requires user import/test.
+SHA256 builder 5361a047843b32ff1fcee70e6d7dbc782d348a337e56f7eea9e1eb596a70673a; game source d4f16bb0f0be1e40e93e031c371c417020a638b4033ec0d6aa45b5d149f056fa; game output f5faeb1ed99ba5aba5b82ad4ef1ef272d6ff10f6c2a8f6642bfd5fe78d6225e9.
 
-SHA256 local_update.py d2f5dc506298e28816d37dcd176c7912404242edc9aba3db130c4afb5250c5ea; unified_update.py 4c63b912243f749210c5671dccc2441c3891d25f5cf00645f11f4056acc13ad6; tests/hako_dns_selftest.py 8fc7ff4eefa80a0e148fa0b3c8d5c3f210f42f8ef0de24ce95b97cb89bdc0032.
+Prior Hako DNS issue unresolved: parser-valid DoH variants still reported internet loss; OS checks saw disconnected despite GUI report. Need internal Hako logs before more changes.
