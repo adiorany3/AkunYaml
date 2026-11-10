@@ -409,12 +409,10 @@ rules:
 - DOMAIN,3.zhzy999.net,REJECT
 - DOMAIN,3.zhzy999.net3.zhzy999.net,REJECT
 - DOMAIN,4eclient.com,REJECT
-- DOMAIN,6sim.vip,REJECT
 - DOMAIN,9eb10b7a3d04a.com,REJECT
 - DOMAIN,acc.jiangsujiaxue.com,REJECT
 - DOMAIN,acd.munber.life,REJECT
 - DOMAIN,acms.saleseos.com,REJECT
-- DOMAIN,activation-gateway.cc,REJECT
 - DOMAIN,ad-loupe.com,REJECT
 - DOMAIN,adcentral.com.mx,REJECT
 - DOMAIN,addesigner.com,REJECT
@@ -449,7 +447,6 @@ rules:
 - DOMAIN,ardguisser.com,REJECT
 - DOMAIN,areyouready.co.za,REJECT
 - DOMAIN,argon-client.com,REJECT
-- DOMAIN,astenterprises.com.pk,REJECT
 - DOMAIN,atasapka.com.tr,REJECT
 - DOMAIN,atgroup-link.id,REJECT
 - DOMAIN,attach.66rpg.com,REJECT
@@ -461,7 +458,6 @@ rules:
 - DOMAIN,bamautzky.de,REJECT
 - DOMAIN,baolongwes.oss-ap-southeast-1.aliyuncs.com,REJECT
 - DOMAIN,baritoneclient.net,REJECT
-- DOMAIN,beak.in,REJECT
 - DOMAIN,benshamcentre.co.uk,REJECT
 - DOMAIN,beoauto.alexion.rs,REJECT
 - DOMAIN,berangkasilmu.com,REJECT
@@ -474,10 +470,10 @@ rules:
 - DOMAIN,bloom-88.com,REJECT
 - DOMAIN,bmdcompany.com,REJECT
 - DOMAIN,bnet-api.playm8ru.win,REJECT
+- DOMAIN,bnet.playm8ru.win,REJECT
 - DOMAIN,boitim.oss-eu-west-2.aliyuncs.com,REJECT
 - DOMAIN,bondeddarkenedswerve.com,REJECT
 - DOMAIN,book.rollingvideogames.com,REJECT
-- DOMAIN,boowellness.screenconnect.com,REJECT
 - DOMAIN,brand.ad,REJECT
 - DOMAIN,bratusferramentas.grupomoltz.com.br,REJECT
 - DOMAIN,briannacorporation.com,REJECT
@@ -502,7 +498,6 @@ rules:
 - DOMAIN,cdnasiaclub.com,REJECT
 - DOMAIN,cdnfgo.xyz,REJECT
 - DOMAIN,celebratingseniors.net,REJECT
-- DOMAIN,cepde.org,REJECT
 - DOMAIN,ceramicasaosebastiao.com.br,REJECT
 - DOMAIN,cfs.uzone.id,REJECT
 - DOMAIN,cfs1.uzone.id,REJECT
@@ -524,7 +519,7 @@ rules:
 - DOMAIN,cliffg.me,REJECT
 - DOMAIN,cloudflareconfirm.com,REJECT
 - DOMAIN,clubdetiroelpicarcho.com,REJECT
-- DOMAIN,cn.unionlever.com,REJECT
+- DOMAIN,complianceportals.com,REJECT
 - DOMAIN,compuserviceonline.com.br,REJECT
 - DOMAIN,continentalgroup.net.in,REJECT
 - DOMAIN,controliumbt.com,REJECT
@@ -557,14 +552,17 @@ rules:
 - DOMAIN,detek.com.mx,REJECT
 - DOMAIN,dezcom.com,REJECT
 - DOMAIN,dfd.zhzy999.net,REJECT
+- DOMAIN,dfgjnisdjfgnisjdfng.online,REJECT
 - DOMAIN,digiads.co.id,REJECT
 - DOMAIN,dinamikakargo.com,REJECT
+- DOMAIN,disk.accord1key.cn,REJECT
 - DOMAIN,dl.1003b.56a.com,REJECT
 - DOMAIN,dl.2345.com,REJECT
 - DOMAIN,dl.dzqzd.com,REJECT
 - DOMAIN,dl.natgo.cn,REJECT
 - DOMAIN,dlied6.bytes.tcdnos.com,REJECT
 - DOMAIN,dlied6.yz.tcdnos.com,REJECT
+- DOMAIN,dmoneii.com,REJECT
 - DOMAIN,doathair.com,REJECT
 - DOMAIN,domainmob.com,REJECT
 - DOMAIN,dongyu.us,REJECT
@@ -583,7 +581,7 @@ rules:
 - DOMAIN,download.kbcard.com,REJECT
 - DOMAIN,download.pdf00.cn,REJECT
 - DOMAIN,download.pdf00.com,REJECT
-- DOMAIN,download.tg1101.com,REJECT
+- DOMAIN,download2.huduntech.com,REJECT
 - DOMAIN,draft-loop.com,REJECT
 - DOMAIN,dreamwatchevent.com,REJECT
 - DOMAIN,drgenov.com,REJECT
@@ -607,6 +605,7 @@ rules:
 - DOMAIN,fcitantibot.pro,REJECT
 - DOMAIN,fd.v2downf.shop,REJECT
 - DOMAIN,file.blackint3.com,REJECT
+- DOMAIN,file.uhsea.com,REJECT
 - DOMAIN,filebanner.com,REJECT
 - DOMAIN,filerit.com,REJECT
 - DOMAIN,first-security-verden.de,REJECT
@@ -623,6 +622,7 @@ rules:
 - DOMAIN,fullstacknir.com,REJECT
 - DOMAIN,fz.tiansys.cn,REJECT
 - DOMAIN,gabyagozetim.com,REJECT
+- DOMAIN,gaenterprises.in,REJECT
 - DOMAIN,galerisenimutiara.com,REJECT
 - DOMAIN,gaode11223.oss-ap-southeast-7.aliyuncs.com,REJECT
 - DOMAIN,garden-82.com,REJECT
@@ -634,7 +634,7 @@ rules:
 - DOMAIN,goratu.site,REJECT
 - DOMAIN,goto.stnts.com,REJECT
 - DOMAIN,greenf.alexion.rs,REJECT
-- DOMAIN,griffcar.com.br,REJECT
+- DOMAIN,grg1n.com,REJECT
 - DOMAIN,groupiklan.com,REJECT
 - DOMAIN,groverudder12.com,REJECT
 - DOMAIN,grupomcperu.com,REJECT
@@ -644,9 +644,9 @@ rules:
 - DOMAIN,haeum.nfile.net,REJECT
 - DOMAIN,halal.ad,REJECT
 - DOMAIN,hanasrmt.ca,REJECT
+- DOMAIN,happynewyearhehe.com,REJECT
 - DOMAIN,hasalltalent.com,REJECT
 - DOMAIN,hasil-gov-my.shop,REJECT
-- DOMAIN,hasilgov-my.my.id,REJECT
 - DOMAIN,hasilgov-my.shop,REJECT
 - DOMAIN,haven-post.com,REJECT
 - DOMAIN,higreens.co.in,REJECT
@@ -679,10 +679,10 @@ rules:
 - DOMAIN,iklantelevisi.com,REJECT
 - DOMAIN,iklantext.com,REJECT
 - DOMAIN,iklanumum.com,REJECT
-- DOMAIN,im-quirky.com,REJECT
 - DOMAIN,imagefiles-backup.oss-ap-southeast-7.aliyuncs.com,REJECT
 - DOMAIN,impectorinternational.com,REJECT
 - DOMAIN,injd.site,REJECT
+- DOMAIN,intelli-sys.co.zw,REJECT
 - DOMAIN,intelligradeeducation.vicentecisnerospub.com,REJECT
 - DOMAIN,ircftp.net,REJECT
 - DOMAIN,isiore.com.co,REJECT
@@ -694,12 +694,10 @@ rules:
 - DOMAIN,jagoiklan.com,REJECT
 - DOMAIN,jagopromo.com,REJECT
 - DOMAIN,jasaiklan.com,REJECT
-- DOMAIN,jawaratekno.com,REJECT
 - DOMAIN,jd-forever.com,REJECT
 - DOMAIN,jenniferloeffler.com,REJECT
 - DOMAIN,jessespridecharters.com,REJECT
 - DOMAIN,jozefinskiatelje.si,REJECT
-- DOMAIN,jumalputty.com,REJECT
 - DOMAIN,kavacanada.ca,REJECT
 - DOMAIN,kavyasourcing.com,REJECT
 - DOMAIN,khavar.com,REJECT
@@ -723,7 +721,6 @@ rules:
 - DOMAIN,lomejordesalamanca.es,REJECT
 - DOMAIN,luckyads.com,REJECT
 - DOMAIN,luizmatoso.com.br,REJECT
-- DOMAIN,lumacrea.com,REJECT
 - DOMAIN,luminouspower.com.pk,REJECT
 - DOMAIN,m.jkoa.co.kr,REJECT
 - DOMAIN,m.meta-dm.com,REJECT
@@ -732,7 +729,6 @@ rules:
 - DOMAIN,malupieng.com.br,REJECT
 - DOMAIN,mandarin.net.au,REJECT
 - DOMAIN,maple30.com,REJECT
-- DOMAIN,mc.heyiwei.net,REJECT
 - DOMAIN,medises.co.kr,REJECT
 - DOMAIN,mersped.mycpanel.rs,REJECT
 - DOMAIN,meteorclients.com,REJECT
@@ -760,7 +756,6 @@ rules:
 - DOMAIN,nagl.com.pg,REJECT
 - DOMAIN,namuvpn.com,REJECT
 - DOMAIN,ncxps.com,REJECT
-- DOMAIN,ndjvmuvkoahnopfqn2jpva.on.drv.tw,REJECT
 - DOMAIN,nest-52.com,REJECT
 - DOMAIN,newkey.co.kr,REJECT
 - DOMAIN,noithaticon.vn,REJECT
@@ -769,9 +764,9 @@ rules:
 - DOMAIN,nova-75.com,REJECT
 - DOMAIN,novasms.com.mx,REJECT
 - DOMAIN,nurse-trader.conohawing.com,REJECT
-- DOMAIN,obohands.com,REJECT
 - DOMAIN,oedturk.com,REJECT
 - DOMAIN,offdeck.telkomsel.com,REJECT
+- DOMAIN,oim.doganltd.com.tr,REJECT
 - DOMAIN,ojang.pe.kr,REJECT
 - DOMAIN,okhan.net,REJECT
 - DOMAIN,oknoplastik.sk,REJECT
@@ -784,7 +779,6 @@ rules:
 - DOMAIN,oz-courses.com,REJECT
 - DOMAIN,p3.zbjimg.com,REJECT
 - DOMAIN,paidforfree.com,REJECT
-- DOMAIN,palharesinformatica.com.br,REJECT
 - DOMAIN,pasangiklan.com,REJECT
 - DOMAIN,pay.aqiu6.com,REJECT
 - DOMAIN,paypopup.com,REJECT
@@ -803,6 +797,7 @@ rules:
 - DOMAIN,prepstarcenter.com,REJECT
 - DOMAIN,procuratio.nu,REJECT
 - DOMAIN,programandojuntos.us.tempcloudsite.com,REJECT
+- DOMAIN,project360.hr,REJECT
 - DOMAIN,projetodegente.com,REJECT
 - DOMAIN,promotioncamp.com,REJECT
 - DOMAIN,props.id,REJECT
@@ -821,13 +816,13 @@ rules:
 - DOMAIN,rbxhub.pro,REJECT
 - DOMAIN,rcf.co.mz,REJECT
 - DOMAIN,rdm.91yunma.cn,REJECT
-- DOMAIN,reauthenticator.com,REJECT
 - DOMAIN,records.dennisign.se,REJECT
 - DOMAIN,reifenquick.de,REJECT
 - DOMAIN,reutilizemais.co.mz,REJECT
 - DOMAIN,rheddh.com,REJECT
 - DOMAIN,riderspin.com,REJECT
 - DOMAIN,robertrowe.com,REJECT
+- DOMAIN,romeopirlanta.com,REJECT
 - DOMAIN,royalindiancurryclub.com,REJECT
 - DOMAIN,rts.gdn,REJECT
 - DOMAIN,runelight.net,REJECT
@@ -863,7 +858,6 @@ rules:
 - DOMAIN,skyblockaddons.org,REJECT
 - DOMAIN,skyblockrpc.com,REJECT
 - DOMAIN,smartermail.host,REJECT
-- DOMAIN,soft.110route.com,REJECT
 - DOMAIN,softbank126023203236.bbtec.net,REJECT
 - DOMAIN,softdl.360tpcdn.com,REJECT
 - DOMAIN,softdl2.360tpcdn.com,REJECT
@@ -876,6 +870,7 @@ rules:
 - DOMAIN,stanarcservice.com,REJECT
 - DOMAIN,star.zcnet.net,REJECT
 - DOMAIN,starcountry.net,REJECT
+- DOMAIN,static.ilclock.com,REJECT
 - DOMAIN,static.topxgun.com,REJECT
 - DOMAIN,static.youdm.cn,REJECT
 - DOMAIN,statics1.tceru134gsur.ru,REJECT
@@ -889,6 +884,7 @@ rules:
 - DOMAIN,swiftfusion.tech,REJECT
 - DOMAIN,swiftonyx16.com,REJECT
 - DOMAIN,synergyconsulting.us,REJECT
+- DOMAIN,t-trustresnew.com,REJECT
 - DOMAIN,tadex.id,REJECT
 - DOMAIN,tangentwaves.com,REJECT
 - DOMAIN,tanscarattorneys.co.tz,REJECT
@@ -924,6 +920,7 @@ rules:
 - DOMAIN,u-ad.info,REJECT
 - DOMAIN,u-on.eu,REJECT
 - DOMAIN,uadexchange.com,REJECT
+- DOMAIN,uni.site.je,REJECT
 - DOMAIN,union.macoms.la,REJECT
 - DOMAIN,upaicdn.xinmei365.com,REJECT
 - DOMAIN,upchemicals.co.in,REJECT
@@ -931,6 +928,7 @@ rules:
 - DOMAIN,update.neewsoo.com,REJECT
 - DOMAIN,useads.com,REJECT
 - DOMAIN,uu.v2raynapps.com.cn,REJECT
+- DOMAIN,v5q.eu,REJECT
 - DOMAIN,vaibhavtripathi.in,REJECT
 - DOMAIN,veryboys.com,REJECT
 - DOMAIN,vexonmods.shop,REJECT
@@ -947,7 +945,6 @@ rules:
 - DOMAIN,weco2.oss-me-east-1.aliyuncs.com,REJECT
 - DOMAIN,wegrowcoaching.com,REJECT
 - DOMAIN,wicreset.online,REJECT
-- DOMAIN,wicresetconnect.com,REJECT
 - DOMAIN,widexenmexico.com.mx,REJECT
 - DOMAIN,win.down.55kantu.com,REJECT
 - DOMAIN,winbitbrowser.com,REJECT
@@ -971,6 +968,7 @@ rules:
 - DOMAIN,youtransfer.net,REJECT
 - DOMAIN,zamilgroups.com,REJECT
 - DOMAIN,zhigao5191.com,REJECT
+- DOMAIN,zhikey.com,REJECT
 - DOMAIN,zumvu.net,REJECT
 - DOMAIN,zycdjz.com,REJECT
 - DOMAIN-SUFFIX,local,DIRECT

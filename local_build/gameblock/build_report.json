@@ -1,6 +1,6 @@
 {
   "generator": "independent-local",
-  "built_at": "2026-11-09T10:04:17.484198+00:00",
+  "built_at": "2026-11-10T11:13:58.585615+00:00",
   "mode": "refresh",
   "rules": 11986,
   "providers": 20,
@@ -11,7 +11,7 @@
       "format": "text",
       "path": "rule_providers/live/ads_indonesia.mrs",
       "entries": 125,
-      "fetched_at": "2026-11-09T10:04:13.403263+00:00",
+      "fetched_at": "2026-11-10T11:13:54.349123+00:00",
       "sha256": "28015ff170efdd5e3862839e9727220e4a1fbef5ab6368ca60893d02c5df990d"
     },
     {
@@ -20,7 +20,7 @@
       "format": "mrs",
       "path": "rule_providers/live/ads_domain.mrs",
       "entries": null,
-      "fetched_at": "2026-11-09T10:04:13.707491+00:00",
+      "fetched_at": "2026-11-10T11:13:54.287250+00:00",
       "sha256": "38424a7d19026feddb3277b6a6dce557f3add4648333516b3a76ba8674c81598"
     },
     {
@@ -29,7 +29,7 @@
       "format": "yaml",
       "path": "rule_providers/live/anti-ad.yaml",
       "entries": null,
-      "fetched_at": "2026-11-09T10:04:15.839774+00:00",
+      "fetched_at": "2026-11-10T11:13:56.670436+00:00",
       "sha256": "fbba61f1772422c1e83a8306e9cfafd10b8028e39dc84cfa18f173a7ced06942"
     },
     {
@@ -38,7 +38,7 @@
       "format": "mrs",
       "path": "rule_providers/live/tracker-domain.mrs",
       "entries": null,
-      "fetched_at": "2026-11-09T10:04:13.601874+00:00",
+      "fetched_at": "2026-11-10T11:13:54.233591+00:00",
       "sha256": "e904e567100e133074ac14936e2ff8f9bb4b6f1fc6f9be3d38c0f03c3c8215c2"
     },
     {
@@ -46,27 +46,27 @@
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/tif.mini-onlydomains.txt",
       "format": "text",
       "path": "rule_providers/live/threat-tif-mini.mrs",
-      "entries": 186188,
-      "fetched_at": "2026-11-09T10:04:15.301434+00:00",
-      "sha256": "4d73d4eb0d145cfc1a25a481f5be8122245c28282ea00391262ce01e4378b362"
+      "entries": 187016,
+      "fetched_at": "2026-11-10T11:13:56.621022+00:00",
+      "sha256": "e83b2a71961a525ec7c5b9d69ee66e2a6f6effaf087b5e43430f62047a079b7f"
     },
     {
       "name": "threat-malware",
       "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/malware.txt",
       "format": "text",
       "path": "rule_providers/live/threat-malware.mrs",
-      "entries": 557,
-      "fetched_at": "2026-11-09T10:04:14.083021+00:00",
-      "sha256": "bb893fd36f8f356c28fb67abc24ee60225deafc577f4cc99f41f222c4f77c188"
+      "entries": 558,
+      "fetched_at": "2026-11-10T11:13:54.769213+00:00",
+      "sha256": "2b5babaf5bda464b6378b8f3b3899703cfc1736d33374650f075f940710fbbf5"
     },
     {
       "name": "threat-phishing",
       "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/phishing.txt",
       "format": "text",
       "path": "rule_providers/live/threat-phishing.mrs",
-      "entries": 20577,
-      "fetched_at": "2026-11-09T10:04:14.450496+00:00",
-      "sha256": "ae2d0c77f6d8d61d73fadf4caecdc945c7966666eee60e014038241bf91929a8"
+      "entries": 20067,
+      "fetched_at": "2026-11-10T11:13:55.495091+00:00",
+      "sha256": "9b1d7561a59ede1586836f735d91c8e631a1b5c3cc5302aebe6507ecf10fedad"
     },
     {
       "name": "threat-cryptominers",
@@ -74,7 +74,7 @@
       "format": "text",
       "path": "rule_providers/live/threat-cryptominers.mrs",
       "entries": 296,
-      "fetched_at": "2026-11-09T10:04:14.771490+00:00",
+      "fetched_at": "2026-11-10T11:13:55.366886+00:00",
       "sha256": "6522bdba2094517b26a5ffa3d9e02f88dfc32d2edad0d10e06d6b79e2fca3e12"
     },
     {
@@ -82,18 +82,18 @@
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/fake-onlydomains.txt",
       "format": "text",
       "path": "rule_providers/live/threat-fake-scam.mrs",
-      "entries": 18824,
-      "fetched_at": "2026-11-09T10:04:15.222167+00:00",
-      "sha256": "b2cd840fc73ea5d3d5892e0cddc34f72e6ffe2de943c9712b58ec4367a66e3b6"
+      "entries": 18839,
+      "fetched_at": "2026-11-10T11:13:56.151669+00:00",
+      "sha256": "3f9a8919708bcbcb010c39bada8f59552f4af9ce0380b4f79fe790c69bdbfc75"
     },
     {
       "name": "gambling-mini",
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/gambling.mini-onlydomains.txt",
       "format": "text",
       "path": "rule_providers/live/gambling-mini.mrs",
-      "entries": 72987,
-      "fetched_at": "2026-11-09T10:04:16.172045+00:00",
-      "sha256": "ba9dc7241554e7aef99b657b463b9e45456a5bc17f5a165a697aa545b340cabd"
+      "entries": 46253,
+      "fetched_at": "2026-11-10T11:13:56.634806+00:00",
+      "sha256": "e002879518a0558f432568f67f80fc0573d63245c8bd065110f5965fc3b23307"
     },
     {
       "name": "adult-category",
@@ -101,7 +101,7 @@
       "format": "mrs",
       "path": "rule_providers/live/adult-category.mrs",
       "entries": null,
-      "fetched_at": "2026-11-09T10:04:15.837473+00:00",
+      "fetched_at": "2026-11-10T11:13:56.737426+00:00",
       "sha256": "75d39549fcbfdccd2c35400421f30ff56c1ef3aa585624d4f620f597962874eb"
     },
     {
@@ -109,18 +109,18 @@
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/popupads-onlydomains.txt",
       "format": "text",
       "path": "rule_providers/live/popup-ads.mrs",
-      "entries": 77923,
-      "fetched_at": "2026-11-09T10:04:16.229914+00:00",
-      "sha256": "d36e40af89ebc194a13ecc26289a4c73424fd87493ebadf44ff8314c5a9903b9"
+      "entries": 78179,
+      "fetched_at": "2026-11-10T11:13:58.005260+00:00",
+      "sha256": "8b633775de4c71f8f7c6d62aa0b406ff05746944afa6e2e877853507eb038587"
     },
     {
       "name": "hagezi-pro",
       "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro-onlydomains.txt",
       "format": "text",
       "path": "rule_providers/live/hagezi-pro.mrs",
-      "entries": 224796,
-      "fetched_at": "2026-11-09T10:04:17.326341+00:00",
-      "sha256": "72d4a8cf7292c12c186d29db556b46747030a19656ea832174a661dc1929e913"
+      "entries": 223961,
+      "fetched_at": "2026-11-10T11:13:58.419904+00:00",
+      "sha256": "0a680355817f5c78b172a054449ee6bba9668aabd1a46cb77f472563586e3220"
     },
     {
       "name": "games-category",
@@ -128,7 +128,7 @@
       "format": "mrs",
       "path": "rule_providers/live/games-category.mrs",
       "entries": null,
-      "fetched_at": "2026-11-09T10:04:16.401906+00:00",
+      "fetched_at": "2026-11-10T11:13:56.994585+00:00",
       "sha256": "9f4db5b5b003d3426b35b2c1e618869f9d6642c7bdf7d8f30ab2ff96c4defa99"
     }
   ],
