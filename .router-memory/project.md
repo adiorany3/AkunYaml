@@ -1,30 +1,22 @@
 # Project context
 
-AkunYaml root /Users/macbookpro/Documents/GitHub/AkunYaml; branch main; HEAD d30922ca9c998423fd5f6a39b81e84953337b850. Uncommitted authorized development changes listed below; existing generated outputs unchanged.
+AkunYaml root /Users/macbookpro/Documents/GitHub/AkunYaml; branch main HEAD 75aa6b4133257b7dc6d59f13b1d6e23d8eb41a3b. Existing uncommitted adaptive/README/note changes preserved and fingerprints verified. Current follow-up adds translator validation, parity tests and expanded lint coverage.
 
-Implemented unified health report, static domain explanation with explicit uncertainty and local MRS decoding via core, aggregate credential-free release preview (output/changes.json), separate public blocklist-only export that rejects unrelated targets, direct Sing-box gameblock translation preserving adjacent DIRECT/REJECT policy precedence, opt-in private bounded handshake history with failure ranking penalty, and one-command local checks. Default publication and ranking unchanged. History requires NODE_HISTORY_ENABLED=true; handshake is not full proxy connectivity. Public export is opt-in; complete output still contains credentials.
+Architecture: unified_update stages health/change reports and Sing-box gameblock before validated atomic publication. domain_policy_tools explains local Clash decisions, marking unsupported contexts uncertain. singbox_gameblock preserves adjacent DIRECT/REJECT precedence. release_tools public export opt-in blocklist-only. node_history opt-in private handshake ranking; AI adblock disabled.
 
-Architecture: domain_policy_tools shares provider parser for rule_simulation and singbox_gameblock. unified_update stages generated Sing-box gameblock, validates all profiles, records validation count, health and change reports before atomic publication. node_history called after source batch checks in sumberyaml_core; 20 samples per node, 10000 nodes, seven-day expiry. check_local --full uses temporary copies and local cores, no refresh or deployment. README documents CLI commands and limits.
+Security: ad allowlist exempts adaptive advertising only, not two-known-publisher malware. Category-specific publisher support revalidated on cache read. Exact-host overlay preserves leading Sing-box sniff/hijack-dns and existing routes/default. General allowlist already routes through GLOBAL/proxy, not DIRECT. Account/DNS/routing defaults unchanged.
 
-Verification: final check_local.py --full passed 141 pytest tests, changed-module lint, and real Mihomo/Sing-box gameblock integration. compileall and diff --check passed. Domain explanation and no-change preview smoke checks passed. No online refresh, active profile changes, commit or push. Next successful update publishes new reports and Sing-box profile. Preview compares definitions, not provider content; static explanation marks unsupported runtime context uncertain. Legacy core lint debt not reformatted.
+Follow-up implemented from suggestions: translator rejects non-text rule lists and early/repeated MATCH,DIRECT rather than silently skipping terminal decisions. New tests/test_policy_parity.py compares representative Clash explanation and generated Sing-box decisions for login, CAPTCHA, malware, ads exact-host, game apex/subdomains, and lookalike legitimate domains. Adds terminal/malformed-rule regressions. check_local now lints adaptive modules and parity tests too. README updated.
 
-AI adblock follow-up: local_config AI_ADBLOCK_ENABLED=false; local_runner now requires explicit truthy opt-in for classification/cache. generate_yaml skips stale AI cache when disabled. Non-AI feeds unchanged, secrets/cache preserved, existing outputs not rebuilt. Added tests/test_ai_optional.py; 31 targeted tests and full check_local --full (141 tests and both cores) passed. security_feed_report.md was already modified at task start; left intact.
+Verification: check_local.py --full passed 158 pytest tests, configured module lint and native Mihomo/Sing-box gameblock validation on temporary copies. diff --check passed. No rebuild/deploy of published outputs, live account connectivity checks, commit or push. Future: actual device smoke tests for login/payment/streaming and proxy fallback require known device/account environment; offline policy checks cannot prove internet access.
 
 SHA256:
-- health_report.py: 004ceef7fa324e4001dcfe611fd5449174972e67e9fb427d190ebc69b5cfbccf
-- domain_policy_tools.py: 0bff11ab1443b2ee3531cc07b1996562e6f8bc7ac0b47c057d6d5b84311099bb
-- release_tools.py: dad9fde934d9de3662c495abc1c70e9f8308c15aac5dc4d02ffb593dbc27cbfe
-- singbox_gameblock.py: 62d7ddd98b518530f8602f34e7038fea5c084f28e830ee502dfeabd29e7bb2f2
-- node_history.py: 6f406994f3c4fef968a9db44a955f205d8d92adfa5224d86eca3938500092e3e
-- check_local.py: 59c1795e51fda630dc839317342f7f8eba69b8a0e58e2861ab9eddfac5908af7
-- rule_simulation.py: 15f7c5c3c594a8a8329be40c0c38ff210161ecdf4b1b0a1b18aade52e4db254e
-- unified_update.py: 347ed7a0ea5fe9f3f001b88d6cdbd725b939d04284927ad8bfcce37aad98da4c
-- sumberyaml_core.py: 36a7c9e15de599e8a2b7379783047e0044cfb85798ec481d31c8939b62ac982f
-- tests/test_development_tools.py: 1680901bd04e9d1bb60c40224068fc844d4b1a17fdc02c3420ccdd4d64745fd4
-- tests/test_health_report.py: 00c259f2c789ec41ed8b202929239300d34141cba3dc47fed02c183a33e8b01f
-- README.md: 78d877c1728b0280c1b2b4cbb07f5acdae3f8a7c08e64bb41b686116b2c41585
-- tests/test_unified_update.py: 2228273247bddb5a28973d0eea61415b84f709361484a70d82161c537b43698a
-- local_config.json: 7f8ae18a0ef2a299507b0d3bb4c19df8039aa92fdf3778f88d7fe4195fc655b3
-- local_runner.py: 0e203f78357bbd7660031b73a00a28279e16e9e7492b8cea1e9960c742bc2cb5
-- generate_yaml.py: c8db3afba9e02177b96ff4c491be61d35eb1bbfc758d6de7826549313e6ab795
-- tests/test_ai_optional.py: 3fef62494c16c649cc188de30b22902a21b5e5bcdc9b2249357144d92d6c33c0
+- adaptive_guard.py: d69ed44e345282a54bc73e167d1758d39b87710d120c23751ac3ac002477cf6a
+- tests/test_adaptive_guard.py: fb9e9a6d588126dcb052ee126fa24b1636c2f3f91d4d380e98bca81a76b610de
+- singbox_gameblock.py: 6b2dd852fc73945136aea9e15fa0ead4ada0a821416ed2647ccc3df18b90c986
+- tests/test_policy_parity.py: 2f2974665b724f3d89661ad0169db51c2eb376e5031c4a19e97d7f373bcdcc10
+- check_local.py: e26de2972adfd5c9caae985169f3ddee6a3b55e09b6019ed486595bee6420f92
+- README.md: e188b78a26dde2274f9c7b3ba2df3b2a245d4338d11348b7292b552f80cadaa9
+
+Cleanup follow-up: removed only untracked development caches (.pytest_cache, .ruff_cache, .mypy_cache, root/tests __pycache__), 8,171,223 logical bytes. Added ignore rules for test/lint/type caches and .DS_Store. Tracked backup_target preserved (apply_existing uses it); empty .build preserved (core build script uses it). Profiles, accounts, secrets, cores, feeds and offline caches untouched. Verification: 22 policy/adaptive tests passed without cache/bytecode generation, Ruff --no-cache passed, diff --check passed.
+- .gitignore: fee610ce3030d16c43d9edeef3433d53c9fe99ab8867508b031118d289723aac

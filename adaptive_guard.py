@@ -50,7 +50,7 @@ def evaluate(evidence, allowlist):
                     continue
                 support.setdefault(domain, set()).add(publisher)
         for domain, publishers in support.items():
-            if is_allowlisted(domain, allowlist):
+            if category == "adblock" and is_allowlisted(domain, allowlist):
                 continue
             if len(publishers) >= 2:
                 accepted[domain] = {"category": category, "publishers": sorted(publishers)}
@@ -101,7 +101,19 @@ def snapshot(root, now=None):
     if generated > now or expires <= now or expires - generated > timedelta(hours=TTL_HOURS):
         return {"status": "expired", "accepted": {}}
     allowed = protected_domains(root)
-    report["accepted"] = {d: v for d, v in report["accepted"].items() if _parse_domains(d) == [d] and len(set(v.get("publishers", []))) >= 2 and not is_allowlisted(d, allowed)}
+    accepted = {}
+    for domain, evidence in report["accepted"].items():
+        category = evidence.get("category")
+        publishers = {publisher for publisher, kind, _ in SOURCES.values() if kind == category}
+        support = set(evidence.get("publishers", []))
+        if category not in {"adblock", "malware"} or _parse_domains(domain) != [domain]:
+            continue
+        if len(support & publishers) < 2:
+            continue
+        if category == "adblock" and is_allowlisted(domain, allowed):
+            continue
+        accepted[domain] = evidence
+    report["accepted"] = accepted
     report["status"] = "fresh"
     return report
 
@@ -118,7 +130,11 @@ def apply(stage, root):
                 path.write_text(yaml.safe_dump(config, sort_keys=False, allow_unicode=True))
         for path in (stage / "sing-box").glob("*.json"):
             config = json.loads(path.read_text())
-            config["route"]["rules"].insert(0, {"domain": domains, "action": "reject"})
+            rules = config["route"]["rules"]
+            position = 0
+            while position < len(rules) and rules[position].get("action") in {"sniff", "hijack-dns"}:
+                position += 1
+            rules.insert(position, {"domain": domains, "action": "reject"})
             path.write_text(json.dumps(config, indent=2, ensure_ascii=False) + "\n")
     destination = stage / "security"
     destination.mkdir()

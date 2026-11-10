@@ -254,6 +254,13 @@
   "route": {
     "rules": [
       {
+        "action": "sniff"
+      },
+      {
+        "action": "hijack-dns",
+        "port": 53
+      },
+      {
         "domain": [
           "123.ywxww.net",
           "1717.1000uc.com",
@@ -826,13 +833,6 @@
           "zycdjz.com"
         ],
         "action": "reject"
-      },
-      {
-        "action": "sniff"
-      },
-      {
-        "action": "hijack-dns",
-        "port": 53
       },
       {
         "ip_is_private": true,

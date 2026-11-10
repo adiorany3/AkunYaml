@@ -1,9 +1,60 @@
 {
-  "profiles_changed": 1,
+  "profiles_changed": 5,
   "changes": [
     {
+      "profile": "sing-box/singbox_android.json",
+      "status": "changed",
+      "rules_added": 0,
+      "rules_removed": 0,
+      "rule_order_changed": true,
+      "dns_changed": false,
+      "accounts_changed": false,
+      "groups_changed": false,
+      "providers_changed": false
+    },
+    {
+      "profile": "sing-box/singbox_direct_adblock.json",
+      "status": "changed",
+      "rules_added": 0,
+      "rules_removed": 0,
+      "rule_order_changed": true,
+      "dns_changed": false,
+      "accounts_changed": false,
+      "groups_changed": false,
+      "providers_changed": false
+    },
+    {
       "profile": "sing-box/singbox_direct_gameblock.json",
-      "status": "added"
+      "status": "changed",
+      "rules_added": 0,
+      "rules_removed": 0,
+      "rule_order_changed": true,
+      "dns_changed": false,
+      "accounts_changed": false,
+      "groups_changed": false,
+      "providers_changed": false
+    },
+    {
+      "profile": "sing-box/singbox_hako_direct_adblock.json",
+      "status": "changed",
+      "rules_added": 0,
+      "rules_removed": 0,
+      "rule_order_changed": true,
+      "dns_changed": false,
+      "accounts_changed": false,
+      "groups_changed": false,
+      "providers_changed": false
+    },
+    {
+      "profile": "sing-box/singbox_hako_proxy.json",
+      "status": "changed",
+      "rules_added": 0,
+      "rules_removed": 0,
+      "rule_order_changed": true,
+      "dns_changed": false,
+      "accounts_changed": false,
+      "groups_changed": false,
+      "providers_changed": false
     }
   ]
 }

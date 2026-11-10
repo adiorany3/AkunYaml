@@ -13,7 +13,7 @@ def main():
     parser.add_argument("--full", action="store_true", help="Validasi integrasi gameblock lokal dengan core Mihomo/Sing-box")
     args = parser.parse_args()
     commands = [[sys.executable, "-m", "pytest", "-q", "tests"],
-                [sys.executable, "-m", "ruff", "check", "domain_policy_tools.py", "singbox_gameblock.py", "release_tools.py", "node_history.py", "check_local.py", "health_report.py", "unified_update.py", "rule_simulation.py", "tests/test_health_report.py", "tests/test_development_tools.py"]]
+                [sys.executable, "-m", "ruff", "check", "domain_policy_tools.py", "singbox_gameblock.py", "release_tools.py", "node_history.py", "check_local.py", "health_report.py", "unified_update.py", "rule_simulation.py", "tests/test_health_report.py", "tests/test_development_tools.py", "adaptive_guard.py", "tests/test_adaptive_guard.py", "tests/test_policy_parity.py"]]
     for command in commands:
         result = subprocess.run(command, cwd=ROOT, check=False)
         if result.returncode:

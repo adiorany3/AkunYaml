@@ -98,7 +98,16 @@ Update online kini mengorelasikan daftar langsung dari publisher berbeda.
 Host yang muncul pada minimal dua publisher dalam kategori yang sama masuk
 overlay blokir exact-host. Ini bukan pembuktian independen: publisher bisa
 memakai sumber dasar yang sama. Allowlist dan pengecualian DIRECT di baseline
-dipertahankan; satu sumber/tebakan AI tidak cukup untuk auto-block overlay.
+melindungi layanan dari overlay **iklan**, tetapi tidak membatalkan overlay
+**malware** yang dikonfirmasi dua publisher kategori ancaman. Identitas publisher
+dan kategorinya diperiksa ulang saat packaging; publisher asing tidak dihitung.
+Satu sumber/tebakan AI tidak cukup untuk auto-block overlay.
+
+Overlay memakai exact-host, bukan seluruh CDN/IP bersama. Pada Sing-box,
+`sniff` dan `hijack-dns` awal tetap dijalankan sebelum pemeriksaan domain;
+routing layanan, grup proxy, dan jalur default tidak diubah. Allowlist umum
+menggunakan jalur proxy yang sudah ada, bukan otomatis DIRECT. Perubahan ini
+berlaku setelah build/deploy baru; profil terpasang tidak diubah otomatis.
 
 ```bash
 bash /Users/macbookpro/Documents/GitHub/AkunYaml/update_all.sh --security-only
@@ -199,7 +208,10 @@ ditujukan untuk OpenWrt; Mac memakai Mihomo dengan system proxy HTTP/SOCKS
 **Sing-box gameblock DIRECT tersedia setelah update berikutnya** melalui
 `output/sing-box/singbox_direct_gameblock.json`, dengan kebijakan lokal yang sama
 serta validasi core. Aturan yang belum bisa diterjemahkan membatalkan publikasi,
-bukan dilewati diam-diam.
+bukan dilewati diam-diam. `MATCH,DIRECT` wajib menjadi aturan terakhir;
+aturan terminal di tengah daftar ditolak agar hasil Sing-box tidak berbeda
+dari evaluasi OpenClash. Test kesetaraan offline mencakup login/CAPTCHA,
+malware, iklan exact-host, game beserta subdomain, dan domain mirip yang sah.
 
 `output/manifest.json` mencatat mode, waktu sumber, dan hash. Waktu packaging
 bukan bukti akun aktif. Jika satu tahap gagal/parsial, hasil terpadu lama tidak

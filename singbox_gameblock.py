@@ -11,9 +11,14 @@ def build(source, clash, folder, core):
     blocks = []
     groups = {}
     last_policy = None
-    for raw in clash.get("rules", []):
+    source_rules = clash.get("rules", [])
+    if not isinstance(source_rules, list) or any(not isinstance(rule, str) for rule in source_rules):
+        raise TypeError("Daftar rule gameblock harus berisi teks")
+    for index, raw in enumerate(source_rules):
         parts = raw.split(",")
         if parts == ["MATCH", "DIRECT"]:
+            if index != len(source_rules) - 1:
+                raise ValueError("MATCH,DIRECT hanya boleh berada di akhir")
             continue
         if len(parts) not in {3, 4} or parts[2] not in {"REJECT", "REJECT-DROP", "DIRECT"}:
             raise ValueError("Gameblock hanya mendukung DIRECT/REJECT")
