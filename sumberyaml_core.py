@@ -3989,6 +3989,11 @@ def process_sources(
                         node.status = "dead"
                         node.reason = "check error: " + str(exc)[:120]
 
+                if os.getenv("NODE_HISTORY_ENABLED", "false").lower() == "true":
+                    from node_history import apply_history
+
+                    apply_history(batch, Path(__file__).resolve().parent / ".runtime_cache/node_history.json")
+
                 batch_good = [
                     node for node in batch
                     if _node_passes_output_filters(node, require_successes, int(max_jitter_ms))

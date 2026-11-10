@@ -23,6 +23,75 @@ dari `PYTHON`. Tidak ada instalasi pip, Git pull/push, atau scheduler otomatis.
 Runner online dapat mengunduh core dan memakai AI jika diaktifkan.
 Jangan menjalankan beberapa refresh bersamaan.
 
+## Laporan kesehatan
+
+Setiap update yang berhasil menerbitkan `output/health_report.md` bersama manifest.
+Ringkasannya mencatat mode update, akun yang dipertahankan, jumlah profil lulus
+validasi core, umur sumber/feed gameblock, dan status adaptive guard saat packaging.
+Laporan diterbitkan bersama profil melalui staging; update gagal tidak menggantinya.
+
+Untuk membaca ulang kondisi laporan lokal tanpa jaringan atau membangun profil:
+
+```bash
+/Users/macbookpro/Documents/GitHub/AkunYaml/.venv/bin/python /Users/macbookpro/Documents/GitHub/AkunYaml/health_report.py
+```
+
+Perintah tersebut hanya menampilkan ringkasan terminal, tidak menulis file.
+Manifest lama yang belum mencatat validasi ditandai tidak diketahui. Umur sumber
+bukan bukti node aktif; status adaptive guard adalah snapshot saat packaging.
+Tidak ada kredensial, URI akun, atau log koneksi yang dimasukkan ke ringkasan.
+
+## Pemeriksaan dan pengembangan lokal
+
+Semua perintah berikut dijalankan dengan interpreter proyek:
+`/Users/macbookpro/Documents/GitHub/AkunYaml/.venv/bin/python`.
+
+- **Jelaskan domain:** jalankan `/Users/macbookpro/Documents/GitHub/AkunYaml/rule_simulation.py --domain example.com --config /Users/macbookpro/Documents/GitHub/AkunYaml/local_build/gameblock/openclash_noproxy_gameblock.yaml`.
+  Provider lokal termasuk MRS dibaca tanpa refresh. Hasil memuat rule, urutan,
+  policy, dan nama provider. Exit 2 berarti tidak ada keputusan pasti karena
+  rule/provider yang belum dapat dievaluasi; ini bukan pengganti engine runtime.
+- **Preview perubahan:** setiap update sukses menyimpan `output/changes.json`.
+  Untuk membandingkan dua folder paket sebelum publikasi, jalankan
+  `/Users/macbookpro/Documents/GitHub/AkunYaml/release_tools.py preview /path/absolut/paket-lama /path/absolut/paket-baru`.
+  Ringkasan mencatat jumlah rule ditambah/dihapus, perubahan urutan, DNS, akun,
+  grup, dan definisi provider tanpa menampilkan kredensial. Ini bukan gate approval
+  otomatis atau pemeriksaan perubahan isi provider yang definisinya tetap.
+- **Ekspor publik opsional:** jalankan
+  `/Users/macbookpro/Documents/GitHub/AkunYaml/release_tools.py export-public /Users/macbookpro/Documents/GitHub/AkunYaml/output /path/absolut/paket-publik`.
+  Hanya blocklist adaptif yang tervalidasi sebagai domain dan manifest hash/jumlah
+  yang diekspor. Profil berakun, log, dan manifest privat tidak ikut disalin.
+  Folder tujuan harus terpisah; folder pengguna yang bukan ekspor terkelola tidak
+  akan ditimpa. **Default output dan publikasi akun saat ini tidak berubah.**
+  Paket output lengkap tetap harus diperlakukan sebagai privat; tidak ada auto-push.
+- **Riwayat stabilitas opsional:** set `NODE_HISTORY_ENABLED=true` saat menjalankan
+  update. Maksimal 20 sampel per node dan 10.000 node disimpan privat selama
+  tujuh hari di `.runtime_cache/node_history.json`, identitas berupa hash.
+  Setelah tiga sampel, rasio kegagalan menambah penalti ranking tanpa meloloskan
+  node yang gagal tes saat ini. Median/jitter dan kegagalan beruntun tersedia
+  melalui `/Users/macbookpro/Documents/GitHub/AkunYaml/node_history.py` atau
+  `node_history.summary`. Ini riwayat handshake, bukan bukti akses internet
+  penuh. Default nonaktif menjaga perilaku ranking saat ini; jangan jalankan
+  generator bersamaan ketika riwayat diaktifkan.
+- **Pemeriksaan satu pintu:** jalankan `/Users/macbookpro/Documents/GitHub/AkunYaml/check_local.py`.
+  Semua test dalam `tests/` dan lint modul pengembangan diperiksa. Tambahkan
+  `--full` untuk validasi integrasi gameblock pada salinan sementara dengan core
+  Mihomo/Sing-box lokal; cache/provider/database lokal harus tersedia. Tidak ada
+  refresh feed, perubahan profil terbit, pengaturan jaringan, atau auto-deploy.
+
+## AI adblock opsional
+
+AI tidak diperlukan untuk adblock utama. `AI_ADBLOCK_ENABLED` pada konfigurasi
+proyek kini `false`; feed publisher, korelasi adaptif non-AI, allowlist, dan
+validasi core tetap bekerja. Saat nonaktif, runner tidak menjalankan klasifikasi
+AI dan generator tidak membaca cache blocklist AI lama. Cache/kunci tidak dihapus.
+Profil yang sudah diterbitkan tidak berubah sampai dibangun ulang.
+
+Untuk mengaktifkan kembali secara sadar, ubah `AI_ADBLOCK_ENABLED` menjadi `true`
+di `/Users/macbookpro/Documents/GitHub/AkunYaml/local_config.json` dan siapkan
+endpoint/model/kunci privat. AI hanya pelengkap; kegagalan klasifikasi ditangani
+fail-open. Pengaturan grup routing layanan AI seperti `AI_TEST_URL` berbeda dari
+AI adblock dan tidak dinonaktifkan oleh perubahan ini.
+
 ## Analisis adaptif adblock/malware
 
 Update online kini mengorelasikan daftar langsung dari publisher berbeda.
@@ -127,7 +196,10 @@ Lokasi utama: `/Users/macbookpro/Documents/GitHub/AkunYaml/output/`
 Salin **folder profil beserta `rule_providers/`**, bukan YAML saja. OpenClash
 ditujukan untuk OpenWrt; Mac memakai Mihomo dengan system proxy HTTP/SOCKS
 `127.0.0.1:7890`, bukan TUN otomatis. Aktifkan satu profil Mac saja.
-**Sing-box gameblock belum tersedia.**
+**Sing-box gameblock DIRECT tersedia setelah update berikutnya** melalui
+`output/sing-box/singbox_direct_gameblock.json`, dengan kebijakan lokal yang sama
+serta validasi core. Aturan yang belum bisa diterjemahkan membatalkan publikasi,
+bukan dilewati diam-diam.
 
 `output/manifest.json` mencatat mode, waktu sumber, dan hash. Waktu packaging
 bukan bukti akun aktif. Jika satu tahap gagal/parsial, hasil terpadu lama tidak

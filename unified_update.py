@@ -16,8 +16,11 @@ import yaml
 from adaptive_guard import apply as apply_adaptive_guard
 from adaptive_guard import refresh as refresh_adaptive_guard
 from build_support import publish, seed_geodata
-from openwrt_export import export as export_openwrt
+from health_report import render as render_health
 from local_update import hako_singbox
+from openwrt_export import export as export_openwrt
+from release_tools import preview
+from singbox_gameblock import build as build_singbox_gameblock
 
 
 def mac_profile(source):
@@ -60,11 +63,12 @@ def validate_bundle(stage, root):
         result = subprocess.run(command, capture_output=True, text=True, timeout=120, check=False)
         if result.returncode:
             raise RuntimeError(f"Validasi Mihomo gagal: {config.relative_to(stage)}\n" + (result.stdout + result.stderr)[-2000:])
-    for config in (stage / "sing-box").glob("*.json"):
+    singbox_profiles = list((stage / "sing-box").glob("*.json"))
+    for config in singbox_profiles:
         result = subprocess.run([str(root / ".local_bin/sing-box"), "check", "-c", str(config)], cwd=config.parent, capture_output=True, text=True, timeout=120, check=False)
         if result.returncode:
             raise RuntimeError(f"Validasi Sing-box gagal: {config.name}\n" + (result.stdout + result.stderr)[-2000:])
-    return profiles
+    return profiles + singbox_profiles
 
 
 def collect(root, mode):
@@ -94,6 +98,12 @@ def collect(root, mode):
                 json.loads(source.read_text())
             shutil.copy2(source, destination)
             sources.append(source)
+        game_source = root / "local_build/gameblock/openclash_noproxy_gameblock.yaml"
+        singbox_game = build_singbox_gameblock(
+            json.loads((stage / "sing-box/singbox_direct_adblock.json").read_text()),
+            yaml.safe_load(game_source.read_text()), game_source.parent, root / ".local_bin/mihomo",
+        )
+        (stage / "sing-box/singbox_direct_gameblock.json").write_text(json.dumps(singbox_game, indent=2) + "\n")
         for source_name, target_name in (
             ("singbox_android.json", "singbox_hako_proxy.json"),
             ("singbox_direct_adblock.json", "singbox_hako_direct_adblock.json"),
@@ -117,10 +127,13 @@ def collect(root, mode):
             "mode": mode, "packaged_at": datetime.now(UTC).isoformat(),
             "account_refresh": "retained-old" if mode == "security-refresh-retained-accounts" else ("completed" if mode == "online-refresh" else "not-requested"),
             "adaptive_guard": adaptive_status,
-            "warning": "Offline hanya snapshot; waktu packaging bukan bukti akun aktif. Sing-box gameblock belum tersedia.",
+            "validation": {"profiles": len(profiles)},
+            "warning": "Offline hanya snapshot; waktu packaging bukan bukti akun aktif. Sing-box gameblock memakai kebijakan lokal DIRECT/REJECT.",
             "sources": [{"path": str(p.relative_to(root)), "modified_at": datetime.fromtimestamp(p.stat().st_mtime, UTC).isoformat(), "sha256": hashlib.sha256(p.read_bytes()).hexdigest()} for p in sources],
         }
         (stage / "manifest.json").write_text(json.dumps(report, indent=2) + "\n")
+        (stage / "health_report.md").write_text(render_health(root, report), encoding="utf-8")
+        (stage / "changes.json").write_text(json.dumps(preview(output, stage), indent=2) + "\n")
         (stage / "README.txt").write_text(
             "HASIL UTAMA AKUNYAML\n"
             "akun/: daftar akun hasil generator (rahasia).\n"
@@ -128,7 +141,7 @@ def collect(root, mode):
             "Gameblock OpenClash: DIRECT default, akun lokal opsional melalui grup MANUAL.\n"
             "openclash/subscription/: impor URL Raw YAML; provider lokal diunduh via HTTPS setelah seluruh output di-push.\n"
             "akun/openclash_proxy_provider.yaml: hanya akun, untuk proxy-provider; bukan konfigurasi lengkap.\n"
-            "sing-box/: Android proxy dan direct/adblock; BELUM ada gameblock.\n"
+            "sing-box/: Android proxy, direct/adblock, serta direct/gameblock.\n"
             "mihomo-mac/proxy|direct|gameblock/: config.yaml untuk Mihomo Mac.\n"
             "Mac: gunakan system proxy HTTP/SOCKS 127.0.0.1:7890; bukan TUN otomatis.\n"
             "Jalankan hanya satu profil Mac sekaligus. OpenClash bukan aplikasi macOS.\n"

@@ -4,7 +4,7 @@ openclash/proxy|direct|gameblock/: profil OpenWrt; salin provider bersama YAML.
 Gameblock OpenClash: DIRECT default, akun lokal opsional melalui grup MANUAL.
 openclash/subscription/: impor URL Raw YAML; provider lokal diunduh via HTTPS setelah seluruh output di-push.
 akun/openclash_proxy_provider.yaml: hanya akun, untuk proxy-provider; bukan konfigurasi lengkap.
-sing-box/: Android proxy dan direct/adblock; BELUM ada gameblock.
+sing-box/: Android proxy, direct/adblock, serta direct/gameblock.
 mihomo-mac/proxy|direct|gameblock/: config.yaml untuk Mihomo Mac.
 Mac: gunakan system proxy HTTP/SOCKS 127.0.0.1:7890; bukan TUN otomatis.
 Jalankan hanya satu profil Mac sekaligus. OpenClash bukan aplikasi macOS.

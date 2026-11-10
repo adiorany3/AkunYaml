@@ -924,7 +924,8 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
     threat_blocked_domains = load_blocked_domains(threat_blocklist_files, protect_marketplace=False)
     ai_blocked_domains = [
         domain
-        for domain in _read_text_file(".runtime_cache/ai_adblock_blocklist.txt").splitlines()
+        for domain in (_read_text_file(".runtime_cache/ai_adblock_blocklist.txt").splitlines()
+                       if os.getenv("AI_ADBLOCK_ENABLED", "false").strip().lower() in {"1", "true", "yes", "on"} else [])
         if domain and not domain.startswith("#") and re.fullmatch(r"[a-z0-9-]+(?:\.[a-z0-9-]+)+", domain)
     ]
 

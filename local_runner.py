@@ -1213,7 +1213,7 @@ def load_allowlist(workdir: Path) -> list[str]:
 
 
 def load_ai_adblock_domains(workdir: Path, allowlist: set[str]) -> list[str]:
-    if os.environ.get("AI_ADBLOCK_ENABLED", "false").strip().lower() in {"0", "false", "no", "off"}:
+    if os.environ.get("AI_ADBLOCK_ENABLED", "false").strip().lower() not in {"1", "true", "yes", "on"}:
         return []
     from ai_adblock_classifier import is_allowlisted, load_domains
 
@@ -2937,7 +2937,7 @@ def main() -> int:
             # keep their normal cache/update behavior if the workstation is offline.
             log(f"Security feed guard dilewati: {exc}")
 
-    if env.get("AI_ADBLOCK_ENABLED", "false").strip().lower() not in {"0", "false", "no", "off"}:
+    if env.get("AI_ADBLOCK_ENABLED", "false").strip().lower() in {"1", "true", "yes", "on"}:
         from ai_adblock_classifier import classify_candidates, refresh_streaming_candidates
 
         key_file = Path(env.get("AI_ADBLOCK_API_KEY_FILE", ".secrets/ai_adblock.key")).expanduser()

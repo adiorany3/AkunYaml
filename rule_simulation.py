@@ -1,11 +1,14 @@
-#!/usr/bin/env python3
 """Simulate representative DNS rule matches without making network requests."""
 from __future__ import annotations
 
+import argparse
+import json
 import re
 from pathlib import Path
 
 import yaml
+
+from domain_policy_tools import explain
 
 ROOT = Path(__file__).resolve().parent
 CONFIG = ROOT / "openclash_auto.yaml"
@@ -41,6 +44,21 @@ def payload_rules(path: Path) -> list[str]:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--domain", help="Jelaskan keputusan domain dari provider lokal")
+    parser.add_argument("--config", type=Path, default=CONFIG)
+    parser.add_argument("--core", type=Path, default=ROOT / ".local_bin/mihomo")
+    args = parser.parse_args()
+    if args.domain:
+        try:
+            result = explain(args.config.resolve(), args.domain, args.core.resolve())
+        except (OSError, ValueError, TypeError, yaml.YAMLError):
+            print("[ERROR] Domain, profil, atau provider lokal tidak valid.")
+            return 2
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        if result["uncertain_before"]:
+            print("[WARN] Ada rule/provider sebelumnya yang tidak dapat dievaluasi; keputusan belum pasti.")
+        return 0 if result.get("policy") and not result["uncertain_before"] else 2
     data = yaml.safe_load(CONFIG.read_text(encoding="utf-8")) or {}
     providers = data.get("rule-providers") or {}
     rules = [str(x) for x in data.get("rules", []) or []]

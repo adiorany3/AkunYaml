@@ -57,7 +57,9 @@ def test_all_profile_types_validated(tmp_path, monkeypatch):
         return SimpleNamespace(returncode=0, stdout="", stderr="")
 
     monkeypatch.setattr(unified_update.subprocess, "run", run)
-    validate_bundle(tmp_path, tmp_path)
+    validated = validate_bundle(tmp_path, tmp_path)
+    assert len(validated) == 4
+    assert any(path.suffix == ".json" for path in validated)
     assert len(calls) == 4
     assert any("check" in command for command in calls)
     assert {command[-1] for command in calls} == {str(tmp_path / p) for p in paths}
