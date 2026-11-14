@@ -14,13 +14,13 @@
   "hagezi-pro-plus-mini": {
     "behavior": "domain",
     "path": "rule_providers/compiled/hagezi-pro-plus-mini.mrs",
-    "size": 772545,
+    "size": 790878,
     "status": "compiled"
   },
   "popup-ads": {
     "behavior": "domain",
     "path": "rule_providers/compiled/popup-ads.mrs",
-    "size": 647597,
+    "size": 541108,
     "status": "compiled"
   },
   "threat-cryptominers": {
@@ -32,31 +32,31 @@
   "threat-fake-scam": {
     "behavior": "domain",
     "path": "rule_providers/compiled/threat-fake-scam.mrs",
-    "size": 132551,
+    "size": 132574,
     "status": "compiled"
   },
   "threat-malware": {
     "behavior": "domain",
     "path": "rule_providers/compiled/threat-malware.mrs",
-    "size": 6915,
+    "size": 7025,
     "status": "compiled"
   },
   "threat-phishing": {
     "behavior": "domain",
     "path": "rule_providers/compiled/threat-phishing.mrs",
-    "size": 235805,
+    "size": 219501,
     "status": "compiled"
   },
   "threat-tif-ip": {
     "behavior": "ipcidr",
     "path": "rule_providers/compiled/threat-tif-ip.mrs",
-    "size": 80245,
+    "size": 80648,
     "status": "compiled"
   },
   "threat-tif-mini": {
     "behavior": "domain",
     "path": "rule_providers/compiled/threat-tif-mini.mrs",
-    "size": 1226307,
+    "size": 1224207,
     "status": "compiled"
   }
 }

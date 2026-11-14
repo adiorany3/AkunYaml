@@ -4,7 +4,7 @@
 - Umur packaging: 0.0 jam.
 - Akun: akun lama dipertahankan; refresh baru tidak memenuhi syarat.
 - Validasi core saat packaging: 20 profil lulus.
-- Umur sumber tertua: 1066.2 jam (waktu modifikasi, bukan uji node).
+- Umur sumber tertua: 1149.9 jam (waktu modifikasi, bukan uji node).
 - Feed gameblock: 14 tercatat; umur unduhan tertua: 0.0 jam.
 - Adaptive guard: segar saat packaging.
 - Provider direct yang memerlukan internet saat runtime: 9.
