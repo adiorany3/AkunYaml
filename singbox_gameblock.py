@@ -5,7 +5,7 @@ from domain_policy_tools import FIELDS, provider_rules
 
 
 def build(source, clash, folder, core):
-    from local_update import direct_singbox
+    from local_update import YOUTUBE_AD_HOSTS, YOUTUBE_PLAYBACK_SUFFIXES, direct_singbox
 
     config = direct_singbox(source)
     blocks = []
@@ -50,7 +50,12 @@ def build(source, clash, folder, core):
     route = config.setdefault("route", {})
     previous = route.get("rules", [])
     technical = [copy.deepcopy(rule) for rule in previous if rule.get("action") in {"sniff", "hijack-dns"}]
-    route["rules"] = technical + blocked
+    youtube = [copy.deepcopy(rule) for rule in previous if isinstance(rule, dict) and (
+        rule.get("domain") == YOUTUBE_AD_HOSTS and (rule.get("outbound") == "block" or rule.get("action") == "reject")
+        or rule.get("domain_suffix") == YOUTUBE_PLAYBACK_SUFFIXES
+        or set(rule.get("domain", [])) == {"static.doubleclick.net", "jnn-pa.googleapis.com"}
+    )]
+    route["rules"] = technical + blocked + youtube
     route.pop("rule_set", None)
     for rule in config.get("dns", {}).get("rules", []):
         if "rule_set" in rule:

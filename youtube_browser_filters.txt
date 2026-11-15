@@ -19,6 +19,7 @@ youtube.com##.ytp-ad-text-overlay
 youtube.com##.ytp-ad-image-overlay
 youtube.com##.ytp-ad-progress-list
 youtube.com##ytd-rich-item-renderer:has(ytd-ad-slot-renderer)
+youtube.com##ytd-rich-section-renderer:has(ytd-ad-slot-renderer)
 youtube.com##ytd-search ytd-ad-slot-renderer
 youtube.com##ytd-watch-next-secondary-results-renderer ytd-ad-slot-renderer
 youtube.com##ytm-ad-slot-renderer

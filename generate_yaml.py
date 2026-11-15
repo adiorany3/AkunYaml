@@ -989,6 +989,46 @@ def _build_singbox_android_json(nodes: list[Any]) -> str:
             "action": "route",
             "outbound": "proxy",
         })
+    # YouTube ad endpoints must precede broad ad lists; shared playback hosts stay reachable.
+    route_rules.extend([
+        {
+            "domain": [
+                "ads.youtube.com",
+                "googleads.g.doubleclick.net",
+                "ad.doubleclick.net",
+                "pubads.g.doubleclick.net",
+                "securepubads.g.doubleclick.net",
+                "pagead2.googlesyndication.com",
+                "tpc.googlesyndication.com",
+                "www.googleadservices.com",
+                "imasdk.googleapis.com",
+                "adtrafficquality.google",
+                "googleadapis.com",
+                "mobileads.google.com",
+                "pagead.l.google.com",
+                "adservice.google.com",
+                "pagead2.googleadservices.com",
+                "afs.googlesyndication.com",
+                "stats.g.doubleclick.net",
+                "m.doubleclick.net",
+                "mediavisor.doubleclick.net",
+            ],
+            "action": "reject",
+        },
+        {
+            "domain": ["static.doubleclick.net", "jnn-pa.googleapis.com"],
+            "action": "route",
+            "outbound": "VMESS-VIDEO",
+        },
+        {
+            "domain_suffix": [
+                "youtube.com", "youtu.be", "youtube-nocookie.com", "googlevideo.com",
+                "ytimg.com", "youtubei.googleapis.com", "youtube.googleapis.com", "ggpht.com",
+            ],
+            "action": "route",
+            "outbound": "VMESS-VIDEO",
+        },
+    ])
     route_rules.extend([
         # Cloudflare WebSocket nodes carry TCP reliably, not QUIC. Rejecting
         # UDP/443 makes other Android apps immediately retry HTTPS over TCP.

@@ -95,8 +95,13 @@ def collect(root, mode):
             destination = stage / target
             destination.parent.mkdir(parents=True, exist_ok=True)
             if source.suffix == ".json":
-                json.loads(source.read_text())
-            shutil.copy2(source, destination)
+                config = json.loads(source.read_text())
+                if target == "sing-box/singbox_android.json":
+                    from local_update import apply_youtube_singbox_rules
+                    config = apply_youtube_singbox_rules(config)
+                destination.write_text(json.dumps(config, indent=2, ensure_ascii=False) + "\n")
+            else:
+                shutil.copy2(source, destination)
             sources.append(source)
         game_source = root / "local_build/gameblock/openclash_noproxy_gameblock.yaml"
         singbox_game = build_singbox_gameblock(

@@ -22,6 +22,15 @@ assert gambling_domains & reject_domains, "No cached gambling domains exported"
 assert "netflix.com" not in reject_domains
 assert "ads.spotify.com" in reject_domains
 for domain in (
+    "ads.youtube.com",
+    "googleads.g.doubleclick.net",
+    "ad.doubleclick.net",
+    "pagead2.googlesyndication.com",
+    "imasdk.googleapis.com",
+    "adservice.google.com",
+):
+    assert domain in reject_domains, domain
+for domain in (
     "pagead2.googlesyndication.com",
     "googletagservices.com",
     "metrics.samsung.com",

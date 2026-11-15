@@ -75,6 +75,16 @@ def main():
         # v4.6 router extras must not be injected as a dedicated pre-playback layer on Android.
         # Existing app-ad rules may contain some exact domains later in the file, which is allowed.
         yt_idx = rules.index('DOMAIN-SUFFIX,googlevideo.com,YOUTUBE') if 'DOMAIN-SUFFIX,googlevideo.com,YOUTUBE' in rules else -1
+        if yt_idx < 0:
+            errors += fail('openclash_android.yaml: googlevideo.com playback guard missing')
+        for domain in PROTECTED_SUFFIX:
+            if any(r.startswith(f'DOMAIN-SUFFIX,{domain},') and r.endswith(',REJECT') for r in rules):
+                errors += fail(f'openclash_android.yaml: playback suffix rejected: {domain}')
+            if f'DOMAIN-SUFFIX,{domain},YOUTUBE' not in rules:
+                errors += fail(f'openclash_android.yaml: playback route missing: {domain}')
+        for domain in PROTECTED_EXACT:
+            if f'DOMAIN,{domain},YOUTUBE' not in rules:
+                errors += fail(f'openclash_android.yaml: compatibility route missing: {domain}')
         if yt_idx >= 0:
             for d in EXTRA:
                 try:
@@ -83,12 +93,15 @@ def main():
                     continue
                 if idx < yt_idx:
                     errors += fail(f'openclash_android.yaml: router-only YouTube extra leaked before playback guard: {d}')
+        print('[OK] Android playback and compatibility guards validated')
         print('[OK] Android remains outside router-only YouTube extra layer')
 
     filters = Path('youtube_browser_filters.txt').read_text(encoding='utf-8')
     for d in EXTRA:
         if f'||{d}^$domain=youtube.com' not in filters:
             errors += fail(f'browser filter missing: {d}')
+    if 'youtube.com##ytd-rich-section-renderer:has(ytd-ad-slot-renderer)' not in filters:
+        errors += fail('browser filter missing ad-slot cleanup for rich sections')
     for bad in ('||googlevideo.com', '||static.doubleclick.net'):
         if bad in filters:
             errors += fail(f'browser filter blocks protected host: {bad}')

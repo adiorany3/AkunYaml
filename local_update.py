@@ -38,12 +38,67 @@ def direct_clash(source: dict) -> dict:
     return config
 
 
-def direct_singbox(source: dict) -> dict:
+YOUTUBE_AD_HOSTS = [
+    "ads.youtube.com", "googleads.g.doubleclick.net", "ad.doubleclick.net",
+    "pubads.g.doubleclick.net", "securepubads.g.doubleclick.net",
+    "pagead2.googlesyndication.com", "tpc.googlesyndication.com",
+    "www.googleadservices.com", "imasdk.googleapis.com", "adtrafficquality.google",
+    "googleadapis.com", "mobileads.google.com", "pagead.l.google.com",
+    "adservice.google.com", "pagead2.googleadservices.com", "afs.googlesyndication.com",
+    "stats.g.doubleclick.net", "m.doubleclick.net", "mediavisor.doubleclick.net",
+]
+YOUTUBE_PLAYBACK_SUFFIXES = [
+    "youtube.com", "youtu.be", "youtube-nocookie.com", "googlevideo.com",
+    "ytimg.com", "youtubei.googleapis.com", "youtube.googleapis.com", "ggpht.com",
+]
+
+
+def apply_youtube_singbox_rules(source: dict) -> dict:
     config = copy.deepcopy(source)
+    rules = config.setdefault("route", {}).setdefault("rules", [])
+    ad_hosts = set(YOUTUBE_AD_HOSTS)
+    playback_hosts = set(YOUTUBE_PLAYBACK_SUFFIXES)
+    rules[:] = [rule for rule in rules if not (
+        isinstance(rule, dict) and (
+            rule.get("action") == "reject" and ad_hosts.intersection(rule.get("domain", []))
+            or rule.get("action") == "route" and (
+                playback_hosts.intersection(rule.get("domain_suffix", []))
+                or {"static.doubleclick.net", "jnn-pa.googleapis.com"}.intersection(rule.get("domain", []))
+            )
+        )
+    )]
+    for rule in rules:
+        if not isinstance(rule, dict):
+            continue
+        if rule.get("action") == "reject":
+            rule["domain"] = [d for d in rule.get("domain", []) if d not in ad_hosts | {"static.doubleclick.net", "jnn-pa.googleapis.com"}]
+            rule["domain_suffix"] = [d for d in rule.get("domain_suffix", []) if d not in playback_hosts]
+        if rule.get("action") == "route":
+            rule["domain"] = [d for d in rule.get("domain", []) if d not in {"static.doubleclick.net", "jnn-pa.googleapis.com"}]
+            rule["domain_suffix"] = [d for d in rule.get("domain_suffix", []) if d not in playback_hosts]
+    rules[:] = [r for r in rules if not any(k in r and not r[k] for k in ("domain", "domain_suffix"))]
+    insert_at = next((i for i, rule in enumerate(rules) if isinstance(rule, dict) and
+                      ("doubleclick.net" in rule.get("domain_suffix", []) or
+                       "googlesyndication.com" in rule.get("domain_suffix", []))), len(rules))
+    rules[insert_at:insert_at] = [
+        {"domain": YOUTUBE_AD_HOSTS, "action": "route", "outbound": "block"},
+        {"domain": ["static.doubleclick.net", "jnn-pa.googleapis.com"], "action": "route", "outbound": "VMESS-VIDEO"},
+        {"domain_suffix": YOUTUBE_PLAYBACK_SUFFIXES, "action": "route", "outbound": "VMESS-VIDEO"},
+    ]
+    return config
+
+
+def direct_singbox(source: dict) -> dict:
+    config = apply_youtube_singbox_rules(source)
+    for rule in config.get("route", {}).get("rules", []):
+        if rule.get("outbound") == "block":
+            rule["action"] = "reject"
+            rule.pop("outbound")
     config["outbounds"] = [{"type": "direct", "tag": "direct"}]
     config.pop("experimental", None)
 
     def rewrite(value):
+
         if isinstance(value, dict):
             for key, item in value.items():
                 if key in {"outbound", "detour", "download_detour"}:
