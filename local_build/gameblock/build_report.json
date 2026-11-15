@@ -1,6 +1,6 @@
 {
   "generator": "independent-local",
-  "built_at": "2026-11-15T02:19:11.795569+00:00",
+  "built_at": "2026-11-15T02:40:46.094466+00:00",
   "mode": "refresh",
   "rules": 11986,
   "providers": 20,
@@ -11,7 +11,7 @@
       "format": "text",
       "path": "rule_providers/live/ads_indonesia.mrs",
       "entries": 125,
-      "fetched_at": "2026-11-15T02:19:08.281102+00:00",
+      "fetched_at": "2026-11-15T02:40:42.648809+00:00",
       "sha256": "28015ff170efdd5e3862839e9727220e4a1fbef5ab6368ca60893d02c5df990d"
     },
     {
@@ -20,7 +20,7 @@
       "format": "mrs",
       "path": "rule_providers/live/ads_domain.mrs",
       "entries": null,
-      "fetched_at": "2026-11-15T02:19:08.247687+00:00",
+      "fetched_at": "2026-11-15T02:40:42.622569+00:00",
       "sha256": "38424a7d19026feddb3277b6a6dce557f3add4648333516b3a76ba8674c81598"
     },
     {
@@ -29,7 +29,7 @@
       "format": "yaml",
       "path": "rule_providers/live/anti-ad.yaml",
       "entries": null,
-      "fetched_at": "2026-11-15T02:19:10.388120+00:00",
+      "fetched_at": "2026-11-15T02:40:44.709648+00:00",
       "sha256": "1e28b803b64331df44b2fde10fb990aed50afec8c88d99d99f9dcad6d818a40f"
     },
     {
@@ -38,7 +38,7 @@
       "format": "mrs",
       "path": "rule_providers/live/tracker-domain.mrs",
       "entries": null,
-      "fetched_at": "2026-11-15T02:19:08.248133+00:00",
+      "fetched_at": "2026-11-15T02:40:42.534638+00:00",
       "sha256": "e904e567100e133074ac14936e2ff8f9bb4b6f1fc6f9be3d38c0f03c3c8215c2"
     },
     {
@@ -47,7 +47,7 @@
       "format": "text",
       "path": "rule_providers/live/threat-tif-mini.mrs",
       "entries": 185809,
-      "fetched_at": "2026-11-15T02:19:09.991184+00:00",
+      "fetched_at": "2026-11-15T02:40:44.586867+00:00",
       "sha256": "0352475ab25d9786c5a488d44ed57fc5cfdb3b12b36526203fa2a2f10a27eb84"
     },
     {
@@ -56,7 +56,7 @@
       "format": "text",
       "path": "rule_providers/live/threat-malware.mrs",
       "entries": 574,
-      "fetched_at": "2026-11-15T02:19:08.813304+00:00",
+      "fetched_at": "2026-11-15T02:40:43.241210+00:00",
       "sha256": "b45fbd16e6330c79f6540717f89eb626e0a1d661ed2071812bb24cceb38980c0"
     },
     {
@@ -65,7 +65,7 @@
       "format": "text",
       "path": "rule_providers/live/threat-phishing.mrs",
       "entries": 18446,
-      "fetched_at": "2026-11-15T02:19:08.997896+00:00",
+      "fetched_at": "2026-11-15T02:40:43.405076+00:00",
       "sha256": "4eb3e9522c4abe91baa6f34f16727b5da22874c0ab7e62a72191220e1faff050"
     },
     {
@@ -74,7 +74,7 @@
       "format": "text",
       "path": "rule_providers/live/threat-cryptominers.mrs",
       "entries": 296,
-      "fetched_at": "2026-11-15T02:19:09.482400+00:00",
+      "fetched_at": "2026-11-15T02:40:43.921714+00:00",
       "sha256": "6522bdba2094517b26a5ffa3d9e02f88dfc32d2edad0d10e06d6b79e2fca3e12"
     },
     {
@@ -83,7 +83,7 @@
       "format": "text",
       "path": "rule_providers/live/threat-fake-scam.mrs",
       "entries": 18931,
-      "fetched_at": "2026-11-15T02:19:09.563904+00:00",
+      "fetched_at": "2026-11-15T02:40:44.279453+00:00",
       "sha256": "c486edcca5ce1a5f59b8738e8b65e180efbe05d81f9b5b6ecc3358f869ab2bba"
     },
     {
@@ -92,7 +92,7 @@
       "format": "text",
       "path": "rule_providers/live/gambling-mini.mrs",
       "entries": 49947,
-      "fetched_at": "2026-11-15T02:19:10.456694+00:00",
+      "fetched_at": "2026-11-15T02:40:44.861965+00:00",
       "sha256": "905029bfd16d9f71574ce2c766d4d745777edbf7f372b38a1847d855714e12a3"
     },
     {
@@ -101,7 +101,7 @@
       "format": "mrs",
       "path": "rule_providers/live/adult-category.mrs",
       "entries": null,
-      "fetched_at": "2026-11-15T02:19:10.144190+00:00",
+      "fetched_at": "2026-11-15T02:40:44.955884+00:00",
       "sha256": "75d39549fcbfdccd2c35400421f30ff56c1ef3aa585624d4f620f597962874eb"
     },
     {
@@ -110,7 +110,7 @@
       "format": "text",
       "path": "rule_providers/live/popup-ads.mrs",
       "entries": 78247,
-      "fetched_at": "2026-11-15T02:19:10.872150+00:00",
+      "fetched_at": "2026-11-15T02:40:45.603623+00:00",
       "sha256": "e153ce866a70a3b65f04b7ac09b688c7c6d01af25b9a37ead2f4b0aca7d01069"
     },
     {
@@ -119,7 +119,7 @@
       "format": "text",
       "path": "rule_providers/live/hagezi-pro.mrs",
       "entries": 236098,
-      "fetched_at": "2026-11-15T02:19:11.637451+00:00",
+      "fetched_at": "2026-11-15T02:40:45.929883+00:00",
       "sha256": "a8cfa4793e683ae197390d6df7c68967fab40f164d18fb8b89b982929cfacb7a"
     },
     {
@@ -128,7 +128,7 @@
       "format": "mrs",
       "path": "rule_providers/live/games-category.mrs",
       "entries": null,
-      "fetched_at": "2026-11-15T02:19:10.771108+00:00",
+      "fetched_at": "2026-11-15T02:40:45.361168+00:00",
       "sha256": "9f4db5b5b003d3426b35b2c1e618869f9d6642c7bdf7d8f30ab2ff96c4defa99"
     }
   ],

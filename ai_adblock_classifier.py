@@ -62,6 +62,10 @@ DISCOVERY_FEEDS = CANDIDATE_FEEDS + (
     ".feed_cache/last_good/ads_indonesia.txt",
     ".feed_cache/last_good/gambling-mini.txt",
     ".feed_cache/last_good/threat-fake-scam.txt",
+    ".feed_cache/last_good/threat-malware.txt",
+    ".feed_cache/last_good/threat-phishing.txt",
+    ".feed_cache/last_good/threat-cryptominers.txt",
+    ".feed_cache/last_good/threat-tif-mini.txt",
 )
 DISCOVERY_MARKERS = {
     "bet", "casino", "gacor", "gambling", "judi", "judol", "loan", "lottery",

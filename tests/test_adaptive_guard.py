@@ -1,4 +1,67 @@
 import json
+from pathlib import Path
+
+import adaptive_guard
+
+
+def test_integrated_youtube_rules_preserve_combined_matches(tmp_path):
+    from local_update import apply_youtube_singbox_rules
+
+    original = {"route": {"rules": [
+        {"domain": ["ads.youtube.com", "api.other.example"], "action": "reject"},
+        {"domain_suffix": ["googlevideo.com", "malware-cdn.example"], "action": "reject"},
+        {"domain_suffix": ["googlevideo.com", "doubleclick.net", "other.example"], "action": "reject"},
+    ]}}
+    result = apply_youtube_singbox_rules(original)["route"]["rules"]
+    assert any("api.other.example" in r.get("domain", []) and r["action"] == "reject" for r in result)
+    assert any("malware-cdn.example" in r.get("domain_suffix", []) and r["action"] == "reject" for r in result)
+    assert any("other.example" in r.get("domain_suffix", []) and r["action"] == "reject" for r in result)
+    assert next(r for r in result if "googlevideo.com" in r.get("domain_suffix", []))["outbound"] == "VMESS-VIDEO"
+    assert original["route"]["rules"][1]["domain_suffix"][0] == "googlevideo.com"
+
+
+def test_adaptive_rules_preserve_priority_and_playback(tmp_path, monkeypatch):
+    root = tmp_path / "root"
+    stage = tmp_path / "stage"
+    root.mkdir()
+    (root / "adblock_allowlist.txt").write_text("safe.example\n")
+    baseline = root / "gameblock_policy/baseline"
+    baseline.mkdir(parents=True)
+    (baseline / "openclash_noproxy_gameblock.yaml").write_text("rules: []\n")
+    folder = stage / "sing-box"
+    folder.mkdir(parents=True)
+    config = {"route": {"rules": [
+        {"action": "sniff"},
+        {"rule_set": ["threat-malware"], "action": "reject"},
+        {"domain": ["ads.youtube.com"], "action": "route", "outbound": "block"},
+        {"domain_suffix": ["googlevideo.com"], "action": "route", "outbound": "VMESS-VIDEO"},
+        {"domain_suffix": ["safe.example"], "action": "route", "outbound": "block"},
+    ]}}
+    (folder / "config.json").write_text(json.dumps(config))
+    monkeypatch.setattr(adaptive_guard, "snapshot", lambda _root: {
+        "status": "fresh", "accepted": {
+            "evil.example": {"category": "malware", "publishers": ["a", "b"]},
+            "safe.example": {"category": "adblock", "publishers": ["a", "b"]},
+        },
+    })
+    adaptive_guard.apply(stage, root)
+    rules = json.loads((folder / "config.json").read_text())["route"]["rules"]
+    malware = next(i for i, rule in enumerate(rules) if "threat-malware" in rule.get("rule_set", []))
+    ads = next(i for i, rule in enumerate(rules) if "ads.youtube.com" in rule.get("domain", []))
+    playback = next(i for i, rule in enumerate(rules) if "googlevideo.com" in rule.get("domain_suffix", []))
+    adaptive = next(i for i, rule in enumerate(rules) if rule.get("domain") == ["evil.example"])
+    assert malware < ads < playback < adaptive
+    assert rules[adaptive]["action"] == "reject"
+    assert all("safe.example" not in rule.get("domain", []) for rule in rules)
+    assert rules[playback]["outbound"] == "VMESS-VIDEO"
+
+
+if __name__ == "__main__":
+    import tempfile
+    test_adaptive_rules_preserve_priority_and_playback(Path(tempfile.mkdtemp()), lambda *_: None)
+    print("PASS: adaptive threat ordering, allowlist, YouTube playback")
+
+import json
 from datetime import UTC, datetime, timedelta
 
 import yaml

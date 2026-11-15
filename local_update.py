@@ -58,25 +58,33 @@ def apply_youtube_singbox_rules(source: dict) -> dict:
     rules = config.setdefault("route", {}).setdefault("rules", [])
     ad_hosts = set(YOUTUBE_AD_HOSTS)
     playback_hosts = set(YOUTUBE_PLAYBACK_SUFFIXES)
-    rules[:] = [rule for rule in rules if not (
-        isinstance(rule, dict) and (
-            rule.get("action") == "reject" and ad_hosts.intersection(rule.get("domain", []))
-            or rule.get("action") == "route" and (
-                playback_hosts.intersection(rule.get("domain_suffix", []))
-                or {"static.doubleclick.net", "jnn-pa.googleapis.com"}.intersection(rule.get("domain", []))
-            )
-        )
-    )]
     for rule in rules:
         if not isinstance(rule, dict):
             continue
-        if rule.get("action") == "reject":
-            rule["domain"] = [d for d in rule.get("domain", []) if d not in ad_hosts | {"static.doubleclick.net", "jnn-pa.googleapis.com"}]
-            rule["domain_suffix"] = [d for d in rule.get("domain_suffix", []) if d not in playback_hosts]
-        if rule.get("action") == "route":
-            rule["domain"] = [d for d in rule.get("domain", []) if d not in {"static.doubleclick.net", "jnn-pa.googleapis.com"}]
-            rule["domain_suffix"] = [d for d in rule.get("domain_suffix", []) if d not in playback_hosts]
-    rules[:] = [r for r in rules if not any(k in r and not r[k] for k in ("domain", "domain_suffix"))]
+        if (rule.get("action") == "reject" or rule.get("outbound") == "block") and ad_hosts.intersection(rule.get("domain", [])):
+            rule["domain"] = [domain for domain in rule.get("domain", []) if domain not in ad_hosts]
+        if rule.get("action") == "reject" or rule.get("outbound") == "block":
+            for key, protected in (("domain", {"static.doubleclick.net", "jnn-pa.googleapis.com"}), ("domain_suffix", playback_hosts)):
+                values = rule.get(key, [])
+                if protected.intersection(values):
+                    rule[key] = [domain for domain in values if domain not in protected]
+    rules[:] = [rule for rule in rules if not any(key in rule and not rule[key] for key in ("domain", "domain_suffix"))]
+    protected_exact = {"static.doubleclick.net", "jnn-pa.googleapis.com"}
+    for rule in rules:
+        if not isinstance(rule, dict) or not (rule.get("outbound") == "block" or rule.get("action") == "reject"):
+            continue
+        for key, protected in (("domain", ad_hosts | protected_exact), ("domain_suffix", playback_hosts)):
+            values = rule.get(key)
+            if not isinstance(values, list) or not protected.intersection(values):
+                continue
+            remaining = [value for value in values if value not in protected]
+            if remaining:
+                rule[key] = remaining
+            else:
+                rule.pop(key)
+                if not any(rule.get(k) for k in ("domain", "domain_suffix", "domain_keyword", "domain_regex", "ip_cidr")):
+                    rules.remove(rule)
+                    break
     insert_at = next((i for i, rule in enumerate(rules) if isinstance(rule, dict) and
                       ("doubleclick.net" in rule.get("domain_suffix", []) or
                        "googlesyndication.com" in rule.get("domain_suffix", []))), len(rules))

@@ -123,10 +123,23 @@ def apply(stage, root):
     domains = sorted(report["accepted"])
     if domains:
         import yaml
+        from ai_adblock_classifier import is_allowlisted, load_domains
+        allowlist = set(load_domains(root / "adblock_allowlist.txt"))
+        blocked_domains = [domain for domain in domains if not is_allowlisted(domain, allowlist)]
         for folder in (stage / "openclash", stage / "mihomo-mac"):
             for path in folder.glob("*/*.yaml"):
                 config = yaml.safe_load(path.read_text())
-                config["rules"] = [f"DOMAIN,{domain},REJECT" for domain in domains] + config["rules"]
+                rules = config.get("rules", [])
+                position = next((i for i, rule in enumerate(rules) if str(rule).startswith((
+                    "RULE-SET,threat-malware,", "RULE-SET,threat-phishing,", "RULE-SET,threat-tif-mini,",
+                    "RULE-SET,ads_domain,", "RULE-SET,tracker-domain,", "MATCH,", "FINAL,",
+                ))), len(rules))
+                youtube_position = next((i for i, rule in enumerate(rules) if
+                                         str(rule).startswith("DOMAIN-SUFFIX,googlevideo.com,")), None)
+                if youtube_position is not None:
+                    position = max(position, youtube_position + 1)
+                rules[position:position] = [f"DOMAIN,{domain},REJECT" for domain in blocked_domains]
+                config["rules"] = rules
                 path.write_text(yaml.safe_dump(config, sort_keys=False, allow_unicode=True))
         for path in (stage / "sing-box").glob("*.json"):
             config = json.loads(path.read_text())
@@ -134,7 +147,15 @@ def apply(stage, root):
             position = 0
             while position < len(rules) and rules[position].get("action") in {"sniff", "hijack-dns"}:
                 position += 1
-            rules.insert(position, {"domain": domains, "action": "reject"})
+            youtube_rule = next((i for i, rule in enumerate(rules) if
+                                 "googlevideo.com" in rule.get("domain_suffix", [])), None)
+            if youtube_rule is not None:
+                position = youtube_rule + 1
+            ads_rule = next((i for i, rule in enumerate(rules) if rule.get("domain_suffix") and
+                             "googlevideo.com" in rule["domain_suffix"]), None)
+            if ads_rule is not None:
+                position = max(position, ads_rule + 1)
+            rules.insert(position, {"domain": blocked_domains, "action": "reject"})
             path.write_text(json.dumps(config, indent=2, ensure_ascii=False) + "\n")
     destination = stage / "security"
     destination.mkdir()
