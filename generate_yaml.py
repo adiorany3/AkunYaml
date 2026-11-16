@@ -2282,6 +2282,15 @@ def main() -> int:
     )
     alive_nodes = _smart_select_nodes(tested_nodes, max_nodes)
     unique_names(alive_nodes)
+    if not manual_text.strip() and alive_nodes:
+        manual_nodes, manual_skipped = parse_manual_nodes_unscreened(alive_nodes[0].raw)
+        if manual_nodes:
+            manual_nodes[0].tier = "MANUAL"
+            manual_file_path = Path(manual_file)
+            manual_file_path.parent.mkdir(parents=True, exist_ok=True)
+            manual_file_path.write_text(alive_nodes[0].raw.rstrip() + "\n", encoding="utf-8")
+            singbox_manual_nodes = list(manual_nodes)
+            print(f"[INFO] Manual source kosong; simpan node otomatis hidup: {_node_name(manual_nodes[0])}")
     print(f"[INFO] NekoBox/sing-box test otomatis: {nekobox_reason}")
     # Fail closed before builders: Android has no safe automatic/DIRECT fallback.
     # Manual nodes count because they are mandatory input and outside auto quota.
