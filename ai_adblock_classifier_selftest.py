@@ -7,7 +7,12 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-from ai_adblock_classifier import _discovery_score, classify_candidates, is_allowlisted, parse_response
+from ai_adblock_classifier import (
+    _discovery_score,
+    classify_candidates,
+    is_allowlisted,
+    parse_response,
+)
 
 
 def check(condition: bool, message: str) -> None:

@@ -4,6 +4,7 @@ import base64
 import concurrent.futures
 import copy
 import csv
+import hashlib
 import html
 import io
 import json
@@ -12,9 +13,8 @@ import re
 import socket
 import ssl
 import statistics
-import time
-import hashlib
 import threading
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -23,24 +23,44 @@ from urllib.parse import parse_qs, quote, unquote, urlparse
 import requests
 import yaml
 
-from security_policy import (
-    provider_catalog as shared_security_provider_catalog,
-    provider_reject_rules as shared_security_provider_reject_rules,
-)
-from android_marketplace_policy import (
-    enabled as android_marketplace_live_enabled,
-    route_policy as android_marketplace_live_policy,
-    guard_rules as android_marketplace_live_guard_rules,
-    fake_ip_filters as android_marketplace_live_fake_ip_filters,
-    sniffer_skip_domains as android_marketplace_live_sniffer_skip_domains,
-    dns_policy_domains as android_marketplace_live_dns_policy_domains,
+from android_banking_policy import (
+    dns_policy_domains as android_banking_dns_policy_domains,
 )
 from android_banking_policy import (
     enabled as android_banking_enabled,
-    guard_rules as android_banking_guard_rules,
+)
+from android_banking_policy import (
     fake_ip_filters as android_banking_fake_ip_filters,
+)
+from android_banking_policy import (
+    guard_rules as android_banking_guard_rules,
+)
+from android_banking_policy import (
     sniffer_skip_domains as android_banking_sniffer_skip_domains,
-    dns_policy_domains as android_banking_dns_policy_domains,
+)
+from android_marketplace_policy import (
+    dns_policy_domains as android_marketplace_live_dns_policy_domains,
+)
+from android_marketplace_policy import (
+    enabled as android_marketplace_live_enabled,
+)
+from android_marketplace_policy import (
+    fake_ip_filters as android_marketplace_live_fake_ip_filters,
+)
+from android_marketplace_policy import (
+    guard_rules as android_marketplace_live_guard_rules,
+)
+from android_marketplace_policy import (
+    route_policy as android_marketplace_live_policy,
+)
+from android_marketplace_policy import (
+    sniffer_skip_domains as android_marketplace_live_sniffer_skip_domains,
+)
+from security_policy import (
+    provider_catalog as shared_security_provider_catalog,
+)
+from security_policy import (
+    provider_reject_rules as shared_security_provider_reject_rules,
 )
 
 
@@ -524,7 +544,6 @@ def _domain_from_manual_line(line: str) -> tuple[str, str] | None:
     if not text:
         return None
 
-    upper = text.upper()
     if "," in text:
         parts = [p.strip() for p in text.split(",") if p.strip()]
         if len(parts) >= 2:
@@ -1045,7 +1064,7 @@ def unique_names(nodes: list[ProxyNode], provider_names: bool = True) -> None:
 
 def first_query(params: dict[str, list[str]], *names: str, default: str = "") -> str:
     for name in names:
-        if name in params and params[name]:
+        if params.get(name):
             return params[name][0]
     return default
 
@@ -2249,9 +2268,8 @@ def tls_bug_delay(node: ProxyNode, timeout: float, attempts: int, target_server:
             raw = socket.create_connection((target_server, ONLY_PORT), timeout=timeout)
             node.tcp_reachable = True
             raw.settimeout(timeout)
-            with raw:
-                with context.wrap_socket(raw, server_hostname=sni):
-                    delays.append(int((time.perf_counter() - start) * 1000))
+            with raw, context.wrap_socket(raw, server_hostname=sni):
+                delays.append(int((time.perf_counter() - start) * 1000))
         except Exception as exc:
             last_error = str(exc)
         if attempt_index + 1 < attempts:
@@ -2721,12 +2739,6 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         "interval": 86400,
         "behavior": "classical",
         "format": "yaml",
-    }
-    text_domain_provider = {
-        "type": "http",
-        "interval": 43200,
-        "behavior": "domain",
-        "format": "text",
     }
 
     security_profile = os.getenv("ADBLOCK_PROFILE", "balanced").strip().lower() or "balanced"
@@ -3293,7 +3305,7 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
         "find-process-mode": "off",
         **_mihomo_keep_alive_config(),
         "external-controller": os.getenv("MIHOMO_EXTERNAL_CONTROLLER", "127.0.0.1:9090"),
-        "secret": os.getenv("MIHOMO_SECRET", "reyre"),
+        "secret": os.getenv("MIHOMO_SECRET") or base64.urlsafe_b64encode(os.urandom(18)).decode().rstrip("="),
         "profile": {
             "store-selected": True,
             "store-fake-ip": True,
@@ -3317,7 +3329,6 @@ def build_openclash_yaml(nodes: list[ProxyNode], interval: int, tolerance: int, 
             "fake-ip-range": "198.18.0.1/16",
             "fake-ip-filter": _dns_fake_ip_filter(),
             "cache-algorithm": "arc",
-            "respect-rules": True,
             "default-nameserver": ["https://1.1.1.1/dns-query", "https://9.9.9.9/dns-query"],
             "nameserver": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
             "proxy-server-nameserver": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],

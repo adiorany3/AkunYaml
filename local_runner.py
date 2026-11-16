@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import argparse
 import copy
-from contextlib import contextmanager
 import gzip
 import ipaddress
 import json
@@ -34,25 +33,25 @@ import tempfile
 import time
 import urllib.request
 import zipfile
+from collections.abc import Iterable
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Iterable
-
+from typing import Any
 
 from manual_routing_provider import compress_manual_routing
 from mrs_compile import apply_compiled_mrs, load_compiled_report
-from semantic_rule_audit import remove_safe_shadowed_domains
-
 from openclash_target import (
-    atomic_write_text,
     DEFAULT_ROUTER_CORE,
     MIHOMO_TARGET_LABEL,
     MIHOMO_TARGET_REVISION,
     OPENCLASH_TARGET_VERSION,
     assert_target_mihomo,
+    atomic_write_text,
     is_target_mihomo_version,
     mihomo_version_text,
     validate_yaml_file,
 )
+from semantic_rule_audit import remove_safe_shadowed_domains
 
 APP_VERSION = "4.8-precision-optimization"
 GITHUB_API = "https://api.github.com"
@@ -83,7 +82,7 @@ DEFAULT_ENV = {
     "NEKOBOX_POOL_NODES": "30",
     "FRESH_POOL_NODES": "30",
     "REQUIRE_URL_TEST": "true",
-    "REQUIRE_NEKOBOX_TEST": "false",
+    "REQUIRE_NEKOBOX_TEST": "true",
     "OPENCLASH_TARGET_VERSION": OPENCLASH_TARGET_VERSION,
     "MIHOMO_TARGET_REVISION": MIHOMO_TARGET_REVISION,
     "REQUIRE_EXACT_MIHOMO_CORE": "true",
@@ -117,8 +116,8 @@ DEFAULT_ENV = {
     "CANDIDATE_INITIAL": "250",
     "CANDIDATE_MAX": "2000",
     "RESERVE_POOL_NODES": "120",
-    "ATTEMPTS": "3",
-    "REQUIRE_SUCCESSES": "2",
+    "ATTEMPTS": "4",
+    "REQUIRE_SUCCESSES": "3",
     "REQUIRE_ORIGINAL": "true",
     "TCP_TIMEOUT": "3.0",
     "FETCH_TIMEOUT": "12",
@@ -249,31 +248,47 @@ DEFAULT_ENV = {
     "OUTPUT_STAMP": "last_update.txt",
 }
 
-from security_policy import (
-    ANDROID_BASE_PROVIDERS as ANDROID_SECURITY_PROVIDERS,
-    ANDROID_STRICT_PROVIDERS as ANDROID_STRICT_SECURITY_PROVIDERS,
-    ROUTER_BASE_PROVIDERS as SECURITY_PROVIDERS,
-    ROUTER_STRICT_PROVIDERS as ROUTER_STRICT_SECURITY_PROVIDERS,
-    ROUTER_THREAT_SAFE_PROVIDERS as ROUTER_THREAT_SAFE_SECURITY_PROVIDERS,
-    ROUTER_THREAT_IP_PROVIDERS as ROUTER_THREAT_IP_PROVIDER,
-    managed_provider_names,
-    provider_catalog as shared_provider_catalog,
-    provider_reject_rules as shared_provider_reject_rules,
-)
-from android_marketplace_policy import (
-    enabled as android_marketplace_live_enabled,
-    route_policy as android_marketplace_live_policy,
-    guard_rules as android_marketplace_live_guard_rules,
-    fake_ip_filters as android_marketplace_live_fake_ip_filters,
-    sniffer_skip_domains as android_marketplace_live_sniffer_skip_domains,
-    dns_policy_domains as android_marketplace_live_dns_policy_domains,
+from android_banking_policy import (
+    dns_policy_domains as android_banking_dns_policy_domains,
 )
 from android_banking_policy import (
     enabled as android_banking_enabled,
-    guard_rules as android_banking_guard_rules,
+)
+from android_banking_policy import (
     fake_ip_filters as android_banking_fake_ip_filters,
+)
+from android_banking_policy import (
+    guard_rules as android_banking_guard_rules,
+)
+from android_banking_policy import (
     sniffer_skip_domains as android_banking_sniffer_skip_domains,
-    dns_policy_domains as android_banking_dns_policy_domains,
+)
+from android_marketplace_policy import (
+    dns_policy_domains as android_marketplace_live_dns_policy_domains,
+)
+from android_marketplace_policy import (
+    enabled as android_marketplace_live_enabled,
+)
+from android_marketplace_policy import (
+    fake_ip_filters as android_marketplace_live_fake_ip_filters,
+)
+from android_marketplace_policy import (
+    guard_rules as android_marketplace_live_guard_rules,
+)
+from android_marketplace_policy import (
+    route_policy as android_marketplace_live_policy,
+)
+from android_marketplace_policy import (
+    sniffer_skip_domains as android_marketplace_live_sniffer_skip_domains,
+)
+from security_policy import (
+    managed_provider_names,
+)
+from security_policy import (
+    provider_catalog as shared_provider_catalog,
+)
+from security_policy import (
+    provider_reject_rules as shared_provider_reject_rules,
 )
 
 # Child-safe profile uses a family DNS resolver that blocks ads, trackers,
@@ -954,9 +969,9 @@ def ensure_input_files(workdir: Path) -> None:
 
 def install_dependencies() -> None:
     try:
+        import certifi  # noqa: F401
         import requests  # noqa: F401
         import yaml  # noqa: F401
-        import certifi  # noqa: F401
         return
     except Exception:
         pass
@@ -1386,7 +1401,6 @@ def strict_proxy_domain_filter(config: dict, source_name: str = "") -> int:
     return len(removed_names)
 
 def sanitize_yaml(path: Path) -> bool:
-    import yaml
 
     if not path.exists():
         return False
@@ -1419,7 +1433,7 @@ def sanitize_yaml(path: Path) -> bool:
             cleaned_filter = []
             for raw_domain in fake_filter:
                 value = str(raw_domain or "").strip()
-                check = value[2:] if value.startswith("+.") else (value[1:] if value.startswith(".") else value)
+                check = value[2:] if value.startswith("+.") else (value.removeprefix("."))
                 valid = bool(value) and not any(ch.isspace() for ch in value)
                 if "+" in value and not value.startswith("+."):
                     valid = False
@@ -1680,7 +1694,6 @@ def apply_reference_profile(
 
 def apply_network_hardening(path: Path) -> bool:
     """Reduce exposed management surface while preserving LAN proxy access."""
-    import yaml
 
     if not path.exists():
         return False
@@ -1731,7 +1744,6 @@ def apply_network_hardening(path: Path) -> bool:
 
 def apply_responsiveness(path: Path) -> bool:
     """Tune Mihomo/OpenClash for lower router overhead and faster steady-state response."""
-    import yaml
 
     if not path.exists():
         return False
@@ -1938,7 +1950,6 @@ def apply_responsiveness(path: Path) -> bool:
 
 def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_mode: str) -> bool:
     """Apply ad, tracker, and threat protection with per-client provider compatibility."""
-    import yaml
 
     if not path.exists():
         return False
@@ -2517,7 +2528,6 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
 
 def apply_youtube_guard(path: Path, mode: str) -> bool:
     """Protect YouTube playback and add conservative ad endpoint rules."""
-    import yaml
 
     if not path.exists():
         return False
@@ -2953,7 +2963,10 @@ def main() -> int:
             log(f"Security feed guard dilewati: {exc}")
 
     if env.get("AI_ADBLOCK_ENABLED", "false").strip().lower() in {"1", "true", "yes", "on"}:
-        from ai_adblock_classifier import classify_candidates, refresh_streaming_candidates
+        from ai_adblock_classifier import (
+            classify_candidates,
+            refresh_streaming_candidates,
+        )
 
         key_file = Path(env.get("AI_ADBLOCK_API_KEY_FILE", ".secrets/ai_adblock.key")).expanduser()
         if not key_file.is_absolute():

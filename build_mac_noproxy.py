@@ -1,12 +1,12 @@
 """Build a single-file Mac direct profile using local, validated provider snapshots."""
 import argparse
 import copy
-from pathlib import Path
+import socket
 import subprocess
 import tempfile
-import socket
 import time
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 import yaml
 

@@ -6,7 +6,7 @@ from pathlib import Path
 repo_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(repo_root))
 
-from ads_audit import _cfg, AUDITS, FILES, NETFLIX_PLAYBACK, BROAD_MEDIA_BLOCKS
+from ads_audit import AUDITS, BROAD_MEDIA_BLOCKS, FILES, NETFLIX_PLAYBACK, _cfg
 
 
 def test_default_config_values():

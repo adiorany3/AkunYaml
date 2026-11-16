@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from pathlib import Path
-import sys, yaml
+
+import yaml
 
 ROUTER_FILES = [
     Path('openclash_auto.yaml'),

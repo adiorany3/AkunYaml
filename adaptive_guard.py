@@ -129,6 +129,7 @@ def apply(stage, root):
     domains = sorted(report["accepted"])
     if domains:
         import yaml
+
         from ai_adblock_classifier import is_allowlisted, load_domains
         allowlist = set(load_domains(root / "adblock_allowlist.txt")) | TELEGRAM_DOMAINS
         blocked_domains = [domain for domain in domains if not is_allowlisted(domain, allowlist)]

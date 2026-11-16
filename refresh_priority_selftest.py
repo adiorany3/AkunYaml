@@ -6,7 +6,6 @@ from types import SimpleNamespace
 
 import generate_yaml as generator
 
-
 with tempfile.TemporaryDirectory() as tmp:
     root = Path(tmp)
     pool = root / "fresh_pool"

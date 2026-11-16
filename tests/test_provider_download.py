@@ -1,13 +1,12 @@
 """Provider downloads retry transport errors without bypassing TLS verification."""
-from contextlib import contextmanager
-from http.client import IncompleteRead
 import ssl
 import urllib.error
+from contextlib import contextmanager
+from http.client import IncompleteRead
 
 import pytest
 
 import build_support
-
 
 URL = "https://raw.githubusercontent.com/example/feed/main/domains.txt"
 

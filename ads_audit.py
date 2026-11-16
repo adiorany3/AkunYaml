@@ -3,16 +3,13 @@
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import subprocess
 import sys
 from pathlib import Path
 
 import yaml
-import hashlib
-import json
-import os
-from pathlib import Path
 
 # Load optional configuration file (config.yaml) to allow overriding defaults.
 # If the file does not exist, fall back to the hard‑coded defaults defined below.
@@ -93,13 +90,9 @@ def audit_netflix(root: Path) -> bool:
                 continue
             kind, domain = parts[:2]
             domain = domain.lower().rstrip(".")
-            if kind == "DOMAIN" and domain in NETFLIX_PLAYBACK:
-                broad.add(rule)
-            elif kind == "DOMAIN-SUFFIX" and any(
+            if kind == "DOMAIN" and domain in NETFLIX_PLAYBACK or kind == "DOMAIN-SUFFIX" and any(
                 d == domain or d.endswith("." + domain) for d in NETFLIX_PLAYBACK
-            ):
-                broad.add(rule)
-            elif kind == "DOMAIN-KEYWORD" and any(domain in d for d in NETFLIX_PLAYBACK):
+            ) or kind == "DOMAIN-KEYWORD" and any(domain in d for d in NETFLIX_PLAYBACK):
                 broad.add(rule)
         broad = sorted(broad)
         if broad:

@@ -4,7 +4,6 @@ from tempfile import TemporaryDirectory
 
 from ai_adblock_classifier import refresh_streaming_candidates
 
-
 with TemporaryDirectory() as tmp:
     root = Path(tmp)
     feed = root / ".feed_cache" / "last_good"

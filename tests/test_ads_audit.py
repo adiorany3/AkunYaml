@@ -8,6 +8,7 @@ sys.path.append(str(repo_root))
 
 from ads_audit import audit_netflix
 
+
 def test_audit_netflix_no_files(tmp_path, monkeypatch):
     # Create a temporary directory without any of the expected YAML files
     # Monkeypatch Path(__file__) used inside audit_netflix to point to tmp_path

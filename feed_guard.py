@@ -23,14 +23,14 @@ from typing import Any
 
 import yaml
 
+from mrs_compile import compile_lkg_to_mrs
 from security_policy import (
     ROUTER_BASE_PROVIDERS,
     ROUTER_ENHANCED_AD_PROVIDERS,
     ROUTER_GAMBLING_PROVIDERS,
-    ROUTER_THREAT_SAFE_PROVIDERS,
     ROUTER_THREAT_IP_PROVIDERS,
+    ROUTER_THREAT_SAFE_PROVIDERS,
 )
-from mrs_compile import compile_lkg_to_mrs
 
 DOMAIN_RE = re.compile(
     r"^(?:\*\.)?(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$",
@@ -73,12 +73,9 @@ def _normalize_domain_line(raw: str) -> str | None:
     if not line or line.startswith(("#", "!", ";")):
         return None
     # Handle common domain-list prefixes without accepting full adblock syntax.
-    if line.startswith("+."):
-        line = line[2:]
-    if line.startswith("*."):
-        line = line[2:]
-    if line.startswith("."):
-        line = line[1:]
+    line = line.removeprefix("+.")
+    line = line.removeprefix("*.")
+    line = line.removeprefix(".")
     line = line.rstrip(".")
     if DOMAIN_RE.fullmatch(line) and ".." not in line:
         return line

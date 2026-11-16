@@ -8,7 +8,6 @@ existing blocklist YAML files defined in the configuration.
 from __future__ import annotations
 
 import argparse
-import json
 import logging
 import sys
 from pathlib import Path

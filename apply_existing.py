@@ -39,6 +39,7 @@ def parse_args() -> argparse.Namespace:
 
 def regenerate_android_offline(workdir: Path, core: Path) -> None:
     import yaml
+
     import generate_yaml as generator
     from openclash_target import atomic_write_text, validate_generated_text_with_core
 

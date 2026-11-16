@@ -183,6 +183,8 @@ def main():
                 commands.append([sys.executable, str(root / "local_runner.py"), "--workdir", str(root), "--config", str(root / "local_config.json"), "--no-install-deps"])
         commands.append([sys.executable, str(root / "independent_gameblock.py")] + ([] if args.offline else ["--refresh"]))
         commands.append([sys.executable, str(root / "local_update.py")])
+        # Runs after local_runner/local_update so generated outputs are current.
+        commands.append([sys.executable, str(root / "adblock_protection_audit.py"), "--openclash", str(root / "openclash_auto.yaml"), "--singbox", str(root / "singbox_android.json")])
         retained_accounts = False
         for command in commands:
             print(f"[RUN] {Path(command[1]).name}", flush=True)

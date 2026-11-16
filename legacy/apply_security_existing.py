@@ -10,7 +10,6 @@ from pathlib import Path
 
 from local_runner import optimize_outputs
 
-
 FILES = (
     "openclash_auto.yaml",
     "openclash_android.yaml",

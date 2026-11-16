@@ -1,5 +1,6 @@
 """Run: .venv/bin/python tests/mac_gameblock_selftest.py"""
 from pathlib import Path
+
 import yaml
 
 root = Path(__file__).resolve().parents[1]

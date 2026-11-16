@@ -5,8 +5,8 @@ import subprocess
 import time
 import urllib.error
 import urllib.request
-from http.client import IncompleteRead
 import warnings
+from http.client import IncompleteRead
 from pathlib import Path
 
 PROFILE = "openclash_noproxy_gameblock.yaml"

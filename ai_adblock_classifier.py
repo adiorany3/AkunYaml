@@ -33,7 +33,7 @@ def _open_api(request: urllib.request.Request, timeout: float):
             error, retryable = exc, exc.code in RETRYABLE_HTTP_STATUS
         except urllib.error.URLError as exc:
             error, retryable = exc, _is_timeout(exc)
-        except (TimeoutError, socket.timeout) as exc:
+        except TimeoutError as exc:
             error, retryable = exc, True
         if not retryable or attempt == MAX_API_RETRIES:
             raise error

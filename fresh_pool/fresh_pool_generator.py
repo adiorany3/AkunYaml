@@ -17,12 +17,10 @@ import json
 import logging
 import os
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import List, Tuple
 
 import aiohttp
-
-from datetime import datetime, timezone
 
 # ---------------------------------------------------------------------------
 # Configuration (can be overridden via environment variables if needed)
@@ -43,7 +41,7 @@ handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
 logger.addHandler(handler)
 
 
-def _load_candidates() -> List[str]:
+def _load_candidates() -> list[str]:
     """Read candidate URLs (or domains) from the text file.
     Empty lines and lines starting with ``#`` are ignored.
     """
@@ -59,7 +57,7 @@ def _load_candidates() -> List[str]:
     return candidates
 
 
-def _hash_candidates(candidates: List[str]) -> str:
+def _hash_candidates(candidates: list[str]) -> str:
     """Return a SHA‑256 hash of the candidate list (order‑sensitive)."""
     m = hashlib.sha256()
     for c in candidates:
@@ -67,7 +65,7 @@ def _hash_candidates(candidates: List[str]) -> str:
         m.update(b"\n")
     return m.hexdigest()
 
-async def _test_one(session: aiohttp.ClientSession, url: str) -> Tuple[str, int | None, str | None]:
+async def _test_one(session: aiohttp.ClientSession, url: str) -> tuple[str, int | None, str | None]:
     """Perform a HEAD request (fallback to GET) and return (url, ms, status).
     If the request fails or times out, ``ms`` and ``status`` are ``None``.
     """
@@ -85,7 +83,7 @@ async def _test_one(session: aiohttp.ClientSession, url: str) -> Tuple[str, int 
         except Exception:
             return url, None, None
 
-async def _run_tests(candidates: List[str]) -> List[Tuple[str, int | None, str | None]]:
+async def _run_tests(candidates: list[str]) -> list[tuple[str, int | None, str | None]]:
     """Run URL tests in parallel using a limited number of connections.
     """
     connector = aiohttp.TCPConnector(limit_per_host=10, ssl=False)
@@ -109,14 +107,14 @@ def _save_cache(data: dict) -> None:
     CACHE_FILE.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
 
-def _write_json_report(results: List[Tuple[str, int | None, str | None]]) -> None:
+def _write_json_report(results: list[tuple[str, int | None, str | None]]) -> None:
     # Build a list of dicts sorted by latency (fastest first, None last)
     items = []
     for url, ms, status in results:
         items.append({"url": url, "latency_ms": ms, "status": status})
     items.sort(key=lambda x: (x["latency_ms"] is None, x["latency_ms"]))
     report = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "total": len(items),
         "candidates": items,
     }
@@ -124,7 +122,7 @@ def _write_json_report(results: List[Tuple[str, int | None, str | None]]) -> Non
     logger.info("Wrote JSON report with %d entries to %s", len(items), JSON_REPORT)
 
 
-def _update_markdown_top_n(results: List[Tuple[str, int | None, str | None]]) -> None:
+def _update_markdown_top_n(results: list[tuple[str, int | None, str | None]]) -> None:
     # Load existing markdown (if any) and replace the "Kandidat Fresh Teratas" section.
     if not MARKDOWN_REPORT.is_file():
         logger.warning("Markdown report %s not found – skipping update", MARKDOWN_REPORT)

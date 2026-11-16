@@ -2,9 +2,14 @@
 import json
 import os
 from types import SimpleNamespace
+
 import yaml
 
-from generate_yaml import _build_singbox_android_json, _validate_singbox_json, _prune_missing_proxy_group_refs_yaml_text
+from generate_yaml import (
+    _build_singbox_android_json,
+    _prune_missing_proxy_group_refs_yaml_text,
+    _validate_singbox_json,
+)
 
 for available, expected in (("MANUAL", "MANUAL"), ("FALLBACK", "FALLBACK"), ("AUTO-FAST", "AUTO-FAST"), (None, "REJECT")):
     source = {

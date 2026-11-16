@@ -13,7 +13,7 @@ from __future__ import annotations
 import json
 import os
 import re
-from typing import Iterable
+from collections.abc import Iterable
 
 DEFAULT_EXACT_DOMAINS: tuple[str, ...] = ()
 

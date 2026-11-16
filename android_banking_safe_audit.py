@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+
 import yaml
 
 from android_banking_policy import suffix_domains

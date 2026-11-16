@@ -1,7 +1,7 @@
 # tests/test_main_report.py
+import json
 import sys
 from pathlib import Path
-import json
 
 
 def test_main_json_report(tmp_path, monkeypatch):

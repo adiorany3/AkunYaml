@@ -13,9 +13,9 @@ import os
 import shutil
 import subprocess
 import tempfile
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
-
+from typing import Any
 
 LogFn = Callable[[str], None]
 

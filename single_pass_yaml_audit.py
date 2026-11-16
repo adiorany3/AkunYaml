@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+
 import argparse
 import json
 import os
@@ -7,7 +8,6 @@ import shutil
 import tempfile
 from pathlib import Path
 
-import yaml
 import local_runner
 
 

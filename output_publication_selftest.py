@@ -3,7 +3,6 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-from openclash_target import atomic_write_text
 from local_runner import (
     _YAML_TX_CACHE,
     _YAML_TX_DIRTY,
@@ -11,6 +10,7 @@ from local_runner import (
     _yaml_store_config,
     yaml_edit_transaction,
 )
+from openclash_target import atomic_write_text
 
 with tempfile.TemporaryDirectory() as tmp:
     path = Path(tmp) / "config.yaml"

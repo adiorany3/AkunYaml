@@ -1,13 +1,12 @@
 # tests/test_audit_netflix.py
 import sys
 from pathlib import Path
-import yaml
 
 # Ensure repository root is on sys.path for imports
 repo_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(repo_root))
 
-from ads_audit import audit_netflix, FILES, NETFLIX_PLAYBACK, BROAD_MEDIA_BLOCKS
+from ads_audit import BROAD_MEDIA_BLOCKS, FILES, audit_netflix
 
 
 def test_audit_netflix_no_rules(tmp_path, monkeypatch):

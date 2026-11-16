@@ -61,7 +61,6 @@ if __name__ == "__main__":
     test_adaptive_rules_preserve_priority_and_playback(Path(tempfile.mkdtemp()), lambda *_: None)
     print("PASS: adaptive threat ordering, allowlist, YouTube playback")
 
-import json
 from datetime import UTC, datetime, timedelta
 
 import yaml
@@ -70,7 +69,7 @@ import adaptive_guard as guard
 
 
 def test_telegram_domains_are_protected_from_adaptive_blocks(tmp_path):
-    from adaptive_guard import protected_domains, evaluate
+    from adaptive_guard import evaluate, protected_domains
 
     allowlist = protected_domains(tmp_path)
     telegram = {"telegram.org", "t.me", "telegram-cdn.org", "telegra.ph"}

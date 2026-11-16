@@ -6,8 +6,9 @@ alive ones back to the same file.
 """
 
 import socket
-import yaml
 from pathlib import Path
+
+import yaml
 
 CONFIG_PATH = Path(__file__).with_name("config.yaml")
 if CONFIG_PATH.is_file():
