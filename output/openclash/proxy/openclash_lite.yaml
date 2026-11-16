@@ -8,7 +8,7 @@ lan-allowed-ips:
 - 10.0.0.0/8
 - 172.16.0.0/12
 - 192.168.0.0/16
-mode: rule
+mode: direct
 log-level: warning
 ipv6: false
 unified-delay: true
@@ -299,16 +299,10 @@ proxies:
   - http/1.1
 proxy-groups:
 - name: GLOBAL
-  type: fallback
+  type: select
   proxies:
   - FALLBACK
   - AUTO-FAST
-  url: https://www.gstatic.com/generate_204
-  interval: 300
-  lazy: true
-  timeout: 5000
-  expected-status: 200/204/301/302
-  max-failed-times: 3
 - name: PROXY
   type: fallback
   proxies:

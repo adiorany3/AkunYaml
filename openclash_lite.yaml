@@ -301,12 +301,8 @@ proxy-groups:
 - name: GLOBAL
   type: select
   proxies:
-  - DIRECT
-  - MANUAL
-  - AUTO-FAST
   - FALLBACK
-  - MANUAL-VMess-WS-TLS-443-ikada543
-  - MANUAL-VMess-WS-TLS-443-akuku8
+  - AUTO-FAST
 - name: PROXY
   type: fallback
   proxies:
