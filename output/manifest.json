@@ -1,6 +1,6 @@
 {
   "mode": "security-refresh-retained-accounts",
-  "packaged_at": "2026-11-16T12:12:02.618445+00:00",
+  "packaged_at": "2026-11-16T12:23:49.357312+00:00",
   "account_refresh": "retained-old",
   "adaptive_guard": "fresh",
   "validation": {
@@ -10,32 +10,32 @@
   "sources": [
     {
       "path": "openclash_auto.yaml",
-      "modified_at": "2026-11-16T12:11:37.204428+00:00",
+      "modified_at": "2026-11-16T12:23:24.674750+00:00",
       "sha256": "a55be1e2652ecc0a873301bfd7204774e7113a455adab37d20d082674976b21e"
     },
     {
       "path": "openclash_android.yaml",
-      "modified_at": "2026-11-16T12:11:37.268931+00:00",
+      "modified_at": "2026-11-16T12:23:24.735920+00:00",
       "sha256": "391138c7d95eebd0926b7432bea92d3c9c19acf3664b7f9df47bcd4d8de8d824"
     },
     {
       "path": "openclash_lite.yaml",
-      "modified_at": "2026-11-16T12:11:37.300994+00:00",
+      "modified_at": "2026-11-16T12:23:24.766892+00:00",
       "sha256": "dc31cdbe8f4bea8eacbd652dfa574683d60c4b2030125e413a0be88cfcb7a440"
     },
     {
       "path": "openclash_fresh_pool.yaml",
-      "modified_at": "2026-11-16T12:11:37.364743+00:00",
+      "modified_at": "2026-11-16T12:23:24.830198+00:00",
       "sha256": "509524031d28ecf327bb71ab891ac679a7968f1b680ab356ab3b5221f2276d2d"
     },
     {
       "path": "local_build/openclash_noproxy.yaml",
-      "modified_at": "2026-11-16T12:11:42.594208+00:00",
+      "modified_at": "2026-11-16T12:23:29.466970+00:00",
       "sha256": "54d84c5e20532ad0c08a226e13d3beea95f522621ebbc0465c17130f60d953bf"
     },
     {
       "path": "local_build/gameblock/openclash_noproxy_gameblock.yaml",
-      "modified_at": "2026-11-16T12:11:42.013254+00:00",
+      "modified_at": "2026-11-16T12:23:28.913646+00:00",
       "sha256": "5cafa33a32c17a88300a65df4dfc4a72faa7b42b86f096132e52eebc035f648f"
     },
     {
@@ -45,7 +45,7 @@
     },
     {
       "path": "local_build/singbox_direct_adblock.json",
-      "modified_at": "2026-11-16T12:11:42.599021+00:00",
+      "modified_at": "2026-11-16T12:23:29.469800+00:00",
       "sha256": "3124a0a08c9d24074dddf0e40e66bd17853e8b8b45f334379078db4567630e66"
     },
     {
