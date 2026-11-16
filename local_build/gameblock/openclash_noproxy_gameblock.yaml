@@ -373,6 +373,7 @@ dns:
   use-hosts: true
   use-system-hosts: false
 rules:
+- RULE-SET,games-blackmatrix,REJECT
 - RULE-SET,games-category,REJECT
 - DOMAIN-SUFFIX,games.co.id,REJECT
 - DOMAIN-SUFFIX,easy-games.io,REJECT
@@ -12535,3 +12536,8 @@ rule-providers:
     behavior: domain
     format: mrs
     path: ./rule_providers/live/games-category.mrs
+  games-blackmatrix:
+    type: file
+    behavior: classical
+    format: yaml
+    path: ./rule_providers/live/games-blackmatrix.yaml

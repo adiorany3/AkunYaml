@@ -1905,6 +1905,7 @@ def _build_lite_yaml_from_text(yaml_text: str) -> str:
         lite_groups.append(new_g)
 
     config["proxy-groups"] = lite_groups
+    config["mode"] = "rule"  # Lite still needs rule evaluation for adblock/security rules.
     config.pop("rule-providers", None)
     config["rules"] = _inject_manual_unblock_rules([
         "DOMAIN-SUFFIX,local,DIRECT",

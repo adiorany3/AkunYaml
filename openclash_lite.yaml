@@ -8,7 +8,7 @@ lan-allowed-ips:
 - 10.0.0.0/8
 - 172.16.0.0/12
 - 192.168.0.0/16
-mode: direct
+mode: rule
 log-level: warning
 ipv6: false
 unified-delay: true
@@ -325,9 +325,9 @@ proxy-groups:
   - AKUN-008-MD-ITFRUIT-185153198-202-VLESS-WS-104MS
   - AKUN-004-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-106MS
   url: https://www.gstatic.com/generate_204
-  interval: 180
+  interval: 90
   tolerance: 150
-  lazy: true
+  lazy: false
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
@@ -661,11 +661,6 @@ rule-providers:
     behavior: classical
     format: yaml
     path: ./rule_providers/security-pinjol.yaml
-  popup-ads:
-    type: file
-    behavior: domain
-    format: mrs
-    path: ./rule_providers/compiled/popup-ads.mrs
   threat-malware:
     type: file
     behavior: domain
@@ -773,6 +768,11 @@ rule-providers:
     path: ./rule_providers/youtube.mrs
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs
     interval: 43200
+  popup-ads:
+    type: file
+    behavior: domain
+    format: mrs
+    path: ./rule_providers/compiled/popup-ads.mrs
 hosts:
   www.google.com: forcesafesearch.google.com
   www.google.co.id: forcesafesearch.google.com

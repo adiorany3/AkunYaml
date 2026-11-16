@@ -11,6 +11,10 @@ import yaml
 
 REQUIRED_RULE_NAMES = {"ads_domain", "tracker-domain"}
 REQUIRED_SINGBOX_TAGS = {"ads-domain", "tracker-domain"}
+CRITICAL_ALLOWLIST_DOMAINS = {
+    "challenges.cloudflare.com", "hcaptcha.com", "recaptcha.net", "telegram.org",
+    "t.me", "simaster.ugm.ac.id", "speedtest.net", "ookla.com",
+}
 
 
 def _fail(errors: list[str], message: str) -> None:
@@ -30,6 +34,14 @@ def audit_feed_cache(path: Path) -> list[str]:
         good = path.parent / "last_good" / f"{name}.txt"
         if not good.exists():
             _fail(errors, f"feed {name} tanpa last-known-good cache")
+            continue
+        try:
+            valid_lines = [line for line in good.read_text(encoding="utf-8", errors="ignore").splitlines() if line.strip() and not line.lstrip().startswith("#")]
+        except OSError:
+            valid_lines = []
+        expected = int(item.get("count") or 0)
+        if len(valid_lines) < min(10, max(1, expected)):
+            _fail(errors, f"feed LKG {name} terlalu kecil/kosong: {len(valid_lines)} baris; metadata={expected}")
     return errors
 
 
@@ -53,6 +65,13 @@ def audit_openclash(path: Path) -> list[str]:
     reject_positions = [i for i, rule in enumerate(rules) if "REJECT" in rule.upper()]
     if reject_positions and allow_positions and min(allow_positions) > min(reject_positions):
         _fail(errors, "allowlist/safe rules berada setelah reject")
+    match_positions = [i for i, rule in enumerate(rules) if rule.upper().startswith("MATCH,")]
+    if reject_positions and match_positions and max(reject_positions) > min(match_positions):
+        _fail(errors, "aturan REJECT berada setelah MATCH")
+    for rule in rules:
+        parts = [part.strip().lower() for part in rule.split(",")]
+        if len(parts) >= 3 and parts[-1].startswith("reject") and parts[1] in CRITICAL_ALLOWLIST_DOMAINS:
+            _fail(errors, f"domain allowlist kritis ditolak: {parts[1]}")
     return errors
 
 
@@ -69,23 +88,31 @@ def audit_singbox(path: Path) -> list[str]:
     reject = [rule for rule in route.get("rules") or [] if rule.get("action") == "reject"]
     if not reject:
         _fail(errors, "route reject adblock tidak ditemukan")
+    ruleset_reject = [rule for rule in reject if set(rule.get("rule_set", [])) & REQUIRED_SINGBOX_TAGS]
+    if not ruleset_reject:
+        _fail(errors, "route reject tidak terhubung dengan rule-set iklan/tracker wajib")
+    if route.get("final") == "reject":
+        _fail(errors, "route final sing-box tidak boleh reject")
     return errors
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--openclash", type=Path, default=Path("openclash_lite.yaml"))
+    parser.add_argument("--openclash", type=Path, action="append")
     parser.add_argument("--singbox", type=Path, default=Path("singbox_android.json"))
     parser.add_argument("--feed-cache", type=Path, default=Path(".feed_cache/last_good"))
     args = parser.parse_args()
-    failures = audit_openclash(args.openclash) + audit_singbox(args.singbox)
+    openclash_paths = args.openclash or [Path("openclash_lite.yaml")]
+    failures = [error for path in openclash_paths for error in audit_openclash(path)]
+    failures += audit_singbox(args.singbox)
     if args.feed_cache.exists():
         failures += audit_feed_cache(args.feed_cache.parent / "metadata.json")
     if failures:
         for failure in failures:
             print(f"[ERROR] {failure}")
         return 1
-    print(f"[OK] protection audit: {args.openclash} + {args.singbox}")
+    profiles = ", ".join(str(path) for path in openclash_paths)
+    print(f"[OK] protection audit: {profiles} + {args.singbox}")
     return 0
 
 

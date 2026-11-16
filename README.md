@@ -164,9 +164,14 @@ URL setelah seluruh hasil di-commit/push ke branch `main`:
 https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/subscription/openclash_auto.yaml
 ```
 
-Pada OpenClash, tambahkan URL itu sebagai subscription konfigurasi, unduh,
-pilih profil, dan gunakan core **Meta/Mihomo**, bukan core Clash lama.
-Untuk noproxy/gameblock, gunakan varian `subscription`, bukan folder `gameblock`:
+## Pilihan akun OpenClash dengan/tanpa blokir game
+
+Di `output/openclash/subscription/urls.json` ada dua varian akun yang memakai node sama:
+
+- `openclash_auto.yaml`: tanpa blokir game.
+- `openclash_auto_gameblock.yaml`: blokir game dari feed game publisher, kategori MetaCubeX, serta daftar manual lokal. Salin `rule_providers/` bersama YAML.
+
+Refresh online memperbarui feed game secara wajib. Jika sumber gagal, output rilis lama dipertahankan; `--offline` memakai snapshot cache dan bukan refresh baru. Tidak ada daftar yang menjamin seluruh game online—domain/CDN bersama dan protokol non-domain dapat membatasi cakupan. Feed mencakup IP-CIDR pada Blackmatrix; trafik berbasis IP langsung/non-DNS tetap dapat lolos.
 
 ```text
 https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/subscription/openclash_noproxy_gameblock.yaml

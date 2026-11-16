@@ -1965,7 +1965,7 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
     indonesia_ads_enabled = os.environ.get("INDONESIA_ADBLOCK", "true").strip().lower() not in {"0", "false", "no", "off"}
     threat_ip_enabled = os.environ.get("THREAT_IP_BLOCKING", "true").strip().lower() not in {"0", "false", "no", "off"}
     router_adblock_level = os.environ.get("OPENWRT_ADBLOCK_LEVEL", "enhanced").strip().lower()
-    lite_adblock_level = os.environ.get("OPENWRT_LITE_ADBLOCK_LEVEL", "standard").strip().lower()
+    lite_adblock_level = os.environ.get("OPENWRT_LITE_ADBLOCK_LEVEL", "compact").strip().lower()
     if router_adblock_level not in {"standard", "compact", "enhanced"}:
         router_adblock_level = "enhanced"
     if lite_adblock_level not in {"standard", "compact", "enhanced"}:

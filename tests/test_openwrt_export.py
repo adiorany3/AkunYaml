@@ -3,7 +3,38 @@ import pytest
 from openwrt_export import manual_gameblock, subscription_profile
 
 
-def test_subscription_replaces_local_provider(tmp_path):
+def test_gameblock_account_profiles_offer_blocked_and_unblocked_options(tmp_path):
+    from openwrt_export import gameblock_account_profile
+
+    game_folder = tmp_path / "gameblock"
+    proxy_folder = tmp_path / "proxy"
+    (game_folder / "rule_providers").mkdir(parents=True)
+    (proxy_folder / "rule_providers").mkdir(parents=True)
+    (game_folder / "rule_providers/games.mrs").write_bytes(b"games")
+    (game_folder / "rule_providers/manual.txt").write_text("poki.com\n")
+    game_config = {
+        "rules": ["DOMAIN-SUFFIX,games.co.id,REJECT", "RULE-SET,games-category,REJECT", "RULE-SET,game-block-online,REJECT", "DOMAIN-SUFFIX,pay.example,DIRECT"],
+        "rule-providers": {
+            "games-blackmatrix": {"type": "file", "behavior": "classical", "format": "yaml", "path": "./rule_providers/games.mrs"},
+            "games-category": {"type": "file", "behavior": "domain", "format": "mrs", "path": "./rule_providers/games.mrs"},
+            "game-block-online": {"type": "file", "behavior": "domain", "format": "text", "path": "./rule_providers/manual.txt"},
+        },
+    }
+    account_config = {"proxies": [{"name": "node"}], "rules": ["DOMAIN-SUFFIX,pay.example,DIRECT", "MATCH,GLOBAL"]}
+    result = gameblock_account_profile(account_config, game_config, game_folder, proxy_folder)
+    assert result["proxies"] == account_config["proxies"]
+    assert result["rules"][:4] == [
+        "RULE-SET,games-blackmatrix,REJECT",
+        "RULE-SET,games-category,REJECT",
+        "RULE-SET,game-block-online,REJECT",
+        "DOMAIN-SUFFIX,games.co.id,REJECT",
+    ]
+    assert result["rules"].index("RULE-SET,game-block-online,REJECT") < result["rules"].index("DOMAIN-SUFFIX,pay.example,DIRECT")
+    assert result["rule-providers"]["games-category"]["path"] == "./rule_providers/gameblock/games-category.mrs"
+    assert (proxy_folder / "rule_providers/gameblock/game-block-online.txt").is_file()
+    assert "RULE-SET,games-category,REJECT" not in account_config["rules"]
+    assert "rule-providers" not in account_config
+
     folder = tmp_path / "openclash/proxy"
     provider = folder / "rule_providers/test.yaml"
     provider.parent.mkdir(parents=True)

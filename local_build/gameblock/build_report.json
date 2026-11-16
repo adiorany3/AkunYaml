@@ -1,9 +1,9 @@
 {
   "generator": "independent-local",
-  "built_at": "2026-11-16T12:23:28.914169+00:00",
+  "built_at": "2026-11-16T14:18:49.620025+00:00",
   "mode": "refresh",
-  "rules": 11986,
-  "providers": 20,
+  "rules": 11987,
+  "providers": 21,
   "assets": [
     {
       "name": "ads_indonesia",
@@ -11,7 +11,7 @@
       "format": "text",
       "path": "rule_providers/live/ads_indonesia.mrs",
       "entries": 125,
-      "fetched_at": "2026-11-16T12:23:25.627897+00:00",
+      "fetched_at": "2026-11-16T14:03:47.174347+00:00",
       "sha256": "28015ff170efdd5e3862839e9727220e4a1fbef5ab6368ca60893d02c5df990d"
     },
     {
@@ -20,7 +20,7 @@
       "format": "mrs",
       "path": "rule_providers/live/ads_domain.mrs",
       "entries": null,
-      "fetched_at": "2026-11-16T12:23:25.889468+00:00",
+      "fetched_at": "2026-11-16T14:03:47.045668+00:00",
       "sha256": "38424a7d19026feddb3277b6a6dce557f3add4648333516b3a76ba8674c81598"
     },
     {
@@ -28,9 +28,9 @@
       "url": "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-clash.yaml",
       "format": "yaml",
       "path": "rule_providers/live/anti-ad.yaml",
-      "entries": null,
-      "fetched_at": "2026-11-16T12:23:27.901133+00:00",
-      "sha256": "1e28b803b64331df44b2fde10fb990aed50afec8c88d99d99f9dcad6d818a40f"
+      "entries": 102656,
+      "fetched_at": "2026-11-16T14:18:48.635367+00:00",
+      "sha256": "fb453604c8c413348874b03a9dbd5c09c97e857eb010bbe51eae2693a80e6e47"
     },
     {
       "name": "tracker-domain",
@@ -38,7 +38,7 @@
       "format": "mrs",
       "path": "rule_providers/live/tracker-domain.mrs",
       "entries": null,
-      "fetched_at": "2026-11-16T12:23:25.853439+00:00",
+      "fetched_at": "2026-11-16T14:03:47.034858+00:00",
       "sha256": "e904e567100e133074ac14936e2ff8f9bb4b6f1fc6f9be3d38c0f03c3c8215c2"
     },
     {
@@ -47,7 +47,7 @@
       "format": "text",
       "path": "rule_providers/live/threat-tif-mini.mrs",
       "entries": 182648,
-      "fetched_at": "2026-11-16T12:23:26.565559+00:00",
+      "fetched_at": "2026-11-16T14:18:47.093913+00:00",
       "sha256": "1c71e00c242fdf690963340b98e8ab8c508e3bf6ac0bc4bc51c85c33f41270fc"
     },
     {
@@ -55,18 +55,18 @@
       "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/malware.txt",
       "format": "text",
       "path": "rule_providers/live/threat-malware.mrs",
-      "entries": 570,
-      "fetched_at": "2026-11-16T12:23:26.149850+00:00",
-      "sha256": "8c60e5ec42b60f2ce92be5713195e958db38a8d524907c06aa961e80b410f49c"
+      "entries": 569,
+      "fetched_at": "2026-11-16T14:03:47.183442+00:00",
+      "sha256": "ad4c9ac0c39d02653b28c293b592c82e52d58250da26a24f261e618b7ea987cc"
     },
     {
       "name": "threat-phishing",
       "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-clash-rules/release/phishing.txt",
       "format": "text",
       "path": "rule_providers/live/threat-phishing.mrs",
-      "entries": 17978,
-      "fetched_at": "2026-11-16T12:23:26.562717+00:00",
-      "sha256": "20e9d87a84947896461d72574c5f2a78ec934302e68efe145081e3f6ddbcc265"
+      "entries": 17695,
+      "fetched_at": "2026-11-16T14:03:47.791327+00:00",
+      "sha256": "416771be328ffd8d9f7651f703dc393c2c4f201c3c9ed6cd4aa17a734c7a5d23"
     },
     {
       "name": "threat-cryptominers",
@@ -74,7 +74,7 @@
       "format": "text",
       "path": "rule_providers/live/threat-cryptominers.mrs",
       "entries": 296,
-      "fetched_at": "2026-11-16T12:23:26.745089+00:00",
+      "fetched_at": "2026-11-16T14:03:47.518186+00:00",
       "sha256": "6522bdba2094517b26a5ffa3d9e02f88dfc32d2edad0d10e06d6b79e2fca3e12"
     },
     {
@@ -83,7 +83,7 @@
       "format": "text",
       "path": "rule_providers/live/threat-fake-scam.mrs",
       "entries": 18777,
-      "fetched_at": "2026-11-16T12:23:27.307399+00:00",
+      "fetched_at": "2026-11-16T14:03:47.984115+00:00",
       "sha256": "372de4e6b130f9f1e63094b3aa767a1d426e17fcc97b86dbf926ac3c07f0089d"
     },
     {
@@ -92,7 +92,7 @@
       "format": "text",
       "path": "rule_providers/live/gambling-mini.mrs",
       "entries": 48784,
-      "fetched_at": "2026-11-16T12:23:27.591899+00:00",
+      "fetched_at": "2026-11-16T14:18:46.856128+00:00",
       "sha256": "810447d530471d8e3fea812ad47b114fffb985b74d09877dff8f8fb77c3feb07"
     },
     {
@@ -101,7 +101,7 @@
       "format": "mrs",
       "path": "rule_providers/live/adult-category.mrs",
       "entries": null,
-      "fetched_at": "2026-11-16T12:23:27.418350+00:00",
+      "fetched_at": "2026-11-16T14:18:46.370387+00:00",
       "sha256": "75d39549fcbfdccd2c35400421f30ff56c1ef3aa585624d4f620f597962874eb"
     },
     {
@@ -110,7 +110,7 @@
       "format": "text",
       "path": "rule_providers/live/popup-ads.mrs",
       "entries": 77523,
-      "fetched_at": "2026-11-16T12:23:28.526674+00:00",
+      "fetched_at": "2026-11-16T14:18:48.150486+00:00",
       "sha256": "a3d9835dbcab971977b1265f0667b2a235f5a72b748305042f51f564ca736f7d"
     },
     {
@@ -119,7 +119,7 @@
       "format": "text",
       "path": "rule_providers/live/hagezi-pro.mrs",
       "entries": 241180,
-      "fetched_at": "2026-11-16T12:23:28.753229+00:00",
+      "fetched_at": "2026-11-16T14:18:49.355033+00:00",
       "sha256": "5ec96ce06311582b678c8262d1c4f59e3ea4b0ca005d4d09c84366eeeb9decd3"
     },
     {
@@ -128,8 +128,17 @@
       "format": "mrs",
       "path": "rule_providers/live/games-category.mrs",
       "entries": null,
-      "fetched_at": "2026-11-16T12:23:28.199392+00:00",
+      "fetched_at": "2026-11-16T14:18:47.909061+00:00",
       "sha256": "9f4db5b5b003d3426b35b2c1e618869f9d6642c7bdf7d8f30ab2ff96c4defa99"
+    },
+    {
+      "name": "games-blackmatrix",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Game/Game_No_Resolve.yaml",
+      "format": "yaml",
+      "path": "rule_providers/live/games-blackmatrix.yaml",
+      "entries": 609,
+      "fetched_at": "2026-11-16T14:18:48.643167+00:00",
+      "sha256": "b3e6fa61c8f83e252b89798b3b99ae00d744ed984d6c7c6503c16b9980f2feec"
     }
   ],
   "manual_game_domains": [

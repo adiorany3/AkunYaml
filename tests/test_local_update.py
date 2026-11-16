@@ -19,7 +19,12 @@ def test_singbox_direct():
     source = {"outbounds": [{"type": "trojan", "password": "private"}], "route": {"final": "proxy", "rules": [{"action": "reject"}, {"outbound": "proxy"}]}}
     result = direct_singbox(source)
     assert result["outbounds"] == [{"type": "direct", "tag": "direct"}]
-    assert result["route"]["rules"] == [{"action": "reject"}, {"outbound": "direct"}]
+    rules = result["route"]["rules"]
+    assert rules[0] == {"action": "reject"}
+    assert rules[1] == {"outbound": "direct"}
+    # direct_singbox injects YouTube adblock/playback rules; verify they reject ads and route playback direct.
+    assert any(r.get("action") == "reject" and "ads.youtube.com" in r.get("domain", []) for r in rules)
+    assert any(r.get("outbound") == "direct" and "youtube.com" in r.get("domain_suffix", []) for r in rules)
     assert source["route"]["final"] == "proxy"
 
 

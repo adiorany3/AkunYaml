@@ -123,7 +123,7 @@ def collect(root, mode):
         for directory in {config.parent for config in profiles}:
             declared = {config.name for config in profiles if config.parent == directory}
             for item in directory.iterdir():
-                if item.name not in declared | {"rule_providers"}:
+                if item.name not in declared | {"rule_providers", "urls.json"}:
                     if item.is_dir():
                         shutil.rmtree(item)
                     else:
@@ -142,8 +142,9 @@ def collect(root, mode):
         (stage / "README.txt").write_text(
             "HASIL UTAMA AKUNYAML\n"
             "akun/: daftar akun hasil generator (rahasia).\n"
-            "openclash/proxy|direct|gameblock/: profil OpenWrt; salin provider bersama YAML.\n"
-            "Gameblock OpenClash: DIRECT default, akun lokal opsional melalui grup MANUAL.\n"
+            "openclash/proxy/: profil akun OpenWrt; salin provider bersama YAML.\n"
+            "openclash_auto.yaml = akun tanpa blokir game; openclash_auto_gameblock.yaml = varian akun dengan blokir game.\n"
+            "openclash/gameblock/: profil DIRECT dengan gameblock; akun lokal opsional melalui grup MANUAL.\n"
             "openclash/subscription/: impor URL Raw YAML; provider lokal diunduh via HTTPS setelah seluruh output di-push.\n"
             "akun/openclash_proxy_provider.yaml: hanya akun, untuk proxy-provider; bukan konfigurasi lengkap.\n"
             "sing-box/: Android proxy, direct/adblock, serta direct/gameblock.\n"
@@ -184,7 +185,14 @@ def main():
         commands.append([sys.executable, str(root / "independent_gameblock.py")] + ([] if args.offline else ["--refresh"]))
         commands.append([sys.executable, str(root / "local_update.py")])
         # Runs after local_runner/local_update so generated outputs are current.
-        commands.append([sys.executable, str(root / "adblock_protection_audit.py"), "--openclash", str(root / "openclash_auto.yaml"), "--singbox", str(root / "singbox_android.json")])
+        commands.append([
+            sys.executable, str(root / "adblock_protection_audit.py"),
+            "--openclash", str(root / "openclash_auto.yaml"),
+            "--openclash", str(root / "openclash_android.yaml"),
+            "--openclash", str(root / "openclash_lite.yaml"),
+            "--openclash", str(root / "openclash_fresh_pool.yaml"),
+            "--singbox", str(root / "singbox_android.json"),
+        ])
         retained_accounts = False
         for command in commands:
             print(f"[RUN] {Path(command[1]).name}", flush=True)

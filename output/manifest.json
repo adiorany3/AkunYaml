@@ -1,10 +1,10 @@
 {
-  "mode": "security-refresh-retained-accounts",
-  "packaged_at": "2026-11-16T12:23:49.357312+00:00",
-  "account_refresh": "retained-old",
+  "mode": "security-refresh",
+  "packaged_at": "2026-11-16T14:19:11.097345+00:00",
+  "account_refresh": "not-requested",
   "adaptive_guard": "fresh",
   "validation": {
-    "profiles": 20
+    "profiles": 22
   },
   "warning": "Offline hanya snapshot; waktu packaging bukan bukti akun aktif. Sing-box gameblock memakai kebijakan lokal DIRECT/REJECT.",
   "sources": [
@@ -20,8 +20,8 @@
     },
     {
       "path": "openclash_lite.yaml",
-      "modified_at": "2026-11-16T12:23:24.766892+00:00",
-      "sha256": "dc31cdbe8f4bea8eacbd652dfa574683d60c4b2030125e413a0be88cfcb7a440"
+      "modified_at": "2026-11-16T12:59:43.446687+00:00",
+      "sha256": "ff7a95eb986025dff13ce09487f100b60036ea09589516977a282ca293b759ab"
     },
     {
       "path": "openclash_fresh_pool.yaml",
@@ -30,13 +30,13 @@
     },
     {
       "path": "local_build/openclash_noproxy.yaml",
-      "modified_at": "2026-11-16T12:23:29.466970+00:00",
+      "modified_at": "2026-11-16T14:18:50.240529+00:00",
       "sha256": "54d84c5e20532ad0c08a226e13d3beea95f522621ebbc0465c17130f60d953bf"
     },
     {
       "path": "local_build/gameblock/openclash_noproxy_gameblock.yaml",
-      "modified_at": "2026-11-16T12:23:28.913646+00:00",
-      "sha256": "5cafa33a32c17a88300a65df4dfc4a72faa7b42b86f096132e52eebc035f648f"
+      "modified_at": "2026-11-16T14:18:49.619621+00:00",
+      "sha256": "0f562a7aff0a01d20d53186b4c0fba89800968373eb94bb7026c1c708b22bc93"
     },
     {
       "path": "singbox_android.json",
@@ -45,7 +45,7 @@
     },
     {
       "path": "local_build/singbox_direct_adblock.json",
-      "modified_at": "2026-11-16T12:23:29.469800+00:00",
+      "modified_at": "2026-11-16T14:18:50.243699+00:00",
       "sha256": "3124a0a08c9d24074dddf0e40e66bd17853e8b8b45f334379078db4567630e66"
     },
     {

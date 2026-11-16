@@ -2,6 +2,7 @@
 import copy
 import hashlib
 import json
+import shutil
 from pathlib import Path
 
 import yaml
@@ -23,6 +24,38 @@ def manual_gameblock(config, accounts):
     rules[-1] = "MATCH,MANUAL"
     # Avoid restoring an old proxy selection after an updated profile import.
     result.setdefault("profile", {})["store-selected"] = False
+    return result
+
+
+def gameblock_account_profile(config, game_config, game_folder, proxy_folder):
+    """Clone an account profile and prepend refreshed game feeds before all routing exceptions."""
+    result = copy.deepcopy(config)
+    providers = result.setdefault("rule-providers", {})
+    source_providers = game_config.get("rule-providers", {})
+    for name in ("games-blackmatrix", "games-category", "game-block-online"):
+        provider = source_providers.get(name)
+        if not isinstance(provider, dict) or provider.get("type") != "file":
+            raise ValueError(f"Provider gameblock hilang/tidak lokal: {name}")
+        relative = Path(provider.get("path", ""))
+        origin = (game_folder / relative).resolve()
+        if relative.is_absolute() or ".." in relative.parts or not origin.is_relative_to(game_folder.resolve()) or not origin.is_file():
+            raise FileNotFoundError(f"Provider gameblock tidak aman/hilang: {name}")
+        if name in providers:
+            raise ValueError(f"Nama provider gameblock bentrok: {name}")
+        target_relative = Path("rule_providers/gameblock") / f"{name}{origin.suffix}"
+        target = proxy_folder / target_relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(origin, target)
+        providers[name] = {**copy.deepcopy(provider), "path": "./" + target_relative.as_posix()}
+
+    manual_rules = []
+    for rule in game_config.get("rules", []):
+        if rule == "RULE-SET,game-block-online,REJECT":
+            break
+        if rule.startswith("DOMAIN-SUFFIX,") and rule.endswith(",REJECT"):
+            manual_rules.append(rule)
+    game_rules = ["RULE-SET,games-blackmatrix,REJECT", "RULE-SET,games-category,REJECT", "RULE-SET,game-block-online,REJECT", *manual_rules]
+    result["rules"] = game_rules + [rule for rule in result.get("rules", []) if rule not in game_rules]
     return result
 
 
@@ -62,6 +95,13 @@ def export(stage):
     gameblock = stage / "openclash/gameblock/openclash_noproxy_gameblock.yaml"
     config = manual_gameblock(yaml.safe_load(gameblock.read_text()), accounts)
     gameblock.write_text(yaml.safe_dump(config, sort_keys=False, allow_unicode=True))
+
+    proxy = stage / "openclash/proxy"
+    game_config = yaml.safe_load(gameblock.read_text())
+    account_config = yaml.safe_load((proxy / "openclash_auto.yaml").read_text())
+    game_account = gameblock_account_profile(account_config, game_config, gameblock.parent, proxy)
+    (proxy / "openclash_auto_gameblock.yaml").write_text(yaml.safe_dump(game_account, sort_keys=False, allow_unicode=True))
+
     destination = stage / "openclash/subscription"
     destination.mkdir()
     profiles = []

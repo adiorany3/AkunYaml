@@ -8,7 +8,7 @@ lan-allowed-ips:
 - 10.0.0.0/8
 - 172.16.0.0/12
 - 192.168.0.0/16
-mode: direct
+mode: rule
 log-level: warning
 ipv6: false
 unified-delay: true
@@ -325,9 +325,9 @@ proxy-groups:
   - AKUN-008-MD-ITFRUIT-185153198-202-VLESS-WS-104MS
   - AKUN-004-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-106MS
   url: https://www.gstatic.com/generate_204
-  interval: 180
+  interval: 90
   tolerance: 150
-  lazy: true
+  lazy: false
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
@@ -512,6 +512,7 @@ rules:
 - DOMAIN,ardguisser.com,REJECT
 - DOMAIN,areyouready.co.za,REJECT
 - DOMAIN,argon-client.com,REJECT
+- DOMAIN,astenterprises.com.pk,REJECT
 - DOMAIN,atasapka.com.tr,REJECT
 - DOMAIN,atgroup-link.id,REJECT
 - DOMAIN,attach.66rpg.com,REJECT
@@ -531,7 +532,6 @@ rules:
 - DOMAIN,best.obs.cn-sz1.ctyun.cn,REJECT
 - DOMAIN,bitbrowse.oss-cn-hongkong.aliyuncs.com,REJECT
 - DOMAIN,bjyunte.com,REJECT
-- DOMAIN,bkktech-thai.com,REJECT
 - DOMAIN,blankeyeo.com,REJECT
 - DOMAIN,blessdayservices.org,REJECT
 - DOMAIN,blogs.sokun.jp,REJECT
@@ -544,6 +544,7 @@ rules:
 - DOMAIN,boitim.oss-eu-west-2.aliyuncs.com,REJECT
 - DOMAIN,bondeddarkenedswerve.com,REJECT
 - DOMAIN,book.rollingvideogames.com,REJECT
+- DOMAIN,boost-19.com,REJECT
 - DOMAIN,boowellness.screenconnect.com,REJECT
 - DOMAIN,brand.ad,REJECT
 - DOMAIN,bratusferramentas.grupomoltz.com.br,REJECT
@@ -588,7 +589,6 @@ rules:
 - DOMAIN,class1004.dothome.co.kr,REJECT
 - DOMAIN,cliffg.me,REJECT
 - DOMAIN,clubdetiroelpicarcho.com,REJECT
-- DOMAIN,complianceportals.com,REJECT
 - DOMAIN,compuserviceonline.com.br,REJECT
 - DOMAIN,continentalgroup.net.in,REJECT
 - DOMAIN,controliumbt.com,REJECT
@@ -627,18 +627,17 @@ rules:
 - DOMAIN,dinamikakargo.com,REJECT
 - DOMAIN,disk.accord1key.cn,REJECT
 - DOMAIN,dl.1003b.56a.com,REJECT
+- DOMAIN,dl.2345.com,REJECT
 - DOMAIN,dl.dzqzd.com,REJECT
 - DOMAIN,dl.natgo.cn,REJECT
 - DOMAIN,dlied6.bytes.tcdnos.com,REJECT
 - DOMAIN,dlied6.yz.tcdnos.com,REJECT
 - DOMAIN,dmoneii.com,REJECT
 - DOMAIN,doathair.com,REJECT
-- DOMAIN,dolphlinksan.online,REJECT
 - DOMAIN,domainmob.com,REJECT
 - DOMAIN,dongyu.us,REJECT
 - DOMAIN,donkeytourscroatia.com,REJECT
 - DOMAIN,donutclient.de,REJECT
-- DOMAIN,donutsmpclient.net,REJECT
 - DOMAIN,down.fwqlt.com,REJECT
 - DOMAIN,down.pcclear.com,REJECT
 - DOMAIN,down.qqfarmer.com.cn,REJECT
@@ -655,7 +654,6 @@ rules:
 - DOMAIN,download.pdf00.cn,REJECT
 - DOMAIN,download.pdf00.com,REJECT
 - DOMAIN,download.tg1101.com,REJECT
-- DOMAIN,download2.huduntech.com,REJECT
 - DOMAIN,draft-loop.com,REJECT
 - DOMAIN,dreamwatchevent.com,REJECT
 - DOMAIN,drgenov.com,REJECT
@@ -677,12 +675,11 @@ rules:
 - DOMAIN,fd.v2downf.shop,REJECT
 - DOMAIN,feedweave14.com,REJECT
 - DOMAIN,file.blackint3.com,REJECT
+- DOMAIN,file.uhsea.com,REJECT
 - DOMAIN,filebanner.com,REJECT
 - DOMAIN,filerit.com,REJECT
 - DOMAIN,first-security-verden.de,REJECT
 - DOMAIN,flexsportpools.com,REJECT
-- DOMAIN,flicargo.com,REJECT
-- DOMAIN,flycheats.xyz,REJECT
 - DOMAIN,flyingmutts.com,REJECT
 - DOMAIN,fmrio.com,REJECT
 - DOMAIN,forge-copper.com,REJECT
@@ -691,6 +688,7 @@ rules:
 - DOMAIN,frame-kite.com,REJECT
 - DOMAIN,frame97.com,REJECT
 - DOMAIN,ftp.vietnam852.com,REJECT
+- DOMAIN,fucktermedfir.st,REJECT
 - DOMAIN,fullstacknir.com,REJECT
 - DOMAIN,fz.tiansys.cn,REJECT
 - DOMAIN,gabyagozetim.com,REJECT
@@ -724,6 +722,7 @@ rules:
 - DOMAIN,hitman-pro.ru,REJECT
 - DOMAIN,hitstation.nl,REJECT
 - DOMAIN,hnjgdl.geps.glodon.com,REJECT
+- DOMAIN,hobobot.net,REJECT
 - DOMAIN,host-195-103-203-106.business.telecomitalia.it,REJECT
 - DOMAIN,host-95-230-215-65.business.telecomitalia.it,REJECT
 - DOMAIN,host-95-255-114-11.business.telecomitalia.it,REJECT
@@ -750,7 +749,9 @@ rules:
 - DOMAIN,iklanumum.com,REJECT
 - DOMAIN,imagefiles-backup.oss-ap-southeast-7.aliyuncs.com,REJECT
 - DOMAIN,impectorinternational.com,REJECT
+- DOMAIN,imperia243.com,REJECT
 - DOMAIN,injd.site,REJECT
+- DOMAIN,intelli-sys.co.zw,REJECT
 - DOMAIN,intelligradeeducation.vicentecisnerospub.com,REJECT
 - DOMAIN,ircftp.net,REJECT
 - DOMAIN,isiore.com.co,REJECT
@@ -762,6 +763,7 @@ rules:
 - DOMAIN,jagoiklan.com,REJECT
 - DOMAIN,jagopromo.com,REJECT
 - DOMAIN,jasaiklan.com,REJECT
+- DOMAIN,jawaratekno.com,REJECT
 - DOMAIN,jd-forever.com,REJECT
 - DOMAIN,jenniferloeffler.com,REJECT
 - DOMAIN,jessespridecharters.com,REJECT
@@ -777,7 +779,6 @@ rules:
 - DOMAIN,klik4.me,REJECT
 - DOMAIN,klikajadeh.com,REJECT
 - DOMAIN,konsor.ru,REJECT
-- DOMAIN,kop4r.com,REJECT
 - DOMAIN,kral.shaderzone.org,REJECT
 - DOMAIN,kuakuawenjian.oss-cn-hangzhou.aliyuncs.com,REJECT
 - DOMAIN,lake-90.com,REJECT
@@ -790,7 +791,6 @@ rules:
 - DOMAIN,local-update.com,REJECT
 - DOMAIN,lomejordesalamanca.es,REJECT
 - DOMAIN,luckyads.com,REJECT
-- DOMAIN,luegner.top,REJECT
 - DOMAIN,luizmatoso.com.br,REJECT
 - DOMAIN,lumacrea.com,REJECT
 - DOMAIN,luminouspower.com.pk,REJECT
@@ -802,7 +802,6 @@ rules:
 - DOMAIN,maple30.com,REJECT
 - DOMAIN,mc.heyiwei.net,REJECT
 - DOMAIN,mccl.com.vn,REJECT
-- DOMAIN,medises.co.kr,REJECT
 - DOMAIN,mersped.mycpanel.rs,REJECT
 - DOMAIN,meteorclients.com,REJECT
 - DOMAIN,metrics.gocloudmaps.com,REJECT
@@ -817,7 +816,6 @@ rules:
 - DOMAIN,mogimall.com,REJECT
 - DOMAIN,moneyfree.co,REJECT
 - DOMAIN,mousheen.net,REJECT
-- DOMAIN,mowcangler.co.uk,REJECT
 - DOMAIN,mrsweaterltd.com,REJECT
 - DOMAIN,muaklekcoop.com,REJECT
 - DOMAIN,muledo.com,REJECT
@@ -828,7 +826,6 @@ rules:
 - DOMAIN,n.vs108.com,REJECT
 - DOMAIN,namuvpn.com,REJECT
 - DOMAIN,ncxps.com,REJECT
-- DOMAIN,ndjvmuvkoahnopfqn2jpva.on.drv.tw,REJECT
 - DOMAIN,nerve.untergrund.net,REJECT
 - DOMAIN,nest-52.com,REJECT
 - DOMAIN,newkey.co.kr,REJECT
@@ -851,8 +848,6 @@ rules:
 - DOMAIN,oz-courses.com,REJECT
 - DOMAIN,p3.zbjimg.com,REJECT
 - DOMAIN,paidforfree.com,REJECT
-- DOMAIN,pakdigital.org,REJECT
-- DOMAIN,palharesinformatica.com.br,REJECT
 - DOMAIN,paretandassociates.screenconnect.com,REJECT
 - DOMAIN,pasangiklan.com,REJECT
 - DOMAIN,pay.aqiu6.com,REJECT
@@ -860,7 +855,6 @@ rules:
 - DOMAIN,pcupd.com,REJECT
 - DOMAIN,pfatrivandrum.org,REJECT
 - DOMAIN,pictureurl.com,REJECT
-- DOMAIN,pingl.vip,REJECT
 - DOMAIN,pjsn.hi2.ro,REJECT
 - DOMAIN,pointtohealth.com,REJECT
 - DOMAIN,polinex.org,REJECT
@@ -891,7 +885,6 @@ rules:
 - DOMAIN,rdm.91yunma.cn,REJECT
 - DOMAIN,records.dennisign.se,REJECT
 - DOMAIN,reifenquick.de,REJECT
-- DOMAIN,relay.lecoindudiabetique.com,REJECT
 - DOMAIN,reutilizemais.co.mz,REJECT
 - DOMAIN,rheddh.com,REJECT
 - DOMAIN,riderspin.com,REJECT
@@ -939,8 +932,10 @@ rules:
 - DOMAIN,softdl.360tpcdn.com,REJECT
 - DOMAIN,softdl2.360tpcdn.com,REJECT
 - DOMAIN,softdl4.360.cn,REJECT
+- DOMAIN,soniamart.com,REJECT
 - DOMAIN,southernalarm.screenconnect.com,REJECT
 - DOMAIN,southwindsfineart.com,REJECT
+- DOMAIN,spaceware.to,REJECT
 - DOMAIN,spgint.com,REJECT
 - DOMAIN,src1.minibai.com,REJECT
 - DOMAIN,srsorvete.com.br,REJECT
@@ -976,10 +971,10 @@ rules:
 - DOMAIN,theclickers.net,REJECT
 - DOMAIN,theholidayroads.com,REJECT
 - DOMAIN,thementordirectory.com,REJECT
+- DOMAIN,thexfil.fit,REJECT
 - DOMAIN,tiacreation.club,REJECT
 - DOMAIN,tinggalklik.com,REJECT
 - DOMAIN,tmcksa.com,REJECT
-- DOMAIN,tools.lumma.cy,REJECT
 - DOMAIN,toolshare.com.tr,REJECT
 - DOMAIN,top8onlinegame.com,REJECT
 - DOMAIN,topklik.com,REJECT
@@ -1252,13 +1247,6 @@ rule-providers:
     path: ./rule_provider/akunyaml-f8bd6e8f93a1.yaml
     url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/proxy/rule_providers/security-pinjol.yaml
     interval: 43200
-  popup-ads:
-    type: http
-    behavior: domain
-    format: mrs
-    path: ./rule_provider/akunyaml-000cdc3700f2.mrs
-    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/proxy/rule_providers/compiled/popup-ads.mrs
-    interval: 43200
   threat-malware:
     type: http
     behavior: domain
@@ -1373,6 +1361,13 @@ rule-providers:
     format: mrs
     path: ./rule_providers/youtube.mrs
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs
+    interval: 43200
+  popup-ads:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./rule_provider/akunyaml-000cdc3700f2.mrs
+    url: https://raw.githubusercontent.com/adiorany3/AkunYaml/main/output/openclash/proxy/rule_providers/compiled/popup-ads.mrs
     interval: 43200
 hosts:
   www.google.com: forcesafesearch.google.com

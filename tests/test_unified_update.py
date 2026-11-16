@@ -101,5 +101,5 @@ def test_runner_partial_only_allows_security_update(tmp_path, monkeypatch, stage
     assert unified_update.main() == expected
     assert published == ([mode] if mode else [])
     if mode:
-        assert calls == ["local_runner.py", "independent_gameblock.py", "local_update.py"]
+        assert calls == ["local_runner.py", "independent_gameblock.py", "local_update.py", "adblock_protection_audit.py"]
     assert not (tmp_path / ".runtime_cache/unified_update.lock").exists()

@@ -17,6 +17,12 @@ from feed_guard import _parse_domains
 from game_domain_policy import apply_policy
 
 
+SHARED_INFRA = {
+    # Microsoft account/login is shared by Windows, Office, and Xbox: blocking it breaks non-game use.
+    "login.live.com", "logincdn.msauth.net", "store-images.s-microsoft.com",
+}
+
+
 def materialize(content, fmt, destination, core):
     if fmt not in {"text", "yaml", "mrs"}:
         raise ValueError("Format feed tidak didukung")
@@ -32,9 +38,14 @@ def materialize(content, fmt, destination, core):
         return len(domains)
     if fmt == "yaml":
         obj = yaml.safe_load(content)
-        if not isinstance(obj, dict) or not isinstance(obj.get("payload"), list) or len(obj["payload"]) < 10 or not all(isinstance(item, str) for item in obj["payload"]):
+        payload = obj.get("payload") if isinstance(obj, dict) else None
+        if not isinstance(payload, list) or len(payload) < 10 or not all(isinstance(item, str) for item in payload):
             raise ValueError("Provider YAML kosong/tidak valid")
-    elif fmt == "mrs" and not content.startswith(b"\x28\xb5\x2f\xfd"):
+        cleaned = [item for item in payload if not any(item.strip().endswith("," + host) or item.strip() == host for host in SHARED_INFRA)]
+        obj["payload"] = cleaned
+        destination.write_text(yaml.safe_dump(obj, sort_keys=False, allow_unicode=True))
+        return len(cleaned)
+    if fmt == "mrs" and not content.startswith(b"\x28\xb5\x2f\xfd"):
         raise ValueError("Header provider MRS tidak valid")
     destination.write_bytes(content)
     return None
@@ -113,9 +124,11 @@ def update(root, refresh=False):
             with ThreadPoolExecutor(max_workers=4) as pool:
                 assets = list(pool.map(build_feed, manifest.items()))
             for name, spec in manifest.items():
-                config["rule-providers"][name] = {"type": "file", "behavior": "domain", "format": "mrs" if spec["format"] == "text" else spec["format"], "path": "./" + spec["path"]}
+                # Blackmatrix ships classical rules (DOMAIN/IP-CIDR); others are domain lists.
+                behavior = "classical" if name == "games-blackmatrix" else "domain"
+                config["rule-providers"][name] = {"type": "file", "behavior": behavior, "format": "mrs" if spec["format"] == "text" else spec["format"], "path": "./" + spec["path"]}
                 rule = f"RULE-SET,{name},REJECT"
-                if name == "games-category":
+                if name in {"games-category", "games-blackmatrix"}:
                     config["rules"] = [rule, *[item for item in config["rules"] if item != rule]]
                 elif rule not in config["rules"]:
                     config["rules"].insert(-1, rule)
