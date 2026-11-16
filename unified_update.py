@@ -198,6 +198,7 @@ def main():
         if retained_accounts:
             mode = "security-refresh-retained-accounts"
         print(f"[OK] Semua hasil: {collect(root, mode)}")
+        print("[OK] Proxy difilter lewat Mihomo URL test; adblock/feed diperbarui dalam pipeline local_runner.")
         return 0
     except (OSError, ValueError, RuntimeError, yaml.YAMLError, subprocess.SubprocessError) as exc:
         print(f"[ERROR] {exc}; output terpadu lama dipertahankan.")
