@@ -84,6 +84,26 @@ def test_public_export_allowlist_and_preservation(tmp_path):
         public_export(source, source / "nested")
 
 
+def test_telegram_download_domains_precede_reject_rules(tmp_path):
+    from domain_policy_tools import explain
+
+    config = {
+        "rules": [
+            "DOMAIN-SUFFIX,telegram.org,SOCIAL-MEDIA",
+            "DOMAIN-SUFFIX,t.me,SOCIAL-MEDIA",
+            "DOMAIN-SUFFIX,telegram-cdn.org,SOCIAL-MEDIA",
+            "RULE-SET,ads,REJECT",
+            "MATCH,DIRECT",
+        ],
+        "rule-providers": {"ads": {"behavior": "domain", "format": "yaml", "path": "ads.yaml"}},
+    }
+    (tmp_path / "ads.yaml").write_text("payload: ['+.telegram-cdn.org']\n")
+    path = tmp_path / "config.yaml"
+    path.write_text(yaml.safe_dump(config))
+    for host in ("t.me", "telegram.org", "cdn.telegram-cdn.org"):
+        assert explain(path, host, Path("missing"))["policy"] == "SOCIAL-MEDIA"
+
+
 def test_inline_provider_and_allowlist_precedence(tmp_path):
     source = {"outbounds": [{"type": "direct", "tag": "direct"}], "route": {}}
     clash = {"rules": ["DOMAIN,allow.games.example,DIRECT", "RULE-SET,games,REJECT", "MATCH,DIRECT"],

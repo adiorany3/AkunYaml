@@ -1,2 +1,10 @@
-# Domain yang dikecualikan dari kandidat log, satu domain per baris.
-# Tidak mengubah aturan jaringan/feed; konflik dengan manual_domains.txt ditolak.
+# Domain yang dikecualikan dari kandidat log dan blokir game, satu domain per baris.
+# Jaga layanan penting tetap berfungsi; konflik dengan manual_domains.txt ditolak.
+telegram.org
+telegram.me
+t.me
+telesco.pe
+telegra.ph
+telegram-cdn.org
+cdn-telegram.org
+comments.app

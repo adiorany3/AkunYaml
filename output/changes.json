@@ -1,4 +1,137 @@
 {
-  "profiles_changed": 0,
-  "changes": []
+  "profiles_changed": 12,
+  "changes": [
+    {
+      "profile": "mihomo-mac/direct/config.yaml",
+      "status": "changed",
+      "rules_added": 16,
+      "rules_removed": 0,
+      "rule_order_changed": false,
+      "dns_changed": false,
+      "accounts_changed": false,
+      "groups_changed": false,
+      "providers_changed": false
+    },
+    {
+      "profile": "mihomo-mac/proxy/config.yaml",
+      "status": "changed",
+      "rules_added": 16,
+      "rules_removed": 0,
+      "rule_order_changed": false,
+      "dns_changed": false,
+      "accounts_changed": false,
+      "groups_changed": false,
+      "providers_changed": false
+    },
+    {
+      "profile": "openclash/direct/openclash_noproxy.yaml",
+      "status": "changed",
+      "rules_added": 16,
+      "rules_removed": 0,
+      "rule_order_changed": false,
+      "dns_changed": false,
+      "accounts_changed": false,
+      "groups_changed": false,
+      "providers_changed": false
+    },
+    {
+      "profile": "openclash/proxy/openclash_android.yaml",
+      "status": "changed",
+      "rules_added": 16,
+      "rules_removed": 0,
+      "rule_order_changed": false,
+      "dns_changed": false,
+      "accounts_changed": false,
+      "groups_changed": false,
+      "providers_changed": false
+    },
+    {
+      "profile": "openclash/proxy/openclash_auto.yaml",
+      "status": "changed",
+      "rules_added": 16,
+      "rules_removed": 0,
+      "rule_order_changed": false,
+      "dns_changed": false,
+      "accounts_changed": false,
+      "groups_changed": false,
+      "providers_changed": false
+    },
+    {
+      "profile": "openclash/proxy/openclash_fresh_pool.yaml",
+      "status": "changed",
+      "rules_added": 14,
+      "rules_removed": 0,
+      "rule_order_changed": false,
+      "dns_changed": false,
+      "accounts_changed": false,
+      "groups_changed": false,
+      "providers_changed": false
+    },
+    {
+      "profile": "openclash/proxy/openclash_lite.yaml",
+      "status": "changed",
+      "rules_added": 16,
+      "rules_removed": 0,
+      "rule_order_changed": false,
+      "dns_changed": false,
+      "accounts_changed": false,
+      "groups_changed": false,
+      "providers_changed": false
+    },
+    {
+      "profile": "openclash/subscription/openclash_android.yaml",
+      "status": "changed",
+      "rules_added": 16,
+      "rules_removed": 0,
+      "rule_order_changed": false,
+      "dns_changed": false,
+      "accounts_changed": false,
+      "groups_changed": false,
+      "providers_changed": false
+    },
+    {
+      "profile": "openclash/subscription/openclash_auto.yaml",
+      "status": "changed",
+      "rules_added": 16,
+      "rules_removed": 0,
+      "rule_order_changed": false,
+      "dns_changed": false,
+      "accounts_changed": false,
+      "groups_changed": false,
+      "providers_changed": false
+    },
+    {
+      "profile": "openclash/subscription/openclash_fresh_pool.yaml",
+      "status": "changed",
+      "rules_added": 14,
+      "rules_removed": 0,
+      "rule_order_changed": false,
+      "dns_changed": false,
+      "accounts_changed": false,
+      "groups_changed": false,
+      "providers_changed": false
+    },
+    {
+      "profile": "openclash/subscription/openclash_lite.yaml",
+      "status": "changed",
+      "rules_added": 16,
+      "rules_removed": 0,
+      "rule_order_changed": false,
+      "dns_changed": false,
+      "accounts_changed": false,
+      "groups_changed": false,
+      "providers_changed": false
+    },
+    {
+      "profile": "openclash/subscription/openclash_noproxy.yaml",
+      "status": "changed",
+      "rules_added": 16,
+      "rules_removed": 0,
+      "rule_order_changed": false,
+      "dns_changed": false,
+      "accounts_changed": false,
+      "groups_changed": false,
+      "providers_changed": false
+    }
+  ]
 }

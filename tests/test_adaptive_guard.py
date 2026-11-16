@@ -69,6 +69,22 @@ import yaml
 import adaptive_guard as guard
 
 
+def test_telegram_domains_are_protected_from_adaptive_blocks(tmp_path):
+    from adaptive_guard import protected_domains, evaluate
+
+    allowlist = protected_domains(tmp_path)
+    telegram = {"telegram.org", "t.me", "telegram-cdn.org", "telegra.ph"}
+    assert telegram <= allowlist
+    evidence = {
+        "hagezi-ads": telegram,
+        "abpindo-ads": telegram,
+        "hagezi-threat": set(),
+        "chocolate-threat": set(),
+    }
+    accepted, _ = evaluate(evidence, allowlist)
+    assert not telegram.intersection(accepted)
+
+
 def test_only_corroborated_exact_host_and_allowlist():
     evidence = {"hagezi-threat": {"bad.example", "single.example", "safe.example", "1.2.3.4"}, "chocolate-threat": {"bad.example", "safe.example", "1.2.3.4"}}
     accepted, review = guard.evaluate(evidence, {"safe.example"})

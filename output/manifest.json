@@ -1,6 +1,6 @@
 {
   "mode": "security-refresh-retained-accounts",
-  "packaged_at": "2026-11-16T01:38:34.955734+00:00",
+  "packaged_at": "2026-11-16T01:58:04.279559+00:00",
   "account_refresh": "retained-old",
   "adaptive_guard": "fresh",
   "validation": {
@@ -10,32 +10,32 @@
   "sources": [
     {
       "path": "openclash_auto.yaml",
-      "modified_at": "2026-11-16T01:38:10.371288+00:00",
-      "sha256": "6aedac56bd11e88572adaff6e57c070e40e63be397bd599b890fe52c3515a731"
+      "modified_at": "2026-11-16T01:57:39.284393+00:00",
+      "sha256": "a55be1e2652ecc0a873301bfd7204774e7113a455adab37d20d082674976b21e"
     },
     {
       "path": "openclash_android.yaml",
-      "modified_at": "2026-11-16T01:38:10.431863+00:00",
-      "sha256": "94f20de15e2c614e6801bb6b81f0a41cb4441630e4c620d0164b5b760351bc9a"
+      "modified_at": "2026-11-16T01:57:39.349254+00:00",
+      "sha256": "391138c7d95eebd0926b7432bea92d3c9c19acf3664b7f9df47bcd4d8de8d824"
     },
     {
       "path": "openclash_lite.yaml",
-      "modified_at": "2026-11-16T01:38:10.462347+00:00",
-      "sha256": "388f93c3df3355071f8a3de5069e591e9d676e9fbed22e744a4f477d9b016218"
+      "modified_at": "2026-11-16T01:57:39.380796+00:00",
+      "sha256": "dc31cdbe8f4bea8eacbd652dfa574683d60c4b2030125e413a0be88cfcb7a440"
     },
     {
       "path": "openclash_fresh_pool.yaml",
-      "modified_at": "2026-11-16T01:38:10.522656+00:00",
-      "sha256": "bf52b64ad6847706214d3aa71ca7d5d66e60f507c56862fcacdb0e8e64849fa8"
+      "modified_at": "2026-11-16T01:57:39.445195+00:00",
+      "sha256": "509524031d28ecf327bb71ab891ac679a7968f1b680ab356ab3b5221f2276d2d"
     },
     {
       "path": "local_build/openclash_noproxy.yaml",
-      "modified_at": "2026-11-16T01:38:15.390656+00:00",
-      "sha256": "b512b140236475287b7870129a3fa956aaf8843c3ac28dc16a0cfca705934fc8"
+      "modified_at": "2026-11-16T01:57:44.426310+00:00",
+      "sha256": "54d84c5e20532ad0c08a226e13d3beea95f522621ebbc0465c17130f60d953bf"
     },
     {
       "path": "local_build/gameblock/openclash_noproxy_gameblock.yaml",
-      "modified_at": "2026-11-16T01:38:14.858015+00:00",
+      "modified_at": "2026-11-16T01:57:43.842017+00:00",
       "sha256": "5cafa33a32c17a88300a65df4dfc4a72faa7b42b86f096132e52eebc035f648f"
     },
     {
@@ -45,7 +45,7 @@
     },
     {
       "path": "local_build/singbox_direct_adblock.json",
-      "modified_at": "2026-11-16T01:38:15.393664+00:00",
+      "modified_at": "2026-11-16T01:57:44.437052+00:00",
       "sha256": "3124a0a08c9d24074dddf0e40e66bd17853e8b8b45f334379078db4567630e66"
     },
     {

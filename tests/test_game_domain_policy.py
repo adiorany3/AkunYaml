@@ -19,6 +19,14 @@ def test_approved_rules_deduplicate(tmp_path):
     assert config["rules"] == ["DOMAIN-SUFFIX,game.example,REJECT", "MATCH,DIRECT"]
 
 
+def test_telegram_protected_from_gameblock(tmp_path):
+    policy = tmp_path / "gameblock_policy"
+    policy.mkdir()
+    (policy / "manual_domains.txt").write_text("t.me\n")
+    with pytest.raises(ValueError, match="bertentangan"):
+        apply_policy({"rules": ["MATCH,DIRECT"]}, tmp_path)
+
+
 def test_allow_conflict_fails(tmp_path):
     policy = tmp_path / "gameblock_policy"
     policy.mkdir()

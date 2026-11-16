@@ -221,7 +221,8 @@ snapshot, dan validator masih dapat membutuhkan database jika belum tersedia.
 ## Konfigurasi yang perlu dikenali
 
 - `local_config.json`: pengaturan runner akun dan AI.
-- `akun_manual.txt`: input akun manual, bukan output.
+- `accounts/manual_nodes.txt`: input akun manual; satu URI proxy per baris.
+- `akun_manual.txt`: output akun manual yang lolos validasi; jangan diedit sebagai input.
 - `.secrets/ai_adblock.key`: JSON privat dengan `api_key`, `base_url`, dan `model`;
   permission `600`. Endpoint/model privat diprioritaskan. Environment
   `AI_ADBLOCK_API_KEY` dapat mengganti key. Format key polos lama masih didukung.

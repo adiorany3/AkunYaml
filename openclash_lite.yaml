@@ -389,6 +389,14 @@ rules:
 - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
 - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
 - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+- DOMAIN-SUFFIX,telegram.org,DIRECT
+- DOMAIN-SUFFIX,telegram.me,DIRECT
+- DOMAIN-SUFFIX,t.me,DIRECT
+- DOMAIN-SUFFIX,telesco.pe,DIRECT
+- DOMAIN-SUFFIX,telegra.ph,DIRECT
+- DOMAIN-SUFFIX,telegram-cdn.org,DIRECT
+- DOMAIN-SUFFIX,cdn-telegram.org,DIRECT
+- DOMAIN-SUFFIX,comments.app,DIRECT
 - DOMAIN,static.doubleclick.net,YOUTUBE
 - DOMAIN,jnn-pa.googleapis.com,YOUTUBE
 - DOMAIN,googleads.g.doubleclick.net,REJECT
@@ -439,7 +447,9 @@ rules:
 - DOMAIN,rum-apis.reolink.com,REJECT
 - DOMAIN,sentry.tuyaus.com,REJECT
 - DOMAIN,promotion-en.xmeye.net,REJECT
+- DOMAIN-SUFFIX,cdn-telegram.org,GLOBAL
 - DOMAIN-SUFFIX,challenges.cloudflare.com,GLOBAL
+- DOMAIN-SUFFIX,comments.app,GLOBAL
 - DOMAIN-SUFFIX,hcaptcha.com,GLOBAL
 - DOMAIN-SUFFIX,licdn.com,GLOBAL
 - DOMAIN-SUFFIX,linkedin.cn,GLOBAL
@@ -447,6 +457,12 @@ rules:
 - DOMAIN-SUFFIX,lnkd.in,GLOBAL
 - DOMAIN-SUFFIX,recaptcha.net,GLOBAL
 - DOMAIN-SUFFIX,simaster.ugm.ac.id,GLOBAL
+- DOMAIN-SUFFIX,t.me,GLOBAL
+- DOMAIN-SUFFIX,telegra.ph,GLOBAL
+- DOMAIN-SUFFIX,telegram-cdn.org,GLOBAL
+- DOMAIN-SUFFIX,telegram.me,GLOBAL
+- DOMAIN-SUFFIX,telegram.org,GLOBAL
+- DOMAIN-SUFFIX,telesco.pe,GLOBAL
 - DOMAIN-SUFFIX,speedtest.net,GLOBAL
 - DOMAIN-SUFFIX,ookla.com,GLOBAL
 - DOMAIN-SUFFIX,speedtestcustom.com,GLOBAL

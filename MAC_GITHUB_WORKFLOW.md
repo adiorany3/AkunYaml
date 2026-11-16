@@ -99,7 +99,7 @@ python3 validate_openclash_target.py --core /etc/openclash/core/clash_meta openc
 
 ## 6. Menambah sumber akun
 
-Masukkan URL subscription ke `subscription_links.txt`, satu URL per baris. Untuk node individual, masukkan URI ke `manual_nodes.txt`, satu URI per baris.
+Masukkan URL subscription ke `subscription_links.txt`, satu URL per baris. Untuk node individual, masukkan URI ke `accounts/manual_nodes.txt`, satu URI VLESS/VMess/Trojan/SS per baris. File `akun_manual.txt` adalah output, bukan input.
 
 Jangan edit `akun.txt` sebagai input karena file tersebut merupakan output generator.
 

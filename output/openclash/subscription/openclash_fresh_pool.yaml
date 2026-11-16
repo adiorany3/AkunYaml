@@ -1356,6 +1356,14 @@ rules:
 - DOMAIN-SUFFIX,youtubei.googleapis.com,YOUTUBE
 - DOMAIN-SUFFIX,youtube.googleapis.com,YOUTUBE
 - DOMAIN-SUFFIX,ggpht.com,YOUTUBE
+- DOMAIN-SUFFIX,telegram.org,SOCIAL-MEDIA
+- DOMAIN-SUFFIX,telegram.me,SOCIAL-MEDIA
+- DOMAIN-SUFFIX,t.me,SOCIAL-MEDIA
+- DOMAIN-SUFFIX,telesco.pe,SOCIAL-MEDIA
+- DOMAIN-SUFFIX,telegra.ph,SOCIAL-MEDIA
+- DOMAIN-SUFFIX,telegram-cdn.org,SOCIAL-MEDIA
+- DOMAIN-SUFFIX,cdn-telegram.org,SOCIAL-MEDIA
+- DOMAIN-SUFFIX,comments.app,SOCIAL-MEDIA
 - DOMAIN,adstatistics.av380.net,REJECT
 - DOMAIN,logs.av380.net,REJECT
 - DOMAIN,ad.av380.net,REJECT
@@ -1375,7 +1383,9 @@ rules:
 - DOMAIN,rum-apis.reolink.com,REJECT
 - DOMAIN,sentry.tuyaus.com,REJECT
 - DOMAIN,promotion-en.xmeye.net,REJECT
+- DOMAIN-SUFFIX,cdn-telegram.org,GLOBAL
 - DOMAIN-SUFFIX,challenges.cloudflare.com,GLOBAL
+- DOMAIN-SUFFIX,comments.app,GLOBAL
 - DOMAIN-SUFFIX,hcaptcha.com,GLOBAL
 - DOMAIN-SUFFIX,licdn.com,GLOBAL
 - DOMAIN-SUFFIX,linkedin.cn,GLOBAL
@@ -1383,6 +1393,12 @@ rules:
 - DOMAIN-SUFFIX,lnkd.in,GLOBAL
 - DOMAIN-SUFFIX,recaptcha.net,GLOBAL
 - DOMAIN-SUFFIX,simaster.ugm.ac.id,GLOBAL
+- DOMAIN-SUFFIX,t.me,GLOBAL
+- DOMAIN-SUFFIX,telegra.ph,GLOBAL
+- DOMAIN-SUFFIX,telegram-cdn.org,GLOBAL
+- DOMAIN-SUFFIX,telegram.me,GLOBAL
+- DOMAIN-SUFFIX,telegram.org,GLOBAL
+- DOMAIN-SUFFIX,telesco.pe,GLOBAL
 - DOMAIN-SUFFIX,speedtest.net,GLOBAL
 - DOMAIN-SUFFIX,ookla.com,GLOBAL
 - DOMAIN-SUFFIX,speedtestcustom.com,GLOBAL
@@ -2107,8 +2123,6 @@ rules:
 - DOMAIN-SUFFIX,cdninstagram.com,SOCIAL-MEDIA
 - DOMAIN-SUFFIX,tiktok.com,SOCIAL-MEDIA
 - DOMAIN-SUFFIX,tiktokcdn.com,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,t.me,SOCIAL-MEDIA
-- DOMAIN-SUFFIX,telegram.org,SOCIAL-MEDIA
 - MATCH,GLOBAL
 hosts:
   www.google.com: forcesafesearch.google.com

@@ -19,8 +19,14 @@ SOURCES = {
 TTL_HOURS = 24
 
 
+TELEGRAM_DOMAINS = {
+    "telegram.org", "telegram.me", "t.me", "telesco.pe",
+    "telegra.ph", "telegram-cdn.org", "cdn-telegram.org", "comments.app",
+}
+
+
 def protected_domains(root):
-    allowed = set(load_domains(root / "adblock_allowlist.txt"))
+    allowed = set(load_domains(root / "adblock_allowlist.txt")) | TELEGRAM_DOMAINS
     # Retain explicit service exceptions from the maintained local policy.
     baseline = root / "gameblock_policy/baseline/openclash_noproxy_gameblock.yaml"
     if baseline.exists():
@@ -124,7 +130,7 @@ def apply(stage, root):
     if domains:
         import yaml
         from ai_adblock_classifier import is_allowlisted, load_domains
-        allowlist = set(load_domains(root / "adblock_allowlist.txt"))
+        allowlist = set(load_domains(root / "adblock_allowlist.txt")) | TELEGRAM_DOMAINS
         blocked_domains = [domain for domain in domains if not is_allowlisted(domain, allowlist)]
         for folder in (stage / "openclash", stage / "mihomo-mac"):
             for path in folder.glob("*/*.yaml"):

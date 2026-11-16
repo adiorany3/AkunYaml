@@ -54,9 +54,16 @@ def read_list(path):
     return result
 
 
+PROTECTED_SERVICE_DOMAINS = {
+    "telegram.org", "telegram.me", "t.me", "telesco.pe",
+    "telegra.ph", "telegram-cdn.org", "cdn-telegram.org", "comments.app",
+}
+
+
 def apply_policy(config, root):
     approved = read_list(root / "gameblock_policy/manual_domains.txt")
-    allowed = read_list(root / "gameblock_policy/allow_domains.txt")
+    allowed = set(read_list(root / "gameblock_policy/allow_domains.txt")) | PROTECTED_SERVICE_DOMAINS
+    allowed = sorted(allowed)
     for name in approved:
         if any(name == a or name.endswith("." + a) or a.endswith("." + name) for a in allowed):
             raise ValueError("Daftar game manual bertentangan dengan pengecualian game")

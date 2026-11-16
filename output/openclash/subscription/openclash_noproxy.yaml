@@ -545,6 +545,14 @@ rules:
 - DOMAIN-SUFFIX,youtubei.googleapis.com,DIRECT
 - DOMAIN-SUFFIX,youtube.googleapis.com,DIRECT
 - DOMAIN-SUFFIX,ggpht.com,DIRECT
+- DOMAIN-SUFFIX,telegram.org,DIRECT
+- DOMAIN-SUFFIX,telegram.me,DIRECT
+- DOMAIN-SUFFIX,t.me,DIRECT
+- DOMAIN-SUFFIX,telesco.pe,DIRECT
+- DOMAIN-SUFFIX,telegra.ph,DIRECT
+- DOMAIN-SUFFIX,telegram-cdn.org,DIRECT
+- DOMAIN-SUFFIX,cdn-telegram.org,DIRECT
+- DOMAIN-SUFFIX,comments.app,DIRECT
 - DOMAIN,adstatistics.av380.net,REJECT
 - DOMAIN,logs.av380.net,REJECT
 - DOMAIN,ad.av380.net,REJECT
@@ -564,7 +572,9 @@ rules:
 - DOMAIN,rum-apis.reolink.com,REJECT
 - DOMAIN,sentry.tuyaus.com,REJECT
 - DOMAIN,promotion-en.xmeye.net,REJECT
+- DOMAIN-SUFFIX,cdn-telegram.org,DIRECT
 - DOMAIN-SUFFIX,challenges.cloudflare.com,DIRECT
+- DOMAIN-SUFFIX,comments.app,DIRECT
 - DOMAIN-SUFFIX,hcaptcha.com,DIRECT
 - DOMAIN-SUFFIX,licdn.com,DIRECT
 - DOMAIN-SUFFIX,linkedin.cn,DIRECT
@@ -572,6 +582,12 @@ rules:
 - DOMAIN-SUFFIX,lnkd.in,DIRECT
 - DOMAIN-SUFFIX,recaptcha.net,DIRECT
 - DOMAIN-SUFFIX,simaster.ugm.ac.id,DIRECT
+- DOMAIN-SUFFIX,t.me,DIRECT
+- DOMAIN-SUFFIX,telegra.ph,DIRECT
+- DOMAIN-SUFFIX,telegram-cdn.org,DIRECT
+- DOMAIN-SUFFIX,telegram.me,DIRECT
+- DOMAIN-SUFFIX,telegram.org,DIRECT
+- DOMAIN-SUFFIX,telesco.pe,DIRECT
 - DOMAIN-SUFFIX,speedtest.net,DIRECT
 - DOMAIN-SUFFIX,ookla.com,DIRECT
 - DOMAIN-SUFFIX,speedtestcustom.com,DIRECT

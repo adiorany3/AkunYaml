@@ -2164,7 +2164,7 @@ def main() -> int:
     output_fresh_yaml = os.getenv("OUTPUT_FRESH_YAML", "openclash_fresh_pool.yaml")
     output_fresh_dir = os.getenv("OUTPUT_FRESH_DIR", "fresh_pool")
     output_stamp = os.getenv("OUTPUT_STAMP", "last_update.txt")
-    manual_file = os.getenv("MANUAL_NODES_FILE", "manual_nodes.txt")
+    manual_file = os.getenv("MANUAL_NODES_FILE", "accounts/manual_nodes.txt")
 
     max_nodes = max(1, _env_int("MAX_NODES", 10))
     min_output_nodes = max(1, _env_int("MIN_OUTPUT_NODES", 1))

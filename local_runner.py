@@ -233,7 +233,7 @@ DEFAULT_ENV = {
     "YOUTUBE_HEALTH_TIMEOUT_MS": "3000",
     "YOUTUBE_BROWSER_FILTER_FILE": "youtube_browser_filters.txt",
     "SUBSCRIPTION_LINKS_FILE": "subscription_links.txt",
-    "MANUAL_NODES_FILE": "manual_nodes.txt",
+    "MANUAL_NODES_FILE": "accounts/manual_nodes.txt",
     "OUTPUT_YAML": "openclash_auto.yaml",
     "OUTPUT_ANDROID_YAML": "openclash_android.yaml",
     "OUTPUT_SINGBOX_ANDROID": "singbox_android.json",
@@ -943,7 +943,7 @@ def ensure_core_files(workdir: Path, refresh: bool) -> None:
 def ensure_input_files(workdir: Path) -> None:
     defaults = {
         "subscription_links.txt": "# Tambahkan subscription publik/milik Anda. Satu URL per baris.\n",
-        "manual_nodes.txt": "# Node manual opsional. Satu URI per baris.\n",
+        "accounts/manual_nodes.txt": "# INPUT akun manual OpenClash/Sing-box. Satu URI VLESS/VMess/Trojan/SS per baris.\n",
         "adblock_allowlist.txt": "# Domain yang tidak boleh diblokir. Satu domain per baris.\n",
     }
     for name, body in defaults.items():
@@ -2294,8 +2294,22 @@ def apply_security(path: Path, profile: str, workdir: Path, interval: int, dns_m
         skip_domain = list(sniff_cfg.get("skip-domain") or [])
         sniff_cfg["skip-domain"] = list(dict.fromkeys(skip_domain + android_marketplace_live_sniffer_skip_domains()))
 
+    telegram_allow_rules = [
+        f"DOMAIN-SUFFIX,{domain},SOCIAL-MEDIA"
+        for domain in (
+            "telegram.org", "telegram.me", "t.me", "telesco.pe",
+            "telegra.ph", "telegram-cdn.org", "cdn-telegram.org", "comments.app",
+        )
+    ] if "SOCIAL-MEDIA" in _valid_policies(config) else [
+        f"DOMAIN-SUFFIX,{domain},DIRECT"
+        for domain in (
+            "telegram.org", "telegram.me", "t.me", "telesco.pe",
+            "telegra.ph", "telegram-cdn.org", "cdn-telegram.org", "comments.app",
+        )
+    ]
     security_rules = (
         lan_rules
+        + telegram_allow_rules
         + ai_guard_rules
         + list(V380_AD_RULES)
         + list(V380_SERVICE_RULES)
