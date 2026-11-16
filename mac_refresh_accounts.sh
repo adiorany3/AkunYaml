@@ -188,6 +188,7 @@ echo "[AUDIT] Memeriksa keamanan, adblock, kategori judi, dan budget performa...
 "$PY" threat_safe_audit.py
 "$PY" security_hardening_audit.py
 "$PY" openwrt_adblock_audit.py
+"$PY" adblock_protection_audit.py --openclash openclash_auto.yaml --singbox singbox_android.json
 "$PY" performance_budget_audit.py
 "$PY" load_balance_policy_audit.py
 "$PY" android_marketplace_live_audit.py

@@ -6,7 +6,7 @@ Added/Removed counts the domain diff against the previous known-good snapshot (0
 | Provider | Status | Entries | Added | Removed | SHA-256 |
 |---|---:|---:|---:|---:|---|
 | `ads_indonesia` | cached | 125 | 0 | 0 | `a2894f6c9bcd6687` |
-| `gambling-mini` | last-known-good | 47594 | 7018 | 5719 | `a5749aeab5e2c620` |
+| `gambling-mini` | updated | 48784 | 32724 | 56927 | `741fe73b7944f97a` |
 | `hagezi-pro-plus-mini` | cached | 104336 | 1688 | 2301 | `cdf2bf1b2b6d5001` |
 | `popup-ads` | cached | 77475 | 508 | 1280 | `e13b2524f00e20c2` |
 | `threat-cryptominers` | cached | 296 | 0 | 0 | `9fe832d795938cd4` |

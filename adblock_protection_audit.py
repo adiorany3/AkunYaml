@@ -17,6 +17,22 @@ def _fail(errors: list[str], message: str) -> None:
     errors.append(message)
 
 
+def audit_feed_cache(path: Path) -> list[str]:
+    """Check every feed in metadata still reports >=10 entries or is LKG."""
+    if not path.exists():
+        return []
+    errors: list[str] = []
+    try:
+        meta = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return errors
+    for name, item in meta.items():
+        good = path.parent / "last_good" / f"{name}.txt"
+        if not good.exists():
+            _fail(errors, f"feed {name} tanpa last-known-good cache")
+    return errors
+
+
 def audit_openclash(path: Path) -> list[str]:
     errors: list[str] = []
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
@@ -60,8 +76,11 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--openclash", type=Path, default=Path("openclash_lite.yaml"))
     parser.add_argument("--singbox", type=Path, default=Path("singbox_android.json"))
+    parser.add_argument("--feed-cache", type=Path, default=Path(".feed_cache/last_good"))
     args = parser.parse_args()
     failures = audit_openclash(args.openclash) + audit_singbox(args.singbox)
+    if args.feed_cache.exists():
+        failures += audit_feed_cache(args.feed_cache.parent / "metadata.json")
     if failures:
         for failure in failures:
             print(f"[ERROR] {failure}")

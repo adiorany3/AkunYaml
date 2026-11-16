@@ -195,7 +195,7 @@ def _feed_specs() -> list[FeedSpec]:
             elif name == "popup-ads":
                 minimum = 100
             elif name == "gambling-mini":
-                minimum = 50000
+                minimum = 45000
             specs.append(FeedSpec(name=name, url=url, kind="ipcidr" if behavior == "ipcidr" else "domain", min_entries=minimum))
     return specs
 
@@ -318,6 +318,7 @@ def refresh_security_feeds(workdir: Path, *, refresh: bool = True, log=print) ->
     _write_android_domain_snapshot(workdir, report, "popup-ads", "popup-ads_android.yaml", log=log)
     _write_android_domain_snapshot(workdir, report, "threat-fake-scam", "threat-fake-scam_android.yaml", log=log)
     _write_report(workdir, report)
+    write_alert(workdir, report)
 
     # Compile only validated LKG domain/ipcidr text feeds. The compiler is
     # fail-open: if the exact/runnable core is unavailable, providers remain
@@ -374,6 +375,29 @@ def _write_report(workdir: Path, report: dict[str, dict[str, Any]]) -> None:
         )
     lines.append("")
     (workdir / "security_feed_report.md").write_text("\n".join(lines), encoding="utf-8")
+
+
+def write_alert(workdir: Path, report: dict[str, dict[str, Any]]) -> None:
+    """Emit a compact alert payload when feeds degrade.
+
+    ponytail: stdout only; wire a real transport (Telegram/Discord) in
+    mac_refresh_accounts.sh if/when it is needed. Add here when a token exists.
+    """
+    degraded = [name for name, item in report.items() if item.get("status") != "updated"]
+    if not degraded:
+        return
+    payload = {
+        "event": "feed_degraded",
+        "feeds": {
+            name: {
+                "status": report[name].get("status"),
+                "count": report[name].get("count"),
+                "detail": report[name].get("detail", ""),
+            }
+            for name in degraded
+        },
+    }
+    print("[ALERT] " + json.dumps(payload, sort_keys=True))
 
 
 if __name__ == "__main__":

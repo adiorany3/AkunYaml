@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>id.akunyaml.refresh</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-lc</string>
+    <string>cd "/Users/macbookpro/Documents/GitHub/AkunYaml" &amp;&amp; ./mac_refresh_accounts.sh --no-pull &gt;&gt; .feed_cache/refresh.log 2&gt;&amp;1</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <array>
+    <dict><key>Hour</key><integer>3</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Hour</key><integer>15</integer><key>Minute</key><integer>0</integer></dict>
+  </array>
+  <key>StandardOutPath</key>
+  <string>/Users/macbookpro/Documents/GitHub/AkunYaml/.feed_cache/launchd.out</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/macbookpro/Documents/GitHub/AkunYaml/.feed_cache/launchd.err</string>
+</dict>
+</plist>
