@@ -325,9 +325,9 @@ proxy-groups:
   - AKUN-008-MD-ITFRUIT-185153198-202-VLESS-WS-104MS
   - AKUN-004-SPECIAL-IPV4-BENCHMARK-T-VLESS-WS-106MS
   url: https://www.gstatic.com/generate_204
-  interval: 90
+  interval: 180
   tolerance: 150
-  lazy: false
+  lazy: true
   timeout: 5000
   expected-status: 200/204/301/302
   max-failed-times: 2
