@@ -181,8 +181,8 @@ def main():
             refresh_adaptive_guard(root)
             if not args.security_only:
                 commands.append([sys.executable, str(root / "local_runner.py"), "--workdir", str(root), "--config", str(root / "local_config.json"), "--no-install-deps"])
-        commands.append([sys.executable, str(root / "local_update.py")])
         commands.append([sys.executable, str(root / "independent_gameblock.py")] + ([] if args.offline else ["--refresh"]))
+        commands.append([sys.executable, str(root / "local_update.py")])
         retained_accounts = False
         for command in commands:
             print(f"[RUN] {Path(command[1]).name}", flush=True)

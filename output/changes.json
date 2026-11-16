@@ -1,27 +1,4 @@
 {
-  "profiles_changed": 2,
-  "changes": [
-    {
-      "profile": "openclash/proxy/openclash_lite.yaml",
-      "status": "changed",
-      "rules_added": 0,
-      "rules_removed": 0,
-      "rule_order_changed": false,
-      "dns_changed": false,
-      "accounts_changed": false,
-      "groups_changed": true,
-      "providers_changed": false
-    },
-    {
-      "profile": "openclash/subscription/openclash_lite.yaml",
-      "status": "changed",
-      "rules_added": 0,
-      "rules_removed": 0,
-      "rule_order_changed": false,
-      "dns_changed": false,
-      "accounts_changed": false,
-      "groups_changed": true,
-      "providers_changed": false
-    }
-  ]
+  "profiles_changed": 0,
+  "changes": []
 }
