@@ -1,26 +1,15 @@
 {
-  "profiles_changed": 2,
+  "profiles_changed": 1,
   "changes": [
     {
-      "profile": "openclash/proxy/openclash_lite.yaml",
+      "profile": "sing-box/singbox_direct_gameblock.json",
       "status": "changed",
-      "rules_added": 0,
-      "rules_removed": 0,
+      "rules_added": 1,
+      "rules_removed": 1,
       "rule_order_changed": false,
       "dns_changed": false,
       "accounts_changed": false,
-      "groups_changed": true,
-      "providers_changed": false
-    },
-    {
-      "profile": "openclash/subscription/openclash_lite.yaml",
-      "status": "changed",
-      "rules_added": 0,
-      "rules_removed": 0,
-      "rule_order_changed": false,
-      "dns_changed": false,
-      "accounts_changed": false,
-      "groups_changed": true,
+      "groups_changed": false,
       "providers_changed": false
     }
   ]
