@@ -1315,6 +1315,7 @@ rules:
 - DOMAIN,checkfivem.com,REJECT
 - DOMAIN,chenwangqiao.com,REJECT
 - DOMAIN,chuguadventures.co.tz,REJECT
+- DOMAIN,chuorinkan-mensesthe.xyz,REJECT
 - DOMAIN,churchinmanila.org,REJECT
 - DOMAIN,cl.ssouy.com,REJECT
 - DOMAIN,class1004.dothome.co.kr,REJECT
@@ -1405,11 +1406,11 @@ rules:
 - DOMAIN,farmutils.com,REJECT
 - DOMAIN,fcitantibot.pro,REJECT
 - DOMAIN,fd.v2downf.shop,REJECT
+- DOMAIN,fd2.eu,REJECT
 - DOMAIN,featherswallet.net,REJECT
 - DOMAIN,featherwallet.com,REJECT
 - DOMAIN,feedweave14.com,REJECT
 - DOMAIN,file.blackint3.com,REJECT
-- DOMAIN,file.uhsea.com,REJECT
 - DOMAIN,filebanner.com,REJECT
 - DOMAIN,filerit.com,REJECT
 - DOMAIN,first-security-verden.de,REJECT
@@ -1424,7 +1425,6 @@ rules:
 - DOMAIN,fucktermedfir.st,REJECT
 - DOMAIN,fullstacknir.com,REJECT
 - DOMAIN,fz.tiansys.cn,REJECT
-- DOMAIN,gabyagozetim.com,REJECT
 - DOMAIN,gaenterprises.in,REJECT
 - DOMAIN,gajukogyxywahu.com,REJECT
 - DOMAIN,galeri3.arkitera.com,REJECT
@@ -1481,6 +1481,7 @@ rules:
 - DOMAIN,iklantext.com,REJECT
 - DOMAIN,iklanumum.com,REJECT
 - DOMAIN,ikovrsps.com,REJECT
+- DOMAIN,ilangademolition.co.za,REJECT
 - DOMAIN,imagefiles-backup.oss-ap-southeast-7.aliyuncs.com,REJECT
 - DOMAIN,impectorinternational.com,REJECT
 - DOMAIN,imperia243.com,REJECT
@@ -1518,6 +1519,7 @@ rules:
 - DOMAIN,kuakuawenjian.oss-cn-hangzhou.aliyuncs.com,REJECT
 - DOMAIN,kuphela.com.mx,REJECT
 - DOMAIN,lake-90.com,REJECT
+- DOMAIN,lamperll.com,REJECT
 - DOMAIN,landonirwin.com,REJECT
 - DOMAIN,lawfirm.paperbirdtech.com,REJECT
 - DOMAIN,layarotaku.id,REJECT
@@ -1701,6 +1703,7 @@ rules:
 - DOMAIN,swiftonyx16.com,REJECT
 - DOMAIN,synergyconsulting.us,REJECT
 - DOMAIN,tadex.id,REJECT
+- DOMAIN,taizi.fdstat.vip,REJECT
 - DOMAIN,tanscarattorneys.co.tz,REJECT
 - DOMAIN,tapestryoftruth.com,REJECT
 - DOMAIN,tartaklegnica.pl,REJECT
@@ -1789,7 +1792,6 @@ rules:
 - DOMAIN,youtransfer.net,REJECT
 - DOMAIN,zamilgroups.com,REJECT
 - DOMAIN,zhikey.com,REJECT
-- DOMAIN,zuawjtuceszhrdvkgsrd.supabase.co,REJECT
 - RULE-SET,threat-malware,REJECT
 - RULE-SET,threat-phishing,REJECT
 - RULE-SET,threat-cryptominers,REJECT
